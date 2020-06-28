@@ -1,2 +1,2 @@
-# Industrial-Tech
+# IndustrialTech
 Think Gregtech 7
