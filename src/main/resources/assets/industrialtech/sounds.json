@@ -1,0 +1,8 @@
+{
+  "wrench": {
+    "sounds": [ "industrialtech:wrench" ]
+  },
+  "drill": {
+    "sounds": [ "industrialtech:drill" ]
+  }
+}

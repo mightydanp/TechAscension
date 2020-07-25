@@ -1,0 +1,4 @@
+include ":tesseract"
+project(":tesseract").projectDir = file("../TesseractAPI")
+include ":antimatterapi"
+project(":antimatterapi").projectDir = file("../AntimatterAPI")

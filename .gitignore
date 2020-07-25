@@ -1,0 +1,35 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+
+# generated
+src/generated/*
+
+# Files from Forge MDK
+forge*changelog.txt
+*.db
+/gradle
+/keep sake
+/run
+/.idea
+/build
+/src/main/resources/gtuassets1.14

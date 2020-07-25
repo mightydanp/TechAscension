@@ -1,2 +1,2 @@
 # IndustrialTech
-Think Gregtech 7
+Inspired by Gregtech

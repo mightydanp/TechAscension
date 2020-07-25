@@ -1,0 +1,12 @@
+{
+	"parent": "antimatter:block/preset/simple",
+	"textures": {
+		"down": "industrialtech:block/tree/rubber_log_end",
+		"up": "industrialtech:block/tree/rubber_log_end",
+		"north": "industrialtech:block/tree/rubber_log_filled",
+		"south": "industrialtech:block/tree/rubber_log",
+		"west": "industrialtech:block/tree/rubber_log",
+		"east": "industrialtech:block/tree/rubber_log",
+		"particle": "industrialtech:block/tree/rubber_log"
+	}
+}
