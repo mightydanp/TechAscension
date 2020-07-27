@@ -7,6 +7,7 @@ import muramasa.antimatter.capability.machine.MachineItemHandler;
 import muramasa.antimatter.gui.SlotType;
 import muramasa.antimatter.machine.event.ContentEvent;
 import muramasa.antimatter.tile.TileEntityMachine;
+import net.minecraftforge.items.IItemHandler;
 import tesseract.Tesseract;
 
 /**
@@ -14,11 +15,11 @@ import tesseract.Tesseract;
  */
 public class IndustrialTechMachineItemHandler extends MachineItemHandler {
 
-    public static ItemStackWrapper motorInputWrapper;
+    public ItemStackWrapper motorInputWrapper;
     protected ContentEvent MOTOR_INPUT_CHANGER;
     public IndustrialTechMachineItemHandler(TileEntityMachineFrame tile) {
         super(tile);
-        this.motorInputWrapper = new ItemStackWrapper(tile, tile.getMachineType().getGui().getSlots(IndustrialTechSlotType.MOTOR_IN, tile.getMachineTier()).size(), MOTOR_INPUT_CHANGER);
+        this.motorInputWrapper = new ItemStackWrapper(tile, tile.getMachineType().getGui().getSlots(IndustrialTechSlotType.Motor_IN, tile.getMachineTier()).size(), MOTOR_INPUT_CHANGER);
         Tesseract.ITEM.registerNode(tile.getDimension(), tile.getPos().toLong(), this);
     }
 }

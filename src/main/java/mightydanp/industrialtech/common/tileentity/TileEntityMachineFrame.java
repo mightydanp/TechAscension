@@ -12,7 +12,7 @@ import java.util.Optional;
  * Created by MightyDanp on 7/24/2020.
  */
 public class TileEntityMachineFrame extends TileEntityMachine {
-    public Optional<IndustrialTechMachineItemHandler> itemITHandler;
+    public Optional<IndustrialTechMachineItemHandler> itItemHandler;
     public TileEntityMachineFrame(Machine<?> type){
         super(type);
     }

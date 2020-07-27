@@ -7,6 +7,6 @@ import mightydanp.industrialtech.client.gui.IndustrialTechSlotType;
  */
 public class Guis {
     public static void init() {
-        Machines.MACHINE_FRAME.getGui().add(IndustrialTechSlotType.MOTOR_IN, 53, 16);
+        Machines.MACHINE_FRAME.getGui().add(IndustrialTechSlotType.Motor_IN, 53, 16);
     }
 }
