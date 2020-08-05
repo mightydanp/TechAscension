@@ -22,8 +22,6 @@ public class SlotMotor extends SlotItemHandler {
         }else{
             return false;
         }
-
-
     }
 
     @Override
