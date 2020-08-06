@@ -6,6 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
+import static mightydanp.industrialtech.common.data.IndustrialTechData.*;
+
 /**
  * Created by MightyDanp on 7/24/2020.
  */
@@ -17,7 +19,7 @@ public class SlotFieldGenerator extends SlotItemHandler {
 
     @Override
     public boolean isItemValid(ItemStack stack) {
-        if(stack.getItem() == IndustrialTechData.MotorLV || stack.getItem() == IndustrialTechData.MotorMV || stack.getItem() == IndustrialTechData.MotorHV || stack.getItem() == IndustrialTechData.MotorEV || stack.getItem() == IndustrialTechData.MotorIV){
+        if(stack.getItem() == FieldGenLV || stack.getItem() == FieldGenMV || stack.getItem() == FieldGenHV || stack.getItem() == FieldGenEV || stack.getItem() == FieldGenIV){
             return true;
         }else{
             return false;

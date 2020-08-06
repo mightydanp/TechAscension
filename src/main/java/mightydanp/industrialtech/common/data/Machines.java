@@ -13,5 +13,6 @@ public class Machines {
     // Machine Casing
     public static BlockMachineFrame MACHINE_FRAME = new BlockMachineFrame(References.ID, "machine_frame", ITEM, FLUID);
 
-    public static void init() {}
+    public static void init() {
+    }
 }

@@ -4,10 +4,7 @@ import mightydanp.industrialtech.client.gui.IndustrialTechSlotType;
 import mightydanp.industrialtech.common.tileentity.TileEntityMachineFrame;
 import muramasa.antimatter.capability.item.ItemStackWrapper;
 import muramasa.antimatter.capability.machine.MachineItemHandler;
-import muramasa.antimatter.gui.SlotType;
 import muramasa.antimatter.machine.event.ContentEvent;
-import muramasa.antimatter.tile.TileEntityMachine;
-import net.minecraftforge.items.IItemHandler;
 import tesseract.Tesseract;
 
 /**

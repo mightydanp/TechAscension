@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.client.gui.slot;
 
-import mightydanp.industrialtech.common.data.IndustrialTechData;
+import static mightydanp.industrialtech.common.data.IndustrialTechData.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
@@ -17,7 +17,7 @@ public class SlotRobotArm extends SlotItemHandler {
 
     @Override
     public boolean isItemValid(ItemStack stack) {
-        if(stack.getItem() == IndustrialTechData.RobotArmLV || stack.getItem() == IndustrialTechData.RobotArmMV || stack.getItem() == IndustrialTechData.RobotArmHV || stack.getItem() == IndustrialTechData.RobotArmEV || stack.getItem() == IndustrialTechData.RobotArmIV){
+        if(stack.getItem() == RobotArmLV || stack.getItem() == RobotArmMV || stack.getItem() == RobotArmHV || stack.getItem() == RobotArmEV || stack.getItem() == RobotArmIV){
             return true;
         }else{
             return false;

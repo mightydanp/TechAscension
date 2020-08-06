@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.client.gui.slot;
 
-import mightydanp.industrialtech.common.data.IndustrialTechData;
+import static mightydanp.industrialtech.common.data.IndustrialTechData.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
@@ -17,7 +17,7 @@ public class SlotPiston extends SlotItemHandler {
 
     @Override
     public boolean isItemValid(ItemStack stack) {
-        if(stack.getItem() == IndustrialTechData.PistonLV || stack.getItem() == IndustrialTechData.PistonMV || stack.getItem() == IndustrialTechData.PistonHV || stack.getItem() == IndustrialTechData.PistonEV || stack.getItem() == IndustrialTechData.PistonIV){
+        if(stack.getItem() == PistonLV || stack.getItem() == PistonMV || stack.getItem() == PistonHV || stack.getItem() == PistonEV || stack.getItem() == PistonIV){
             return true;
         }else{
             return false;

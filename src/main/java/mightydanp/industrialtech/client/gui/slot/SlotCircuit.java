@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.client.gui.slot;
 
-import mightydanp.industrialtech.common.data.IndustrialTechData;
+import static mightydanp.industrialtech.common.data.IndustrialTechData.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
@@ -17,7 +17,7 @@ public class SlotCircuit extends SlotItemHandler {
 
     @Override
     public boolean isItemValid(ItemStack stack) {
-        if(stack.getItem() == IndustrialTechData.CircuitBasic || stack.getItem() == IndustrialTechData.CircuitAdv || stack.getItem() == IndustrialTechData.CircuitGood || stack.getItem() == IndustrialTechData.CircuitDataStorage || stack.getItem() == IndustrialTechData.CircuitDataControl || stack.getItem() == IndustrialTechData.CircuitEnergyFlow || stack.getItem() == IndustrialTechData.CircuitDataOrb){
+        if(stack.getItem() == CircuitBasic || stack.getItem() == CircuitAdv || stack.getItem() == CircuitGood || stack.getItem() == CircuitDataStorage || stack.getItem() == CircuitDataControl || stack.getItem() == CircuitEnergyFlow || stack.getItem() == CircuitDataOrb){
             return true;
         }else{
             return false;
