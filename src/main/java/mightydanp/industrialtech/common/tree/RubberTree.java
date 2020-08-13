@@ -20,14 +20,14 @@ public class RubberTree extends Tree {
 
     public RubberTree() {
         BlockStateProperties.HORIZONTAL_FACING.getAllowedValues().forEach(d -> {
-            TRUNK_BLOCKS.func_227407_a_(IndustrialTechData.RUBBER_LOG.getDefaultState()
+            TRUNK_BLOCKS.addWeightedBlockstate(IndustrialTechData.RUBBER_LOG.getDefaultState()
                     .with(BlockRubberLog.RESIN_STATE, ResinState.FILLED)
                     .with(BlockRubberLog.RESIN_FACING, d), 1);
-            TRUNK_BLOCKS.func_227407_a_(IndustrialTechData.RUBBER_LOG.getDefaultState()
+            TRUNK_BLOCKS.addWeightedBlockstate(IndustrialTechData.RUBBER_LOG.getDefaultState()
                     .with(BlockRubberLog.RESIN_STATE, ResinState.EMPTY)
                     .with(BlockRubberLog.RESIN_FACING, d), 1);
         });
-        TRUNK_BLOCKS.func_227407_a_(IndustrialTechData.RUBBER_LOG.getDefaultState()
+        TRUNK_BLOCKS.addWeightedBlockstate(IndustrialTechData.RUBBER_LOG.getDefaultState()
                 .with(BlockRubberLog.RESIN_STATE, ResinState.NONE), 16);
     }
 
@@ -37,7 +37,7 @@ public class RubberTree extends Tree {
     }
 
     @Override
-    public boolean func_225545_a_(IWorld world, ChunkGenerator<?> chunkGenerator, BlockPos pos, BlockState state, Random random) {
+    public boolean place(IWorld world, ChunkGenerator<?> chunkGenerator, BlockPos pos, BlockState state, Random random) {
         ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = TREE_FEATURE
                 .withConfiguration(RubberTreeWorldGen.getTreeConfig(world.getBiome(pos)));
         world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);

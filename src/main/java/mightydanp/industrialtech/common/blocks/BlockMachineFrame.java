@@ -30,30 +30,4 @@ public class BlockMachineFrame extends Machine<BlockMachineFrame> {
         setGUI(Data.BASIC_MENU_HANDLER);
         addFlags(BASIC, ENERGY, COVERABLE, CONFIGURABLE, ITEM);
     }
-
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
-        TileEntity tileEntity = worldIn.getTileEntity(pos);
-        if(tileEntity instanceof TileEntityMachineFrame){
-            System.out.println("1");
-            ItemStack itemstack = player.getHeldItem(handIn);
-            if (itemstack.isEmpty()) {
-                return ActionResultType.PASS;
-            } else {
-                Item item = itemstack.getItem();
-                if(item == CircuitBasic.getItem() || item == CircuitAdv || item == CircuitGood || item == CircuitDataStorage || item == CircuitDataControl || item == CircuitEnergyFlow || item == CircuitDataOrb){
-                    System.out.println("2");
-                    if (((TileEntityMachineFrame) tileEntity).circuitSlotItemStack == null && !worldIn.isRemote) {
-                        System.out.println("3");
-                        if (!player.abilities.isCreativeMode) {
-                            System.out.println("4");
-                            ((TileEntityMachineFrame) tileEntity).circuitInputWrapper.setStackInSlot(((TileEntityMachineFrame) tileEntity).circuitInputWrapper.getSlots() ,player.getHeldItemMainhand());
-                            player.setHeldItem(handIn, new ItemStack(null));
-                        }
-                    }
-                    return ActionResultType.SUCCESS;
-                }
-            }
-        }
-        return ActionResultType.PASS;
-    }
 }

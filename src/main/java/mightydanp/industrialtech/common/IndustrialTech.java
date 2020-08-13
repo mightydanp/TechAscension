@@ -4,6 +4,7 @@ import mightydanp.industrialtech.common.data.*;
 import mightydanp.industrialtech.common.datagen.IndustrialTechBlockTagProvider;
 import mightydanp.industrialtech.common.datagen.IndustrialTechRecipes;
 import mightydanp.industrialtech.common.datagen.ProgressionAdvancements;
+import mightydanp.industrialtech.common.handler.IndustrialTechEventHandler;
 import mightydanp.industrialtech.common.lib.References;
 import mightydanp.industrialtech.common.loader.MachineRecipeLoader;
 import mightydanp.industrialtech.common.loader.MaterialRecipeLoader;
@@ -12,6 +13,8 @@ import muramasa.antimatter.AntimatterAPI;
 import muramasa.antimatter.datagen.providers.*;
 import muramasa.antimatter.registration.RegistrationEvent;
 import muramasa.antimatter.AntimatterMod;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -28,6 +31,7 @@ public class IndustrialTech extends AntimatterMod {
     public IndustrialTech() {
         super();
         INSTANCE = this;
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         AntimatterAPI.addProvider(References.ID, g -> new AntimatterBlockStateProvider(References.ID, References.NAME + " BlockStates", g));
         AntimatterAPI.addProvider(References.ID, g -> new AntimatterItemModelProvider(References.ID, References.NAME + " Item Models", g));

@@ -1,7 +1,10 @@
 package mightydanp.industrialtech.client.tileentity.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import mightydanp.industrialtech.client.gui.slot.SlotCircuit;
 import mightydanp.industrialtech.common.tileentity.TileEntityMachineFrame;
+import muramasa.antimatter.capability.item.ItemStackWrapper;
+import muramasa.antimatter.tile.TileEntityMachine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Vector3f;
@@ -9,7 +12,12 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by MightyDanp on 8/6/2020.
@@ -24,24 +32,13 @@ public class TileEntityMachineFrameRenderer extends TileEntityRenderer<TileEntit
 
     @Override
     public void render(TileEntityMachineFrame tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        ItemStack circuitSlot = tileEntityIn.circuitInputWrapper.getStackInSlot(tileEntityIn.circuitInputWrapper.getSlots());
-        ItemStack conveyorSlot = tileEntityIn.conveyorInputWrapper.getStackInSlot(tileEntityIn.conveyorInputWrapper.getSlots());
-        ItemStack emitterSlot = tileEntityIn.emitterInputWrapper.getStackInSlot(tileEntityIn.emitterInputWrapper.getSlots());
-        ItemStack fieldGeneratorInputSlot = tileEntityIn.fieldGeneratorInputWrapper.getStackInSlot(tileEntityIn.fieldGeneratorInputWrapper.getSlots());
-        ItemStack motorSlot = tileEntityIn.motorInputWrapper.getStackInSlot(tileEntityIn.motorInputWrapper.getSlots());
-        ItemStack pistonSlot = tileEntityIn.pistonInputWrapper.getStackInSlot(tileEntityIn.pistonInputWrapper.getSlots());
-        ItemStack pumpSlot = tileEntityIn.pumpInputWrapper.getStackInSlot(tileEntityIn.pumpInputWrapper.getSlots());
-        ItemStack robotArmSlot = tileEntityIn.robotArmInputWrapper.getStackInSlot(tileEntityIn.robotArmInputWrapper.getSlots());
-        ItemStack sensorSlot = tileEntityIn.sensorInputWrapper.getStackInSlot(tileEntityIn.sensorInputWrapper.getSlots());
-
-
-        if (!circuitSlot.isEmpty()) {
+        if (!tileEntityIn.circuitSlotItemStack.isEmpty()) {
             matrixStackIn.push();
             matrixStackIn.translate(0.5D, 1.5D, 0.5D);
-            float currentTime = tileEntityIn.getWorld().getGameTime() + partialTicks;
+            float currentTime = Objects.requireNonNull(tileEntityIn.getWorld()).getGameTime() + partialTicks;
             matrixStackIn.translate(0D, (Math.sin(Math.PI * currentTime / 16) / 4) + 0.1D, 0D);
             matrixStackIn.rotate(Vector3f.YP.rotationDegrees(degrees++ / 2));
-            renderItem(circuitSlot, partialTicks, matrixStackIn, bufferIn, combinedLightIn);
+            renderItem(tileEntityIn.circuitSlotItemStack, partialTicks, matrixStackIn, bufferIn, combinedLightIn);
             matrixStackIn.pop();
         }
     }

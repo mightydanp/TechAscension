@@ -19,7 +19,7 @@ public class RubberTreeFeature extends AbstractTreeFeature<TreeFeatureConfig> {
         super(TreeFeatureConfig::deserializeAcacia);
     }
 
-    public boolean func_225557_a_(IWorldGenerationReader world, Random random, BlockPos pos, Set<BlockPos> set, Set<BlockPos> set1, MutableBoundingBox boundingBox, TreeFeatureConfig config) {
+    public boolean place(IWorldGenerationReader world, Random random, BlockPos pos, Set<BlockPos> set, Set<BlockPos> set1, MutableBoundingBox boundingBox, TreeFeatureConfig config) {
         int baseHeight = config.baseHeight + random.nextInt(config.heightRandA + 1) + random.nextInt(config.heightRandB + 1);
         int trunkHeight = config.trunkHeight >= 0 ? config.trunkHeight + random.nextInt(config.trunkHeightRandom + 1) : baseHeight - (config.foliageHeight + random.nextInt(config.foliageHeightRandom + 1));
 
@@ -28,7 +28,7 @@ public class RubberTreeFeature extends AbstractTreeFeature<TreeFeatureConfig> {
 
         // check if at least bare trunk may be placed
         for (int i = 1; i < trunkHeight; ++i)
-            if (!func_214587_a(world, pos.add(0, i, 0)))
+            if (!isAir(world, pos.add(0, i, 0)))
                 return false;
 
          // fill upper trunk
@@ -48,7 +48,7 @@ public class RubberTreeFeature extends AbstractTreeFeature<TreeFeatureConfig> {
         }
         // check if the branches may be placed
         for (BlockPos bp : set)
-            if (!func_214587_a(world, bp))
+            if (!isAir(world, bp))
                 return false;
 
         setDirtAt(world, pos.down(), pos);
