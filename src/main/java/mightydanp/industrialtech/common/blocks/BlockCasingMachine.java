@@ -6,4 +6,6 @@ public class BlockCasingMachine extends BlockCasing {
     public BlockCasingMachine(String domain, String id) {
         super(domain, id);
     }
+
+
 }

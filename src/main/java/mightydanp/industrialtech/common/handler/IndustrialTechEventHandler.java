@@ -1,20 +1,22 @@
 package mightydanp.industrialtech.common.handler;
 
 import mightydanp.industrialtech.client.gui.slot.*;
+import mightydanp.industrialtech.common.data.Materials;
 import mightydanp.industrialtech.common.lib.References;
 import mightydanp.industrialtech.common.tileentity.TileEntityMachineFrame;
 import muramasa.antimatter.capability.item.ItemStackWrapper;
+import muramasa.antimatter.machine.types.Machine;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.Arrays;
 import java.util.Set;
 
-import static mightydanp.industrialtech.common.data.IndustrialTechData.*;
+import static mightydanp.industrialtech.common.data.IndustrialTechData.CABLE_TIN;
+import static muramasa.antimatter.Data.FRAME;
 
 /**
  * Created by MightyDanp on 8/6/2020.
@@ -37,7 +39,7 @@ public class IndustrialTechEventHandler {
     }
 
     @SubscribeEvent
-    public static void drawLast(PlayerInteractEvent.RightClickBlock event) {
+    public static void init(PlayerInteractEvent.RightClickBlock event) {
         TileEntityMachineFrame tileEntity = (TileEntityMachineFrame)event.getWorld().getTileEntity(event.getPos());
         if(tileEntity != null){
             setSlotItem(event, SlotCircuit.getValidItems(), tileEntity.circuitInputWrapper);
@@ -52,11 +54,32 @@ public class IndustrialTechEventHandler {
         }
     }
 
+    @SubscribeEvent
+    public static void rightClickFrame(PlayerInteractEvent event) {
+        Block rightClickedBlock = event.getWorld().getBlockState(event.getPos()).getBlock();
+        ItemStack playersHand = event.getPlayer().getHeldItem(event.getHand());
+        Machine<?>  type =  Machine.get("machine_frame");
+        //BlockMachineFrame machine = Machines.MACHINE_FRAME;
+        //DirectionProperty TYPE = DirectionProperty.create("direction", event.getFace());
+       ///////// BlockState blockStateLV = new BlockMachine(type, Tier.LV).getDefaultState();
+        if (playersHand.isEmpty()) {
+            event.setCanceled(false);
+        }else{
+            Block frame = FRAME.get().get(Materials.Steel).asBlock();
+            Set<Block> cableSet = CABLE_TIN.getBlocks();
+            Block[] arr = cableSet.stream().toArray(Block[] ::new);
+            if(rightClickedBlock == frame && playersHand.isItemEqual(new ItemStack(arr[0]))){
+                //event.getWorld().setBlockState(event.getPos(), blockStateLV);
+            }
+        }
+    }
+
     public static void setSlotItem(PlayerInteractEvent.RightClickBlock event, Set<Item> itemArray, ItemStackWrapper itemStackWrapper) {
             ItemStack playersHand = event.getPlayer().getHeldItem(event.getHand());
             if (playersHand.isEmpty()) {
                 event.setCanceled(false);
             } else {
+                System.out.println(event.getWorld().getBlockState(event.getPos()));
                 if (itemArray.contains(playersHand.getItem())){
                     ItemStack slotItem = itemStackWrapper.getStackInSlot(itemStackWrapper.getFirstValidSlot(playersHand));
                     if(slotItem.isEmpty()) {

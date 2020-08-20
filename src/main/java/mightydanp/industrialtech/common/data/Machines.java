@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.common.data;
 
-import mightydanp.industrialtech.common.blocks.BlockMachineFrame;
+import mightydanp.industrialtech.common.blocks.BlockBasicMachineFrame;
 import mightydanp.industrialtech.common.lib.References;
 
 import static muramasa.antimatter.machine.MachineFlag.FLUID;
@@ -11,7 +11,7 @@ import static muramasa.antimatter.machine.MachineFlag.ITEM;
  */
 public class Machines {
     // Machine Casing
-    public static BlockMachineFrame MACHINE_FRAME = new BlockMachineFrame(References.ID, "machine_frame", ITEM, FLUID);
+    public static BlockBasicMachineFrame MACHINE_FRAME = new BlockBasicMachineFrame(References.ID, "machine_frame",ITEM, FLUID);
 
     public static void init() {
     }

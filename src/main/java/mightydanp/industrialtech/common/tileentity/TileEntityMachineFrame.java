@@ -1,7 +1,6 @@
 package mightydanp.industrialtech.common.tileentity;
 
 import mightydanp.industrialtech.client.gui.IndustrialTechSlotType;
-import mightydanp.industrialtech.client.gui.slot.SlotCircuit;
 import mightydanp.industrialtech.common.data.IndustrialTechData;
 import muramasa.antimatter.capability.item.ItemStackWrapper;
 import muramasa.antimatter.gui.SlotType;
@@ -49,6 +48,7 @@ public class TileEntityMachineFrame extends TileEntityMachine {
     public TileEntityMachineFrame(Machine<?> type){
         super(type);
     }
+
     public void onServerUpdate(){
         super.onServerUpdate();
     }

@@ -7,7 +7,9 @@ import static mightydanp.industrialtech.common.lib.References.*;
 import muramasa.antimatter.AntimatterAPI;
 import muramasa.antimatter.AntimatterConfig;
 import muramasa.antimatter.fluid.AntimatterMaterialFluid;
+import muramasa.antimatter.material.Element;
 import muramasa.antimatter.material.Material;
+import muramasa.antimatter.material.TextureSet;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemTier;
 
@@ -20,7 +22,7 @@ import static mightydanp.industrialtech.common.data.Textures.*;
 import static net.minecraft.item.ItemTier.GOLD;
 import static net.minecraft.item.ItemTier.IRON;
 
-public class Materials {
+public class Materials extends Material{
 
     public static Material Aluminium = new Material(ID, "aluminium", 0x80c8f0, DULL, Al).asMetal(933, 1700, RING, FOIL, GEAR, FRAME, ORE).addTools(1.5F, 10.0F, 140, 2);
     public static Material Beryllium = new Material(ID, "beryllium", 0x64b464, METALLIC, Be).asMetal(1560, 0, ORE).addTools(2.0F, 14.0F, 64, 2);
@@ -657,6 +659,10 @@ public class Materials {
 //        NaquadahEnriched.mChemicalFormula = "Nq+";
 //        Naquadah.mChemicalFormula = "Nq";
 //        Naquadria.mChemicalFormula = "NqX";
+    }
+
+    public Materials(String domain, String id, int rgb, TextureSet set, Element element) {
+        super(domain, id, rgb, set, element);
     }
 
     //TODO go through the GT_Loader_Item_Block_And_Fluid and make sure all explicitly added fluids have the LIQUID tag

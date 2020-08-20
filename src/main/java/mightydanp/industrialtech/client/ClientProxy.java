@@ -1,5 +1,6 @@
 package mightydanp.industrialtech.client;
 
+import mightydanp.industrialtech.common.blocks.BlockCasingMachine;
 import mightydanp.industrialtech.common.data.IndustrialTechData;
 import muramasa.antimatter.AntimatterAPI;
 import muramasa.antimatter.gui.container.ContainerMachine;
@@ -15,6 +16,7 @@ public class ClientProxy {
             RenderTypeLookup.setRenderLayer(IndustrialTechData.RUBBER_SAPLING, RenderType.getCutout());
             RenderTypeLookup.setRenderLayer(IndustrialTechData.RUBBER_LEAVES, RenderType.getCutout());
             //ScreenManager.registerFactory(StartupCommon.containerTypeContainerFurnace, ContainerMachine::new);
+            AntimatterAPI.all(BlockCasingMachine.class, b -> RenderTypeLookup.setRenderLayer(b, RenderType.getCutout()));
         });
     }
 }
