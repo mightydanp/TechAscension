@@ -84,7 +84,7 @@ public class TileEntityMachineFrame extends TileEntityMachine {
     }
 
     public static ItemStackWrapper createItemStackWrapper(TileEntityMachine tileEntityIn, SlotType slotTypeIn, ContentEvent contentEventIn){
-       return new ItemStackWrapper(tileEntityIn, tileEntityIn.getMachineType().getGui().getSlots(slotTypeIn, tileEntityIn.getMachineTier()).size(), contentEventIn);
+        return new ItemStackWrapper(tileEntityIn, tileEntityIn.getMachineType().getGui().getSlots(slotTypeIn, tileEntityIn.getMachineTier()).size(), contentEventIn);
     }
 
     public static ItemStack getSlotItemstack(ItemStackWrapper itemStackWrapperIn, Object object){

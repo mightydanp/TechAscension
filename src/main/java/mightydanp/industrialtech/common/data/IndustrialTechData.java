@@ -4,22 +4,7 @@ package mightydanp.industrialtech.common.data;
  * Created by MightyDanp on 7/19/2020.
  */
 import mightydanp.industrialtech.common.blocks.BlockCasing;
-import static mightydanp.industrialtech.common.lib.References.*;
-import muramasa.antimatter.AntimatterConfig;
 import mightydanp.industrialtech.common.blocks.BlockCoil;
-import muramasa.antimatter.cover.Cover;
-import muramasa.antimatter.item.ItemBasic;
-import muramasa.antimatter.item.ItemBattery;
-import muramasa.antimatter.item.ItemCover;
-import muramasa.antimatter.item.ItemFluidCell;
-import static muramasa.antimatter.machine.Tier.*;
-import muramasa.antimatter.ore.StoneType;
-import muramasa.antimatter.pipe.PipeSize;
-import muramasa.antimatter.pipe.types.Cable;
-import muramasa.antimatter.pipe.types.FluidPipe;
-import muramasa.antimatter.pipe.types.ItemPipe;
-import muramasa.antimatter.pipe.types.Wire;
-import muramasa.antimatter.texture.Texture;
 import mightydanp.industrialtech.common.blocks.BlockFusionCasing;
 import mightydanp.industrialtech.common.cover.CoverConveyor;
 import mightydanp.industrialtech.common.cover.CoverPlate;
@@ -27,11 +12,28 @@ import mightydanp.industrialtech.common.cover.CoverPump;
 import mightydanp.industrialtech.common.tree.BlockRubberLeaves;
 import mightydanp.industrialtech.common.tree.BlockRubberLog;
 import mightydanp.industrialtech.common.tree.BlockRubberSapling;
+import muramasa.antimatter.AntimatterConfig;
+import muramasa.antimatter.cover.Cover;
+import muramasa.antimatter.item.ItemBasic;
+import muramasa.antimatter.item.ItemBattery;
+import muramasa.antimatter.item.ItemCover;
+import muramasa.antimatter.item.ItemFluidCell;
+import muramasa.antimatter.ore.StoneType;
+import muramasa.antimatter.pipe.PipeSize;
+import muramasa.antimatter.pipe.types.Cable;
+import muramasa.antimatter.pipe.types.FluidPipe;
+import muramasa.antimatter.pipe.types.ItemPipe;
+import muramasa.antimatter.pipe.types.Wire;
+import muramasa.antimatter.texture.Texture;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
+import net.minecraftforge.registries.ObjectHolder;
 
 import static mightydanp.industrialtech.common.data.Materials.*;
-import static muramasa.antimatter.machine.MachineFlag.*;
+import static mightydanp.industrialtech.common.lib.References.ID;
+import static mightydanp.industrialtech.common.lib.References.debugStones;
+import static muramasa.antimatter.machine.Tier.*;
 
 public class IndustrialTechData {
 
@@ -357,12 +359,16 @@ public class IndustrialTechData {
     public static final Cable<?> CABLE_COBALT = new Cable<>(ID, Cobalt, 2, LV).amps(2); //LV
     public static final Cable<?> CABLE_LEAD = new Cable<>(ID, Lead, 2, LV).amps(2);
     public static final Cable<?> CABLE_TIN = new Cable<>(ID, Tin, 1, LV).amps(1);
+    @ObjectHolder("industrialtech:cable_tin_tiny")
+    public static final Block cable_tin_tiny = null;
     public static final Cable<?> CABLE_ZINC = new Cable<>(ID, Zinc, 1, LV).amps(1);
     public static final Cable<?> CABLE_SOLDERING_ALLOY = new Cable<>(ID, SolderingAlloy, 1, LV).amps(1);
     public static final Cable<?> CABLE_IRON = new Cable<>(ID, Iron, HC ? 3 : 4, MV).amps(2); //MV
     public static final Cable<?> CABLE_NICKEL = new Cable<>(ID, Nickel, HC ? 3 : 5, MV).amps(3);
     public static final Cable<?> CABLE_CUPRONICKEL = new Cable<>(ID, Cupronickel, HC ? 3 : 4, MV).amps(2);
     public static final Cable<?> CABLE_COPPER = new Cable<>(ID, Copper, HC ? 2 : 3, MV).amps(1);
+    @ObjectHolder("industrialtech:cable_copper_tiny")
+    public static final Block cable_copper_tiny = null;
     public static final Cable<?> CABLE_ANNEALED_COPPER = new Cable<>(ID, AnnealedCopper, HC ? 1 : 2, MV).amps(1);
     public static final Cable<?> CABLE_KANTHAL = new Cable<>(ID, Kanthal, HC ? 3 : 8, HV).amps(4); //HV
     public static final Cable<?> CABLE_GOLD = new Cable<>(ID, Gold, HC ? 2 : 6, HV).amps(3);

@@ -1,21 +1,23 @@
 package mightydanp.industrialtech.common.handler;
 
 import mightydanp.industrialtech.client.gui.slot.*;
+import mightydanp.industrialtech.common.data.IndustrialTechData;
+import mightydanp.industrialtech.common.data.Machines;
 import mightydanp.industrialtech.common.data.Materials;
 import mightydanp.industrialtech.common.lib.References;
 import mightydanp.industrialtech.common.tileentity.TileEntityMachineFrame;
 import muramasa.antimatter.capability.item.ItemStackWrapper;
-import muramasa.antimatter.machine.types.Machine;
+import muramasa.antimatter.material.Material;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Set;
 
-import static mightydanp.industrialtech.common.data.IndustrialTechData.CABLE_TIN;
 import static muramasa.antimatter.Data.FRAME;
 
 /**
@@ -40,36 +42,34 @@ public class IndustrialTechEventHandler {
 
     @SubscribeEvent
     public static void init(PlayerInteractEvent.RightClickBlock event) {
-        TileEntityMachineFrame tileEntity = (TileEntityMachineFrame)event.getWorld().getTileEntity(event.getPos());
-        if(tileEntity != null){
-            setSlotItem(event, SlotCircuit.getValidItems(), tileEntity.circuitInputWrapper);
-            setSlotItem(event, SlotConveyor.getValidItems(), tileEntity.conveyorInputWrapper);
-            setSlotItem(event, SlotEmitter.getValidItems(), tileEntity.emitterInputWrapper);
-            setSlotItem(event, SlotFieldGenerator.getValidItems(), tileEntity.fieldGeneratorInputWrapper);
-            setSlotItem(event, SlotMotor.getValidItems(), tileEntity.motorInputWrapper);
-            setSlotItem(event, SlotPiston.getValidItems(), tileEntity.pistonInputWrapper);
-            setSlotItem(event, SlotPump.getValidItems(), tileEntity.pumpInputWrapper);
-            setSlotItem(event, SlotRobotArm.getValidItems(), tileEntity.robotArmInputWrapper);
-            setSlotItem(event, SlotSensor.getValidItems(), tileEntity.sensorInputWrapper);
+        TileEntity tileEntity = event.getWorld().getTileEntity(event.getPos());
+        if(tileEntity instanceof TileEntityMachineFrame){
+            setSlotItem(event, SlotCircuit.getValidItems(), ((TileEntityMachineFrame) tileEntity).circuitInputWrapper);
+            setSlotItem(event, SlotConveyor.getValidItems(), ((TileEntityMachineFrame) tileEntity).conveyorInputWrapper);
+            setSlotItem(event, SlotEmitter.getValidItems(), ((TileEntityMachineFrame) tileEntity).emitterInputWrapper);
+            setSlotItem(event, SlotFieldGenerator.getValidItems(), ((TileEntityMachineFrame) tileEntity).fieldGeneratorInputWrapper);
+            setSlotItem(event, SlotMotor.getValidItems(), ((TileEntityMachineFrame) tileEntity).motorInputWrapper);
+            setSlotItem(event, SlotPiston.getValidItems(), ((TileEntityMachineFrame) tileEntity).pistonInputWrapper);
+            setSlotItem(event, SlotPump.getValidItems(), ((TileEntityMachineFrame) tileEntity).pumpInputWrapper);
+            setSlotItem(event, SlotRobotArm.getValidItems(), ((TileEntityMachineFrame) tileEntity).robotArmInputWrapper);
+            setSlotItem(event, SlotSensor.getValidItems(), ((TileEntityMachineFrame) tileEntity).sensorInputWrapper);
         }
+        rightClickFrame(event, IndustrialTechData.cable_tin_tiny, Materials.Steel, Machines.machineFrameLV);
+        rightClickFrame(event, IndustrialTechData.cable_copper_tiny, Materials.Aluminium, Machines.machineFrameMV);
     }
 
-    @SubscribeEvent
-    public static void rightClickFrame(PlayerInteractEvent event) {
+    public static void rightClickFrame(PlayerInteractEvent event, Block cableIn, Material materialIn, Block blockIn) {
         Block rightClickedBlock = event.getWorld().getBlockState(event.getPos()).getBlock();
         ItemStack playersHand = event.getPlayer().getHeldItem(event.getHand());
-        Machine<?>  type =  Machine.get("machine_frame");
-        //BlockMachineFrame machine = Machines.MACHINE_FRAME;
-        //DirectionProperty TYPE = DirectionProperty.create("direction", event.getFace());
-       ///////// BlockState blockStateLV = new BlockMachine(type, Tier.LV).getDefaultState();
         if (playersHand.isEmpty()) {
             event.setCanceled(false);
         }else{
-            Block frame = FRAME.get().get(Materials.Steel).asBlock();
-            Set<Block> cableSet = CABLE_TIN.getBlocks();
-            Block[] arr = cableSet.stream().toArray(Block[] ::new);
-            if(rightClickedBlock == frame && playersHand.isItemEqual(new ItemStack(arr[0]))){
-                //event.getWorld().setBlockState(event.getPos(), blockStateLV);
+            Block frame = FRAME.get().get(materialIn).asBlock();
+
+            if(rightClickedBlock == frame && cableIn != null && playersHand.getItem() == new ItemStack(cableIn).getItem() && blockIn != null){
+                event.getWorld().setBlockState(event.getPos(), blockIn.getDefaultState());
+                event.setCanceled(true);
+                playersHand.shrink(1);
             }
         }
     }

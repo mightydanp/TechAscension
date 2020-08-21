@@ -1,12 +1,16 @@
 package mightydanp.industrialtech.client.gui;
 
 import mightydanp.industrialtech.client.gui.slot.*;
-import static mightydanp.industrialtech.common.data.IndustrialTechData.*;
 import mightydanp.industrialtech.common.tileentity.TileEntityMachineFrame;
 import muramasa.antimatter.gui.SlotType;
 import net.minecraft.item.Item;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import static mightydanp.industrialtech.common.data.IndustrialTechData.*;
 
 /**
  * Created by MightyDanp on 7/24/2020.
@@ -36,11 +40,11 @@ public class IndustrialTechSlotType extends SlotType{
         super(id, slotSupplier);
     }
     public static SlotType CIRCUIT_IN = new SlotType("circuit_in", (t, i, d) ->{
-       if(t instanceof TileEntityMachineFrame){
-           return Optional.of((TileEntityMachineFrame) t).map(handler-> new SlotCircuit(addValidCircuitItemToSlot, ((TileEntityMachineFrame) t).circuitInputWrapper, i, d.x, d.y));
-       }else{
-           return Optional.empty();
-       }
+        if(t instanceof TileEntityMachineFrame){
+            return Optional.of((TileEntityMachineFrame) t).map(handler-> new SlotCircuit(addValidCircuitItemToSlot, ((TileEntityMachineFrame) t).circuitInputWrapper, i, d.x, d.y));
+        }else{
+            return Optional.empty();
+        }
     });
 
     public static SlotType CONVEYOR_IN = new SlotType("conveyor_in", (t, i, d) ->{
@@ -66,7 +70,7 @@ public class IndustrialTechSlotType extends SlotType{
     });
     public static SlotType Motor_IN = new SlotType("motor_in", (t, i, d) ->{
         if(t instanceof TileEntityMachineFrame){
-                return Optional.of((TileEntityMachineFrame) t).map(handler-> new SlotMotor(addValidMotorItemToSlot, ((TileEntityMachineFrame) t).motorInputWrapper, i, d.x, d.y));
+            return Optional.of((TileEntityMachineFrame) t).map(handler-> new SlotMotor(addValidMotorItemToSlot, ((TileEntityMachineFrame) t).motorInputWrapper, i, d.x, d.y));
         }else{
             return Optional.empty();
         }
@@ -109,8 +113,6 @@ public class IndustrialTechSlotType extends SlotType{
             }
         });
     }
-
-
     public static SlotType addSlotType(TileEntity tileEntityIn){
         return new
     }

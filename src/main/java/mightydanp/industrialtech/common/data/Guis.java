@@ -1,8 +1,6 @@
 package mightydanp.industrialtech.common.data;
 
 import mightydanp.industrialtech.client.gui.IndustrialTechSlotType;
-import muramasa.antimatter.capability.item.ItemStackWrapper;
-import muramasa.antimatter.machine.Tier;
 
 /**
  * Created by MightyDanp on 7/24/2020.
