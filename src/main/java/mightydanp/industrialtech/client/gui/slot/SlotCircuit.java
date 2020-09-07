@@ -7,30 +7,36 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
+import static mightydanp.industrialtech.common.data.IndustrialTechData.*;
 
 /**
  * Created by MightyDanp on 7/24/2020.
  */
 public class SlotCircuit extends SlotItemHandler {
-    private static Set<Item> validItems  = new HashSet<Item>();
+
+    private static List<Item> validItems = new ArrayList<>();
 
     public SlotCircuit(IItemHandler stackHandler, int index, int x, int y) {
         super(stackHandler, index, x, y);
+        addValidSlotItem(CircuitBasic);
+        addValidSlotItem(CircuitGood);
+        addValidSlotItem(CircuitAdv);
+        addValidSlotItem(CircuitDataStorage);
+        addValidSlotItem(CircuitDataControl);
+        addValidSlotItem(CircuitEnergyFlow);
+        addValidSlotItem(CircuitDataOrb);
     }
 
-    public SlotCircuit(Set<Item> itemArrayIn, IItemHandler stackHandler, int index, int x, int y) {
-        super(stackHandler, index, x, y);
-        validItems = itemArrayIn;
-    }
-
-    public static Set<Item> getValidItems(){
+    public static List<Item> getValidItems(){
         return validItems;
     }
-    //validItems.addAll(Arrays.asList(itemSetIn).subList(0, itemSetIn.length));
 
+    public static void addValidSlotItem(Item item) {
+        validItems.add(item);
+    }
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {

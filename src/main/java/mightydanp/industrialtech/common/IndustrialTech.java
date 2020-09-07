@@ -1,21 +1,26 @@
 package mightydanp.industrialtech.common;
 
+import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.data.*;
 import mightydanp.industrialtech.common.datagen.IndustrialTechBlockTagProvider;
 import mightydanp.industrialtech.common.datagen.IndustrialTechRecipes;
 import mightydanp.industrialtech.common.datagen.ProgressionAdvancements;
-import mightydanp.industrialtech.common.handler.IndustrialTechEventHandler;
+import mightydanp.industrialtech.common.inventory.container.ModContainers;
+import mightydanp.industrialtech.common.items.ModItems;
 import mightydanp.industrialtech.common.lib.References;
 import mightydanp.industrialtech.common.loader.MachineRecipeLoader;
 import mightydanp.industrialtech.common.loader.MaterialRecipeLoader;
 import mightydanp.industrialtech.common.loader.WorldGenLoader;
+import mightydanp.industrialtech.common.tileentity.ModTileEntity;
 import muramasa.antimatter.AntimatterAPI;
+import muramasa.antimatter.AntimatterMod;
 import muramasa.antimatter.datagen.providers.*;
 import muramasa.antimatter.registration.RegistrationEvent;
-import muramasa.antimatter.AntimatterMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
@@ -27,12 +32,13 @@ public class IndustrialTech extends AntimatterMod {
 
     public static IndustrialTech INSTANCE;
     public static Logger LOGGER = LogManager.getLogger(References.ID);
+    public static IEventBus MOD_EVENT_BUS;
 
     public IndustrialTech() {
         super();
         INSTANCE = this;
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupCommon);
         AntimatterAPI.addProvider(References.ID, g -> new AntimatterBlockStateProvider(References.ID, References.NAME + " BlockStates", g));
         AntimatterAPI.addProvider(References.ID, g -> new AntimatterItemModelProvider(References.ID, References.NAME + " Item Models", g));
         AntimatterAPI.addProvider(References.ID, g -> new IndustrialTechBlockTagProvider(References.ID, References.NAME.concat(" Block Tags"), false, g));
@@ -41,9 +47,21 @@ public class IndustrialTech extends AntimatterMod {
         AntimatterAPI.addProvider(References.ID, g -> new IndustrialTechRecipes(References.ID, References.NAME.concat(" Recipes"), g));
         AntimatterAPI.addProvider(References.ID, g -> new AntimatterAdvancementProvider(References.ID, References.NAME.concat(" Advancements"), g, new ProgressionAdvancements()));
         AntimatterAPI.addProvider(References.ID, IndustrialTechLocalizations.en_US::new);
+        MinecraftForge.EVENT_BUS.register(this);
+
+        ModBlocks.BLOCKS.register(modEventBus);
+        ModItems.ITEMS.register(modEventBus);
+        ModContainers.CONTAINERS.register(modEventBus);
+        ModTileEntity.TILE_ENTITYS.register(modEventBus);
+
     }
 
-    private void setup(final FMLCommonSetupEvent e) {
+    @SubscribeEvent
+    public void setupCommon(final FMLCommonSetupEvent e) {
+    }
+
+    @SubscribeEvent
+    public void setupClient(final FMLClientSetupEvent e) {
 
     }
 
@@ -55,10 +73,18 @@ public class IndustrialTech extends AntimatterMod {
                 IndustrialTechData.init();
                 Machines.init();
                 Guis.init();
+                ModBlocks.commonInit();
+                ModItems.commonInit();
+                ModContainers.commonInit();
+                ModTileEntity.commonInit();
                 //Models.init();
                 break;
             case DATA_READY:
                 //Structures.init();
+                ModBlocks.clientInit();
+                ModItems.clientInit();
+                ModContainers.clientInit();
+                ModTileEntity.clientInit();
                 MaterialRecipeLoader.init();
                 MachineRecipeLoader.init();
                 //GregTechAPI.registerFluidCell(Data.CellTin.get(1));

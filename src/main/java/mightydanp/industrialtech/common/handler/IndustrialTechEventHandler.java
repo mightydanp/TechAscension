@@ -1,24 +1,16 @@
 package mightydanp.industrialtech.common.handler;
 
-import mightydanp.industrialtech.client.gui.slot.*;
-import mightydanp.industrialtech.common.data.IndustrialTechData;
-import mightydanp.industrialtech.common.data.Machines;
-import mightydanp.industrialtech.common.data.Materials;
 import mightydanp.industrialtech.common.lib.References;
-import mightydanp.industrialtech.common.tileentity.TileEntityMachineFrame;
-import muramasa.antimatter.capability.item.ItemStackWrapper;
-import muramasa.antimatter.material.Material;
 import net.minecraft.block.Block;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.Set;
-
-import static muramasa.antimatter.Data.FRAME;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by MightyDanp on 8/6/2020.
@@ -26,36 +18,41 @@ import static muramasa.antimatter.Data.FRAME;
 @Mod.EventBusSubscriber(modid = References.ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class IndustrialTechEventHandler {
 
-    //circuitSlot = circuitInputWrapper.;
-    //conveyorSlotItemStack = conveyorInputWrapper.getStackInSlot(conveyorInputWrapper.getSlots());
-    //emitterSlotItemStack = emitterInputWrapper.getStackInSlot(emitterInputWrapper.getSlots());
-    //fieldGeneratorSlotItemStack = fieldGeneratorInputWrapper.getStackInSlot(fieldGeneratorInputWrapper.getSlots());
-    //motorSlotItemStack = motorInputWrapper.getStackInSlot(motorInputWrapper.getSlots());
-    //pistonSlotItemStack = pistonInputWrapper.getStackInSlot(pistonInputWrapper.getSlots());
-    //pumpSlotItemStack = pumpInputWrapper.getStackInSlot(pumpInputWrapper.getSlots());
-    //robotArmSlotItemStack = robotArmInputWrapper.getStackInSlot(robotArmInputWrapper.getSlots());
-    //sensorSlotItemStack = sensorInputWrapper.getStackInSlot(sensorInputWrapper.getSlots());
+    private static final List<Block> blocks = new ArrayList<>();
+    private static final List<Item> items = new ArrayList<>();
+    private static final List<TileEntityType> tileEntityTypes = new ArrayList<>();
+    public static final List<ContainerType> containerTypes = new ArrayList<>();
+
+    //circuitSlot = circuitWrapper.;
+    //conveyorSlotItemStack = conveyorWrapper.getStackInSlot(conveyorWrapper.getSlots());
+    //emitterSlotItemStack = emitterWrapper.getStackInSlot(emitterWrapper.getSlots());
+    //fieldGeneratorSlotItemStack = fieldGeneratorWrapper.getStackInSlot(fieldGeneratorWrapper.getSlots());
+    //motorSlotItemStack = motorWrapper.getStackInSlot(motorWrapper.getSlots());
+    //pistonSlotItemStack = pistonWrapper.getStackInSlot(pistonWrapper.getSlots());
+    //pumpSlotItemStack = pumpWrapper.getStackInSlot(pumpWrapper.getSlots());
+    //robotArmSlotItemStack = robotArmWrapper.getStackInSlot(robotArmWrapper.getSlots());
+    //sensorSlotItemStack = sensorWrapper.getStackInSlot(sensorWrapper.getSlots());
 
     public void inti(){
 
     }
-
+/*
     @SubscribeEvent
     public static void init(PlayerInteractEvent.RightClickBlock event) {
         TileEntity tileEntity = event.getWorld().getTileEntity(event.getPos());
         if(tileEntity instanceof TileEntityMachineFrame){
-            setSlotItem(event, SlotCircuit.getValidItems(), ((TileEntityMachineFrame) tileEntity).circuitInputWrapper);
-            setSlotItem(event, SlotConveyor.getValidItems(), ((TileEntityMachineFrame) tileEntity).conveyorInputWrapper);
-            setSlotItem(event, SlotEmitter.getValidItems(), ((TileEntityMachineFrame) tileEntity).emitterInputWrapper);
-            setSlotItem(event, SlotFieldGenerator.getValidItems(), ((TileEntityMachineFrame) tileEntity).fieldGeneratorInputWrapper);
-            setSlotItem(event, SlotMotor.getValidItems(), ((TileEntityMachineFrame) tileEntity).motorInputWrapper);
-            setSlotItem(event, SlotPiston.getValidItems(), ((TileEntityMachineFrame) tileEntity).pistonInputWrapper);
-            setSlotItem(event, SlotPump.getValidItems(), ((TileEntityMachineFrame) tileEntity).pumpInputWrapper);
-            setSlotItem(event, SlotRobotArm.getValidItems(), ((TileEntityMachineFrame) tileEntity).robotArmInputWrapper);
-            setSlotItem(event, SlotSensor.getValidItems(), ((TileEntityMachineFrame) tileEntity).sensorInputWrapper);
+            setSlotItem(event, SlotCircuit.getValidItems(), ((TileEntityMachineFrame) tileEntity).machineFrameItemHandler.get().circuitWrapper);
+            setSlotItem(event, SlotConveyor.getValidItems(), ((TileEntityMachineFrame) tileEntity).machineFrameItemHandler.get().conveyorWrapper);
+            setSlotItem(event, SlotEmitter.getValidItems(), ((TileEntityMachineFrame) tileEntity).machineFrameItemHandler.get().emitterWrapper);
+            setSlotItem(event, SlotFieldGenerator.getValidItems(), ((TileEntityMachineFrame) tileEntity).machineFrameItemHandler.get().fieldGeneratorWrapper);
+            setSlotItem(event, SlotMotor.getValidItems(), ((TileEntityMachineFrame) tileEntity).machineFrameItemHandler.get().motorWrapper);
+            setSlotItem(event, SlotPiston.getValidItems(), ((TileEntityMachineFrame) tileEntity).machineFrameItemHandler.get().pistonWrapper);
+            setSlotItem(event, SlotPump.getValidItems(), ((TileEntityMachineFrame) tileEntity).machineFrameItemHandler.get().pumpWrapper);
+            setSlotItem(event, SlotRobotArm.getValidItems(), ((TileEntityMachineFrame) tileEntity).machineFrameItemHandler.get().robotArmWrapper);
+            setSlotItem(event, SlotSensor.getValidItems(), ((TileEntityMachineFrame) tileEntity).machineFrameItemHandler.get().sensorWrapper);
         }
         rightClickFrame(event, IndustrialTechData.cable_tin_tiny, Materials.Steel, Machines.machineFrameLV);
-        rightClickFrame(event, IndustrialTechData.cable_copper_tiny, Materials.Aluminium, Machines.machineFrameMV);
+       rightClickFrame(event, IndustrialTechData.cable_copper_tiny, Materials.Aluminium, Machines.machineFrameMV);
     }
 
     public static void rightClickFrame(PlayerInteractEvent event, Block cableIn, Material materialIn, Block blockIn) {
@@ -74,31 +71,66 @@ public class IndustrialTechEventHandler {
         }
     }
 
-    public static void setSlotItem(PlayerInteractEvent.RightClickBlock event, Set<Item> itemArray, ItemStackWrapper itemStackWrapper) {
-            ItemStack playersHand = event.getPlayer().getHeldItem(event.getHand());
-            if (playersHand.isEmpty()) {
-                event.setCanceled(false);
-            } else {
-                System.out.println(event.getWorld().getBlockState(event.getPos()));
-                if (itemArray.contains(playersHand.getItem())){
-                    ItemStack slotItem = itemStackWrapper.getStackInSlot(itemStackWrapper.getFirstValidSlot(playersHand));
-                    if(slotItem.isEmpty()) {
-                        itemStackWrapper.setStackInSlot(itemStackWrapper.getFirstValidSlot(playersHand), new ItemStack(playersHand.getItem()));
-                        playersHand.shrink(1);
-                    }else{
-                        event.setCanceled(true);
-                        /*
-                        if(event.getPlayer().inventory.hasItemStack(ItemStack.EMPTY)){
-                            event.getPlayer().inventory.addItemStackToInventory(slotItem);
-                            slotItem.shrink(1);
-                            itemStackWrapper.setStackInSlot(itemStackWrapper.getFirstValidSlot(playersHand), playersHand);
-                            playersHand.shrink(1);
-                        }else{
-                            event.setCanceled(true);
-                        }
-                        */
-                    }
-                }
+    public static void setSlotItem(PlayerInteractEvent.RightClickBlock event, List<Item> itemArray, ItemStackWrapper itemStackWrapper) {
+        ItemStack playersHand = event.getPlayer().getHeldItem(event.getHand());
+        if (playersHand.isEmpty()) {
+            event.setCanceled(false);
+        } else {
+            ItemStack slotItem = itemStackWrapper.getStackInSlot(itemStackWrapper.getFirstValidSlot(playersHand));
+            if (itemArray.contains(playersHand.getItem()) && slotItem.isEmpty()) {
+                itemStackWrapper.setStackInSlot(itemStackWrapper.getFirstValidSlot(playersHand), new ItemStack(playersHand.getItem()));
+                playersHand.shrink(1);
+            } else if (itemArray.contains(playersHand.getItem()) && !slotItem.isEmpty()) {
+                event.setCanceled(true);
             }
+        }
+    }
+    */
+
+    @SubscribeEvent
+    public void registerBlockEvent(final RegistryEvent.Register<Block> event) {
+        for (int i = 0; i < blocks.size(); i++) {
+            event.getRegistry().registerAll(blocks.toArray(new Block[i]));
+        }
+    }
+
+    @SubscribeEvent
+    public void registerItemEvent(final RegistryEvent.Register<Item> event) {
+        for (int i = 0; i < items.size(); i++) {
+            event.getRegistry().registerAll(items.toArray(new Item[i]));
+        }
+    }
+
+
+    @SubscribeEvent
+    public static void onTileEntityTypeRegistration(final RegistryEvent.Register<TileEntityType<?>> event) {
+        for (int i = 0; i < tileEntityTypes.size(); i++) {
+            event.getRegistry().registerAll(tileEntityTypes.toArray(new TileEntityType[i]));
+        }
+    }
+
+    @SubscribeEvent
+    public static void registerContainers(final RegistryEvent.Register<ContainerType<?>> event){
+        for (int i = 0; i < containerTypes.size(); i++) {
+            event.getRegistry().registerAll(containerTypes.toArray(new ContainerType[i]));
+        }
+    }
+
+    public static void registerItem(Item itemIn){
+        if(!items.contains(itemIn)) {
+            items.add(itemIn);
+        }
+    }
+
+    public static void registerBlock(Block blockIn){
+        if(!blocks.contains(blockIn)) {
+            blocks.add(blockIn);
+        }
+    }
+
+    public static void registerTileEntityType(TileEntityType tileEntityTypeIn) {
+        if(!tileEntityTypes.contains(tileEntityTypeIn)){
+            tileEntityTypes.add(tileEntityTypeIn);
+        }
     }
 }

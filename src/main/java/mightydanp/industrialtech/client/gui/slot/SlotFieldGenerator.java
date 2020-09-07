@@ -1,6 +1,5 @@
 package mightydanp.industrialtech.client.gui.slot;
 
-import mightydanp.industrialtech.common.data.IndustrialTechData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -8,8 +7,8 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import static mightydanp.industrialtech.common.data.IndustrialTechData.*;
 
@@ -17,22 +16,24 @@ import static mightydanp.industrialtech.common.data.IndustrialTechData.*;
  * Created by MightyDanp on 7/24/2020.
  */
 public class SlotFieldGenerator extends SlotItemHandler {
-    private static Set<Item> validItems  = new HashSet<Item>();
+    private static List<Item> validItems  = new ArrayList<>();;
 
     public SlotFieldGenerator(IItemHandler stackHandler, int index, int x, int y) {
         super(stackHandler, index, x, y);
+        addValidSlotItem(FieldGenLV);
+        addValidSlotItem(FieldGenMV);
+        addValidSlotItem(FieldGenHV);
+        addValidSlotItem(FieldGenEV);
+        addValidSlotItem(FieldGenIV);
     }
 
-    public SlotFieldGenerator(Set<Item> itemArrayIn, IItemHandler stackHandler, int index, int x, int y) {
-        super(stackHandler, index, x, y);
-        validItems = itemArrayIn;
-    }
-
-    public static Set<Item> getValidItems(){
+    public static List<Item> getValidItems(){
         return validItems;
     }
-    //validItems.addAll(Arrays.asList(itemSetIn).subList(0, itemSetIn.length));
 
+    public static void addValidSlotItem(Item item) {
+        validItems.add(item);
+    }
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
