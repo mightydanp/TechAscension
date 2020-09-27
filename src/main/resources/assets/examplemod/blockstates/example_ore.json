@@ -1,6 +1,0 @@
-{
-    "variants": {
-        "stone": { "model": "modid:block/example_stone_ore" },
-        "new_varient":  { "model": "examplemod:block/example_new_ore" }
-    }
-}

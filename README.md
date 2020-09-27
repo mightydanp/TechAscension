@@ -1,2 +1,0 @@
-# IndustrialTech
-Inspired by Gregtech

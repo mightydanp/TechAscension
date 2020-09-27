@@ -1,0 +1,16 @@
+[
+{
+  "modid": "industrialtech",
+  "name": "IndustrialTech",
+  "description": "Inspired by Gregtech",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["MightyDanp"],
+  "credits": "null",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

@@ -1,0 +1,7 @@
+{
+  "parent": "industrialtech:block/ore/state/normal",
+  "textures": {
+    "particle": "minecraft:blocks/stone",
+    "sourceblock": "minecraft:blocks/stone"
+  }
+}
