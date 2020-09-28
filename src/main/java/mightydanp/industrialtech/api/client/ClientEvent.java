@@ -5,7 +5,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 /**
  * Created by MightyDanp on 8/24/2020.
  */
-public class ClientProxy{
+public class ClientEvent{
     public static void init(FMLClientSetupEvent event){
 
     }

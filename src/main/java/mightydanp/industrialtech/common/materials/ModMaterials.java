@@ -14,7 +14,7 @@ public class ModMaterials {
     }
 
     public static void clientInit() {
-        iron.registerColorHandlerForBlock();
-        iron.registerColorForItem();
+        //iron.registerColorHandlerForBlock(iron.blockOre.get());
+        //iron.registerColorForItem(iron.itemOre.get());
     }
 }

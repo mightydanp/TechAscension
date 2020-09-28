@@ -1,10 +1,13 @@
 package mightydanp.industrialtech.common;
 
-import mightydanp.industrialtech.client.ClientProxy;
+import mightydanp.industrialtech.api.common.handler.RegistryHandler;
+import mightydanp.industrialtech.client.ClientEvent;
 
 import mightydanp.industrialtech.common.libs.Ref;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -20,18 +23,17 @@ public class IndustrialTech {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public IndustrialTech(){
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::common_proxy);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client_proxy);
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    private void common_proxy(final FMLCommonSetupEvent event) {
-        CommonProxy.init(event);
         ModMaterials.commonInit();
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::common_event);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client_event);
     }
 
-    private void client_proxy(final FMLClientSetupEvent event) {
-        ClientProxy.init(event);
+    private void common_event(final FMLCommonSetupEvent event) {
+        CommonEvent.init(event);
+    }
+
+    private void client_event(final FMLClientSetupEvent event) {
+        ClientEvent.init(event);
         ModMaterials.clientInit();
     }
 }
