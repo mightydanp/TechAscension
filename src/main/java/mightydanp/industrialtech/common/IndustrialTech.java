@@ -1,13 +1,12 @@
 package mightydanp.industrialtech.common;
 
+import mightydanp.industrialtech.api.common.generation.OreGeneration;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
+import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.client.ClientEvent;
 
-import mightydanp.industrialtech.common.libs.Ref;
 import mightydanp.industrialtech.common.materials.ModMaterials;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -20,9 +19,13 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod(Ref.mod_id)
 public class IndustrialTech {
+    public IndustrialTech INSTANCE;
     public static final Logger LOGGER = LogManager.getLogger();
 
     public IndustrialTech(){
+        INSTANCE = this;
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        RegistryHandler.init(modEventBus);
         ModMaterials.commonInit();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::common_event);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client_event);
@@ -30,6 +33,7 @@ public class IndustrialTech {
 
     private void common_event(final FMLCommonSetupEvent event) {
         CommonEvent.init(event);
+        OreGeneration.init();
     }
 
     private void client_event(final FMLClientSetupEvent event) {

@@ -8,10 +8,13 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
 
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by MightyDanp on 9/26/2020.
@@ -20,8 +23,13 @@ public class MaterialHandler {
     private final String materialName;
     private final int color;
     private final String element;
-    private static Block blockOre;
-    private static Item itemOre;
+
+    public RegistryObject<Block> blockOre;
+    public RegistryObject<Item> itemOre;
+
+    private static final List<String> stone_varients = new ArrayList<String>(){{
+        add("stone");
+    }};
 
     protected static MaterialFlags fluid = MaterialFlags.FLUID;
     protected static MaterialFlags gas = MaterialFlags.GAS;
@@ -41,36 +49,38 @@ public class MaterialHandler {
     }
 
     protected void addFlag(Object... flagsIn) {
-        Object[] o = flagsIn;
-        int i = flagsIn.length;
-
-        for(int j = 0; j < i; ++j) {
-            Object obj = o[j];
+        for(Object obj : flagsIn){
             if(obj == ore){
-                RegistryObject<Block> block = RegistryHandler.getBlocks().register(materialName, () ->
-                        new BlockOre(materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), color));
-                blockOre = block.get();
-                RegistryObject<Item> item = RegistryHandler.getItems().register(materialName, () ->
-                        new ItemBlockOre(block.get(), new Item.Properties().group(ModItemGroups.item_tab), element));
-                itemOre = item.get();
+                for(String stone : stone_varients){
+                    blockOre = RegistryHandler.BLOCKS.register(stone + "_" + materialName + "_ore", () ->
+                            new BlockOre(stone +"_" + materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), color));
+                    itemOre = RegistryHandler.ITEMS.register(stone + "_" + materialName + "_ore", () ->
+                            new ItemBlockOre(blockOre.get(), new Item.Properties().group(ModItemGroups.item_tab), element));
+
+                }
             }
         }
     }
 
-    public void registerColorHandlerForBlock(){
+    public void registerColorHandlerForBlock(Block block){
         Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) ->{
             if (tintIndex != 0)
                 return 0xFFFFFFFF;
             return color;
-        }, blockOre);
+        }, block);
+        RenderTypeLookup.setRenderLayer(block, RenderType.getCutout());
     }
 
-    public void registerColorForItem(){
+    public void registerColorForItem(Item item){
         Minecraft.getInstance().getItemColors().register(
                 (stack, tintIndex) -> {
                     if (tintIndex != 0)
                         return 0xFFFFFFFF;
                     return color;
-                }, itemOre);
+                }, item);
+    }
+
+    public static boolean addStoneVarient(String nameIn){
+        return stone_varients.add(nameIn);
     }
 }

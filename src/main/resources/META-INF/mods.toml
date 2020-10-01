@@ -15,7 +15,7 @@ authors="Love, Cheese and small house plants"
 description='''
 null
 '''
-[[dependencies.examplemod]] #optional
+[[dependencies.industrialtech]] #optional
     # the modid of the dependency
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
@@ -27,7 +27,7 @@ null
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
 # Here's another dependency
-[[dependencies.examplemod]]
+[[dependencies.industrialtech]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.16.3]"

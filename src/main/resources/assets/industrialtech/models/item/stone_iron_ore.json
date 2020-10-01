@@ -1,5 +1,5 @@
 {
-   "parent": "industrialtech:block/ore/stone_iron_ore",
+   "parent": "industrialtech:block/ore/stone_normal_ore",
    "display": {
         "gui": {
             "rotation": [ 30, 225, 0 ],

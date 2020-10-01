@@ -20,12 +20,11 @@ public class ItemBlockOre extends BlockItem {
     public ItemBlockOre(Block blockIn, Properties builder, String elementIn) {
         super(blockIn, builder);
         toolTip = elementIn;
-        this.setRegistryName(Objects.requireNonNull(blockIn.getRegistryName()));
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(ITextComponent.func_244388_a(toolTip));
+        tooltip.add(ITextComponent.getTextComponentOrEmpty(toolTip));
     }
 }
