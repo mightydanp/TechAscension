@@ -2,12 +2,10 @@ package mightydanp.industrialtech.api.common.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.gen.feature.IFeatureConfig;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.feature.template.BlockMatchRuleTest;
 import net.minecraft.world.gen.feature.template.RuleTest;
 import net.minecraft.world.gen.feature.template.TagMatchRuleTest;
@@ -20,27 +18,31 @@ import java.util.List;
  */
 public class OreGenFeatureConfig implements IFeatureConfig {
 
-    public final RuleTest target;
     public final int size;
     public List<BlockState> blocks = new ArrayList<>();
+    public final int rarity;
+    public final int outOf;
 
     public static final Codec<OreGenFeatureConfig> field_236566_a_ = RecordCodecBuilder.create((p_236568_0_) -> {
-        return p_236568_0_.group(RuleTest.field_237127_c_.fieldOf("target").forGetter((p_236570_0_) -> {
-            return p_236570_0_.target;
-        }), BlockState.CODEC.listOf().fieldOf("state").forGetter((a) -> {
-            return a.blocks;
-        })
-        , Codec.intRange(0, 64).fieldOf("size").forGetter((p_236567_0_) -> {
-            return p_236567_0_.size;
-        })).apply(p_236568_0_, OreGenFeatureConfig::new);
+        return p_236568_0_.group(BlockState.CODEC.listOf().fieldOf("state").forGetter((a) -> {
+                    return a.blocks;
+        }), Codec.intRange(0, 64).fieldOf("size").forGetter((a) -> {
+                    return a.size;
+                }), Codec.intRange(0, 100).fieldOf("rarity").forGetter((a) -> {
+            return a.rarity;
+        }), Codec.intRange(0, 64).fieldOf("outOf").forGetter((a) -> {
+                    return a.outOf;
+        })).apply(p_236568_0_, (p_i241989_1_, p_i241989_2_, p_i241989_3_, p_i241989_4_) -> new OreGenFeatureConfig(p_i241989_1_, p_i241989_2_, p_i241989_3_, p_i241989_4_));
+
     });
 
 
 
-    public OreGenFeatureConfig(RuleTest p_i241989_1_, List<BlockState> p_i241989_2_, int p_i241989_3_) {
-        this.size = p_i241989_3_;
-        this.blocks = p_i241989_2_;
-        this.target = p_i241989_1_;
+    public OreGenFeatureConfig(List<BlockState> blockStatesIn, int vainSizeIn, int rarityIn, int outOfIn) {
+        this.size = vainSizeIn;
+        this.blocks = blockStatesIn;
+        this.rarity = rarityIn;
+        this.outOf = outOfIn;
     }
 
     public static final class FillerBlockType {

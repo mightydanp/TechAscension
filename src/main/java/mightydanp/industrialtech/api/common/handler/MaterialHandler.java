@@ -6,11 +6,15 @@ import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import mightydanp.industrialtech.api.common.libs.MaterialFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.Item;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.fml.RegistryObject;
 
 import java.util.ArrayList;
@@ -23,12 +27,11 @@ public class MaterialHandler {
     private final String materialName;
     private final int color;
     private final String element;
+    public List<RegistryObject<Block>>  blockOre = new ArrayList<>();
+    public List<RegistryObject<Item>>  itemOre = new ArrayList<>();
 
-    public RegistryObject<Block> blockOre;
-    public RegistryObject<Item> itemOre;
-
-    private static final List<String> stone_varients = new ArrayList<String>(){{
-        add("stone");
+    private static final List<BlockState> stone_varients = new ArrayList<BlockState>(){{
+        add(Blocks.STONE.getDefaultState());
     }};
 
     protected static MaterialFlags fluid = MaterialFlags.FLUID;
@@ -51,36 +54,44 @@ public class MaterialHandler {
     protected void addFlag(Object... flagsIn) {
         for(Object obj : flagsIn){
             if(obj == ore){
-                for(String stone : stone_varients){
-                    blockOre = RegistryHandler.BLOCKS.register(stone + "_" + materialName + "_ore", () ->
-                            new BlockOre(stone +"_" + materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), color));
-                    itemOre = RegistryHandler.ITEMS.register(stone + "_" + materialName + "_ore", () ->
-                            new ItemBlockOre(blockOre.get(), new Item.Properties().group(ModItemGroups.item_tab), element));
-
+                for(BlockState stone : stone_varients){
+                    RegistryObject<Block> block = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                            new BlockOre(AbstractBlock.Properties.create(Material.ROCK), stone, color));
+                    blockOre.add(block);
+                    RegistryObject<Item> item = RegistryHandler.ITEMS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                            new ItemBlockOre(block.get(), new Item.Properties().group(ModItemGroups.item_tab), element));
+                    itemOre.add(item);
                 }
             }
         }
     }
 
-    public void registerColorHandlerForBlock(Block block){
-        Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) ->{
-            if (tintIndex != 0)
-                return 0xFFFFFFFF;
-            return color;
-        }, block);
-        RenderTypeLookup.setRenderLayer(block, RenderType.getCutout());
-    }
-
-    public void registerColorForItem(Item item){
-        Minecraft.getInstance().getItemColors().register(
-                (stack, tintIndex) -> {
+    public void registerColorHandlerForBlock() {
+        if (blockOre != null) {
+            for (RegistryObject<Block> block : blockOre) {
+                RenderTypeLookup.setRenderLayer(block.get(), RenderType.getCutout());
+                Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
                     if (tintIndex != 0)
                         return 0xFFFFFFFF;
                     return color;
-                }, item);
+                }, block.get());
+            }
+        }
     }
 
-    public static boolean addStoneVarient(String nameIn){
-        return stone_varients.add(nameIn);
+    public void registerColorForItem(){
+        if(itemOre != null) {
+            for (RegistryObject<Item> item : itemOre) {
+                Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                    if (tintIndex != 0)
+                        return 0xFFFFFFFF;
+                    return color;
+                }, item.get());
+            }
+        }
+    }
+
+    public static boolean addStoneVariant(BlockState blockStateIn){
+        return stone_varients.add(blockStateIn);
     }
 }
