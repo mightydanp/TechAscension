@@ -12,15 +12,12 @@ import net.minecraft.state.StateContainer;
  * Created by MightyDanp on 9/26/2020.
  */
 public class BlockOre extends Block {
-
-    private final int color;
     //public static final EnumProperty stoneVariant = EnumProperty.create("variant", EnumStoneVariant.class);
     public BlockState replaceableBlock;
 
-    public BlockOre(Properties properties, BlockState replaceableBlockIn, int oreColor) {
+    public BlockOre(Properties properties, BlockState replaceableBlockIn) {
         super(properties);
         this.replaceableBlock = replaceableBlockIn;
-        this.color = oreColor;
         //this.setDefaultState(this.stateContainer.getBaseState().with(stoneVariant, EnumStoneVariant.stone));
     }
 
@@ -32,9 +29,5 @@ public class BlockOre extends Block {
     @Override
     public BlockRenderType getRenderType(BlockState iBlockState) {
         return BlockRenderType.MODEL;
-    }
-
-    public int getColor() {
-        return color;
     }
 }

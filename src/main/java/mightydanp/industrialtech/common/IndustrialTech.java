@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.common;
 
-import mightydanp.industrialtech.api.common.generation.OreGeneration;
+import mightydanp.industrialtech.api.common.handler.OreGenerationHandler;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.client.ClientEvent;
@@ -33,7 +33,7 @@ public class IndustrialTech {
 
     private void common_event(final FMLCommonSetupEvent event) {
         CommonEvent.init(event);
-        OreGeneration.init();
+        OreGenerationHandler.init();
     }
 
     private void client_event(final FMLClientSetupEvent event) {

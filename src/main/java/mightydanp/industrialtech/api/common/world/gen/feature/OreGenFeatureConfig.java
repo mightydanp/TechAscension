@@ -10,7 +10,6 @@ import net.minecraft.world.gen.feature.template.BlockMatchRuleTest;
 import net.minecraft.world.gen.feature.template.RuleTest;
 import net.minecraft.world.gen.feature.template.TagMatchRuleTest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,29 +17,32 @@ import java.util.List;
  */
 public class OreGenFeatureConfig implements IFeatureConfig {
 
-    public final int size;
-    public List<BlockState> blocks = new ArrayList<>();
-    public final int rarity;
-    public final int outOf;
-
     public static final Codec<OreGenFeatureConfig> field_236566_a_ = RecordCodecBuilder.create((p_236568_0_) -> {
         return p_236568_0_.group(BlockState.CODEC.listOf().fieldOf("state").forGetter((a) -> {
                     return a.blocks;
-        }), Codec.intRange(0, 64).fieldOf("size").forGetter((a) -> {
+                }), Codec.intRange(0, 100).listOf().fieldOf("ore_spawn_chance").forGetter(a -> {
+                    return a.vainBlockChances;
+                }),
+                Codec.intRange(0, 64).fieldOf("size").forGetter((a) -> {
                     return a.size;
                 }), Codec.intRange(0, 100).fieldOf("rarity").forGetter((a) -> {
-            return a.rarity;
-        }), Codec.intRange(0, 64).fieldOf("outOf").forGetter((a) -> {
+                    return a.rarity;
+                }), Codec.intRange(0, 64).fieldOf("outOf").forGetter((a) -> {
                     return a.outOf;
-        })).apply(p_236568_0_, (p_i241989_1_, p_i241989_2_, p_i241989_3_, p_i241989_4_) -> new OreGenFeatureConfig(p_i241989_1_, p_i241989_2_, p_i241989_3_, p_i241989_4_));
+                })).apply(p_236568_0_, (p_i241989_1_, p_i241989_2_, p_i241989_3_, p_i241989_4_, p_i241989_5_) -> new OreGenFeatureConfig(p_i241989_1_, p_i241989_2_, p_i241989_3_, p_i241989_4_, p_i241989_5_));
 
     });
+    public final int size;
+    public final int rarity;
+    public final int outOf;
+    public List<BlockState> blocks;
+    public List<Integer> vainBlockChances;
 
 
-
-    public OreGenFeatureConfig(List<BlockState> blockStatesIn, int vainSizeIn, int rarityIn, int outOfIn) {
+    public OreGenFeatureConfig(List<BlockState> blockStatesIn, List<Integer> vainBlockChancesIn, int vainSizeIn, int rarityIn, int outOfIn) {
         this.size = vainSizeIn;
         this.blocks = blockStatesIn;
+        this.vainBlockChances = vainBlockChancesIn;
         this.rarity = rarityIn;
         this.outOf = outOfIn;
     }

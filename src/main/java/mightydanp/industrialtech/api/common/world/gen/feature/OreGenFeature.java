@@ -3,6 +3,8 @@ package mightydanp.industrialtech.api.common.world.gen.feature;
 import com.mojang.serialization.Codec;
 import mightydanp.industrialtech.api.common.blocks.BlockOre;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ISeedReader;
@@ -11,10 +13,14 @@ import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.Feature;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 import java.util.Random;
 
 public class OreGenFeature extends Feature<OreGenFeatureConfig> {
+    public List<BlockState> oreBlocks;
+
     public OreGenFeature(Codec<OreGenFeatureConfig> p_i231976_1_) {
         super(p_i231976_1_);
     }
@@ -116,17 +122,15 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
                                             if (!bitset.get(l2)) {
                                                 bitset.set(l2);
                                                 blockpos$mutable.setPos(i2, j2, k2);
-                                                Block ore = config.blocks.get(random.nextInt(config.blocks.size())).getBlock();
-                                                Block replacedBlock = worldIn.getBlockState(blockpos$mutable).getBlock();
-                                                if (ore instanceof BlockOre) {
-                                                    if (replacedBlock == ((BlockOre) ore).replaceableBlock.getBlock()) {
-                                                        worldIn.setBlockState(blockpos$mutable, ore.getDefaultState(), 2);
+                                                Block oreRandom = config.blocks.get(random.nextInt(config.blocks.size())).getBlock();
+                                                BlockState replacedBlock = worldIn.getBlockState(blockpos$mutable);
+                                                BlockState oreThatCanReplaceBlock = canReplaceStone(config, replacedBlock);
+                                                if (random.nextInt(100) <= 85 && oreThatCanReplaceBlock != null) {
+                                                    //if (replacedBlock == ((BlockOre) ore).replaceableBlock.getBlock())
+                                                    worldIn.setBlockState(blockpos$mutable, oreThatCanReplaceBlock, 2);
+                                                    if (random.nextInt(50) == 5) {
+                                                        System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "///");
                                                     }
-                                                } else {
-                                                    worldIn.setBlockState(blockpos$mutable, ore.getDefaultState(), 2);
-                                                }
-                                                if (random.nextInt(50) == 5) {
-                                                    System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "///");
                                                 }
                                                 ++i;
                                             }
@@ -141,5 +145,53 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         }
 
         return i > 0;
+    }
+
+    public List<BlockState> findReplacementOres(List<BlockState> blockStateListIn, BlockState replaceBlockStateIn) {
+        List<BlockState> oresThatCanReplace = new ArrayList<>();
+        for (BlockState blockState : blockStateListIn) {
+            Block block = blockState.getBlock();
+            Block replaceBlock = replaceBlockStateIn.getBlock();
+            if (block instanceof BlockOre) {
+                if (replaceBlock == ((BlockOre) block).replaceableBlock.getBlock()) {
+                    oresThatCanReplace.add(blockState);
+                }
+            }
+        }
+        return oresThatCanReplace;
+    }
+
+    public BlockState canReplaceStone(OreGenFeatureConfig config, BlockState blockToBeReplacedIn) {
+        Random rand = new Random();
+        List<BlockState> originalOres = config.blocks;
+        List<Integer> originalOresChances = config.vainBlockChances;
+        List<BlockState> oreThatCanReplace = new ArrayList<>();
+        List<Integer> oreChancesCanReplace = new ArrayList<>();
+        BlockState blockToBePlaced = Blocks.AIR.getDefaultState();
+        if (originalOres.size() == originalOresChances.size()) {
+            for (int i = 0; i <= originalOres.size() - 1; i++) {
+                Block block = originalOres.get(i).getBlock();
+                Block replaceBlock = blockToBeReplacedIn.getBlock();
+                if (block instanceof BlockOre) {
+                    if (replaceBlock == ((BlockOre) block).replaceableBlock.getBlock()) {
+                        oreThatCanReplace.add(originalOres.get(i));
+                        oreChancesCanReplace.add(originalOresChances.get(i));
+                    }
+                }
+            }
+
+            if (oreThatCanReplace.size() != 0 && oreChancesCanReplace.size() != 0) {
+                while (blockToBePlaced == Blocks.AIR.getDefaultState()) {
+                    int randomInt = rand.nextInt(oreThatCanReplace.size());
+                    if (rand.nextInt(100) <= oreChancesCanReplace.get(randomInt)) {
+                        blockToBePlaced = originalOres.get(randomInt);
+                        return blockToBePlaced;
+                    }
+                }
+            } else {
+                return null;
+            }
+        }
+        return null;
     }
 }

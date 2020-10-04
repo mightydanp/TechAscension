@@ -1,7 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "examplemod:material/dull/dust_small",
-    "layer1": "examplemod:material/dull/dust_small_overlay"
-  }
-}
