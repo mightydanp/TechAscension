@@ -12,6 +12,8 @@ import net.minecraftforge.fml.common.Mod;
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EventHandler {
+
+
     @SubscribeEvent(priority= EventPriority.HIGH)
     public static void onBiomeLoading(BiomeLoadingEvent evt)
     {

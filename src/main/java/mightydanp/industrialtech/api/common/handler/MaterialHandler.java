@@ -6,6 +6,7 @@ import mightydanp.industrialtech.api.common.items.ItemIngot;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import static mightydanp.industrialtech.api.common.libs.EnumMaterialFlags.*;
 
+import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -33,6 +34,7 @@ public class MaterialHandler {
     private int meltingPoint = 0;
     private int boilingPoint = 0;
     public static List<MaterialHandler> registeredMaterials = new ArrayList<>();
+    public Object[] flags;
     public List<RegistryObject<Block>>  blockOre = new ArrayList<>();
     public List<RegistryObject<Item>>  itemOre = new ArrayList<>();
     public List<RegistryObject<Item>>  itemIngot = new ArrayList<>();
@@ -42,7 +44,7 @@ public class MaterialHandler {
         add(Blocks.ANDESITE.getDefaultState());
     }};
 
-    public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alphaIn, String elementIn, int meltingPointIn, int boilingPointIn, Object... flagsIn) {
+    public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alphaIn, String elementIn, int meltingPointIn, int boilingPointIn, EnumMaterialFlags... flagsIn) {
         this.materialName = materialNameIn;
         this.red = redIn;
         this.green = greenIn;
@@ -51,11 +53,12 @@ public class MaterialHandler {
         this.element = elementIn;
         this.meltingPoint = meltingPointIn;
         this.boilingPoint = boilingPointIn;
+        this.flags = flagsIn;
         this.addFlag(flagsIn);
         registeredMaterials.add(this);
     }
 
-    public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alpha, Object... flagsIn) {
+    public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alpha, EnumMaterialFlags... flagsIn) {
         this.materialName = materialNameIn;
         this.red = redIn;
         this.green = greenIn;
@@ -65,7 +68,7 @@ public class MaterialHandler {
         registeredMaterials.add(this);
     }
 
-    protected void addFlag(Object... flagsIn) {
+    protected void addFlag(EnumMaterialFlags... flagsIn) {
         for(Object obj : flagsIn){
             if(obj == ORE){
                 for(BlockState stone : stone_variants){

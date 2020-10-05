@@ -33,7 +33,7 @@ public class OreGenerationHandler {
     
     public static void init() {
         //addOreToVain(ModMaterials.iron.blockOre, magnitie_vain_blocks, magnitie_vain_blocks_chances, 50);
-        magnitie_vain = registerNewOre(magnitie_vain_blocks, magnitie_vain_blocks_chances, 50, 5, 1000);
+        //magnitie_vain = registerNewOre(magnitie_vain_blocks, magnitie_vain_blocks_chances, 50, 5, 1000);
     }
 
     @SubscribeEvent
@@ -58,8 +58,8 @@ public class OreGenerationHandler {
     }
 
     public static void initOverworldFeatures(BiomeLoadingEvent event) {
-        event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION,
-                ore_vain.withConfiguration(magnitie_vain).func_242733_d(80));
+       // event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION,
+       //         ore_vain.withConfiguration(magnitie_vain).func_242733_d(80));
     }
 
     public static void initNetherFeatures(BiomeLoadingEvent evt) {

@@ -1,6 +1,8 @@
 package mightydanp.industrialtech.api.common.datagen;
 
+import mightydanp.industrialtech.api.common.blocks.BlockOre;
 import mightydanp.industrialtech.api.common.handler.MaterialHandler;
+import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import net.minecraft.block.Block;
@@ -20,34 +22,34 @@ import java.util.function.Function;
  */
 
 public class BlockStates extends BlockStateProvider {
+
+
     public BlockStates(DataGenerator gen, ExistingFileHelper exFileHelper) {
         super(gen, Ref.mod_id, exFileHelper);
     }
 
     @Override
     protected void registerStatesAndModels() {
-        registerOreBlocksAndItems();
-    }
-
-    private void registerOreBlocksAndItems(){
         for(MaterialHandler material : MaterialHandler.registeredMaterials) {
-            for(RegistryObject<Block> block : material.blockOre) {
-                String blockName = block.get().getRegistryName().toString().split(":")[1];
-                String modId = block.get().getRegistryName().toString().split(":")[0];
-                ResourceLocation txt = new ResourceLocation(Ref.mod_id, "block/" + blockName);
-                BlockModelBuilder modelFirstblock = models().withExistingParent("", new ResourceLocation(modId, "block/ore" + blockName.split("_")[0] + "_normal_ore"));
-                block(block.get(), state-> {return modelFirstblock;});
-            }
+            materialHandlerHelper(material);
         }
     }
 
-    private void block(Block block, Function<BlockState, ModelFile> modelFunc) {
-        getVariantBuilder(block)
-                .forAllStates(state -> {
-                    Direction dir = state.get(BlockStateProperties.FACING);
-                    return ConfiguredModel.builder()
-                            .modelFile(modelFunc.apply(state))
-                            .build();
-                });
+    private void materialHandlerHelper(MaterialHandler material) {
+        for(RegistryObject<Block> blockRegistered : material.blockOre){
+            Block oreBlock = blockRegistered.get();
+            VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
+            if(oreBlock instanceof BlockOre){
+                for(Object flag :material.flags){
+                    if(flag == EnumMaterialFlags.ORE){
+                        String modId= oreBlock.getRegistryName().toString().split(":")[0];
+                        String stoneVariant = oreBlock.getRegistryName().toString().split(":")[0].split("_")[0];
+                        ModelFile ore = new ModelFile.UncheckedModelFile(new ResourceLocation(modId + ":" + "block/ore/" + stoneVariant + "_ore"));
+                        builder.forAllStates(state -> ConfiguredModel.builder().modelFile(ore).build());
+
+                    }
+                }
+            }
+        }
     }
 }
