@@ -14,8 +14,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.ObjectHolder;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Created by MightyDanp on 10/2/2020.
@@ -30,26 +32,35 @@ public class BlockStates extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        for(MaterialHandler material : MaterialHandler.registeredMaterials) {
+        for(MaterialHandler material : ModMaterials.materials) {
             materialHandlerHelper(material);
         }
     }
 
     private void materialHandlerHelper(MaterialHandler material) {
-        for(RegistryObject<Block> blockRegistered : material.blockOre){
-            Block oreBlock = blockRegistered.get();
-            VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
-            if(oreBlock instanceof BlockOre){
-                for(Object flag :material.flags){
-                    if(flag == EnumMaterialFlags.ORE){
-                        String modId= oreBlock.getRegistryName().toString().split(":")[0];
-                        String stoneVariant = oreBlock.getRegistryName().toString().split(":")[0].split("_")[0];
-                        ModelFile ore = new ModelFile.UncheckedModelFile(new ResourceLocation(modId + ":" + "block/ore/" + stoneVariant + "_ore"));
-                        builder.forAllStates(state -> ConfiguredModel.builder().modelFile(ore).build());
-
-                    }
+        for(EnumMaterialFlags flag : material.flags){
+            if(flag == EnumMaterialFlags.ORE){
+                for(RegistryObject<Block> blockRegistered : material.blockOre) {
+                    Block oreBlock = blockRegistered.get();
+                    VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
+                    String modId = oreBlock.getRegistryName().toString().split(":")[0];
+                    String oreName = oreBlock.getRegistryName().toString().split(":")[1];
+                    String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[0];
+                    ModelFile ore = models().withExistingParent(oreName, modId + ":block/ore/" + stoneVariant + "_ore");
+                    builder.forAllStates(state -> ConfiguredModel.builder().modelFile(ore).build());
+                    simpleBlock(oreBlock , ore);
                 }
             }
         }
+    }
+
+    public void simpleBlock(Supplier<? extends Block> blockSupplier) {
+        simpleBlock(blockSupplier.get());
+    }
+
+    @Override
+    public void simpleBlock(Block block, ModelFile model) {
+        super.simpleBlock(block, model);
+        this.simpleBlockItem(block, model);
     }
 }

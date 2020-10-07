@@ -5,6 +5,7 @@ import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.client.ClientEvent;
 
+import mightydanp.industrialtech.common.generation.OreGeneration;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -33,7 +34,7 @@ public class IndustrialTech {
 
     private void common_event(final FMLCommonSetupEvent event) {
         CommonEvent.init(event);
-        OreGenerationHandler.init();
+        OreGeneration.init();
     }
 
     private void client_event(final FMLClientSetupEvent event) {

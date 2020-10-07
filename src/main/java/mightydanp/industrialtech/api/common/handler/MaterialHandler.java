@@ -34,7 +34,7 @@ public class MaterialHandler {
     private int meltingPoint = 0;
     private int boilingPoint = 0;
     public static List<MaterialHandler> registeredMaterials = new ArrayList<>();
-    public Object[] flags;
+    public EnumMaterialFlags[] flags;
     public List<RegistryObject<Block>>  blockOre = new ArrayList<>();
     public List<RegistryObject<Item>>  itemOre = new ArrayList<>();
     public List<RegistryObject<Item>>  itemIngot = new ArrayList<>();
@@ -64,12 +64,13 @@ public class MaterialHandler {
         this.green = greenIn;
         this.blue = blueIn;
         this.alpha = alpha;
+        this.flags = flagsIn;
         this.addFlag(flagsIn);
         registeredMaterials.add(this);
     }
 
     protected void addFlag(EnumMaterialFlags... flagsIn) {
-        for(Object obj : flagsIn){
+        for(EnumMaterialFlags obj : flagsIn){
             if(obj == ORE){
                 for(BlockState stone : stone_variants){
                     RegistryObject<Block> block = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->

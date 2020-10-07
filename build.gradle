@@ -69,7 +69,7 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'industrialtech', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'industrialtech', '--all', '--output', "\"" + file("src/generated/resources").toString() + "\"", "--validate", "--existing", "\"" + sourceSets.main.resources.srcDirs[0] + "\""
 
             mods {
                 industrialtech {
@@ -82,6 +82,18 @@ minecraft {
 
 repositories {
     maven { url 'http://dvs1.progwml6.com/files/maven' }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += "src/main/java"
+        }
+        resources {
+            srcDirs += "src/main/resources"
+            srcDirs += "src/generated/resources"
+        }
+    }
 }
 
 dependencies {

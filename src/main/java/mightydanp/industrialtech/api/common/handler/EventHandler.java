@@ -12,19 +12,4 @@ import net.minecraftforge.fml.common.Mod;
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EventHandler {
-
-
-    @SubscribeEvent(priority= EventPriority.HIGH)
-    public static void onBiomeLoading(BiomeLoadingEvent evt)
-    {
-        if (!OreGenerationHandler.checkAndInitBiome(evt)) return;
-
-        if (evt.getCategory() == Biome.Category.NETHER)
-        {
-            OreGenerationHandler.initNetherFeatures(evt);
-        }
-        else {
-            OreGenerationHandler.initOverworldFeatures(evt);
-        }
-    }
 }
