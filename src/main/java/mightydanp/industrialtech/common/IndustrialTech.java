@@ -1,12 +1,12 @@
 package mightydanp.industrialtech.common;
 
-import mightydanp.industrialtech.api.common.handler.OreGenerationHandler;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
+import mightydanp.industrialtech.api.common.inventory.container.ModContainers;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.client.ClientEvent;
-
 import mightydanp.industrialtech.common.generation.OreGeneration;
 import mightydanp.industrialtech.common.materials.ModMaterials;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -28,6 +28,7 @@ public class IndustrialTech {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         RegistryHandler.init(modEventBus);
         ModMaterials.commonInit();
+        ModContainers.init();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::common_event);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client_event);
     }
@@ -35,6 +36,7 @@ public class IndustrialTech {
     private void common_event(final FMLCommonSetupEvent event) {
         CommonEvent.init(event);
         OreGeneration.init();
+        //CapabilityManager.INSTANCE.register(ICustomInventory.class, new CapabilityCustomInventory.AlignerInvStorage(), () -> new CapabilityCustomInventory(null));
     }
 
     private void client_event(final FMLClientSetupEvent event) {

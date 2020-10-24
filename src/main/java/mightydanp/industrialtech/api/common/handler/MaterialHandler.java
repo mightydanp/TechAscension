@@ -25,7 +25,7 @@ import java.util.List;
  * Created by MightyDanp on 9/26/2020.
  */
 public class MaterialHandler {
-    private final String materialName;
+    public final String materialName;
     private final int red;
     private final int green;
     private final int blue;
@@ -42,10 +42,12 @@ public class MaterialHandler {
     private static final List<BlockState> stone_variants = new ArrayList<BlockState>(){{
         add(Blocks.STONE.getDefaultState());
         add(Blocks.ANDESITE.getDefaultState());
+        add(Blocks.GRANITE.getDefaultState());
+        add(Blocks.DIORITE.getDefaultState());
     }};
 
     public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alphaIn, String elementIn, int meltingPointIn, int boilingPointIn, EnumMaterialFlags... flagsIn) {
-        this.materialName = materialNameIn;
+        materialName = materialNameIn;
         this.red = redIn;
         this.green = greenIn;
         this.blue = blueIn;
@@ -59,7 +61,7 @@ public class MaterialHandler {
     }
 
     public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alpha, EnumMaterialFlags... flagsIn) {
-        this.materialName = materialNameIn;
+        materialName = materialNameIn;
         this.red = redIn;
         this.green = greenIn;
         this.blue = blueIn;
@@ -74,7 +76,17 @@ public class MaterialHandler {
             if(obj == ORE){
                 for(BlockState stone : stone_variants){
                     RegistryObject<Block> block = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new BlockOre(AbstractBlock.Properties.create(Material.ROCK), stone));
+                            new BlockOre(materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), stone));
+                    blockOre.add(block);
+                    RegistryObject<Item> item = RegistryHandler.ITEMS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                            new ItemBlockOre(block.get(), new Item.Properties().group(ModItemGroups.item_tab), element));
+                    itemOre.add(item);
+                }
+            }
+            if(obj == GEM){
+                for(BlockState stone : stone_variants){
+                    RegistryObject<Block> block = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                            new BlockOre(materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), stone));
                     blockOre.add(block);
                     RegistryObject<Item> item = RegistryHandler.ITEMS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new ItemBlockOre(block.get(), new Item.Properties().group(ModItemGroups.item_tab), element));

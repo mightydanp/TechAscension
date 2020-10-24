@@ -46,8 +46,18 @@ public class BlockStates extends BlockStateProvider {
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
                     String oreName = oreBlock.getRegistryName().toString().split(":")[1];
                     String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[0];
-                    ModelFile ore = models().withExistingParent(oreName, modId + ":block/ore/" + stoneVariant + "_ore");
-                    builder.forAllStates(state -> ConfiguredModel.builder().modelFile(ore).build());
+                    ModelFile ore = models().withExistingParent("block/ore/" + stoneVariant + "_ore", modId + ":block/ore/" + stoneVariant + "_ore");
+                    simpleBlock(oreBlock , ore);
+                }
+            }
+            if(flag == EnumMaterialFlags.GEM){
+                for(RegistryObject<Block> blockRegistered : material.blockOre) {
+                    Block oreBlock = blockRegistered.get();
+                    VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
+                    String modId = oreBlock.getRegistryName().toString().split(":")[0];
+                    String oreName = oreBlock.getRegistryName().toString().split(":")[1];
+                    String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[0];
+                    ModelFile ore = models().withExistingParent("block/ore/" + stoneVariant + "_gem", modId + ":block/ore/" + stoneVariant + "_gem");
                     simpleBlock(oreBlock , ore);
                 }
             }

@@ -1,0 +1,7 @@
+{
+  "parent": "industrialtech:block/ore/state/gem",
+  "textures": {
+    "particle": "minecraft:block/diorite",
+    "sourceblock": "minecraft:block/diorite"
+  }
+}

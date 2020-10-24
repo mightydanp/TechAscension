@@ -12,13 +12,13 @@ import net.minecraft.state.StateContainer;
  * Created by MightyDanp on 9/26/2020.
  */
 public class BlockOre extends Block {
-    //public static final EnumProperty stoneVariant = EnumProperty.create("variant", EnumStoneVariant.class);
+    public String name;
     public BlockState replaceableBlock;
 
-    public BlockOre(Properties properties, BlockState replaceableBlockIn) {
+    public BlockOre(String nameIn, Properties properties, BlockState replaceableBlockIn) {
         super(properties);
+        this.name = nameIn;
         this.replaceableBlock = replaceableBlockIn;
-        //this.setDefaultState(this.stateContainer.getBaseState().with(stoneVariant, EnumStoneVariant.stone));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package mightydanp.industrialtech.api.common.handler;
 
 import mightydanp.industrialtech.api.common.datagen.BlockStates;
+import mightydanp.industrialtech.api.common.datagen.Language;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,6 +21,7 @@ public class DataGenEventHandler {
 
         if (event.includeClient())
         {
+            gen.addProvider(new Language(gen));
             gen.addProvider(new BlockStates(gen, event.getExistingFileHelper()));
         }
         if (event.includeServer()){

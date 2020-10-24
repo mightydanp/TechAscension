@@ -1,5 +1,5 @@
 {
-  "parent": "industrialtech:block/ore/state/ore",
+  "parent": "industrialtech:block/ore/state/gem",
   "textures": {
     "particle": "minecraft:block/stone",
     "sourceblock": "minecraft:block/stone"

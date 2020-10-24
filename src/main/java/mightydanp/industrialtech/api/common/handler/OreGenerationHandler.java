@@ -6,11 +6,11 @@ import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeature;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeatureConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.IFeatureConfig;
+import net.minecraft.world.gen.feature.*;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Created by MightyDanp on 9/29/2020.
@@ -32,19 +33,31 @@ public class OreGenerationHandler {
     protected static final List<Object> vain_over_world= new ArrayList<Object>(){{add(addOresToVainAndChance(0, 0, 0, null, null)); add(0);}};
     protected static final List<Object> vain_end = new ArrayList<Object>(){{add(addOresToVainAndChance(0, 0, 0, null, null)); add(0);}};
 
-    public static void addOreGeneration(int vainSizeIn, int maxHeightIn, int rarityIn, int outOfIn, List<MaterialHandler> materialOreIn, List<EnumGenerationWorlds> worldsIn, Integer... chanceIn){
+    public static void addOreGeneration(int vainSizeIn, int maxHeightIn, int rarityIn, int outOfIn, List<Object> materialOreIn, List<EnumGenerationWorlds> worldsIn, Integer... chanceIn){
+        List<MaterialHandler> materialList = new ArrayList<>();
+        List<Integer> intList = new ArrayList<>();
+        int i = -1;
+        for(Object obj :materialOreIn){
+            i++;
+            if(obj instanceof MaterialHandler){
+                materialList.add((MaterialHandler)obj);
+            }
+            if(obj instanceof Integer){
+                intList.add((Integer)obj);
+            }
+        }
         if(worldsIn != null) {
             for (EnumGenerationWorlds world : worldsIn) {
                 if (world == EnumGenerationWorlds.end) {
-                    vain_end.add(addOresToVainAndChance(vainSizeIn, rarityIn, outOfIn, Arrays.asList(chanceIn), materialOreIn));
+                    vain_end.add(addOresToVainAndChance(vainSizeIn, rarityIn, outOfIn, intList, materialList));
                     vain_end.add(maxHeightIn);
                 }
                 if (world == EnumGenerationWorlds.overworld) {
-                    vain_over_world.add(addOresToVainAndChance(vainSizeIn, rarityIn, outOfIn, Arrays.asList(chanceIn), materialOreIn));
+                    vain_over_world.add(addOresToVainAndChance(vainSizeIn, rarityIn, outOfIn, intList, materialList));
                     vain_over_world.add(maxHeightIn);
                 }
                 if (world == EnumGenerationWorlds.nether) {
-                    vain_nether.add(addOresToVainAndChance(vainSizeIn, rarityIn, outOfIn, Arrays.asList(chanceIn), materialOreIn));
+                    vain_nether.add(addOresToVainAndChance(vainSizeIn, rarityIn, outOfIn, intList, materialList));
                     vain_nether.add(maxHeightIn);
                 }
             }
@@ -130,7 +143,6 @@ public class OreGenerationHandler {
                 event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, ore_vain.withConfiguration(config).func_242733_d(integerList.get(i)));
         }
     }
-
     private static <C extends IFeatureConfig, F extends Feature<C>> F register(String key, F value) {
         return Registry.register(Registry.FEATURE, key, value);
     }
@@ -149,5 +161,38 @@ public class OreGenerationHandler {
         }
 
         return new OreGenFeatureConfig(vain_blocks, ore_spawn_chances, vainSizeIn, rarityIn, outOfIn);
+    }
+
+    public static void overrideFeatures(Biome biome){
+        List<ConfiguredFeature> features = new ArrayList<ConfiguredFeature>();
+
+        for (List<Supplier<ConfiguredFeature<?, ?>>> f : biome.getGenerationSettings().getFeatures()) {
+            for ( Supplier<ConfiguredFeature<?, ?>> d : f) {
+                if(d.get().feature instanceof OreFeature) {
+                    if (((OreFeatureConfig) ((DecoratedFeatureConfig) d).feature.get().config).state.getBlock() == Blocks.COAL_ORE) {
+                        features.add(d.get());
+                    }
+                    if (((OreFeatureConfig) ((DecoratedFeatureConfig) d).feature.get().config).state.getBlock() == Blocks.IRON_ORE) {
+                        features.add(d.get());
+                    }
+                    if (((OreFeatureConfig) ((DecoratedFeatureConfig) d).feature.get().config).state.getBlock() == Blocks.GOLD_ORE) {
+                        features.add(d.get());
+                    }
+                    if (((OreFeatureConfig) ((DecoratedFeatureConfig) d).feature.get().config).state.getBlock() == Blocks.DIAMOND_ORE) {
+                        features.add(d.get());
+                    }
+                    if (((OreFeatureConfig) ((DecoratedFeatureConfig) d).feature.get().config).state.getBlock() == Blocks.EMERALD_ORE) {
+                        features.add(d.get());
+                    }
+                    if (((OreFeatureConfig) ((DecoratedFeatureConfig) d).feature.get().config).state.getBlock() == Blocks.LAPIS_ORE) {
+                        features.add(d.get());
+                    }
+                    if (((OreFeatureConfig) ((DecoratedFeatureConfig) d).feature.get().config).state.getBlock() == Blocks.REDSTONE_ORE) {
+                        features.add(d.get());
+                    }
+                }
+            }
+        }
+        biome.getGenerationSettings().getFeatures().removeAll(features);
     }
 }

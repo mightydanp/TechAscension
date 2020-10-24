@@ -59,7 +59,7 @@ public class ModMaterials {
         materials.add(diamond = new MaterialHandler("diamond", 200, 255, 255 , -1, GEM));
         materials.add(dioptase = new MaterialHandler("dioptase", 0, 180, 180, 127, GEM));
         materials.add(dragon_eye = new MaterialHandler("dragon_eye", 164,  95,  83, -1, GEM));
-        materials.add(emerald = new MaterialHandler("emerald", 80, 255,  80, -1, ORE));
+        materials.add(emerald = new MaterialHandler("emerald", 80, 255,  80, -1, GEM));
         materials.add(ferberite = new MaterialHandler("ferberite", 55,  50,  35, 255, ORE));
         materials.add(galena = new MaterialHandler("galena", 100,  60, 100, 255, ORE));
         materials.add(garnierite = new MaterialHandler("garnierite", 0, 200,  70, 255, ORE));

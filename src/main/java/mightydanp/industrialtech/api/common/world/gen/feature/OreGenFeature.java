@@ -126,11 +126,14 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
                                                     Block oreRandom = config.blocks.get(random.nextInt(config.blocks.size())).getBlock();
                                                     BlockState replacedBlock = worldIn.getBlockState(blockpos$mutable);
                                                     BlockState oreThatCanReplaceBlock = canReplaceStone(config, replacedBlock);
+
                                                     if (random.nextInt(100) <= 85 && oreThatCanReplaceBlock != null) {
                                                         //if (replacedBlock == ((BlockOre) ore).replaceableBlock.getBlock())
                                                         worldIn.setBlockState(blockpos$mutable, oreThatCanReplaceBlock, 2);
-                                                        if (random.nextInt(50) == 5) {
-                                                            System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "///");
+                                                        if (random.nextInt(100) <= 25) {
+                                                            if(oreThatCanReplaceBlock.getBlock() instanceof BlockOre){
+                                                                System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + ((BlockOre)oreThatCanReplaceBlock.getBlock()).name + "_ore");
+                                                            }
                                                         }
                                                     }
                                                     ++i;
@@ -186,7 +189,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
                 while (blockToBePlaced == Blocks.AIR.getDefaultState()) {
                     int randomInt = rand.nextInt(oreThatCanReplace.size());
                     if (rand.nextInt(100) <= oreChancesCanReplace.get(randomInt)) {
-                        blockToBePlaced = originalOres.get(randomInt);
+                        blockToBePlaced = oreThatCanReplace.get(randomInt);
                         return blockToBePlaced;
                     }
                 }
