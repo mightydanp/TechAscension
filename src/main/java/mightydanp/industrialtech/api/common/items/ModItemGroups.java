@@ -23,4 +23,18 @@ public class ModItemGroups {
             return new ItemStack(Items.STICK);
         }
     };
+
+    public static final ItemGroup ore_tab = new ItemGroup(Ref.ore_tab) {
+        @Override
+        public ItemStack createIcon() {
+            return new ItemStack(Blocks.IRON_ORE);
+        }
+    };
+
+    public static final ItemGroup plant_tab = new ItemGroup(Ref.plant_tab) {
+        @Override
+        public ItemStack createIcon() {
+            return new ItemStack(Items.WHEAT);
+        }
+    };
 }

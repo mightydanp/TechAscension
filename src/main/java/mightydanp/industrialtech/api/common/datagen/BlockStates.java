@@ -1,22 +1,15 @@
 package mightydanp.industrialtech.api.common.datagen;
 
-import mightydanp.industrialtech.api.common.blocks.BlockOre;
 import mightydanp.industrialtech.api.common.handler.MaterialHandler;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.ObjectHolder;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**

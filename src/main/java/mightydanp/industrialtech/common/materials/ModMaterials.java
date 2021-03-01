@@ -139,8 +139,6 @@ public class ModMaterials {
         materials.add(zircon = new MaterialHandler("zircon", 99,  24,  29, 255, ORE));
     }
 
-
-
     public static void clientInit() {
         for(MaterialHandler material : materials) {
             material.registerColorHandlerForBlock();

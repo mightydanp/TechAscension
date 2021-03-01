@@ -6,6 +6,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.Features;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,11 +25,13 @@ import java.util.function.Supplier;
 public class RegistryHandler {
     public static List<Block> blocks = new ArrayList<>();
     public static List<Item> items = new ArrayList<>();
+    public static List<Item> features = new ArrayList<>();
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Ref.mod_id);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
     public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Ref.mod_id);
     public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Ref.mod_id);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Ref.mod_id);
+    public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(ForgeRegistries.FEATURES, Ref.mod_id);
 
     public void inti(){
 
@@ -39,6 +43,7 @@ public class RegistryHandler {
         TILES.register(IEventBus);
         CONTAINERS.register(IEventBus);
         ENTITIES.register(IEventBus);
+        FEATURES.register(IEventBus);
     }
 
     @SubscribeEvent
@@ -53,5 +58,10 @@ public class RegistryHandler {
         for(Item item : items) {
             event.getRegistry().register(item);
         }
+    }
+
+    public static <F extends Feature<?>> RegistryObject<F> createFeature(String name, Supplier<F> feature)
+    {
+        return FEATURES.register(name, feature);
     }
 }

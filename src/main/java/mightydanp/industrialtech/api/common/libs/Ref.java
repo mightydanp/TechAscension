@@ -12,4 +12,6 @@ public class Ref {
     public static final String client_proxy_location = "mightydanp.industrialtech.common.ClientEvent";
     public static final String block_tab = mod_name + " Block Tab";
     public static final String item_tab = mod_name + " Item Tab";
+    public static final String ore_tab = mod_name + "Block Tab";
+    public static final String plant_tab = mod_name + "Plant Tab";
 }

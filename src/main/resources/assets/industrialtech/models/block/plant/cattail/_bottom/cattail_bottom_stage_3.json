@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "industrialtech:block/plant/cattail/_bottom/cattail_bottom_stage_8"
+  }
+}

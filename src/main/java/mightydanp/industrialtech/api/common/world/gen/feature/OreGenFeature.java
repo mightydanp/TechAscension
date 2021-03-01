@@ -1,7 +1,7 @@
 package mightydanp.industrialtech.api.common.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import mightydanp.industrialtech.api.common.blocks.BlockOre;
+import mightydanp.industrialtech.api.common.blocks.OreBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,7 +25,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         super(p_i231976_1_);
     }
 
-    public boolean func_241855_a(ISeedReader p_241855_1_, ChunkGenerator p_241855_2_, Random p_241855_3_, BlockPos p_241855_4_, OreGenFeatureConfig p_241855_5_) {
+    public boolean generate(ISeedReader p_241855_1_, ChunkGenerator p_241855_2_, Random p_241855_3_, BlockPos p_241855_4_, OreGenFeatureConfig p_241855_5_) {
         float f = p_241855_3_.nextFloat() * (float) Math.PI;
         float f1 = (float) p_241855_5_.size / 8.0F;
         int i = MathHelper.ceil(((float) p_241855_5_.size / 16.0F * 2.0F + 1.0F) / 2.0F);
@@ -127,12 +127,12 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
                                                     BlockState replacedBlock = worldIn.getBlockState(blockpos$mutable);
                                                     BlockState oreThatCanReplaceBlock = canReplaceStone(config, replacedBlock);
 
-                                                    if (random.nextInt(100) <= 85 && oreThatCanReplaceBlock != null) {
+                                                    if (random.nextInt(100) <= 10 && oreThatCanReplaceBlock != null) {
                                                         //if (replacedBlock == ((BlockOre) ore).replaceableBlock.getBlock())
                                                         worldIn.setBlockState(blockpos$mutable, oreThatCanReplaceBlock, 2);
-                                                        if (random.nextInt(100) <= 25) {
-                                                            if(oreThatCanReplaceBlock.getBlock() instanceof BlockOre){
-                                                                System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + ((BlockOre)oreThatCanReplaceBlock.getBlock()).name + "_ore");
+                                                        if (random.nextInt(100) <= 1) {
+                                                            if(oreThatCanReplaceBlock.getBlock() instanceof OreBlock){
+                                                                System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + config.vainName + "_ore");
                                                             }
                                                         }
                                                     }
@@ -157,8 +157,8 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         for (BlockState blockState : blockStateListIn) {
             Block block = blockState.getBlock();
             Block replaceBlock = replaceBlockStateIn.getBlock();
-            if (block instanceof BlockOre) {
-                if (replaceBlock == ((BlockOre) block).replaceableBlock.getBlock()) {
+            if (block instanceof OreBlock) {
+                if (replaceBlock == ((OreBlock) block).replaceableBlock.getBlock()) {
                     oresThatCanReplace.add(blockState);
                 }
             }
@@ -177,8 +177,8 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
             for (int i = 0; i <= originalOres.size() - 1; i++) {
                 Block block = originalOres.get(i).getBlock();
                 Block replaceBlock = blockToBeReplacedIn.getBlock();
-                if (block instanceof BlockOre) {
-                    if (replaceBlock == ((BlockOre) block).replaceableBlock.getBlock()) {
+                if (block instanceof OreBlock) {
+                    if (replaceBlock == ((OreBlock) block).replaceableBlock.getBlock()) {
                         oreThatCanReplace.add(originalOres.get(i));
                         oreChancesCanReplace.add(originalOresChances.get(i));
                     }

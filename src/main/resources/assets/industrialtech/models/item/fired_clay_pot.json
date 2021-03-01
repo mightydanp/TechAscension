@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "industrialtech:item/fired_clay_pot"
+  }
+}

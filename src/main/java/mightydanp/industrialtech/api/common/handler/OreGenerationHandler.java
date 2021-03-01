@@ -1,16 +1,20 @@
 package mightydanp.industrialtech.api.common.handler;
 
-import mightydanp.industrialtech.api.common.libs.EnumGenerationWorlds;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeature;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeatureConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.*;
+import net.minecraft.world.gen.placement.AtSurfaceWithExtraConfig;
+import net.minecraft.world.gen.placement.Placement;
+import net.minecraft.world.gen.placement.TopSolidRangeConfig;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -28,139 +32,62 @@ import java.util.function.Supplier;
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class OreGenerationHandler {
 
-    public static final OreGenFeature ore_vain = register("ore_vain", new OreGenFeature(OreGenFeatureConfig.field_236566_a_));
-    protected static List<Object> vain_nether = new ArrayList<Object>(){{add(addOresToVainAndChance(0, 0, 0, null, null)); add(0);}};
-    protected static final List<Object> vain_over_world= new ArrayList<Object>(){{add(addOresToVainAndChance(0, 0, 0, null, null)); add(0);}};
-    protected static final List<Object> vain_end = new ArrayList<Object>(){{add(addOresToVainAndChance(0, 0, 0, null, null)); add(0);}};
+    //public static final OreGenFeature ore_vain = register("ore_vain", new OreGenFeature(OreGenFeatureConfig.field_236566_a_));
+    public static final RegistryObject<Feature<OreGenFeatureConfig>> ore_vain = RegistryHandler.createFeature("ore_vain", () -> new OreGenFeature(OreGenFeatureConfig.field_236566_a_));
 
-    public static void addOreGeneration(int vainSizeIn, int maxHeightIn, int rarityIn, int outOfIn, List<Object> materialOreIn, List<EnumGenerationWorlds> worldsIn, Integer... chanceIn){
-        List<MaterialHandler> materialList = new ArrayList<>();
+    protected static List<ConfiguredFeature<?, ?>> oreVainList = new ArrayList<>();
+    protected static List<List<Biome.Category>> biomeList = new ArrayList<>();
+
+    public static void addOreGeneration(String vainNameIn, int vainSizeIn, int minHeightIn, int maxHeightIn, int rarityIn, int outOfIn, List<Object> materialOreIn, Biome.Category[] worldsIn){
         List<Integer> intList = new ArrayList<>();
-        int i = -1;
+        List<BlockState> vain_blocks = new ArrayList<>();
+
         for(Object obj :materialOreIn){
-            i++;
-            if(obj instanceof MaterialHandler){
-                materialList.add((MaterialHandler)obj);
-            }
             if(obj instanceof Integer){
-                intList.add((Integer)obj);
+                for(BlockState state :MaterialHandler.stone_variants){
+                    intList.add((Integer)obj);
+                }
             }
-        }
-        if(worldsIn != null) {
-            for (EnumGenerationWorlds world : worldsIn) {
-                if (world == EnumGenerationWorlds.end) {
-                    vain_end.add(addOresToVainAndChance(vainSizeIn, rarityIn, outOfIn, intList, materialList));
-                    vain_end.add(maxHeightIn);
-                }
-                if (world == EnumGenerationWorlds.overworld) {
-                    vain_over_world.add(addOresToVainAndChance(vainSizeIn, rarityIn, outOfIn, intList, materialList));
-                    vain_over_world.add(maxHeightIn);
-                }
-                if (world == EnumGenerationWorlds.nether) {
-                    vain_nether.add(addOresToVainAndChance(vainSizeIn, rarityIn, outOfIn, intList, materialList));
-                    vain_nether.add(maxHeightIn);
+
+            if(obj instanceof MaterialHandler) {
+                for (RegistryObject<Block> ore : ((MaterialHandler) obj).blockOre) {
+                    vain_blocks.add(ore.get().getDefaultState());
                 }
             }
         }
-    }
 
+        Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
+        OreGenFeatureConfig oreGenFeatureConfig = new OreGenFeatureConfig(vainNameIn, vain_blocks, intList, vainSizeIn, rarityIn, outOfIn);
+        ConfiguredFeature<?, ?> oreVainFeature = ore_vain.get().withConfiguration(oreGenFeatureConfig).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(minHeightIn, 0, maxHeightIn)));
+        Registry.register(registry, new ResourceLocation(Ref.mod_id, oreGenFeatureConfig.vainName), oreVainFeature);
 
-    public static void init() {
-        //addOreToVain(ModMaterials.iron.blockOre, magnitie_vain_blocks, magnitie_vain_blocks_chances, 50);
-        //magnitie_vain = registerNewOre(magnitie_vain_blocks, magnitie_vain_blocks_chances, 50, 5, 1000);
+        oreVainList.add(oreVainFeature);
+        biomeList.add(Arrays.asList(worldsIn));
     }
 
     @SubscribeEvent(priority= EventPriority.HIGH)
     public static boolean checkAndInitBiome(BiomeLoadingEvent event) {
-        if (event.getCategory() != Biome.Category.NETHER || event.getCategory() != Biome.Category.THEEND) {
-            if (event.getCategory() == Biome.Category.NETHER) {
-                generateNether(event);
-                return true;
-            } else if (event.getCategory() == Biome.Category.THEEND) {
-                generateEnd(event);
-                return true;
-            } else {
-                generateOverworld(event);
-                return true;
-            }
+        boolean canSpawnCrop = false;
+
+         for (int i = 0; i < oreVainList.size(); i++) {
+             if (biomeCheck(biomeList, event)) {
+                 canSpawnCrop = true;
+                 event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, oreVainList.get(i));
+             }
+         }
+        return canSpawnCrop;
+    }
+
+    public static boolean biomeCheck(List<List<Biome.Category>> biomeListIn, BiomeLoadingEvent event){
+        for(List<Biome.Category> biomes : biomeListIn) {
+            if (biomes.contains(event.getCategory()))return true;
+            else return false;
         }
         return false;
     }
 
-    private static void generateNether(BiomeLoadingEvent event) {
-        List<OreGenFeatureConfig> configList = new ArrayList<>();
-        List<Integer> integerList = new ArrayList<>();;
-        int i = -1;
-        for(Object nether : vain_nether) {
-            if (nether instanceof OreGenFeatureConfig) {
-                configList.add((OreGenFeatureConfig) nether);
-            }
-            if (nether instanceof Integer) {
-                integerList.add((Integer) nether);
-            }
-        }
-        for(OreGenFeatureConfig config : configList) {
-            i++;
-            if(integerList.get(i) != 0)
-                event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, ore_vain.withConfiguration(config).func_242733_d(integerList.get(i)));
-        }
-    }
-
-    private static void generateEnd(BiomeLoadingEvent event) {
-        List<OreGenFeatureConfig> configList = new ArrayList<>();
-        List<Integer> integerList = new ArrayList<>();;
-        int i = -1;
-        for(Object end : vain_end) {
-            if (end instanceof OreGenFeatureConfig) {
-                configList.add((OreGenFeatureConfig) end);
-            }
-            if (end instanceof Integer) {
-                integerList.add((Integer) end);
-            }
-        }
-        for(OreGenFeatureConfig config : configList) {
-            i++;
-            if(integerList.get(i) != 0)
-                event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, ore_vain.withConfiguration(config).func_242733_d(integerList.get(i)));
-        }
-    }
-
-    private static void generateOverworld(BiomeLoadingEvent event) {
-        List<OreGenFeatureConfig> configList = new ArrayList<>();
-        List<Integer> integerList = new ArrayList<>();;
-        int i = -1;
-        for(Object overWorld : vain_over_world) {
-            if (overWorld instanceof OreGenFeatureConfig) {
-                configList.add((OreGenFeatureConfig) overWorld);
-            }
-            if (overWorld instanceof Integer) {
-                integerList.add((Integer)overWorld);
-            }
-        }
-        for(OreGenFeatureConfig config : configList) {
-            i++;
-            if(integerList.get(i) != 0)
-                event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, ore_vain.withConfiguration(config).func_242733_d(integerList.get(i)));
-        }
-    }
     private static <C extends IFeatureConfig, F extends Feature<C>> F register(String key, F value) {
         return Registry.register(Registry.FEATURE, key, value);
-    }
-
-    public static OreGenFeatureConfig addOresToVainAndChance(int vainSizeIn, int rarityIn, int outOfIn, List<Integer> chanceIn, List<MaterialHandler> materialOreIn){
-        List<Integer> ore_spawn_chances = new ArrayList<>();
-        List<BlockState> vain_blocks = new ArrayList<>();
-        int i=-1;
-        if(materialOreIn != null)
-        for (MaterialHandler material : materialOreIn) {
-            i++;
-                for(RegistryObject<Block> ore: material.blockOre) {
-                    vain_blocks.add(ore.get().getDefaultState());
-                    ore_spawn_chances.add(chanceIn.get(i));
-                }
-        }
-
-        return new OreGenFeatureConfig(vain_blocks, ore_spawn_chances, vainSizeIn, rarityIn, outOfIn);
     }
 
     public static void overrideFeatures(Biome biome){

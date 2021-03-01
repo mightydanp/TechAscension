@@ -1,6 +1,5 @@
 package mightydanp.industrialtech.common;
 
-import mightydanp.industrialtech.api.common.packet.PacketHandler;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 /**
@@ -8,6 +7,5 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
  */
 public class CommonEvent {
     public static void init(FMLCommonSetupEvent event) {
-        PacketHandler.registerMessages();
     }
 }
