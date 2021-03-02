@@ -22,7 +22,7 @@ public class ItemIngot extends Item {
 
     public ItemIngot(Properties properties, EnumMaterialFlags ingotStateIn) {
         super(properties);
-        if(ingotStateIn == EnumMaterialFlags.HOTINGOT){
+        if(ingotStateIn == EnumMaterialFlags.HOT_INGOT){
             maxStackSize = 1;
         }else{
             maxStackSize = 64;
@@ -35,11 +35,11 @@ public class ItemIngot extends Item {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         tooltip.add(ITextComponent.getTextComponentOrEmpty(elementToolTip));
-        if(ingotType == EnumMaterialFlags.HOTINGOT){
+        if(ingotType == EnumMaterialFlags.HOT_INGOT){
             tooltip.add(ITextComponent.getTextComponentOrEmpty("§5" + ingotType.getSufixString().split("_")[1]));
-        }else if(ingotType == EnumMaterialFlags.SOFTENEDINGOT){
+        }else if(ingotType == EnumMaterialFlags.SOFTENED_INGOT){
             tooltip.add(ITextComponent.getTextComponentOrEmpty("§b" + ingotType.getSufixString().split("_")[1]));
-        }else if(ingotType == EnumMaterialFlags.HARDENEDINGOT){
+        }else if(ingotType == EnumMaterialFlags.HARDENED_INGOT){
             tooltip.add(ITextComponent.getTextComponentOrEmpty("§8" + ingotType.getSufixString().split("_")[1]));
         }
         if(meltingPoint != 0){

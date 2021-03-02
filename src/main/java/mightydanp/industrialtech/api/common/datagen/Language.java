@@ -34,15 +34,18 @@ public class Language extends LanguageProvider {
                         oreName.append(str);
                     }
                     if(i == nameLength - 1){
-                        oreName.append(" ").append(str).append(" Ore");
+                        oreName.append(" ").append(str);
                     }
                 }
             } else {
                 String str = material.materialName.substring(0, 1).toUpperCase() + material.materialName.substring(1);
-                oreName.append(str).append(" ").append("Ore");
+                oreName.append(str);
             }
             for (RegistryObject<Block> block : material.blockOre) {
-                add(block.get(), oreName.toString());
+                add(block.get(), oreName.toString() + " Ore");
+            }
+            for (RegistryObject<Block> block : material.blockSmallOre) {
+                add(block.get(), oreName.toString() + " Small Ore");
             }
         }
 

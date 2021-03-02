@@ -59,7 +59,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
         int j = config.size;
         int r = config.rarity;
-        if(config.outOf > 0) {
+        if (config.outOf > 0) {
             int e = random.nextInt(config.outOf);
             double[] adouble = new double[j * 4];
 
@@ -131,8 +131,8 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
                                                         //if (replacedBlock == ((BlockOre) ore).replaceableBlock.getBlock())
                                                         worldIn.setBlockState(blockpos$mutable, oreThatCanReplaceBlock, 2);
                                                         if (random.nextInt(100) <= 1) {
-                                                            if(oreThatCanReplaceBlock.getBlock() instanceof OreBlock){
-                                                                System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + config.vainName + "_ore");
+                                                            if (oreThatCanReplaceBlock.getBlock() instanceof OreBlock) {
+                                                                System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + config.veinName);
                                                             }
                                                         }
                                                     }
@@ -169,12 +169,12 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
     public BlockState canReplaceStone(OreGenFeatureConfig config, BlockState blockToBeReplacedIn) {
         Random rand = new Random();
         List<BlockState> originalOres = config.blocks;
-        List<Integer> originalOresChances = config.vainBlockChances;
+        List<Integer> originalOresChances = config.veinBlockChances;
         List<BlockState> oreThatCanReplace = new ArrayList<>();
         List<Integer> oreChancesCanReplace = new ArrayList<>();
         BlockState blockToBePlaced = Blocks.AIR.getDefaultState();
         if (originalOres.size() == originalOresChances.size()) {
-            for (int i = 0; i <= originalOres.size() - 1; i++) {
+            for (int i = 0; i < originalOres.size(); i++) {
                 Block block = originalOres.get(i).getBlock();
                 Block replaceBlock = blockToBeReplacedIn.getBlock();
                 if (block instanceof OreBlock) {

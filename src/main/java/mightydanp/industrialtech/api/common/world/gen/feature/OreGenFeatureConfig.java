@@ -18,14 +18,13 @@ import java.util.List;
 public class OreGenFeatureConfig implements IFeatureConfig {
 
     public static final Codec<OreGenFeatureConfig> field_236566_a_ = RecordCodecBuilder.create((p_236568_0_) -> {
-        return p_236568_0_.group(Codec.STRING.fieldOf("vain_name").forGetter(z -> {
-                    return z.vainName;
+        return p_236568_0_.group(Codec.STRING.fieldOf("vein_name").forGetter(z -> {
+                    return z.veinName;
                 }),BlockState.CODEC.listOf().fieldOf("state").forGetter((a) -> {
                     return a.blocks;
                 }), Codec.intRange(0, 100).listOf().fieldOf("ore_spawn_chance").forGetter(a -> {
-                    return a.vainBlockChances;
-                }),
-                Codec.intRange(0, 64).fieldOf("size").forGetter((a) -> {
+                    return a.veinBlockChances;
+                }), Codec.intRange(0, 64).fieldOf("size").forGetter((a) -> {
                     return a.size;
                 }), Codec.intRange(0, 100).fieldOf("rarity").forGetter((a) -> {
                     return a.rarity;
@@ -34,19 +33,19 @@ public class OreGenFeatureConfig implements IFeatureConfig {
                 })).apply(p_236568_0_, (p_i241989_1_, p_i241989_2_, p_i241989_3_, p_i241989_4_, p_i241989_5_, p_i241989_6_) -> new OreGenFeatureConfig(p_i241989_1_, p_i241989_2_, p_i241989_3_, p_i241989_4_, p_i241989_5_, p_i241989_6_));
 
     });
-    public String vainName;
+    public String veinName;
     public final int size;
     public final int rarity;
     public final int outOf;
     public List<BlockState> blocks;
-    public List<Integer> vainBlockChances;
+    public List<Integer> veinBlockChances;
 
 
-    public OreGenFeatureConfig(String VainNameIn, List<BlockState> blockStatesIn, List<Integer> vainBlockChancesIn, int vainSizeIn, int rarityIn, int outOfIn) {
-        this.vainName = VainNameIn;
-        this.size = vainSizeIn;
+    public OreGenFeatureConfig(String VeinNameIn, List<BlockState> blockStatesIn, List<Integer> veinBlockChancesIn, int veinSizeIn, int rarityIn, int outOfIn) {
+        this.veinName = VeinNameIn;
+        this.size = veinSizeIn;
         this.blocks = blockStatesIn;
-        this.vainBlockChances = vainBlockChancesIn;
+        this.veinBlockChances = veinBlockChancesIn;
         this.rarity = rarityIn;
         this.outOf = outOfIn;
     }

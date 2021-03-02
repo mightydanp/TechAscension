@@ -16,14 +16,49 @@ public class OreGeneration {
         Biome.Category.OCEAN, Biome.Category.PLAINS, Biome.Category.RIVER, Biome.Category.SAVANNA,
         Biome.Category.SWAMP, Biome.Category.TAIGA};
 
+    public static List<Object> small_ore_gems;
 
-    public static List<Object> platinumVain, emeraldVain, uraniumVain, manganeseVain, redstoneVain, olivineVain, rareEarthVain, tinVain,
-            copperIronVain, galenaVain, molybdeniteVain, copperVain, tungstateVain, copperIronOxideVain, garniteVain, diamondVain, quartzVain,
-            phosphorusVain, nickleVain, magnetiteVain, coalVain, saltCommonVain, saltRareVain, lapisVain, rutileVain;
+    public static List<Object> platinumVein, emeraldVein, uraniumVein, manganeseVein, redstoneVein, olivineVein, rareEarthVein, tinVein,
+            copperIronVein, galenaVein, molybdeniteVein, copperVein, tungstateVein, copperIronOxideVein, garniteVein, diamondVein, quartzVein,
+            phosphorusVein, nickleVein, magnetiteVein, coalVein, saltCommonVein, saltRareVein, lapisVein, rutileVein;
+
 
     public static void init() {
+        //small ore
+        small_ore_gems = new ArrayList<Object>() {{
+        add(ModMaterials.jasper);add(10);
+        add(ModMaterials.blue_jasper); add(10);
+        add(ModMaterials.green_jasper); add(10);
+        add(ModMaterials.yellow_jasper); add(10);
+        add(ModMaterials.rainforest_jasper); add(10);
+        add(ModMaterials.tiger_eye); add(10);
+        add(ModMaterials.cats_eye); add(10);
+        add(ModMaterials.dragon_eye); add(10);
+        add(ModMaterials.hawks_eye); add(10);
+        add(ModMaterials.black_eye); add(10);
+        add(ModMaterials.tiger_iron); add(10);
+        add(ModMaterials.dioptase); add(10);
+        add(ModMaterials.sapphire); add(10);
+        add(ModMaterials.green_sapphire); add(10);
+        add(ModMaterials.yellow_sapphire); add(10);
+        add(ModMaterials.orange_sapphire); add(10);
+        add(ModMaterials.blue_sapphire); add(10);
+        add(ModMaterials.purple_sapphire); add(10);
+        add(ModMaterials.craponite); add(10);
+        add(ModMaterials.amethyst); add(10);
+        add(ModMaterials.alexandrite); add(10);
+        add(ModMaterials.aquamarine); add(10);
+        add(ModMaterials.morganite); add(10);
+        add(ModMaterials.heliodor); add(10);
+        add(ModMaterials.goshenite); add(10);
+        add(ModMaterials.bixbite); add(10);
+        add(ModMaterials.maxixe); add(10);
+        }};
+        OreGenerationHandler.addSmallOreGeneration("small_ore_gems", 1, 256, 5, small_ore_gems, OverWorldBiomes);
 
-        platinumVain = new ArrayList<Object>() {{
+
+        //regular ore
+        platinumVein = new ArrayList<Object>() {{
             add(ModMaterials.cooperite);
             add(45);
             add(ModMaterials.sperrylite);
@@ -31,9 +66,9 @@ public class OreGeneration {
             add(ModMaterials.iridium);
             add(10);
         }};
-        OreGenerationHandler.addOreGeneration("platinum_vain",128, 1, 10, 50, 5000, platinumVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("platinum_vein",128, 1, 10, 50, 5000, platinumVein, OverWorldBiomes);
 
-        emeraldVain = new ArrayList<Object>() {{
+        emeraldVein = new ArrayList<Object>() {{
             add(ModMaterials.beryllium);
             add(100);
             add(ModMaterials.thorium);
@@ -41,17 +76,17 @@ public class OreGeneration {
             add(ModMaterials.emerald);
             add(100);
         }};
-        OreGenerationHandler.addOreGeneration("emerald_vain", 128, 5, 30, 250, 5000, emeraldVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("emerald_vein", 128, 5, 30, 250, 5000, emeraldVein, OverWorldBiomes);
 
-        uraniumVain = new ArrayList<Object>() {{
+        uraniumVein = new ArrayList<Object>() {{
             add(ModMaterials.pitchblende);
             add(100);
             add(ModMaterials.uraninite);
             add(100);
         }};
-        OreGenerationHandler.addOreGeneration("uranium_vain", 128, 10, 40, 150, 5000, uraniumVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("uranium_vein", 128, 10, 40, 150, 5000, uraniumVein, OverWorldBiomes);
 
-        manganeseVain = new ArrayList<Object>() {{
+        manganeseVein = new ArrayList<Object>() {{
             add(ModMaterials.grossular);
             add(75);
             add(ModMaterials.spessartine);
@@ -61,9 +96,9 @@ public class OreGeneration {
             add(ModMaterials.tantalite);
             add(100);
         }};
-        OreGenerationHandler.addOreGeneration("manganese_vain", 128, 20, 30, 250, 5000, manganeseVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("manganese_vein", 128, 20, 30, 250, 5000, manganeseVein, OverWorldBiomes);
 
-        redstoneVain = new ArrayList<Object>() {{
+        redstoneVein = new ArrayList<Object>() {{
             add(ModMaterials.ruby);
             add(50);
             add(ModMaterials.cinnabar);
@@ -73,9 +108,9 @@ public class OreGeneration {
             add(ModMaterials.pyrite);
             add(75);
         }};
-        OreGenerationHandler.addOreGeneration("redstone_vain", 128, 10, 40, 250, 5000, redstoneVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("redstone_vein", 128, 10, 40, 250, 5000, redstoneVein, OverWorldBiomes);
 
-        olivineVain = new ArrayList<Object>() {{//
+        olivineVein = new ArrayList<Object>() {{//
             add(ModMaterials.bentonite);
             add(100);
             add(ModMaterials.magnesite);
@@ -85,9 +120,9 @@ public class OreGeneration {
             add(ModMaterials.glauconite);
             add(100);
         }};
-        OreGenerationHandler.addOreGeneration("olivine_vain", 128, 10, 40, 250, 5000, olivineVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("olivine_vein", 128, 10, 40, 250, 5000, olivineVein, OverWorldBiomes);
 
-        rareEarthVain = new ArrayList<Object>() {{
+        rareEarthVein = new ArrayList<Object>() {{
             add(ModMaterials.bastnasite);
             add(85);
             add(ModMaterials.monazite);
@@ -97,9 +132,9 @@ public class OreGeneration {
             add(ModMaterials.tantalite);
             add(90);
         }};
-        OreGenerationHandler.addOreGeneration("rare_earth_vain", 128, 1, 20, 250, 5000, rareEarthVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("rare_earth_vein", 128, 1, 20, 250, 5000, rareEarthVein, OverWorldBiomes);
 
-        tinVain = new ArrayList<Object>() {{
+        tinVein = new ArrayList<Object>() {{
             add(ModMaterials.cassiterite);
             add(100);
             add(ModMaterials.stannite);
@@ -107,9 +142,9 @@ public class OreGeneration {
             add(ModMaterials.kesterite);
             add(100);
         }};
-        OreGenerationHandler.addOreGeneration("tin_vain", 128, 60, 120, 250, 5000, tinVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("tin_vein", 128, 60, 120, 250, 5000, tinVein, OverWorldBiomes);
 
-        copperIronVain = new ArrayList<Object>() {{
+        copperIronVein = new ArrayList<Object>() {{
             add(ModMaterials.sphalerite);
             add(100);
             add(ModMaterials.chalcopyrite);
@@ -117,9 +152,9 @@ public class OreGeneration {
             add(ModMaterials.pyrite);
             add(75);
         }};
-        OreGenerationHandler.addOreGeneration("copper_iron_vain", 128, 10, 30, 250, 5000, copperIronVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("copper_iron_vein", 128, 10, 30, 250, 5000, copperIronVein, OverWorldBiomes);
 
-        galenaVain = new ArrayList<Object>() {{
+        galenaVein = new ArrayList<Object>() {{
             add(ModMaterials.galena);
             add(100);
             add(ModMaterials.stibnite);
@@ -127,9 +162,9 @@ public class OreGeneration {
             add(ModMaterials.bromargyrite);
             add(100);
         }};
-        OreGenerationHandler.addOreGeneration("galena_vain", 128, 30, 60, 250, 5000, galenaVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("galena_vein", 128, 30, 60, 250, 5000, galenaVein, OverWorldBiomes);
 
-        molybdeniteVain = new ArrayList<Object>() {{
+        molybdeniteVein = new ArrayList<Object>() {{
             add(ModMaterials.arsenopyrite);
             add(100);
             add(ModMaterials.powellite);
@@ -137,9 +172,9 @@ public class OreGeneration {
             add(ModMaterials.molybdenite);
             add(40);
         }};
-        OreGenerationHandler.addOreGeneration("molybdenite_vain", 128, 20, 50, 250, 5000, molybdeniteVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("molybdenite_vein", 128, 20, 50, 250, 5000, molybdeniteVein, OverWorldBiomes);
 
-        copperVain = new ArrayList<Object>() {{
+        copperVein = new ArrayList<Object>() {{
             add(ModMaterials.tetrahedrite);
             add(100);
             add(ModMaterials.copper);
@@ -147,9 +182,9 @@ public class OreGeneration {
             add(ModMaterials.stibnite);
             add(35);
         }};
-        OreGenerationHandler.addOreGeneration("copper_vain", 128, 80, 120, 250, 5000, copperVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("copper_vein", 128, 80, 120, 250, 5000, copperVein, OverWorldBiomes);
 
-        tungstateVain = new ArrayList<Object>() {{
+        tungstateVein = new ArrayList<Object>() {{
             add(ModMaterials.scheelite);
             add(100);
             add(ModMaterials.wolframite);
@@ -161,9 +196,9 @@ public class OreGeneration {
             add(ModMaterials.tungstate);
             add(100);
         }};
-        OreGenerationHandler.addOreGeneration("tungstate_vain", 128, 20, 50, 250, 5000, tungstateVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("tungstate_vein", 128, 20, 50, 250, 5000, tungstateVein, OverWorldBiomes);
 
-        copperIronOxideVain = new ArrayList<Object>() {{
+        copperIronOxideVein = new ArrayList<Object>() {{
             add(ModMaterials.yellow_limonite);
             add(100);
             add(ModMaterials.brown_limonite);
@@ -173,9 +208,9 @@ public class OreGeneration {
             add(ModMaterials.azurite);
             add(50);
         }};
-        OreGenerationHandler.addOreGeneration("copper_iron_oxide_vain", 128, 10, 40, 250, 5000, copperIronOxideVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("copper_iron_oxide_vein", 128, 10, 40, 250, 5000, copperIronOxideVein, OverWorldBiomes);
 
-        garniteVain = new ArrayList<Object>() {{
+        garniteVein = new ArrayList<Object>() {{
             add(ModMaterials.andradite);
             add(100);
             add(ModMaterials.almandine);
@@ -189,9 +224,9 @@ public class OreGeneration {
             add(ModMaterials.uvarovite);
             add(100);
         }};
-        OreGenerationHandler.addOreGeneration("garnite_vain", 128, 20, 30, 250, 5000, garniteVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("garnite_vein", 128, 20, 30, 250, 5000, garniteVein, OverWorldBiomes);
 
-        diamondVain = new ArrayList<Object>() {{//
+        diamondVein = new ArrayList<Object>() {{//
             add(ModMaterials.diamond);
             add(75);
             add(ModMaterials.spinel);
@@ -203,9 +238,9 @@ public class OreGeneration {
             add(ModMaterials.coal);
             add(75);
         }};
-        OreGenerationHandler.addOreGeneration("diamond_vain", 128, 5, 20, 3, 5000, diamondVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("diamond_vein", 128, 5, 20, 3, 5000, diamondVein, OverWorldBiomes);
 
-        quartzVain = new ArrayList<Object>() {{
+        quartzVein = new ArrayList<Object>() {{
             add(ModMaterials.certus_quartz);
             add(100);
             add(ModMaterials.quartzite);
@@ -213,9 +248,9 @@ public class OreGeneration {
             add(ModMaterials.barite);
             add(75);
         }};
-        OreGenerationHandler.addOreGeneration("quartz_vain", 128, 40, 80, 250, 5000, quartzVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("quartz_vein", 128, 40, 80, 250, 5000, quartzVein, OverWorldBiomes);
 
-        phosphorusVain = new ArrayList<Object>() {{
+        phosphorusVein = new ArrayList<Object>() {{
             add(ModMaterials.apatite);
             add(100);
             add(ModMaterials.phosphate);
@@ -225,9 +260,9 @@ public class OreGeneration {
             add(ModMaterials.phosphorus);
             add(50);
         }};
-        OreGenerationHandler.addOreGeneration("phosphorus_vain", 128, 40, 60, 250, 5000, phosphorusVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("phosphorus_vein", 128, 40, 60, 250, 5000, phosphorusVein, OverWorldBiomes);
 
-        nickleVain = new ArrayList<Object>() {{
+        nickleVein = new ArrayList<Object>() {{
             add(ModMaterials.garnierite);
             add(100);
             add(ModMaterials.pentlandite);
@@ -235,9 +270,9 @@ public class OreGeneration {
             add(ModMaterials.cobaltite);
             add(100);
         }};
-        OreGenerationHandler.addOreGeneration("nickle_vain", 128, 10, 40, 250, 5000, nickleVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("nickle_vein", 128, 10, 40, 250, 5000, nickleVein, OverWorldBiomes);
 
-        magnetiteVain = new ArrayList<Object>() {{
+        magnetiteVein = new ArrayList<Object>() {{
             add(ModMaterials.gold);
             add(50);
             add(ModMaterials.magnetite);
@@ -245,9 +280,9 @@ public class OreGeneration {
             add(ModMaterials.vanadium_magnetite);
             add(75);
         }};
-        OreGenerationHandler.addOreGeneration("magnetite_vain", 128, 60, 80, 250, 5000, magnetiteVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("magnetite_vein", 128, 60, 80, 250, 5000, magnetiteVein, OverWorldBiomes);
 
-        coalVain = new ArrayList<Object>() {{//
+        coalVein = new ArrayList<Object>() {{//
             add(ModMaterials.anthracite);
             add(100);
             add(ModMaterials.lignite);
@@ -257,9 +292,9 @@ public class OreGeneration {
             add(ModMaterials.peat_bituminous);
             add(100);
         }};
-        OreGenerationHandler.addOreGeneration("coal_vain", 128, 50, 80, 250, 5000, coalVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("coal_vein", 128, 50, 80, 250, 5000, coalVein, OverWorldBiomes);
 
-        saltCommonVain = new ArrayList<Object>() {{//
+        saltCommonVein = new ArrayList<Object>() {{//
             add(ModMaterials.salt);
             add(100);
             add(ModMaterials.iodinesalt);
@@ -267,9 +302,9 @@ public class OreGeneration {
             add(ModMaterials.rocksalt);
             add(75);
         }};
-        OreGenerationHandler.addOreGeneration("salt_common_vain", 128, 50, 60, 250, 5000, saltCommonVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("salt_common_vein", 128, 50, 60, 250, 5000, saltCommonVein, OverWorldBiomes);
 
-        saltRareVain = new ArrayList<Object>() {{//
+        saltRareVein = new ArrayList<Object>() {{//
             add(ModMaterials.salt);
             add(100);
             add(ModMaterials.lepidolite);
@@ -277,9 +312,9 @@ public class OreGeneration {
             add(ModMaterials.spodumene);
             add(75);
         }};
-        OreGenerationHandler.addOreGeneration("salt_rare_vain", 128, 50, 60, 50, 5000, saltRareVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("salt_rare_vein", 128, 50, 60, 50, 5000, saltRareVein, OverWorldBiomes);
 
-        lapisVain = new ArrayList<Object>() {{//
+        lapisVein = new ArrayList<Object>() {{//
             add(ModMaterials.lapis);
             add(100);
             add(ModMaterials.lazurite);
@@ -289,9 +324,9 @@ public class OreGeneration {
             add(ModMaterials.pyrite);
             add(75);
         }};
-        OreGenerationHandler.addOreGeneration("lapis_vain", 128, 20, 50, 250, 5000, lapisVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("lapis_vein", 128, 20, 50, 250, 5000, lapisVein, OverWorldBiomes);
 
-        rutileVain = new ArrayList<Object>() {{//
+        rutileVein = new ArrayList<Object>() {{//
             add(ModMaterials.rutile);
             add(85);
             add(ModMaterials.ilmenite);
@@ -299,6 +334,6 @@ public class OreGeneration {
             add(ModMaterials.zircon);
             add(65);
         }};
-        OreGenerationHandler.addOreGeneration("rutile_vain", 128, 10, 40, 250, 5000, rutileVain, OverWorldBiomes);
+        OreGenerationHandler.addOreGeneration("rutile_vein", 128, 10, 40, 250, 5000, rutileVein, OverWorldBiomes);
     }
 }

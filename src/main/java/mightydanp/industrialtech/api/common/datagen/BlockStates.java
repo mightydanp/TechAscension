@@ -39,7 +39,18 @@ public class BlockStates extends BlockStateProvider {
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
                     String oreName = oreBlock.getRegistryName().toString().split(":")[1];
                     String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[0];
-                    ModelFile ore = models().withExistingParent("block/ore/" + stoneVariant + "_ore", modId + ":block/ore/" + stoneVariant + "_ore");
+                    ModelFile ore = models().withExistingParent("block/ore/" + stoneVariant + "_ore", modId + ":block/ore/state/ore").texture("particle", "minecraft:block/" + stoneVariant).texture("sourceblock", "minecraft:block/" + stoneVariant);
+                    simpleBlock(oreBlock , ore);
+                }
+            }
+            if(flag == EnumMaterialFlags.SMALL_ORE){
+                for(RegistryObject<Block> blockRegistered : material.blockSmallOre) {
+                    Block oreBlock = blockRegistered.get();
+                    VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
+                    String modId = oreBlock.getRegistryName().toString().split(":")[0];
+                    String oreName = oreBlock.getRegistryName().toString().split(":")[1];
+                    String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[0];
+                    ModelFile ore = models().withExistingParent("block/small_ore/" + stoneVariant + "_small_ore", modId + ":block/ore/state/small_ore").texture("particle", "minecraft:block/" + stoneVariant).texture("sourceblock", "minecraft:block/" + stoneVariant);
                     simpleBlock(oreBlock , ore);
                 }
             }
@@ -50,7 +61,7 @@ public class BlockStates extends BlockStateProvider {
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
                     String oreName = oreBlock.getRegistryName().toString().split(":")[1];
                     String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[0];
-                    ModelFile ore = models().withExistingParent("block/ore/" + stoneVariant + "_gem", modId + ":block/ore/" + stoneVariant + "_gem");
+                    ModelFile ore = models().withExistingParent("block/gem/" + stoneVariant + "_gem", modId + ":block/ore/state/gem").texture("particle", "minecraft:block/" + stoneVariant).texture("sourceblock", "minecraft:block/" + stoneVariant);
                     simpleBlock(oreBlock , ore);
                 }
             }

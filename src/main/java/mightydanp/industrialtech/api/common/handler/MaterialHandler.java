@@ -1,6 +1,7 @@
 package mightydanp.industrialtech.api.common.handler;
 
 import mightydanp.industrialtech.api.common.blocks.OreBlock;
+import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
 import mightydanp.industrialtech.api.common.items.ItemBlockOre;
 import mightydanp.industrialtech.api.common.items.ItemIngot;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
@@ -15,6 +16,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
 
@@ -36,7 +38,9 @@ public class MaterialHandler {
     public static List<MaterialHandler> registeredMaterials = new ArrayList<>();
     public EnumMaterialFlags[] flags;
     public List<RegistryObject<Block>>  blockOre = new ArrayList<>();
+    public List<RegistryObject<Block>>  blockSmallOre = new ArrayList<>();
     public List<RegistryObject<Item>>  itemOre = new ArrayList<>();
+    public List<RegistryObject<Item>>  itemSmallOre = new ArrayList<>();
     public List<RegistryObject<Item>>  itemIngot = new ArrayList<>();
 
     public static final List<BlockState> stone_variants = new ArrayList<BlockState>(){{
@@ -93,6 +97,16 @@ public class MaterialHandler {
                     itemOre.add(item);
                 }
             }
+            if(obj == SMALL_ORE){
+                for(BlockState stone : stone_variants){
+                    RegistryObject<Block> block = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_small_ore", () ->
+                            new SmallOreBlock(materialName + "_small_ore", AbstractBlock.Properties.create(Material.ROCK), stone));
+                    blockSmallOre.add(block);
+                    RegistryObject<Item> item = RegistryHandler.ITEMS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_small_ore", () ->
+                            new BlockItem(block.get(), new Item.Properties().group(ModItemGroups.ore_tab)));
+                    itemSmallOre.add(item);
+                }
+            }
             if(obj == INGOT){
                 RegistryObject<Item> item = RegistryHandler.ITEMS.register(materialName + INGOT.getSufixString(), () ->
                         new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), INGOT));
@@ -100,21 +114,21 @@ public class MaterialHandler {
                 ((ItemIngot)item.get()).setBoilingPoint(boilingPoint);
                 itemIngot.add(item);
             }
-            if(obj == HOTINGOT){
-                RegistryObject<Item> item = RegistryHandler.ITEMS.register(HOTINGOT.getPrefixString() + materialName + HOTINGOT.getSufixString(), () ->
-                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), HOTINGOT));
+            if(obj == HOT_INGOT){
+                RegistryObject<Item> item = RegistryHandler.ITEMS.register(HOT_INGOT.getPrefixString() + materialName + HOT_INGOT.getSufixString(), () ->
+                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), HOT_INGOT));
                 ((ItemIngot)item.get()).setMeltingPoint(meltingPoint);
                 itemIngot.add(item);
             }
-            if(obj == SOFTENEDINGOT){
-                RegistryObject<Item> item = RegistryHandler.ITEMS.register(SOFTENEDINGOT.getPrefixString() + materialName + SOFTENEDINGOT.getSufixString(), () ->
-                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), SOFTENEDINGOT));
+            if(obj == SOFTENED_INGOT){
+                RegistryObject<Item> item = RegistryHandler.ITEMS.register(SOFTENED_INGOT.getPrefixString() + materialName + SOFTENED_INGOT.getSufixString(), () ->
+                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), SOFTENED_INGOT));
                 ((ItemIngot)item.get()).setMeltingPoint(meltingPoint);
                 itemIngot.add(item);
             }
-            if(obj == HARDENEDINGOT){
-                RegistryObject<Item> item = RegistryHandler.ITEMS.register(HARDENEDINGOT.getPrefixString() + materialName + HARDENEDINGOT.getSufixString(), () ->
-                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), HARDENEDINGOT));
+            if(obj == HARDENED_INGOT){
+                RegistryObject<Item> item = RegistryHandler.ITEMS.register(HARDENED_INGOT.getPrefixString() + materialName + HARDENED_INGOT.getSufixString(), () ->
+                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), HARDENED_INGOT));
                 ((ItemIngot)item.get()).setMeltingPoint(meltingPoint);
                 itemIngot.add(item);
             }
@@ -130,16 +144,31 @@ public class MaterialHandler {
                     return ColorToInt();
                 }, block.get());
         }
+        for (RegistryObject<Block> block : blockSmallOre) {
+            RenderTypeLookup.setRenderLayer(block.get(), RenderType.getCutout());
+            Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
+                if (tintIndex != 0)
+                    return 0xFFFFFFFF;
+                return ColorToInt();
+            }, block.get());
+        }
     }
 
     public void registerColorForItem(){
-            for (RegistryObject<Item> item : itemOre) {
+        for (RegistryObject<Item> item : itemOre) {
                 Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                     if (tintIndex != 0)
                         return 0xFFFFFFFF;
                     return ColorToInt();
                 }, item.get());
             }
+        for (RegistryObject<Item> item : itemSmallOre) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex != 0)
+                    return 0xFFFFFFFF;
+                return ColorToInt();
+            }, item.get());
+        }
         for (RegistryObject<Item> item : itemIngot) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 if (tintIndex != 0)

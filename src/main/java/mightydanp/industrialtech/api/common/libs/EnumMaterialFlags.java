@@ -8,15 +8,16 @@ import net.minecraft.util.IStringSerializable;
 public enum  EnumMaterialFlags {
     DUST("", "_dust"),
     INGOT("", "_ingot"),
-    HOTINGOT("hot_", "_ingot"),
-    SOFTENEDINGOT("softened_", "_ingot"),
-    HARDENEDINGOT("hardened_", "_ingot"),
+    HOT_INGOT("hot_", "_ingot"),
+    SOFTENED_INGOT("softened_", "_ingot"),
+    HARDENED_INGOT("hardened_", "_ingot"),
     ORE("", "_ore"),
+    SMALL_ORE("", "_ore"),
     GEM("", "_ore"),
     FLUID("", "_fluid"),
     GAS("", "_gas"),
-    BLOCKMETAL("", "_block"),
-    BLOCKGEM("", "_block"),
+    BLOCK_METAL("", "_block"),
+    BLOCK_GEM("", "_block"),
     NULL("", "");
 
     private final String prefix;
