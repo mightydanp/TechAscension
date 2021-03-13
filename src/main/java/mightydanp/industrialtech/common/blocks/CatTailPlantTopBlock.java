@@ -72,7 +72,7 @@ public class CatTailPlantTopBlock extends CropsBlock implements IPlantable{
     @Override
     protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
         BlockState blockstate = worldIn.getBlockState(pos.down());
-        if (blockstate.isIn(ModBlocks.CatTailPlantBottomBlock.get())) {
+        if (blockstate.isIn(ModBlocks.cattail_plant_bottom_block.get())) {
             return true;
         }
         return false;
@@ -81,7 +81,7 @@ public class CatTailPlantTopBlock extends CropsBlock implements IPlantable{
     @Override
     public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
         BlockState blockstate = worldIn.getBlockState(pos.down());
-        if (blockstate.isIn(ModBlocks.CatTailPlantBottomBlock.get())) {
+        if (blockstate.isIn(ModBlocks.cattail_plant_bottom_block.get())) {
             return true;
         }
         return false;

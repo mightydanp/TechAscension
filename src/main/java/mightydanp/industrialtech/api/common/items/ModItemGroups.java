@@ -37,4 +37,18 @@ public class ModItemGroups {
             return new ItemStack(Items.WHEAT);
         }
     };
+
+    public static final ItemGroup gem_tab = new ItemGroup(Ref.gem_tab) {
+        @Override
+        public ItemStack createIcon() {
+            return new ItemStack(Items.DIAMOND);
+        }
+    };
+
+    public static final ItemGroup ore_products_tab = new ItemGroup(Ref.ore_products_tab) {
+        @Override
+        public ItemStack createIcon() {
+            return new ItemStack(Items.GLOWSTONE_DUST);
+        }
+    };
 }

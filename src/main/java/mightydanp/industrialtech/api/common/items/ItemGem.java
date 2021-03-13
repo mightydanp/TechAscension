@@ -1,0 +1,35 @@
+package mightydanp.industrialtech.api.common.items;
+
+import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
+import java.util.List;
+
+/**
+ * Created by MightyDanp on 3/9/2021.
+ */
+public class ItemGem extends Item {
+    public String element;
+
+    public ItemGem(Item.Properties properties, String elementIn) {
+        super(properties);
+        element = elementIn;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+        if(element != null) {
+            tooltip.add(ITextComponent.getTextComponentOrEmpty(element));
+        }
+    }
+
+    public void setElement(String elementIn) {
+        element = elementIn;
+    }
+}

@@ -14,47 +14,58 @@ import java.util.List;
  * Created by MightyDanp on 10/2/2020.
  */
 public class ItemIngot extends Item {
-    public String elementToolTip;
-    public EnumMaterialFlags ingotType;
+    public String element;
+    public int temperature;
     public int maxStackSize;
-    public int boilingPoint;
     public int meltingPoint;
+    public int boilingPoint;
 
-    public ItemIngot(Properties properties, EnumMaterialFlags ingotStateIn) {
+    public ItemIngot(Properties properties, int boilingPointIn, int meltingPointIn, String elementIn) {
         super(properties);
-        if(ingotStateIn == EnumMaterialFlags.HOT_INGOT){
+        meltingPoint = meltingPointIn;
+        boilingPoint = boilingPointIn;
+        element = elementIn;
+
+        if(temperature == boilingPoint){
             maxStackSize = 1;
         }else{
             maxStackSize = 64;
         }
         properties.maxStackSize(maxStackSize);
-        ingotType = ingotStateIn;
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(ITextComponent.getTextComponentOrEmpty(elementToolTip));
-        if(ingotType == EnumMaterialFlags.HOT_INGOT){
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("§5" + ingotType.getSufixString().split("_")[1]));
-        }else if(ingotType == EnumMaterialFlags.SOFTENED_INGOT){
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("§b" + ingotType.getSufixString().split("_")[1]));
-        }else if(ingotType == EnumMaterialFlags.HARDENED_INGOT){
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("§8" + ingotType.getSufixString().split("_")[1]));
+        tooltip.add(ITextComponent.getTextComponentOrEmpty(element));
+        if (meltingPoint != 0) {
+            tooltip.add(ITextComponent.getTextComponentOrEmpty("Melting Point of" + " §5" + meltingPoint));
         }
-        if(meltingPoint != 0){
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("Melting Point of" + ingotType.getSufixString().split("_")[1] + " §5" + meltingPoint));
+        if (boilingPoint != 0) {
+            tooltip.add(ITextComponent.getTextComponentOrEmpty("Boiling Point of" + " §5" + boilingPoint));
         }
-        if(boilingPoint != 0){
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("Boiling Point of" + ingotType.getSufixString().split("_")[1] + " §5" + boilingPoint));
+
+        if (temperature == boilingPoint) {
+            tooltip.add(ITextComponent.getTextComponentOrEmpty("§5" + "Hot"));
+        }
+
+        if(element != null) {
+            tooltip.add(ITextComponent.getTextComponentOrEmpty(element));
         }
     }
-
-    public int setBoilingPoint(int boilingPointIn){
-        return boilingPoint = boilingPointIn;
+    public void setElement(String elementIn) {
+        element = elementIn;
     }
 
-    public int setMeltingPoint(int meltingPointIn){
-        return meltingPoint = meltingPointIn;
+    public void setBoilingPoint(int boilingPointIn){
+        this.boilingPoint = boilingPointIn;
+    }
+
+    public void setMeltingPoint (int meltingPointIn){
+        meltingPoint = meltingPointIn;
+    }
+
+    public int getTemperature(){
+        return temperature;
     }
 }

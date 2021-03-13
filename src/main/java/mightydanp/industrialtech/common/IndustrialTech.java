@@ -42,6 +42,7 @@ public class IndustrialTech {
         ModMaterials.commonInit();
         ModItems.init();
         ModBlocks.init();
+        ModItems.initBlockItems();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::common_event);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client_event);
         modLoadingContext.registerConfig(ModConfig.Type.SERVER, DataConfig.SERVER_SPEC);
@@ -53,7 +54,6 @@ public class IndustrialTech {
         CommonEvent.init(event);
         OreGeneration.init();
         PlantGeneration.init();
-
     }
 
     private void client_event(final FMLClientSetupEvent event) {

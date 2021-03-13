@@ -2,9 +2,8 @@ package mightydanp.industrialtech.api.common.handler;
 
 import mightydanp.industrialtech.api.common.blocks.OreBlock;
 import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
-import mightydanp.industrialtech.api.common.items.ItemBlockOre;
-import mightydanp.industrialtech.api.common.items.ItemIngot;
-import mightydanp.industrialtech.api.common.items.ModItemGroups;
+import mightydanp.industrialtech.api.common.items.*;
+
 import static mightydanp.industrialtech.api.common.libs.EnumMaterialFlags.*;
 
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
@@ -20,6 +19,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
 
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,11 +37,11 @@ public class MaterialHandler {
     private int boilingPoint = 0;
     public static List<MaterialHandler> registeredMaterials = new ArrayList<>();
     public EnumMaterialFlags[] flags;
-    public List<RegistryObject<Block>>  blockOre = new ArrayList<>();
-    public List<RegistryObject<Block>>  blockSmallOre = new ArrayList<>();
-    public List<RegistryObject<Item>>  itemOre = new ArrayList<>();
-    public List<RegistryObject<Item>>  itemSmallOre = new ArrayList<>();
-    public List<RegistryObject<Item>>  itemIngot = new ArrayList<>();
+    public List<RegistryObject<Block>> blockOre = new ArrayList<>();
+    public List<RegistryObject<Block>> blockSmallOre = new ArrayList<>();
+    public List<RegistryObject<Item>> itemOre = new ArrayList<>();
+    public List<RegistryObject<Item>> itemSmallOre = new ArrayList<>();
+    public RegistryObject<Item> itemIngot, itemGem, itemChippedGem, itemFlawedGem, itemFlawlessGem, itemLegendaryGem, crushed_ore, purified_ore, centrifuged_ore;
 
     public static final List<BlockState> stone_variants = new ArrayList<BlockState>(){{
         add(Blocks.STONE.getDefaultState());
@@ -64,6 +64,18 @@ public class MaterialHandler {
         registeredMaterials.add(this);
     }
 
+    public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alphaIn, String elementIn, EnumMaterialFlags... flagsIn) {
+        materialName = materialNameIn;
+        this.red = redIn;
+        this.green = greenIn;
+        this.blue = blueIn;
+        this.alpha = alphaIn;
+        this.element = elementIn;
+        this.flags = flagsIn;
+        this.addFlag(flagsIn);
+        registeredMaterials.add(this);
+    }
+
     public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alpha, EnumMaterialFlags... flagsIn) {
         materialName = materialNameIn;
         this.red = redIn;
@@ -76,61 +88,64 @@ public class MaterialHandler {
     }
 
     protected void addFlag(EnumMaterialFlags... flagsIn) {
-        for(EnumMaterialFlags obj : flagsIn){
-            if(obj == ORE){
+        for(EnumMaterialFlags flag : flagsIn){
+            if(flag == ORE){
                 for(BlockState stone : stone_variants){
                     RegistryObject<Block> block = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new OreBlock(materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), stone));
                     blockOre.add(block);
                     RegistryObject<Item> item = RegistryHandler.ITEMS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new ItemBlockOre(block.get(), new Item.Properties().group(ModItemGroups.ore_tab), element));
+                            new ItemBlockOre(block.get(), new Item.Properties().group(ModItemGroups.ore_tab), boilingPoint, meltingPoint, element));
                     itemOre.add(item);
                 }
+
+
             }
-            if(obj == GEM){
+            if(flag == GEM){
                 for(BlockState stone : stone_variants){
                     RegistryObject<Block> block = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new OreBlock(materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), stone));
                     blockOre.add(block);
                     RegistryObject<Item> item = RegistryHandler.ITEMS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new ItemBlockOre(block.get(), new Item.Properties().group(ModItemGroups.ore_tab), element));
+                            new ItemBlockOre(block.get(), new Item.Properties().group(ModItemGroups.ore_tab), boilingPoint, meltingPoint, element));
                     itemOre.add(item);
                 }
+
+                itemGem = RegistryHandler.ITEMS.register( materialName + "_gem", () -> new ItemGem(new Item.Properties()
+                        .group(ModItemGroups.gem_tab), element));
+                itemChippedGem = RegistryHandler.ITEMS.register( "chipped_" + materialName + "_gem", () -> new ItemGem(new Item.Properties()
+                        .group(ModItemGroups.gem_tab), element));
+                itemFlawedGem = RegistryHandler.ITEMS.register( "flawed_" + materialName + "_gem", () -> new ItemGem(new Item.Properties()
+                        .group(ModItemGroups.gem_tab), element));
+                itemFlawlessGem = RegistryHandler.ITEMS.register( "flawless_" + materialName + "_gem", () -> new ItemGem(new Item.Properties()
+                        .group(ModItemGroups.gem_tab), element));
+                itemLegendaryGem = RegistryHandler.ITEMS.register( "legendary_" + materialName + "_gem", () -> new ItemGem(new Item.Properties()
+                        .group(ModItemGroups.gem_tab), element));
             }
-            if(obj == SMALL_ORE){
+
+            if(flag == SMALL_ORE){
                 for(BlockState stone : stone_variants){
-                    RegistryObject<Block> block = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_small_ore", () ->
-                            new SmallOreBlock(materialName + "_small_ore", AbstractBlock.Properties.create(Material.ROCK), stone));
+                    RegistryObject<Block> block = RegistryHandler.BLOCKS.register("small_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                            new SmallOreBlock("small_" + materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), stone));
                     blockSmallOre.add(block);
-                    RegistryObject<Item> item = RegistryHandler.ITEMS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_small_ore", () ->
+                    RegistryObject<Item> item = RegistryHandler.ITEMS.register("small_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new BlockItem(block.get(), new Item.Properties().group(ModItemGroups.ore_tab)));
                     itemSmallOre.add(item);
                 }
             }
-            if(obj == INGOT){
-                RegistryObject<Item> item = RegistryHandler.ITEMS.register(materialName + INGOT.getSufixString(), () ->
-                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), INGOT));
-                ((ItemIngot)item.get()).setMeltingPoint(meltingPoint);
-                ((ItemIngot)item.get()).setBoilingPoint(boilingPoint);
-                itemIngot.add(item);
+
+            if(flag == ORE || flag == GEM){
+                crushed_ore = RegistryHandler.ITEMS.register( "crushed_" + materialName + "_ore", () -> new OreProductsItem(new Item.Properties()
+                        .group(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
+                purified_ore = RegistryHandler.ITEMS.register( "purified_" + materialName + "_ore", () -> new OreProductsItem(new Item.Properties()
+                        .group(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
+                centrifuged_ore = RegistryHandler.ITEMS.register( "centrifuged_" + materialName + "_ore", () -> new OreProductsItem(new Item.Properties()
+                        .group(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
             }
-            if(obj == HOT_INGOT){
-                RegistryObject<Item> item = RegistryHandler.ITEMS.register(HOT_INGOT.getPrefixString() + materialName + HOT_INGOT.getSufixString(), () ->
-                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), HOT_INGOT));
-                ((ItemIngot)item.get()).setMeltingPoint(meltingPoint);
-                itemIngot.add(item);
-            }
-            if(obj == SOFTENED_INGOT){
-                RegistryObject<Item> item = RegistryHandler.ITEMS.register(SOFTENED_INGOT.getPrefixString() + materialName + SOFTENED_INGOT.getSufixString(), () ->
-                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), SOFTENED_INGOT));
-                ((ItemIngot)item.get()).setMeltingPoint(meltingPoint);
-                itemIngot.add(item);
-            }
-            if(obj == HARDENED_INGOT){
-                RegistryObject<Item> item = RegistryHandler.ITEMS.register(HARDENED_INGOT.getPrefixString() + materialName + HARDENED_INGOT.getSufixString(), () ->
-                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), HARDENED_INGOT));
-                ((ItemIngot)item.get()).setMeltingPoint(meltingPoint);
-                itemIngot.add(item);
+
+            if(flag == INGOT){
+                itemIngot = RegistryHandler.ITEMS.register(materialName + "_" + INGOT.name(), () ->
+                        new ItemIngot(new Item.Properties().group(ModItemGroups.item_tab), boilingPoint, meltingPoint, element));
             }
         }
     }
@@ -169,12 +184,92 @@ public class MaterialHandler {
                 return ColorToInt();
             }, item.get());
         }
-        for (RegistryObject<Item> item : itemIngot) {
+
+        if(itemIngot != null) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
-                if (tintIndex != 0)
+                if (tintIndex == 0)
+                    return ColorToInt();
+                else
                     return 0xFFFFFFFF;
-                return ColorToInt();
-            }, item.get());
+            }, itemIngot.get());
+        }
+
+        if(itemGem != null) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return ColorToInt();
+                else
+                    return 0xFFFFFFFF;
+            }, itemGem.get());
+        }
+
+        if(itemChippedGem != null) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return ColorToInt();
+                else
+                    return 0xFFFFFFFF;
+            }, itemChippedGem.get());
+        }
+
+        if(itemFlawedGem != null) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return ColorToInt();
+                else
+                    return 0xFFFFFFFF;
+            }, itemFlawedGem.get());
+        }
+
+        if(itemFlawedGem != null) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return ColorToInt();
+                else
+                    return 0xFFFFFFFF;
+            }, itemFlawedGem.get());
+        }
+
+        if(itemFlawlessGem != null) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return ColorToInt();
+                else
+                    return 0xFFFFFFFF;
+            }, itemFlawlessGem.get());
+        }
+
+        if(itemLegendaryGem != null) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return ColorToInt();
+                else
+                    return 0xFFFFFFFF;
+            }, itemLegendaryGem.get());
+        }
+        if(crushed_ore != null) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return ColorToInt();
+                else
+                    return 0xFFFFFFFF;
+            }, crushed_ore.get());
+        }
+        if(purified_ore != null) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return ColorToInt();
+                else
+                    return 0xFFFFFFFF;
+            }, purified_ore.get());
+        }
+        if(centrifuged_ore != null) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return ColorToInt();
+                else
+                    return 0xFFFFFFFF;
+            }, centrifuged_ore.get());
         }
     }
 

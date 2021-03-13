@@ -49,8 +49,8 @@ public class BlockStates extends BlockStateProvider {
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
                     String oreName = oreBlock.getRegistryName().toString().split(":")[1];
-                    String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[0];
-                    ModelFile ore = models().withExistingParent("block/small_ore/" + stoneVariant + "_small_ore", modId + ":block/ore/state/small_ore").texture("particle", "minecraft:block/" + stoneVariant).texture("sourceblock", "minecraft:block/" + stoneVariant);
+                    String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[1];
+                    ModelFile ore = models().withExistingParent("block/small_ore/" + "small_"+ stoneVariant + "_ore", modId + ":block/ore/state/small_ore").texture("particle", "minecraft:block/" + stoneVariant).texture("sourceblock", "minecraft:block/" + stoneVariant);
                     simpleBlock(oreBlock , ore);
                 }
             }

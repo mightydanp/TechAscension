@@ -1,6 +1,7 @@
 package mightydanp.industrialtech.api.common.datagen;
 
 import mightydanp.industrialtech.api.common.handler.MaterialHandler;
+import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import net.minecraft.block.Block;
@@ -19,36 +20,43 @@ public class Language extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        for (MaterialHandler material : ModMaterials.materials) {
-            StringBuilder oreName = new StringBuilder();
-            if (material.materialName.contains("_")) {
-                int i = -1;
-                for (String word : material.materialName.split("_")) {
-                    int nameLength = material.materialName.split("_").length;
-                    i++;
-                    String str = word.substring(0, 1).toUpperCase() + word.substring(1);
-                    if (i == 0) {
-                        oreName.append(str);
-                    }
-                    if (i != 0 && i < nameLength - 1) {
-                        oreName.append(str);
-                    }
-                    if(i == nameLength - 1){
-                        oreName.append(" ").append(str);
-                    }
-                }
-            } else {
-                String str = material.materialName.substring(0, 1).toUpperCase() + material.materialName.substring(1);
-                oreName.append(str);
-            }
-            for (RegistryObject<Block> block : material.blockOre) {
-                add(block.get(), oreName.toString() + " Ore");
-            }
-            for (RegistryObject<Block> block : material.blockSmallOre) {
-                add(block.get(), oreName.toString() + " Small Ore");
-            }
+        for(RegistryObject<Item> item : RegistryHandler.ITEMS.getEntries()) {
+            String itemName = translateUpperCase(item.get().getRegistryName().toString());
+            add(item.get(), itemName);
+        }
+/*
+        for(RegistryObject<Block> block : RegistryHandler.BLOCKS.getEntries()) {
+            String itemName = translateUpperCase(block.get().getRegistryName().toString());
+            add(block.get(), itemName);
         }
 
-        // add(MODID + ".test.unicode", "\u0287s\u01DD\u2534 \u01DDpo\u0254\u1D09u\u2229");}
+ */
+        for(RegistryObject<Item> blockItem : RegistryHandler.BLOCKITEMS.getEntries()) {
+            String itemName = translateUpperCase(blockItem.get().getRegistryName().toString());
+            add(blockItem.get(), itemName);
+        }
+    }
+
+    String translateUpperCase(String name){
+        StringBuilder translatedName = new StringBuilder();
+        if (name.contains("_")) {
+            int i = 0;
+            for (String word : name.split("_")) {
+                String str = word.substring(0, 1).toUpperCase() + word.substring(1);
+                if( i == 0 ){
+                    String str1 = word.split(":")[1];
+                    String str2 = str1.substring(0, 1).toUpperCase() + str1.substring(1);
+                    translatedName.append(str2);
+                    i++;
+                }else{
+                    translatedName.append(" ").append(str);
+                }
+            }
+        }else{
+            String str = name.substring(0, 1).toUpperCase() + name.substring(1);
+            translatedName.append(str.split(":")[1]);
+        }
+
+        return translatedName.toString();
     }
 }

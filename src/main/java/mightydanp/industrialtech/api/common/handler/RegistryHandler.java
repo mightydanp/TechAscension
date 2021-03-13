@@ -26,8 +26,9 @@ public class RegistryHandler {
     public static List<Block> blocks = new ArrayList<>();
     public static List<Item> items = new ArrayList<>();
     public static List<Item> features = new ArrayList<>();
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Ref.mod_id);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Ref.mod_id);
+    public static final DeferredRegister<Item> BLOCKITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
     public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Ref.mod_id);
     public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Ref.mod_id);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Ref.mod_id);
@@ -38,8 +39,9 @@ public class RegistryHandler {
     }
 
     public static void init(IEventBus IEventBus) {
-        BLOCKS.register(IEventBus);
         ITEMS.register(IEventBus);
+        BLOCKS.register(IEventBus);
+        BLOCKITEMS.register(IEventBus);
         TILES.register(IEventBus);
         CONTAINERS.register(IEventBus);
         ENTITIES.register(IEventBus);

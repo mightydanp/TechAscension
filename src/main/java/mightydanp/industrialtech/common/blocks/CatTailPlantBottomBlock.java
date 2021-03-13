@@ -21,7 +21,6 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.IPlantable;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -130,7 +129,7 @@ public class CatTailPlantBottomBlock extends CropsBlock implements ILiquidContai
                 }
             }
             if(i >= 14){
-                worldIn.setBlockState(pos.up(), ModBlocks.CatTailPlantTopBlock.get().getDefaultState());
+                worldIn.setBlockState(pos.up(), ModBlocks.cattail_plant_top_block.get().getDefaultState());
             }
     }
 
@@ -142,7 +141,7 @@ public class CatTailPlantBottomBlock extends CropsBlock implements ILiquidContai
             BlockPos blockpos = pos.down();
             for(Direction direction : Direction.Plane.HORIZONTAL) {
                 FluidState fluidstate = worldIn.getFluidState(blockpos.offset(direction));
-                if ((fluidstate.isTagged(FluidTags.WATER) && blockStateTop.isAir()) || (fluidstate.isTagged(FluidTags.WATER) && blockStateTop.getBlock() == ModBlocks.CatTailPlantTopBlock.get())) {
+                if ((fluidstate.isTagged(FluidTags.WATER) && blockStateTop.isAir()) || (fluidstate.isTagged(FluidTags.WATER) && blockStateTop.getBlock() == ModBlocks.cattail_plant_top_block.get())) {
                     return true;
                 }
             }
@@ -154,7 +153,7 @@ public class CatTailPlantBottomBlock extends CropsBlock implements ILiquidContai
     public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
         BlockState blockStateTop = worldIn.getBlockState(pos.up());
         BlockState blockstate = worldIn.getBlockState(pos.down());
-        if (blockstate == ModBlocks.CatTailPlantBottomBlock.get().getDefaultState()) {
+        if (blockstate == ModBlocks.cattail_plant_bottom_block.get().getDefaultState()) {
             return false;
         } else {
             if (blockstate.isIn(Blocks.GRASS_BLOCK) || blockstate.isIn(Blocks.DIRT) || blockstate.isIn(Blocks.COARSE_DIRT) || blockstate.isIn(Blocks.PODZOL)) {
@@ -162,7 +161,7 @@ public class CatTailPlantBottomBlock extends CropsBlock implements ILiquidContai
 
                 for(Direction direction : Direction.Plane.HORIZONTAL) {
                     FluidState fluidstate = worldIn.getFluidState(blockpos.offset(direction));
-                    if ((fluidstate.isTagged(FluidTags.WATER) && blockStateTop.isAir()) || (fluidstate.isTagged(FluidTags.WATER) && blockStateTop.getBlock() == ModBlocks.CatTailPlantTopBlock.get())) {
+                    if ((fluidstate.isTagged(FluidTags.WATER) && blockStateTop.isAir()) || (fluidstate.isTagged(FluidTags.WATER) && blockStateTop.getBlock() == ModBlocks.cattail_plant_top_block.get())) {
                         return true;
                     }
                 }

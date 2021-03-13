@@ -15,16 +15,41 @@ import java.util.Objects;
  * Created by MightyDanp on 9/26/2020.
  */
 public class ItemBlockOre extends BlockItem {
-    public String toolTip;
+    public String element;
+    public int meltingPoint;
+    public int boilingPoint;
 
-    public ItemBlockOre(Block blockIn, Properties builder, String elementIn) {
+    public ItemBlockOre(Block blockIn, Properties builder, int boilingPointIn, int meltingPointIn, String elementIn) {
         super(blockIn, builder);
-        toolTip = elementIn;
+        meltingPoint = meltingPointIn;
+        boilingPoint = boilingPointIn;
+        element = elementIn;
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(ITextComponent.getTextComponentOrEmpty(toolTip));
+        if (element != null) {
+            tooltip.add(ITextComponent.getTextComponentOrEmpty(element));
+        }
+
+        if (meltingPoint != 0) {
+            tooltip.add(ITextComponent.getTextComponentOrEmpty("Melting Point of" + " §5" + meltingPoint));
+        }
+        if (boilingPoint != 0) {
+            tooltip.add(ITextComponent.getTextComponentOrEmpty("Boiling Point of" + " §5" + boilingPoint));
+        }
+    }
+
+    public void setElement(String elementIn) {
+        element = elementIn;
+    }
+
+    public void setBoilingPoint(int boilingPointIn){
+        this.boilingPoint = boilingPointIn;
+    }
+
+    public void setMeltingPoint (int meltingPointIn){
+        meltingPoint = meltingPointIn;
     }
 }

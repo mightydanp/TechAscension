@@ -21,9 +21,6 @@ build
 eclipse
 run
 
-# generated
-src/generated/*
-
 # Files from Forge MDK
 forge*changelog.txt
 *.db

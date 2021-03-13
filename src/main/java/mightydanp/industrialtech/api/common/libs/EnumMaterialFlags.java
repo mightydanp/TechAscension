@@ -1,7 +1,5 @@
 package mightydanp.industrialtech.api.common.libs;
 
-import net.minecraft.util.IStringSerializable;
-
 /**
  * Created by MightyDanp on 9/18/2020.
  */
@@ -13,7 +11,7 @@ public enum  EnumMaterialFlags {
     HARDENED_INGOT("hardened_", "_ingot"),
     ORE("", "_ore"),
     SMALL_ORE("", "_ore"),
-    GEM("", "_ore"),
+    GEM("", "_gem"),
     FLUID("", "_fluid"),
     GAS("", "_gas"),
     BLOCK_METAL("", "_block"),

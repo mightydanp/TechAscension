@@ -1,16 +1,14 @@
 package mightydanp.industrialtech.common.items;
 
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
-import mightydanp.industrialtech.api.common.items.BasicBlockItem;
 import mightydanp.industrialtech.api.common.items.BasicItem;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
+import mightydanp.industrialtech.api.common.items.RockBlockItem;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
-import mightydanp.industrialtech.common.libs.BlockRef;
 import mightydanp.industrialtech.common.libs.ItemRef;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
-import org.lwjgl.system.CallbackI;
 
 /**
  * Created by MightyDanp on 10/10/2020.
@@ -24,14 +22,14 @@ public class ModItems {
     public static RegistryObject<Item> cattail_leaf;
     public static RegistryObject<Item> plant_fiber;
     public static RegistryObject<Item> twine;
+    public static RegistryObject<Item> rock;
+    public static RegistryObject<Item> rock_block;
     //public static RegistryObject<Item> unfired_clay_pot;
     //public static RegistryObject<Item> unfired_clay_pan;
     //public static RegistryObject<Item> fired_clay_pot;
     //public static RegistryObject<Item> fired_clay_pan;
 
     public static void init(){
-        cattail_bottom_item = RegistryHandler.ITEMS.register(ItemRef.cattail_bottom_name, () -> new BlockItem(ModBlocks.CatTailPlantBottomBlock.get(), new Item.Properties().group(ModItemGroups.item_tab).maxStackSize(64)));
-        cattail_top_item = RegistryHandler.ITEMS.register(ItemRef.cattail_top_name, () -> new BlockItem(ModBlocks.CatTailPlantTopBlock.get(), new Item.Properties().group(ModItemGroups.item_tab).maxStackSize(64)));
         //cattail_root = RegistryHandler.ITEMS.register(ItemRef.cattail_root_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
         //cattail_shoot = RegistryHandler.ITEMS.register(ItemRef.cattail_shoot_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
         //cattail_stalk = RegistryHandler.ITEMS.register(ItemRef.cattail_stalk_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
@@ -39,9 +37,17 @@ public class ModItems {
 
         plant_fiber = RegistryHandler.ITEMS.register(ItemRef.plant_fiber_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
         twine = RegistryHandler.ITEMS.register(ItemRef.twine_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
+        rock = RegistryHandler.ITEMS.register(ItemRef.rock_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
+
         //unfired_clay_pot = RegistryHandler.ITEMS.register(ItemRef.unfired_clay_pot_name, () -> new BasicItem(new Item.Properties().maxStackSize(1)));
         //unfired_clay_pan = RegistryHandler.ITEMS.register(ItemRef.unfired_clay_pan_name, () -> new BasicItem(new Item.Properties().maxStackSize(1)));
         //fired_clay_pot = RegistryHandler.ITEMS.register(ItemRef.fired_clay_pot_name, () -> new BasicItem(new Item.Properties().maxStackSize(1)));
         //fired_clay_pan = RegistryHandler.ITEMS.register(ItemRef.fired_clay_pan_name, () -> new BasicItem(new Item.Properties().maxStackSize(1)));
+    }
+
+    public static void initBlockItems(){
+        cattail_bottom_item = RegistryHandler.BLOCKITEMS.register(ItemRef.cattail_bottom_name, () -> new BlockItem(ModBlocks.cattail_plant_bottom_block.get(), new Item.Properties().group(ModItemGroups.item_tab).maxStackSize(64)));
+        cattail_top_item = RegistryHandler.BLOCKITEMS.register(ItemRef.cattail_top_name, () -> new BlockItem(ModBlocks.cattail_plant_top_block.get(), new Item.Properties().group(ModItemGroups.item_tab).maxStackSize(64)));
+        rock_block = RegistryHandler.BLOCKITEMS.register(ItemRef.rock_block_name, () -> new RockBlockItem(ModBlocks.rock_block.get(), new Item.Properties().group(ModItemGroups.item_tab).maxStackSize(64)));
     }
 }

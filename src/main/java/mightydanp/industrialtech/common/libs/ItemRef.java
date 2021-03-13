@@ -18,4 +18,6 @@ public class ItemRef {
     public static String cattail_shoot_name = "cattail_shoot";
     public static String cattail_leaf_name = "cattail_leaf";
     public static String cattail_stalk_name = "cattail_stalk";
+    public static String rock_name = "rock";
+    public static String rock_block_name = "rock_block";
 }

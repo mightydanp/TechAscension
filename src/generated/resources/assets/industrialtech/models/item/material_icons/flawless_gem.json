@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialtech:item/material_icons/flawless_gem",
+    "layer1": "industrialtech:item/material_icons/flawless_gem_overlay"
+  }
+}
