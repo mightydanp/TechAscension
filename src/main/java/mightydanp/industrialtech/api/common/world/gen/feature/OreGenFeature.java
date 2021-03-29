@@ -1,16 +1,18 @@
 package mightydanp.industrialtech.api.common.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import mightydanp.industrialtech.api.common.blocks.DenseOreBlock;
 import mightydanp.industrialtech.api.common.blocks.OreBlock;
+import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ISeedReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.Feature;
 
 import java.util.ArrayList;
@@ -19,137 +21,175 @@ import java.util.List;
 import java.util.Random;
 
 public class OreGenFeature extends Feature<OreGenFeatureConfig> {
-    public List<BlockState> oreBlocks;
-
     public OreGenFeature(Codec<OreGenFeatureConfig> p_i231976_1_) {
         super(p_i231976_1_);
     }
 
-    public boolean generate(ISeedReader p_241855_1_, ChunkGenerator p_241855_2_, Random p_241855_3_, BlockPos p_241855_4_, OreGenFeatureConfig p_241855_5_) {
-        float f = p_241855_3_.nextFloat() * (float) Math.PI;
-        float f1 = (float) p_241855_5_.size / 8.0F;
-        int i = MathHelper.ceil(((float) p_241855_5_.size / 16.0F * 2.0F + 1.0F) / 2.0F);
-        double d0 = (double) p_241855_4_.getX() + Math.sin(f) * (double) f1;
-        double d1 = (double) p_241855_4_.getX() - Math.sin(f) * (double) f1;
-        double d2 = (double) p_241855_4_.getZ() + Math.cos(f) * (double) f1;
-        double d3 = (double) p_241855_4_.getZ() - Math.cos(f) * (double) f1;
-        int j = 2;
-        double d4 = p_241855_4_.getY() + p_241855_3_.nextInt(3) - 2;
-        double d5 = p_241855_4_.getY() + p_241855_3_.nextInt(3) - 2;
-        int k = p_241855_4_.getX() - MathHelper.ceil(f1) - i;
-        int l = p_241855_4_.getY() - 2 - i;
-        int i1 = p_241855_4_.getZ() - MathHelper.ceil(f1) - i;
-        int j1 = 2 * (MathHelper.ceil(f1) + i);
-        int k1 = 2 * (2 + i);
-
-        for (int l1 = k; l1 <= k + j1; ++l1) {
-            for (int i2 = i1; i2 <= i1 + j1; ++i2) {
-                if (l <= p_241855_1_.getHeight(Heightmap.Type.OCEAN_FLOOR_WG, l1, i2)) {
-                    return this.func_207803_a(p_241855_1_, p_241855_3_, p_241855_5_, d0, d1, d2, d3, d4, d5, k, l, i1, j1, k1);
+    public static List<BlockPos> getNearbyVeins(long seed, int chunkX, int chunkZ, Random rand, int radius, OreGenFeatureConfig oreGenFeatureConfig) {
+        List<BlockPos> veins = new ArrayList<>();
+        for (int x = chunkX - radius; x <= chunkX + radius; x++) {
+            for (int z = chunkZ - radius; z <= chunkZ + radius; z++) {
+                if (getVeinAtChunk(seed, x, z, rand, oreGenFeatureConfig) != null) {
+                    veins.add(getVeinAtChunk(seed, x, z, rand, oreGenFeatureConfig));
                 }
             }
         }
-
-        return false;
+        return veins;
     }
 
-    protected boolean func_207803_a(IWorld worldIn, Random random, OreGenFeatureConfig config, double p_207803_4_, double p_207803_6_, double p_207803_8_, double p_207803_10_, double p_207803_12_, double p_207803_14_, int p_207803_16_, int p_207803_17_, int p_207803_18_, int p_207803_19_, int p_207803_20_) {
-        int i = 0;
-        BitSet bitset = new BitSet(p_207803_19_ * p_207803_20_ * p_207803_19_);
+    private static BlockPos getVeinAtChunk(long seed, int chunkX, int chunkZ, Random rand, OreGenFeatureConfig oreGenFeatureConfig) {
+        rand.setSeed(seed + chunkX * 341873128712L + chunkZ * 132897987541L);
+        //rand.setSeed(worldSeed);
+        int chance = rand.nextInt(20);
+        if (chance == 0) {
+            return new BlockPos(chunkX, 0, chunkZ);
+        }
+        return null;
+    }
+
+    public boolean generate(ISeedReader iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, OreGenFeatureConfig oreGenFeatureConfig) {
+        ChunkPos chunkPos = new ChunkPos(blockPosIn);
+        List<BlockPos> getValidVeins = getNearbyVeins(iSeedReaderIn.getSeed(), chunkPos.x, chunkPos.z, randomIn, 9, oreGenFeatureConfig);
+        randomIn.setSeed(iSeedReaderIn.getSeed() + chunkPos.x * 341873128712L + chunkPos.z * 132897987541L);
+        boolean canSpawn = false;
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
-        int j = config.size;
-        int r = config.rarity;
-        if (config.outOf > 0) {
-            int e = random.nextInt(config.outOf);
-            double[] adouble = new double[j * 4];
+        int radius = oreGenFeatureConfig.minRadius;//24;
+        int diameter = radius * 2;
+        int maxSmallOreBlocksExtend = oreGenFeatureConfig.minNumberOfSmallOreLayers;//3;
+        int x = blockPosIn.getX() + 8;
+        int y = blockPosIn.getY();
+        int z = blockPosIn.getZ() + 8;
 
-            for (int k = 0; k < j; ++k) {
-                float f = (float) k / (float) j;
-                double d0 = MathHelper.lerp(f, p_207803_4_, p_207803_6_);
-                double d2 = MathHelper.lerp(f, p_207803_12_, p_207803_14_);
-                double d4 = MathHelper.lerp(f, p_207803_8_, p_207803_10_);
-                double d6 = random.nextDouble() * (double) j / 16.0D;
-                double d7 = ((double) (MathHelper.sin((float) Math.PI * f) + 1.0F) * d6 + 1.0D) / 2.0D;
-                adouble[k * 4 + 0] = d0;
-                adouble[k * 4 + 1] = d2;
-                adouble[k * 4 + 2] = d4;
-                adouble[k * 4 + 3] = d7;
+        int minHeight = 3 + (maxSmallOreBlocksExtend * 2);
+        int maxHeight = 7 + (maxSmallOreBlocksExtend);
+
+        BlockState block = iSeedReaderIn.getBlockState(blockPosIn);
+        if(y > chunkGeneratorIn.getGroundHeight()){
+            BlockPos pos = new BlockPos(x, y, z);
+            y = oreGenFeatureConfig.minHeight + maxHeight + maxHeight/2;
+        }
+
+        BlockPos upperLeft = new BlockPos(x, maxHeight, z);
+        BlockPos upperRight = new BlockPos(x - 1, maxHeight, z);
+        BlockPos lowerLeft = new BlockPos(x, maxHeight, z - 1);
+        BlockPos lowerRight = new BlockPos(x - 1, maxHeight, z - 1);
+
+
+        int minX = x - (radius - randomIn.nextInt(radius));
+        int maxX = x + (radius - randomIn.nextInt(radius));
+        int minY = y;
+        int maxY = y + minHeight + (randomIn.nextInt(maxHeight));
+        int minZ = z - (radius - randomIn.nextInt(radius));
+        int maxZ = z + (radius - randomIn.nextInt(radius));
+
+        //class provides a iterator                                                             goes throw things to give you
+        Iterable<BlockPos> cubePos = () -> BlockPos.getAllInBox(minX, minY, minZ, maxX, maxY, maxZ).iterator();
+        List<BlockPos> veinBlockPos = new ArrayList<>();
+
+        for (BlockPos pos : cubePos) {
+            veinBlockPos.add(pos);
+        }
+
+        /*
+        //                           this equals
+        new Iterable<BlockPos>(){
+            @Override//This
+            //                         \/
+            public Iterator<BlockPos> iterator() {
+                return BlockPos.getAllInBox(0,0, 0, 16, 16, 16).iterator();
             }
+        };
 
-            for (int i3 = 0; i3 < j - 1; ++i3) {
-                if (!(adouble[i3 * 4 + 3] <= 0.0D)) {
-                    for (int k3 = i3 + 1; k3 < j; ++k3) {
-                        if (!(adouble[k3 * 4 + 3] <= 0.0D)) {
-                            double d12 = adouble[i3 * 4 + 0] - adouble[k3 * 4 + 0];
-                            double d13 = adouble[i3 * 4 + 1] - adouble[k3 * 4 + 1];
-                            double d14 = adouble[i3 * 4 + 2] - adouble[k3 * 4 + 2];
-                            double d15 = adouble[i3 * 4 + 3] - adouble[k3 * 4 + 3];
-                            if (d15 * d15 > d12 * d12 + d13 * d13 + d14 * d14) {
-                                if (d15 > 0.0D) {
-                                    adouble[k3 * 4 + 3] = -1.0D;
+        BlockPos test = null;
+
+        //everything here test will = null.
+
+        for(BlockPos block : cubePos){
+            if(test == null){
+                //sets first Blockpos but makes new instance. Makes it to where its not changeable
+                test = block.toImmutable();
+                //test will always = last blockPos of the for loop. Makes it to where it can change.
+                test = block;
+            }
+        }
+        //if the for loop is never executed then test = null
+        //everything here test will not = null.
+        */
+
+        //to-do fix the getVeinAtChunk and getNearbyVeins to make sure veins do not overlap.\\
+        int chance = randomIn.nextInt(oreGenFeatureConfig.rarity);
+        if (chance == 0) {
+            if(y > chunkGeneratorIn.getGroundHeight()){
+                y = chunkGeneratorIn.getGroundHeight() - maxHeight;
+            }
+            /*
+            iSeedReaderIn.setBlockState(upperLeft, Blocks.COAL_BLOCK.getDefaultState(), 2);
+            iSeedReaderIn.setBlockState(upperRight, Blocks.GOLD_BLOCK.getDefaultState(), 2);
+            iSeedReaderIn.setBlockState(lowerLeft, Blocks.OBSIDIAN.getDefaultState(), 2);
+            iSeedReaderIn.setBlockState(lowerRight, Blocks.DIAMOND_BLOCK.getDefaultState(), 2);
+            iSeedReaderIn.setBlockState(new BlockPos(minX, maxY, minZ), Blocks.COAL_BLOCK.getDefaultState(), 2);
+            iSeedReaderIn.setBlockState(new BlockPos(minX, maxY, maxZ), Blocks.GOLD_BLOCK.getDefaultState(), 2);
+            iSeedReaderIn.setBlockState(new BlockPos(maxX, maxY, minZ), Blocks.OBSIDIAN.getDefaultState(), 2);
+            iSeedReaderIn.setBlockState(new BlockPos(maxX, maxY, maxZ), Blocks.DIAMOND_BLOCK.getDefaultState(), 2);
+            */
+            System.out.println(x + " " + y + " " + z + " " + "/" + oreGenFeatureConfig.veinName);
+
+
+            for (BlockPos pos : cubePos) {
+                int xBlockPos = pos.getX();
+                int yBlockPos = pos.getY();
+                int zBlockPos = pos.getZ();
+
+                blockpos$mutable.setPos(xBlockPos, yBlockPos, zBlockPos);
+                BlockState replacedBlock = iSeedReaderIn.getBlockState(blockpos$mutable);
+                BlockState smallOreThatCanReplaceBlock = canSmallOreReplaceStone(oreGenFeatureConfig, replacedBlock);
+                BlockState oreThatCanReplaceBlock = canOreReplaceStone(oreGenFeatureConfig, replacedBlock);
+                BlockState denseOreThatCanReplaceBlock = canDenseOreReplaceStone(oreGenFeatureConfig, replacedBlock);
+
+                if (randomIn.nextInt(100) <= 20 && smallOreThatCanReplaceBlock != null && oreThatCanReplaceBlock != null && denseOreThatCanReplaceBlock != null) {
+                    //to-do sides have ores fix bellow to make sure that it gets fixed\\
+                    if (xBlockPos < minX + maxSmallOreBlocksExtend || yBlockPos < minY + maxSmallOreBlocksExtend || zBlockPos < minZ + maxSmallOreBlocksExtend ||
+                            xBlockPos > maxX - maxSmallOreBlocksExtend || yBlockPos > maxY - maxSmallOreBlocksExtend || zBlockPos > maxZ - maxSmallOreBlocksExtend) {
+                        for (int i = 0; i <= maxSmallOreBlocksExtend; i++) {
+                            if (xBlockPos == minX + i || yBlockPos == minY + i || zBlockPos == minZ + i ||
+                                    xBlockPos == maxX - i || yBlockPos == maxY - i || zBlockPos == maxZ - i) {
+                                if (i == 0) {
+                                    iSeedReaderIn.setBlockState(pos, smallOreThatCanReplaceBlock, 2);
                                 } else {
-                                    adouble[i3 * 4 + 3] = -1.0D;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (e <= r) {
-                for (int j3 = 0; j3 < j; ++j3) {
-                    double d11 = adouble[j3 * 4 + 3];
-                    if (!(d11 < 0.0D)) {
-                        double d1 = adouble[j3 * 4 + 0];
-                        double d3 = adouble[j3 * 4 + 1];
-                        double d5 = adouble[j3 * 4 + 2];
-                        int l = Math.max(MathHelper.floor(d1 - d11), p_207803_16_);
-                        int l3 = Math.max(MathHelper.floor(d3 - d11), p_207803_17_);
-                        int i1 = Math.max(MathHelper.floor(d5 - d11), p_207803_18_);
-                        int j1 = Math.max(MathHelper.floor(d1 + d11), l);
-                        int k1 = Math.max(MathHelper.floor(d3 + d11), l3);
-                        int l1 = Math.max(MathHelper.floor(d5 + d11), i1);
-
-                        for (int i2 = l; i2 <= j1; ++i2) {
-                            double d8 = ((double) i2 + 0.5D - d1) / d11;
-                            if (d8 * d8 < 1.0D) {
-                                for (int j2 = l3; j2 <= k1; ++j2) {
-                                    double d9 = ((double) j2 + 0.5D - d3) / d11;
-                                    if (d8 * d8 + d9 * d9 < 1.0D) {
-                                        for (int k2 = i1; k2 <= l1; ++k2) {
-                                            double d10 = ((double) k2 + 0.5D - d5) / d11;
-                                            if (d8 * d8 + d9 * d9 + d10 * d10 < 1.0D) {
-                                                int l2 = i2 - p_207803_16_ + (j2 - p_207803_17_) * p_207803_19_ + (k2 - p_207803_18_) * p_207803_19_ * p_207803_20_;
-                                                if (!bitset.get(l2)) {
-                                                    bitset.set(l2);
-                                                    blockpos$mutable.setPos(i2, j2, k2);
-                                                    Block oreRandom = config.blocks.get(random.nextInt(config.blocks.size())).getBlock();
-                                                    BlockState replacedBlock = worldIn.getBlockState(blockpos$mutable);
-                                                    BlockState oreThatCanReplaceBlock = canReplaceStone(config, replacedBlock);
-
-                                                    if (random.nextInt(100) <= 10 && oreThatCanReplaceBlock != null) {
-                                                        //if (replacedBlock == ((BlockOre) ore).replaceableBlock.getBlock())
-                                                        worldIn.setBlockState(blockpos$mutable, oreThatCanReplaceBlock, 2);
-                                                        if (random.nextInt(100) <= 1) {
-                                                            if (oreThatCanReplaceBlock.getBlock() instanceof OreBlock) {
-                                                                System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + config.veinName);
-                                                            }
-                                                        }
-                                                    }
-                                                    ++i;
-                                                }
-                                            }
-                                        }
+                                    if (randomIn.nextInt(100) <= (20 * i)) {
+                                        iSeedReaderIn.setBlockState(pos, oreThatCanReplaceBlock, 2);
+                                    } else {
+                                        iSeedReaderIn.setBlockState(pos, denseOreThatCanReplaceBlock, 2);
                                     }
                                 }
                             }
                         }
+                    } else {
+                        //To-do Dense ore is more dense in small vein, and less in bigger veins\\
+                        if (randomIn.nextInt(75) == 0) {
+                            iSeedReaderIn.setBlockState(pos, denseOreThatCanReplaceBlock, 2);
+                        } else {
+                            iSeedReaderIn.setBlockState(pos, oreThatCanReplaceBlock, 2);
+                        }
+                    }
+
+                }
+            }
+            canSpawn = true;
+        }
+/*
+            for (BlockPos pos : getValidVeins) {
+                if (pos != null) {
+                    //System.out.println(pos.getX() + " " + 120 + " " + pos.getY() + " a vein can generate");
+                    if (getVeinAtChunk(pos.getX(), pos.getY(), randomIn, oreGenFeatureConfig) != null) {
+                        //System.out.println(pos.getX() + " " + 120 + " " + pos.getY() + " true");
                     }
                 }
             }
-        }
+ */
 
-        return i > 0;
+
+        return canSpawn;
     }
 
     public List<BlockState> findReplacementOres(List<BlockState> blockStateListIn, BlockState replaceBlockStateIn) {
@@ -166,9 +206,43 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         return oresThatCanReplace;
     }
 
-    public BlockState canReplaceStone(OreGenFeatureConfig config, BlockState blockToBeReplacedIn) {
+    public BlockState canSmallOreReplaceStone(OreGenFeatureConfig config, BlockState blockToBeReplacedIn) {
         Random rand = new Random();
-        List<BlockState> originalOres = config.blocks;
+        List<BlockState> originalOres = config.smallOre;
+        List<Integer> originalOresChances = config.veinBlockChances;
+        List<BlockState> oreThatCanReplace = new ArrayList<>();
+        List<Integer> oreChancesCanReplace = new ArrayList<>();
+        BlockState blockToBePlaced = Blocks.AIR.getDefaultState();
+        if (originalOres.size() == originalOresChances.size()) {
+            for (int i = 0; i < originalOres.size(); i++) {
+                Block block = originalOres.get(i).getBlock();
+                Block replaceBlock = blockToBeReplacedIn.getBlock();
+                if (block instanceof SmallOreBlock) {
+                    if (replaceBlock == ((SmallOreBlock) block).replaceableBlock.getBlock()) {
+                        oreThatCanReplace.add(originalOres.get(i));
+                        oreChancesCanReplace.add(originalOresChances.get(i));
+                    }
+                }
+            }
+
+            if (oreThatCanReplace.size() != 0 && oreChancesCanReplace.size() != 0) {
+                while (blockToBePlaced == Blocks.AIR.getDefaultState()) {
+                    int randomInt = rand.nextInt(oreThatCanReplace.size());
+                    if (rand.nextInt(20) <= oreChancesCanReplace.get(randomInt)) {
+                        blockToBePlaced = oreThatCanReplace.get(randomInt);
+                        return blockToBePlaced;
+                    }
+                }
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public BlockState canOreReplaceStone(OreGenFeatureConfig config, BlockState blockToBeReplacedIn) {
+        Random rand = new Random();
+        List<BlockState> originalOres = config.ore;
         List<Integer> originalOresChances = config.veinBlockChances;
         List<BlockState> oreThatCanReplace = new ArrayList<>();
         List<Integer> oreChancesCanReplace = new ArrayList<>();
@@ -188,12 +262,58 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
             if (oreThatCanReplace.size() != 0 && oreChancesCanReplace.size() != 0) {
                 while (blockToBePlaced == Blocks.AIR.getDefaultState()) {
                     int randomInt = rand.nextInt(oreThatCanReplace.size());
-                    if (rand.nextInt(100) <= oreChancesCanReplace.get(randomInt)) {
+                    if (rand.nextInt(20) <= oreChancesCanReplace.get(randomInt)) {
                         blockToBePlaced = oreThatCanReplace.get(randomInt);
                         return blockToBePlaced;
                     }
                 }
             } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public BlockState canDenseOreReplaceStone(OreGenFeatureConfig config, BlockState blockToBeReplacedIn) {
+        Random rand = new Random();
+        List<BlockState> originalOres = config.denseOre;
+        List<Integer> originalOresChances = config.veinBlockChances;
+        List<BlockState> oreThatCanReplace = new ArrayList<>();
+        List<Integer> oreChancesCanReplace = new ArrayList<>();
+        BlockState blockToBePlaced = Blocks.AIR.getDefaultState();
+        if (originalOres.size() == originalOresChances.size()) {
+            for (int i = 0; i < originalOres.size(); i++) {
+                Block block = originalOres.get(i).getBlock();
+                Block replaceBlock = blockToBeReplacedIn.getBlock();
+                if (block instanceof DenseOreBlock) {
+                    if (replaceBlock == ((DenseOreBlock) block).replaceableBlock.getBlock()) {
+                        oreThatCanReplace.add(originalOres.get(i));
+                        oreChancesCanReplace.add(originalOresChances.get(i));
+                    }
+                }
+            }
+
+            if (oreThatCanReplace.size() != 0 && oreChancesCanReplace.size() != 0) {
+                while (blockToBePlaced == Blocks.AIR.getDefaultState()) {
+                    int randomInt = rand.nextInt(oreThatCanReplace.size());
+                    if (rand.nextInt(20) <= oreChancesCanReplace.get(randomInt)) {
+                        blockToBePlaced = oreThatCanReplace.get(randomInt);
+                        return blockToBePlaced;
+                    }
+                }
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public BlockPos getValidSpotToSpawn(ISeedReader iSeedReaderIn, BlockPos pos, int takeOff){
+        for(int i = pos.getY(); i > 0; i--){
+            BlockState newBlock = iSeedReaderIn.getBlockState(new BlockPos(pos.getX(), i, pos.getZ()));
+            if(newBlock == Blocks.STONE.getDefaultState() || newBlock == Blocks.ANDESITE.getDefaultState()  || newBlock == Blocks.DIORITE.getDefaultState() || newBlock == Blocks.GRANITE.getDefaultState()){
+                return new BlockPos(pos.getX(), i - takeOff, pos.getZ());
+            }else{
                 return null;
             }
         }

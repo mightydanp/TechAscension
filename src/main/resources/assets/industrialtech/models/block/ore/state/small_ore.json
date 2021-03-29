@@ -1,7 +1,7 @@
 {
     "parent": "block/block",
 	"textures": {
-		"overlay": "industrialtech:block/materialicons/ore_small"
+		"overlay": "industrialtech:block/materialicons/small_ore"
 	},
 	"elements": [
 		{

@@ -33,9 +33,11 @@ public class PlantGenerationHandler {
 
     public static final RegistryObject<Feature<RandomlyOnSurfaceGenFeatureConfig>> topBlockSurface = RegistryHandler.createFeature("top_block_surface", () -> new RandomlyOnSurfaceGenFeature(RandomlyOnSurfaceGenFeatureConfig.field_236566_a_));
 
-    protected static List<Object> topWaterGenerateList = new ArrayList<>();
+    protected static List<ConfiguredFeature<?, ?>> topWaterGenerateList = new ArrayList<>();
+    protected static List<List<Biome.Category>> topWaterBiomesGenerateList = new ArrayList<>();
 
-    protected static List<Object> topBlockSurfaceGenerateList = new ArrayList<>();
+    protected static List<ConfiguredFeature<?, ?>> topBlockSurfaceGenerateList = new ArrayList<>();
+    protected static List<List<Biome.Category>> topBlockSurfaceBiomesGenerateList = new ArrayList<>();
 
     public static void addTopCrop(String cropNameIn, BlockState TopStateIn, BlockState BellowStateIn, List<BlockState>  soilsIn, int rarityIn, boolean shallowWaterIn, boolean goesAboveWaterIn, int howTallIn, Biome.Category... biomesIn){
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
@@ -43,7 +45,7 @@ public class PlantGenerationHandler {
         ConfiguredFeature<?, ?> topWaterCropFeature = topWaterCrop.get().withConfiguration(topWaterCropConfig);
         Registry.register(registry, new ResourceLocation(Ref.mod_id, topWaterCropConfig.cropName), topWaterCropFeature);
         topWaterGenerateList.add(topWaterCropFeature);
-        topWaterGenerateList.add(biomesIn);
+        topWaterBiomesGenerateList.add(Arrays.asList(biomesIn));
     }
 
     public static void addtopBlockSurfaceGenerate(String cropNameIn, BlockState blockStateIn, List<BlockState> soilsIn, int rarityIn, Biome.Category... biomesIn){
@@ -53,47 +55,21 @@ public class PlantGenerationHandler {
         Registry.register(registry, new ResourceLocation(Ref.mod_id, topBlockSurfaceConfig.generationName), topBlockSurfaceFeature);
 
         topBlockSurfaceGenerateList.add(topBlockSurfaceFeature);
-        topBlockSurfaceGenerateList.add(biomesIn);
+        topBlockSurfaceBiomesGenerateList.add(Arrays.asList(biomesIn));
     }
 
     @SubscribeEvent(priority= EventPriority.HIGH)
     public static boolean checkAndInitBiome(BiomeLoadingEvent event) {
-        List<ConfiguredFeature<?, ?>> topWaterGenerateNewList = new ArrayList<>();
-        List<List<Biome.Category>> topWaterbiomeList = new ArrayList<>();
-
-        List<ConfiguredFeature<?, ?>> topBlockSurfaceGenerateNewList = new ArrayList<>();
-        List<List<Biome.Category>> topBlockSurfacebiomeList = new ArrayList<>();
-
-        for(int i = 0; i <= topWaterGenerateList.size() - 1; i++){
-            if(topWaterGenerateList.get(i) instanceof ConfiguredFeature<?, ?>){
-                topWaterGenerateNewList.add((ConfiguredFeature<?, ?>)topWaterGenerateList.get(i));
-            }else{
-                if(topWaterGenerateList.get(i) instanceof Biome.Category[]) {
-                    topWaterbiomeList.add(Arrays.asList((Biome.Category[]) topWaterGenerateList.get(i)));
-                }
-            }
-        }
-
-        for(int i = 0; i <= topBlockSurfaceGenerateList.size() - 1; i++){
-            if(topBlockSurfaceGenerateList.get(i) instanceof ConfiguredFeature<?, ?>){
-                topBlockSurfaceGenerateNewList.add((ConfiguredFeature<?, ?>)topBlockSurfaceGenerateList.get(i));
-            }else{
-                if(topBlockSurfaceGenerateList.get(i) instanceof Biome.Category[]) {
-                    topBlockSurfacebiomeList.add(Arrays.asList((Biome.Category[]) topBlockSurfaceGenerateList.get(i)));
-                }
-            }
-        }
-
-        for(int i = 0; i < topWaterGenerateNewList.size(); i++){
-            if(topWaterbiomeList.get(i).contains(event.getCategory())){
-                event.getGeneration().withFeature(GenerationStage.Decoration.VEGETAL_DECORATION, topWaterGenerateNewList.get(i));
+        for(int i = 0; i < topWaterGenerateList.size(); i++){
+            if(topWaterBiomesGenerateList.get(i).contains(event.getCategory())){
+                event.getGeneration().withFeature(GenerationStage.Decoration.VEGETAL_DECORATION, topWaterGenerateList.get(i));
                 return true;
             }
         }
 
-        for(int i = 0; i < topBlockSurfaceGenerateNewList.size(); i++){
-            if(topBlockSurfacebiomeList.get(i).contains(event.getCategory())){
-                event.getGeneration().withFeature(GenerationStage.Decoration.VEGETAL_DECORATION, topBlockSurfaceGenerateNewList.get(i));
+        for(int i = 0; i < topBlockSurfaceGenerateList.size(); i++){
+            if(topBlockSurfaceBiomesGenerateList.get(i).contains(event.getCategory())){
+                event.getGeneration().withFeature(GenerationStage.Decoration.VEGETAL_DECORATION, topBlockSurfaceGenerateList.get(i));
                 return true;
             }
         }

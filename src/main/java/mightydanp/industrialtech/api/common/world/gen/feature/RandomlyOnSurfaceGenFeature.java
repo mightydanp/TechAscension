@@ -46,26 +46,4 @@ public class RandomlyOnSurfaceGenFeature extends Feature<RandomlyOnSurfaceGenFea
         }
         return canSpawn;
     }
-
-    /*
-    public BlockState canReplaceStone(RandomlyOnSurfaceGenFeatureConfig config, BlockState soilBlockIn) {
-        Random rand = new Random();
-        BlockState blockToBePlaced = Blocks.AIR.getDefaultState();
-        while (blockToBePlaced == Blocks.AIR.getDefaultState()) {
-            int chance100 = rand.nextInt(100);
-            int randomPick = rand.nextInt(config.blocks.size());
-            int i = 0;
-            if (chance100 < config.chance.get(randomPick)) {
-                BlockState block = config.blocks.get(randomPick);
-                for (BlockState state : config.soilBlocks.get(i)) {
-                    if (state == soilBlockIn) {
-                        return config.blocks.get(i);
-                    }
-                }
-            }
-        }
-        return blockToBePlaced;
-    }
-
-     */
 }

@@ -1,9 +1,7 @@
 package mightydanp.industrialtech.api.common.datagen;
 
-import jdk.nashorn.internal.ir.annotations.Reference;
 import mightydanp.industrialtech.api.common.handler.MaterialHandler;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
-import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
@@ -14,6 +12,7 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.generators.*;
+import net.minecraftforge.fml.RegistryObject;
 
 /**
  * Created by MightyDanp on 3/9/2021.
@@ -27,17 +26,33 @@ public class ItemModel extends ItemModelProvider {
     protected void registerModels() {
         for(MaterialHandler material : ModMaterials.materials) {
             for(EnumMaterialFlags flag : material.flags){
+                if(flag == EnumMaterialFlags.ORE) {
+
+                }
+
                 if(flag == EnumMaterialFlags.GEM) {
-                    coloredMaterial(material.itemGem.get(), material);
-                    coloredMaterial(material.itemChippedGem.get(), material);
-                    coloredMaterial(material.itemFlawedGem.get(), material);
-                    coloredMaterial(material.itemFlawlessGem.get(), material);
-                    coloredMaterial(material.itemLegendaryGem.get(), material);
+                    coloredMaterial(material.gemItem.get(), material);
+                    coloredMaterial(material.chippedGemItem.get(), material);
+                    coloredMaterial(material.flawedGemItem.get(), material);
+                    coloredMaterial(material.flawlessGemItem.get(), material);
+                    coloredMaterial(material.legendaryGemItem.get(), material);
                 }
                 if(flag == EnumMaterialFlags.GEM || flag == EnumMaterialFlags.ORE){
-                    coloredMaterial(material.crushed_ore.get(), material);
-                    coloredMaterial(material.purified_ore.get(), material);
-                    coloredMaterial(material.centrifuged_ore.get(), material);
+                    coloredMaterial(material.crushedOreItem.get(), material);
+                    coloredMaterial(material.purifiedOreItem.get(), material);
+                    coloredMaterial(material.centrifugedOreItem.get(), material);
+                    coloredMaterial(material.dustItem.get(), material);
+                    coloredMaterial(material.smallDustItem.get(), material);
+                    coloredMaterial(material.tinyDustItem.get(), material);
+                    for(RegistryObject<Item> item: material.oreItem){
+                        generateItemBlockSuffix(item.get(), material);
+                    }
+                    for(RegistryObject<Item> item: material.denseOreItem){
+                        generatePrefixItemBlockSuffix(item.get(), material);
+                    }
+                    for(RegistryObject<Item> item: material.smallOreItem){
+                        generatePrefixItemBlockSuffix(item.get(), material);
+                    }
                 }
             }
         }
@@ -54,6 +69,46 @@ public class ItemModel extends ItemModelProvider {
     }
 
  */
+    void generatePrefixItemBlock(Item itemIn, MaterialHandler materialIn) {
+        String modId = itemIn.getRegistryName().toString().split(":")[0];
+        String itemName = itemIn.getRegistryName().toString().split(":")[1];
+        String prefix = itemName.split("_")[0]+ "_";
+        final ItemModelBuilder denseOreIconModel = factory.apply((new ResourceLocation( modId, "block/" + prefix.replace("_", "") + "/"  + materialToMaterialPrefixStoneVariant(itemIn))));
+        final ResourceLocation denseOreLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/" + itemName);
+
+        final ItemModelBuilder denseOre = factory.apply(denseOreLocation);
+        denseOre.parent(denseOreIconModel);
+
+        generatedModels.put(denseOreLocation, denseOre);
+    }
+
+    void generatePrefixItemBlockSuffix(Item itemIn, MaterialHandler materialIn) {
+        String modId = itemIn.getRegistryName().toString().split(":")[0];
+        String itemName = itemIn.getRegistryName().toString().split(":")[1];
+        String prefix = itemName.split("_")[0]+ "_";
+        String suffix = "_" + itemName.split("_")[itemName.split("_").length- 1];
+        String materialName = prefix.replace("_", "") + "_" + suffix.replace("_", "");
+        final ItemModelBuilder denseOreIconModel = factory.apply((new ResourceLocation( modId, "block/" + materialName + "/" + materialToMaterialPrefixStoneVariantSuffix(itemIn))));
+        final ResourceLocation denseOreLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/" + itemName);
+
+        final ItemModelBuilder denseOre = factory.apply(denseOreLocation);
+        denseOre.parent(denseOreIconModel);
+
+        generatedModels.put(denseOreLocation, denseOre);
+    }
+
+    void generateItemBlockSuffix(Item itemIn, MaterialHandler materialIn) {
+        String modId = itemIn.getRegistryName().toString().split(":")[0];
+        String itemName = itemIn.getRegistryName().toString().split(":")[1];
+        String suffix = "_" + itemName.split("_")[itemName.split("_").length- 1];
+        final ItemModelBuilder denseOreIconModel = factory.apply((new ResourceLocation( modId, "block/" + suffix.replace("_", "") + "/" + materialToMaterialStoneVariantSuffix(itemIn))));
+        final ResourceLocation denseOreLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/" + itemName);
+
+        final ItemModelBuilder denseOre = factory.apply(denseOreLocation);
+        denseOre.parent(denseOreIconModel);
+
+        generatedModels.put(denseOreLocation, denseOre);
+    }
 
     void coloredMaterial(Item item, MaterialHandler materialIn) {
         String modId = item.getRegistryName().toString().split(":")[0];
@@ -70,7 +125,7 @@ public class ItemModel extends ItemModelProvider {
 
         generatedModels.put(iconModel.getLocation(), iconModel);
 
-        final ResourceLocation gemLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/" + materialToString(item));
+        final ResourceLocation gemLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/" + itemName);
         final ModelFile iconParent = factory.apply(iconModel.getLocation());
         final ItemModelBuilder gem = factory.apply(gemLocation);
         gem.parent(iconParent);
@@ -176,6 +231,41 @@ public class ItemModel extends ItemModelProvider {
         }else{
             translatedName.append(name.split(":")[1]);
         }
+
+        return translatedName.toString();
+    }
+
+    String materialToMaterialPrefixStoneVariant(Item itemIn){
+        StringBuilder translatedName = new StringBuilder();
+        String itemName = itemIn.getRegistryName().toString().split(":")[1];
+        String prefix = itemName.split("_")[0]+ "_";
+        String stoneVariant = itemName.replace(prefix, "").split("_")[0];
+
+        translatedName.append(prefix).append(stoneVariant);
+
+        return translatedName.toString();
+    }
+
+    String materialToMaterialPrefixStoneVariantSuffix(Item itemIn){
+        StringBuilder translatedName = new StringBuilder();
+        String itemName = itemIn.getRegistryName().toString().split(":")[1];
+        String prefix = itemName.split("_")[0]+ "_";
+        String suffix = "_" + itemName.split("_")[itemName.split("_").length- 1];
+        String stoneVariant = itemName.replace(prefix, "").replace(suffix, "").split("_")[0];
+
+        translatedName.append(prefix).append(stoneVariant).append(suffix);
+
+        return translatedName.toString();
+    }
+
+    String materialToMaterialStoneVariantSuffix(Item itemIn){
+        StringBuilder translatedName = new StringBuilder();
+        String itemName = itemIn.getRegistryName().toString().split(":")[1];
+        //String prefix = itemName.split("_")[0]+ "_";
+        String suffix = "_" + itemName.split("_")[itemName.split("_").length- 1];
+        String stoneVariant = itemName.replace(suffix, "").split("_")[0];
+
+        translatedName.append(stoneVariant).append(suffix);
 
         return translatedName.toString();
     }

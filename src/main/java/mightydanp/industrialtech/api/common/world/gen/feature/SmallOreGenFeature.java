@@ -42,7 +42,7 @@ public class SmallOreGenFeature extends Feature<SmallOreGenFeatureConfig> {
                         iSeedReaderIn.setBlockState(blockpos$mutable, blockThatCanBePlace, 2);
                         canSpawn = true;
                         if(blockThatCanBePlace.getBlock() instanceof SmallOreBlock) {
-                            System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + ((SmallOreBlock) blockThatCanBePlace.getBlock()).name);
+                            //System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + ((SmallOreBlock) blockThatCanBePlace.getBlock()).name);
                         }
                     }
                 }

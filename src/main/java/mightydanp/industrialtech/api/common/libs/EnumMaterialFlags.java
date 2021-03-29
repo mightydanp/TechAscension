@@ -16,6 +16,9 @@ public enum  EnumMaterialFlags {
     GAS("", "_gas"),
     BLOCK_METAL("", "_block"),
     BLOCK_GEM("", "_block"),
+
+    TOOL_HEAD("TOOL_", "_HEAD"),
+
     NULL("", "");
 
     private final String prefix;

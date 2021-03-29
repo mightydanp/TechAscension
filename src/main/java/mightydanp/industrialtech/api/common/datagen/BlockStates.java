@@ -33,7 +33,7 @@ public class BlockStates extends BlockStateProvider {
     private void materialHandlerHelper(MaterialHandler material) {
         for(EnumMaterialFlags flag : material.flags){
             if(flag == EnumMaterialFlags.ORE){
-                for(RegistryObject<Block> blockRegistered : material.blockOre) {
+                for(RegistryObject<Block> blockRegistered : material.oreBlock) {
                     Block oreBlock = blockRegistered.get();
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
@@ -43,19 +43,9 @@ public class BlockStates extends BlockStateProvider {
                     simpleBlock(oreBlock , ore);
                 }
             }
-            if(flag == EnumMaterialFlags.SMALL_ORE){
-                for(RegistryObject<Block> blockRegistered : material.blockSmallOre) {
-                    Block oreBlock = blockRegistered.get();
-                    VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
-                    String modId = oreBlock.getRegistryName().toString().split(":")[0];
-                    String oreName = oreBlock.getRegistryName().toString().split(":")[1];
-                    String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[1];
-                    ModelFile ore = models().withExistingParent("block/small_ore/" + "small_"+ stoneVariant + "_ore", modId + ":block/ore/state/small_ore").texture("particle", "minecraft:block/" + stoneVariant).texture("sourceblock", "minecraft:block/" + stoneVariant);
-                    simpleBlock(oreBlock , ore);
-                }
-            }
+
             if(flag == EnumMaterialFlags.GEM){
-                for(RegistryObject<Block> blockRegistered : material.blockOre) {
+                for(RegistryObject<Block> blockRegistered : material.oreBlock) {
                     Block oreBlock = blockRegistered.get();
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
@@ -65,16 +55,30 @@ public class BlockStates extends BlockStateProvider {
                     simpleBlock(oreBlock , ore);
                 }
             }
+
+            if(flag == EnumMaterialFlags.ORE || flag == EnumMaterialFlags.GEM){
+                for(RegistryObject<Block> blockRegistered : material.smallOreBlock) {
+                    Block oreBlock = blockRegistered.get();
+                    VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
+                    String modId = oreBlock.getRegistryName().toString().split(":")[0];
+                    String oreName = oreBlock.getRegistryName().toString().split(":")[1];
+                    String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[1];
+                    ModelFile ore = models().withExistingParent("block/small_ore/" + "small_"+ stoneVariant + "_ore", modId + ":block/ore/state/small_ore").texture("particle", "minecraft:block/" + stoneVariant).texture("sourceblock", "minecraft:block/" + stoneVariant);
+                    simpleBlock(oreBlock , ore);
+                }
+
+                for(RegistryObject<Block> blockRegistered : material.denseOreBlock) {
+                    Block oreBlock = blockRegistered.get();
+                    VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
+                    String modId = oreBlock.getRegistryName().toString().split(":")[0];
+                    String oreName = oreBlock.getRegistryName().toString().split(":")[1];
+                    String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[1];
+                    ModelFile ore = models().withExistingParent("block/dense_ore/" + "dense_"+ stoneVariant + "_ore", modId + ":block/ore/state/dense_ore").texture("particle", "minecraft:block/" + stoneVariant).texture("sourceblock", "minecraft:block/" + stoneVariant);
+                    simpleBlock(oreBlock , new ConfiguredModel(ore));
+                }
+            }
         }
+
     }
 
-    public void simpleBlock(Supplier<? extends Block> blockSupplier) {
-        simpleBlock(blockSupplier.get());
-    }
-
-    @Override
-    public void simpleBlock(Block block, ModelFile model) {
-        super.simpleBlock(block, model);
-        this.simpleBlockItem(block, model);
-    }
 }

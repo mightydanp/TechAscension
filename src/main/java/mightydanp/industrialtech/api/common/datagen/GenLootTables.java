@@ -1,37 +1,31 @@
 package mightydanp.industrialtech.api.common.datagen;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 
-import mcp.MethodsReturnNonnullByDefault;
 import mightydanp.industrialtech.api.common.handler.MaterialHandler;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
-import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.datagen.ModBlockLootTables;
 import mightydanp.industrialtech.common.materials.ModMaterials;
+import net.minecraft.advancements.criterion.EnchantmentPredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.criterion.MinMaxBounds;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.LootTableProvider;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.loot.*;
+import net.minecraft.loot.conditions.MatchTool;
 import net.minecraft.loot.conditions.SurvivesExplosion;
-import net.minecraft.loot.functions.CopyName;
-import net.minecraft.loot.functions.CopyNbt;
-import net.minecraft.loot.functions.SetContents;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.RegistryObject;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Created by MightyDanp on 3/5/2021.
@@ -50,25 +44,37 @@ public class GenLootTables extends LootTableProvider {
         for (MaterialHandler material : ModMaterials.materials) {
             for (EnumMaterialFlags flag : material.flags) {
                 if (flag == EnumMaterialFlags.ORE) {
-                    for(RegistryObject<Block> blockRegistered : material.blockOre) {
+                    for(RegistryObject<Block> blockRegistered : material.oreBlock) {
                         standardDropTable(blockRegistered.get());
                     }
                 }
-                if (flag == EnumMaterialFlags.BLOCK_GEM) {
-                    for(RegistryObject<Block> blockRegistered : material.blockOre) {
+                if (flag == EnumMaterialFlags.GEM) {
+                    for(RegistryObject<Block> blockRegistered : material.oreBlock) {
                         standardDropTable(blockRegistered.get());
                     }
                 }
-                if (flag == EnumMaterialFlags.SMALL_ORE) {
-                    for(RegistryObject<Block> blockRegistered : material.blockSmallOre) {
+                if (flag == EnumMaterialFlags.ORE || flag == EnumMaterialFlags.GEM) {
+                    for(RegistryObject<Block> blockRegistered : material.smallOreBlock) {
                         standardDropTable(blockRegistered.get());
+                    }
+
+                    int i = 0;
+                    for(RegistryObject<Block> blockRegistered : material.denseOreBlock) {
+                        LootTable.Builder tableBuilder = LootTable.builder();
+                        LootPool.Builder poolBuilder = LootPool.builder();
+
+                        blockTable(blockRegistered.get(), tableBuilder.addLootPool(poolBuilder.rolls(ConstantRange.of(1))
+                                        .addEntry(AlternativesLootEntry.builder().alternatively(ItemLootEntry.builder(blockRegistered.get())
+                                                .acceptCondition(MatchTool.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.IntBound.atLeast(1)))))))
+                                        .addEntry(ItemLootEntry.builder(material.oreBlock.get(i).get()))
+                        ));
+                        i++;
                     }
                 }
             }
         }
 
         ModBlockLootTables.registerModBlockTables();
-
         return tables;
     }
 

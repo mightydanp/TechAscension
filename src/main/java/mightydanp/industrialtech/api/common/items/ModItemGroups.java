@@ -51,4 +51,11 @@ public class ModItemGroups {
             return new ItemStack(Items.GLOWSTONE_DUST);
         }
     };
+
+    public static final ItemGroup tool_parts_tab = new ItemGroup(Ref.tool_parts_tab) {
+        @Override
+        public ItemStack createIcon() {
+            return new ItemStack(Items.STICK);
+        }
+    };
 }

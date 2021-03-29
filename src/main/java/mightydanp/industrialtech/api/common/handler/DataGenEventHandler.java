@@ -1,9 +1,6 @@
 package mightydanp.industrialtech.api.common.handler;
 
-import mightydanp.industrialtech.api.common.datagen.BlockStates;
-import mightydanp.industrialtech.api.common.datagen.GenLootTables;
-import mightydanp.industrialtech.api.common.datagen.ItemModel;
-import mightydanp.industrialtech.api.common.datagen.Language;
+import mightydanp.industrialtech.api.common.datagen.*;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,10 +20,14 @@ public class DataGenEventHandler {
 
         if (event.includeClient())
         {
+            GenBlockTags blockTags = new GenBlockTags(gen, Ref.mod_id, event.getExistingFileHelper());
             gen.addProvider(new Language(gen));
             gen.addProvider(new BlockStates(gen, event.getExistingFileHelper()));
             gen.addProvider(new GenLootTables(gen));
             gen.addProvider(new ItemModel(gen, Ref.mod_id, event.getExistingFileHelper()));
+            gen.addProvider(blockTags);
+            gen.addProvider(new GenFluidTags(gen, Ref.mod_id, event.getExistingFileHelper()));
+            gen.addProvider(new GenItemTags(gen, blockTags, Ref.mod_id, event.getExistingFileHelper()));
         }
 
         if (event.includeServer()){

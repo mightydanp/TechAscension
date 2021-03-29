@@ -11,15 +11,16 @@ import net.minecraft.world.biome.Biome;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.minecraft.world.biome.Biome.Category.*;
+import static net.minecraft.world.biome.Biome.Category.MUSHROOM;
+
 /**
  * Created by MightyDanp on 2/18/2021.
  */
 public class PlantGeneration {
     public static Biome.Category[] OverWorldBiomes = {
-            Biome.Category.JUNGLE, Biome.Category.BEACH, Biome.Category.DESERT, Biome.Category.EXTREME_HILLS,
-            Biome.Category.FOREST, Biome.Category.ICY, Biome.Category.MESA, Biome.Category.MUSHROOM,
-            Biome.Category.OCEAN, Biome.Category.PLAINS, Biome.Category.RIVER, Biome.Category.SAVANNA,
-            Biome.Category.SWAMP, Biome.Category.TAIGA};
+            TAIGA, EXTREME_HILLS, JUNGLE, MESA, PLAINS, SAVANNA, ICY, BEACH, FOREST, OCEAN, DESERT, RIVER, SWAMP, MUSHROOM
+    };
 
     public static List<BlockState> cattailSoilBlocks = new ArrayList<BlockState>(){{
         add(Blocks.DIRT.getDefaultState());
@@ -34,6 +35,7 @@ public class PlantGeneration {
         add(Blocks.STONE.getDefaultState());
         add(Blocks.GRASS_BLOCK.getDefaultState());
         add(Blocks.GRAVEL.getDefaultState());
+        add(Blocks.SAND.getDefaultState());
     }};
 
     public static void init() {
