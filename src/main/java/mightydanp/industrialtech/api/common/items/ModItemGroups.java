@@ -12,50 +12,57 @@ import net.minecraft.item.Items;
 public class ModItemGroups {
     public static final ItemGroup block_tab = new ItemGroup(Ref.block_tab) {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(Blocks.STONE);
         }
     };
 
     public static final ItemGroup item_tab = new ItemGroup(Ref.item_tab) {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(Items.STICK);
         }
     };
 
     public static final ItemGroup ore_tab = new ItemGroup(Ref.ore_tab) {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(Blocks.IRON_ORE);
         }
     };
 
     public static final ItemGroup plant_tab = new ItemGroup(Ref.plant_tab) {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(Items.WHEAT);
         }
     };
 
     public static final ItemGroup gem_tab = new ItemGroup(Ref.gem_tab) {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(Items.DIAMOND);
         }
     };
 
     public static final ItemGroup ore_products_tab = new ItemGroup(Ref.ore_products_tab) {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(Items.GLOWSTONE_DUST);
         }
     };
 
     public static final ItemGroup tool_parts_tab = new ItemGroup(Ref.tool_parts_tab) {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(Items.STICK);
+        }
+    };
+
+    public static final ItemGroup tool_tab = new ItemGroup(Ref.tool_tab) {
+        @Override
+        public ItemStack makeIcon() {
+            return new ItemStack(Items.STONE_AXE);
         }
     };
 }

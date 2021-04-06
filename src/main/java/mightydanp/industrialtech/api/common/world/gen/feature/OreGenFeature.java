@@ -47,7 +47,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         return null;
     }
 
-    public boolean generate(ISeedReader iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, OreGenFeatureConfig oreGenFeatureConfig) {
+    public boolean place(ISeedReader iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, OreGenFeatureConfig oreGenFeatureConfig) {
         ChunkPos chunkPos = new ChunkPos(blockPosIn);
         List<BlockPos> getValidVeins = getNearbyVeins(iSeedReaderIn.getSeed(), chunkPos.x, chunkPos.z, randomIn, 9, oreGenFeatureConfig);
         randomIn.setSeed(iSeedReaderIn.getSeed() + chunkPos.x * 341873128712L + chunkPos.z * 132897987541L);
@@ -64,7 +64,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         int maxHeight = 7 + (maxSmallOreBlocksExtend);
 
         BlockState block = iSeedReaderIn.getBlockState(blockPosIn);
-        if(y > chunkGeneratorIn.getGroundHeight()){
+        if(y > chunkGeneratorIn.getSpawnHeight()){
             BlockPos pos = new BlockPos(x, y, z);
             y = oreGenFeatureConfig.minHeight + maxHeight + maxHeight/2;
         }
@@ -83,7 +83,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         int maxZ = z + (radius - randomIn.nextInt(radius));
 
         //class provides a iterator                                                             goes throw things to give you
-        Iterable<BlockPos> cubePos = () -> BlockPos.getAllInBox(minX, minY, minZ, maxX, maxY, maxZ).iterator();
+        Iterable<BlockPos> cubePos = () -> BlockPos.betweenClosedStream(minX, minY, minZ, maxX, maxY, maxZ).iterator();
         List<BlockPos> veinBlockPos = new ArrayList<>();
 
         for (BlockPos pos : cubePos) {
@@ -119,8 +119,8 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         //to-do fix the getVeinAtChunk and getNearbyVeins to make sure veins do not overlap.\\
         int chance = randomIn.nextInt(oreGenFeatureConfig.rarity);
         if (chance == 0) {
-            if(y > chunkGeneratorIn.getGroundHeight()){
-                y = chunkGeneratorIn.getGroundHeight() - maxHeight;
+            if(y > chunkGeneratorIn.getSpawnHeight()){
+                y = chunkGeneratorIn.getSpawnHeight() - maxHeight;
             }
             /*
             iSeedReaderIn.setBlockState(upperLeft, Blocks.COAL_BLOCK.getDefaultState(), 2);
@@ -140,7 +140,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
                 int yBlockPos = pos.getY();
                 int zBlockPos = pos.getZ();
 
-                blockpos$mutable.setPos(xBlockPos, yBlockPos, zBlockPos);
+                blockpos$mutable.set(xBlockPos, yBlockPos, zBlockPos);
                 BlockState replacedBlock = iSeedReaderIn.getBlockState(blockpos$mutable);
                 BlockState smallOreThatCanReplaceBlock = canSmallOreReplaceStone(oreGenFeatureConfig, replacedBlock);
                 BlockState oreThatCanReplaceBlock = canOreReplaceStone(oreGenFeatureConfig, replacedBlock);
@@ -154,12 +154,12 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
                             if (xBlockPos == minX + i || yBlockPos == minY + i || zBlockPos == minZ + i ||
                                     xBlockPos == maxX - i || yBlockPos == maxY - i || zBlockPos == maxZ - i) {
                                 if (i == 0) {
-                                    iSeedReaderIn.setBlockState(pos, smallOreThatCanReplaceBlock, 2);
+                                    iSeedReaderIn.setBlock(pos, smallOreThatCanReplaceBlock, 2);
                                 } else {
                                     if (randomIn.nextInt(100) <= (20 * i)) {
-                                        iSeedReaderIn.setBlockState(pos, oreThatCanReplaceBlock, 2);
+                                        iSeedReaderIn.setBlock(pos, oreThatCanReplaceBlock, 2);
                                     } else {
-                                        iSeedReaderIn.setBlockState(pos, denseOreThatCanReplaceBlock, 2);
+                                        iSeedReaderIn.setBlock(pos, denseOreThatCanReplaceBlock, 2);
                                     }
                                 }
                             }
@@ -167,9 +167,9 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
                     } else {
                         //To-do Dense ore is more dense in small vein, and less in bigger veins\\
                         if (randomIn.nextInt(75) == 0) {
-                            iSeedReaderIn.setBlockState(pos, denseOreThatCanReplaceBlock, 2);
+                            iSeedReaderIn.setBlock(pos, denseOreThatCanReplaceBlock, 2);
                         } else {
-                            iSeedReaderIn.setBlockState(pos, oreThatCanReplaceBlock, 2);
+                            iSeedReaderIn.setBlock(pos, oreThatCanReplaceBlock, 2);
                         }
                     }
 
@@ -212,7 +212,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         List<Integer> originalOresChances = config.veinBlockChances;
         List<BlockState> oreThatCanReplace = new ArrayList<>();
         List<Integer> oreChancesCanReplace = new ArrayList<>();
-        BlockState blockToBePlaced = Blocks.AIR.getDefaultState();
+        BlockState blockToBePlaced = Blocks.AIR.defaultBlockState();
         if (originalOres.size() == originalOresChances.size()) {
             for (int i = 0; i < originalOres.size(); i++) {
                 Block block = originalOres.get(i).getBlock();
@@ -226,7 +226,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
             }
 
             if (oreThatCanReplace.size() != 0 && oreChancesCanReplace.size() != 0) {
-                while (blockToBePlaced == Blocks.AIR.getDefaultState()) {
+                while (blockToBePlaced == Blocks.AIR.defaultBlockState()) {
                     int randomInt = rand.nextInt(oreThatCanReplace.size());
                     if (rand.nextInt(20) <= oreChancesCanReplace.get(randomInt)) {
                         blockToBePlaced = oreThatCanReplace.get(randomInt);
@@ -246,7 +246,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         List<Integer> originalOresChances = config.veinBlockChances;
         List<BlockState> oreThatCanReplace = new ArrayList<>();
         List<Integer> oreChancesCanReplace = new ArrayList<>();
-        BlockState blockToBePlaced = Blocks.AIR.getDefaultState();
+        BlockState blockToBePlaced = Blocks.AIR.defaultBlockState();
         if (originalOres.size() == originalOresChances.size()) {
             for (int i = 0; i < originalOres.size(); i++) {
                 Block block = originalOres.get(i).getBlock();
@@ -260,7 +260,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
             }
 
             if (oreThatCanReplace.size() != 0 && oreChancesCanReplace.size() != 0) {
-                while (blockToBePlaced == Blocks.AIR.getDefaultState()) {
+                while (blockToBePlaced == Blocks.AIR.defaultBlockState()) {
                     int randomInt = rand.nextInt(oreThatCanReplace.size());
                     if (rand.nextInt(20) <= oreChancesCanReplace.get(randomInt)) {
                         blockToBePlaced = oreThatCanReplace.get(randomInt);
@@ -280,7 +280,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
         List<Integer> originalOresChances = config.veinBlockChances;
         List<BlockState> oreThatCanReplace = new ArrayList<>();
         List<Integer> oreChancesCanReplace = new ArrayList<>();
-        BlockState blockToBePlaced = Blocks.AIR.getDefaultState();
+        BlockState blockToBePlaced = Blocks.AIR.defaultBlockState();
         if (originalOres.size() == originalOresChances.size()) {
             for (int i = 0; i < originalOres.size(); i++) {
                 Block block = originalOres.get(i).getBlock();
@@ -294,7 +294,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
             }
 
             if (oreThatCanReplace.size() != 0 && oreChancesCanReplace.size() != 0) {
-                while (blockToBePlaced == Blocks.AIR.getDefaultState()) {
+                while (blockToBePlaced == Blocks.AIR.defaultBlockState()) {
                     int randomInt = rand.nextInt(oreThatCanReplace.size());
                     if (rand.nextInt(20) <= oreChancesCanReplace.get(randomInt)) {
                         blockToBePlaced = oreThatCanReplace.get(randomInt);
@@ -311,7 +311,7 @@ public class OreGenFeature extends Feature<OreGenFeatureConfig> {
     public BlockPos getValidSpotToSpawn(ISeedReader iSeedReaderIn, BlockPos pos, int takeOff){
         for(int i = pos.getY(); i > 0; i--){
             BlockState newBlock = iSeedReaderIn.getBlockState(new BlockPos(pos.getX(), i, pos.getZ()));
-            if(newBlock == Blocks.STONE.getDefaultState() || newBlock == Blocks.ANDESITE.getDefaultState()  || newBlock == Blocks.DIORITE.getDefaultState() || newBlock == Blocks.GRANITE.getDefaultState()){
+            if(newBlock == Blocks.STONE.defaultBlockState() || newBlock == Blocks.ANDESITE.defaultBlockState()  || newBlock == Blocks.DIORITE.defaultBlockState() || newBlock == Blocks.GRANITE.defaultBlockState()){
                 return new BlockPos(pos.getX(), i - takeOff, pos.getZ());
             }else{
                 return null;

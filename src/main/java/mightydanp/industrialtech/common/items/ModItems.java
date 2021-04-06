@@ -35,9 +35,9 @@ public class ModItems {
         //cattail_stalk = RegistryHandler.ITEMS.register(ItemRef.cattail_stalk_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
         //cattail_leaf = RegistryHandler.ITEMS.register(ItemRef.cattail_leaf_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
 
-        plant_fiber = RegistryHandler.ITEMS.register(ItemRef.plant_fiber_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
-        twine = RegistryHandler.ITEMS.register(ItemRef.twine_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
-        rock = RegistryHandler.ITEMS.register(ItemRef.rock_name, () -> new BasicItem(new Item.Properties().maxStackSize(64)));
+        plant_fiber = RegistryHandler.ITEMS.register(ItemRef.plant_fiber_name, () -> new BasicItem(new Item.Properties().stacksTo(64)));
+        twine = RegistryHandler.ITEMS.register(ItemRef.twine_name, () -> new BasicItem(new Item.Properties().stacksTo(64)));
+        rock = RegistryHandler.ITEMS.register(ItemRef.rock_name, () -> new BasicItem(new Item.Properties().stacksTo(64)));
 
         //unfired_clay_pot = RegistryHandler.ITEMS.register(ItemRef.unfired_clay_pot_name, () -> new BasicItem(new Item.Properties().maxStackSize(1)));
         //unfired_clay_pan = RegistryHandler.ITEMS.register(ItemRef.unfired_clay_pan_name, () -> new BasicItem(new Item.Properties().maxStackSize(1)));
@@ -46,8 +46,8 @@ public class ModItems {
     }
 
     public static void initBlockItems(){
-        cattail_bottom_item = RegistryHandler.BLOCKITEMS.register(ItemRef.cattail_bottom_name, () -> new BlockItem(ModBlocks.cattail_plant_bottom_block.get(), new Item.Properties().group(ModItemGroups.item_tab).maxStackSize(64)));
-        cattail_top_item = RegistryHandler.BLOCKITEMS.register(ItemRef.cattail_top_name, () -> new BlockItem(ModBlocks.cattail_plant_top_block.get(), new Item.Properties().group(ModItemGroups.item_tab).maxStackSize(64)));
-        rock_block = RegistryHandler.BLOCKITEMS.register(ItemRef.rock_block_name, () -> new RockBlockItem(ModBlocks.rock_block.get(), new Item.Properties().group(ModItemGroups.item_tab).maxStackSize(64)));
+        cattail_bottom_item = RegistryHandler.BLOCKITEMS.register(ItemRef.cattail_bottom_name, () -> new BlockItem(ModBlocks.cattail_plant_bottom_block.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
+        cattail_top_item = RegistryHandler.BLOCKITEMS.register(ItemRef.cattail_top_name, () -> new BlockItem(ModBlocks.cattail_plant_top_block.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
+        rock_block = RegistryHandler.BLOCKITEMS.register(ItemRef.rock_block_name, () -> new RockBlockItem(ModBlocks.rock_block.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
     }
 }

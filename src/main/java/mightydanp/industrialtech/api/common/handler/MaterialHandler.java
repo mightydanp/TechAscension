@@ -8,6 +8,8 @@ import mightydanp.industrialtech.api.common.items.*;
 import static mightydanp.industrialtech.api.common.libs.EnumMaterialFlags.*;
 
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
+import mightydanp.industrialtech.api.common.libs.EnumMaterialTextureFlags;
+import mightydanp.industrialtech.api.common.libs.ITToolType;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,16 +30,15 @@ import java.util.List;
  */
 public class MaterialHandler {
     public final String materialName;
-    private final int red;
-    private final int green;
-    private final int blue;
-    private final int alpha;
+    private final int color;
     private int density;
     private String element;
     private int meltingPoint = 0;
     private int boilingPoint = 0;
+    public final EnumMaterialTextureFlags textureFlag;
     private int durability;
     private int speed;
+    private float damage;
     public static List<MaterialHandler> registeredMaterials = new ArrayList<>();
     public EnumMaterialFlags[] flags;
     public List<RegistryObject<Block>> oreBlock = new ArrayList<>();
@@ -51,20 +52,18 @@ public class MaterialHandler {
     public RegistryObject<Item> drillHeadItem, axeHeadItem, buzzSawHeadItem, chiselHeadItem, fileHeadItem, hammerHeadItem, hoeHeadItem, pickaxeHeadItem, arrowHeadItem, sawHeadItem, shovelHeadItem, swordHeadItem, screwdriverHeadItem;
 
     public static final List<BlockState> stone_variants = new ArrayList<BlockState>(){{
-        add(Blocks.STONE.getDefaultState());
-        add(Blocks.ANDESITE.getDefaultState());
-        add(Blocks.GRANITE.getDefaultState());
-        add(Blocks.DIORITE.getDefaultState());
+        add(Blocks.STONE.defaultBlockState());
+        add(Blocks.ANDESITE.defaultBlockState());
+        add(Blocks.GRANITE.defaultBlockState());
+        add(Blocks.DIORITE.defaultBlockState());
     }};
 
-    public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alphaIn, int densityIn, String elementIn, int meltingPointIn, int boilingPointIn, EnumMaterialFlags... flagsIn) {
+    public MaterialHandler(String materialNameIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int densityIn, String elementIn, int meltingPointIn, int boilingPointIn, EnumMaterialFlags... flagsIn) {
         materialName = materialNameIn;
-        this.red = redIn;
-        this.green = greenIn;
-        this.blue = blueIn;
-        this.alpha = alphaIn;
+        this.color = colorIn;
         this.density = densityIn;
         this.element = elementIn;
+        this.textureFlag = textureFlagIn;
         this.meltingPoint = meltingPointIn;
         this.boilingPoint = boilingPointIn;
         this.flags = flagsIn;
@@ -72,37 +71,34 @@ public class MaterialHandler {
         registeredMaterials.add(this);
     }
 
-    public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alphaIn, int densityIn, String elementIn, EnumMaterialFlags... flagsIn) {
+    public MaterialHandler(String materialNameIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int densityIn, String elementIn, EnumMaterialFlags... flagsIn) {
         materialName = materialNameIn;
-        this.red = redIn;
-        this.green = greenIn;
-        this.blue = blueIn;
-        this.alpha = alphaIn;
+        this.color = colorIn;
         this.density = densityIn;
         this.element = elementIn;
+        this.textureFlag = textureFlagIn;
         this.flags = flagsIn;
         this.addFlag(flagsIn);
         registeredMaterials.add(this);
     }
 
-    public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alphaIn, int densityIn, EnumMaterialFlags... flagsIn) {
+    public MaterialHandler(String materialNameIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int densityIn, EnumMaterialFlags... flagsIn) {
         materialName = materialNameIn;
-        this.red = redIn;
-        this.green = greenIn;
-        this.blue = blueIn;
-        this.alpha = alphaIn;
+        this.color = colorIn;
         this.density = densityIn;
+        this.textureFlag = textureFlagIn;
         this.flags = flagsIn;
         this.addFlag(flagsIn);
         registeredMaterials.add(this);
     }
 
-    public MaterialHandler(String materialNameIn, int redIn, int greenIn, int blueIn, int alphaIn, int speedIn, int durabilityIn, EnumMaterialFlags... flagsIn) {
+    public MaterialHandler(String materialNameIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int speedIn, int durabilityIn, float damageIn, EnumMaterialFlags... flagsIn) {
         materialName = materialNameIn;
-        this.red = redIn;
-        this.green = greenIn;
-        this.blue = blueIn;
-        this.alpha = alphaIn;
+        this.color = colorIn;
+        this.speed = speedIn;
+        this.durability = durabilityIn;
+        this.damage = damageIn;
+        this.textureFlag = textureFlagIn;
         this.flags = flagsIn;
         this.addFlag(flagsIn);
         registeredMaterials.add(this);
@@ -113,36 +109,36 @@ public class MaterialHandler {
             if(flag == ORE || flag == GEM){
                 for(BlockState stone : stone_variants){
                     RegistryObject<Block> oreBlockR = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new OreBlock(materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), stone));
+                            new OreBlock(materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), stone));
                     oreBlock.add(oreBlockR);
                     RegistryObject<Item> oreItemR = RegistryHandler.ITEMS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new BlockOreItem(oreBlockR.get(), new Item.Properties().group(ModItemGroups.ore_tab), boilingPoint, meltingPoint, element));
+                            new BlockOreItem(oreBlockR.get(), new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, element));
                     oreItem.add(oreItemR);
                     RegistryObject<Block> smallOreBlockR = RegistryHandler.BLOCKS.register("small_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new SmallOreBlock("small_" + materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), stone));
+                            new SmallOreBlock("small_" + materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), stone));
                     smallOreBlock.add(smallOreBlockR);
                     RegistryObject<Item> smallOreItemR = RegistryHandler.ITEMS.register("small_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new BlockItem(smallOreBlockR.get(), new Item.Properties().group(ModItemGroups.ore_tab)));
+                            new BlockItem(smallOreBlockR.get(), new Item.Properties().tab(ModItemGroups.ore_tab)));
                     smallOreItem.add(smallOreItemR);
                     RegistryObject<Block> denseOreBlockR = RegistryHandler.BLOCKS.register("dense_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new DenseOreBlock("dense_" + materialName + "_ore", AbstractBlock.Properties.create(Material.ROCK), density, stone, oreItem));
+                            new DenseOreBlock("dense_" + materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), density, stone, oreItem));
                     denseOreBlock.add(denseOreBlockR);
                     RegistryObject<Item> denseOreItemR = RegistryHandler.ITEMS.register("dense_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new BlockOreItem(denseOreBlockR.get(), new Item.Properties().group(ModItemGroups.ore_tab), boilingPoint, meltingPoint, element));
+                            new BlockOreItem(denseOreBlockR.get(), new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, element));
                     denseOreItem.add(denseOreItemR);
                 }
                 crushedOreItem = RegistryHandler.ITEMS.register( "crushed_" + materialName + "_ore", () -> new OreProductsItem(new Item.Properties()
-                        .group(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
+                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
                 purifiedOreItem = RegistryHandler.ITEMS.register( "purified_" + materialName + "_ore", () -> new OreProductsItem(new Item.Properties()
-                        .group(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
+                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
                 centrifugedOreItem = RegistryHandler.ITEMS.register( "centrifuged_" + materialName + "_ore", () -> new OreProductsItem(new Item.Properties()
-                        .group(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
+                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
                 dustItem = RegistryHandler.ITEMS.register( "" + materialName + "_dust", () -> new OreProductsItem(new Item.Properties()
-                        .group(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
+                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
                 smallDustItem = RegistryHandler.ITEMS.register( "small_" + materialName + "_dust", () -> new OreProductsItem(new Item.Properties()
-                        .group(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
+                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
                 tinyDustItem = RegistryHandler.ITEMS.register( "tiny_" + materialName + "_dust", () -> new OreProductsItem(new Item.Properties()
-                        .group(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
+                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
 
 
             }
@@ -151,27 +147,27 @@ public class MaterialHandler {
 
             if(flag == GEM){
                 gemItem = RegistryHandler.ITEMS.register( materialName + "_gem", () -> new GemItem(new Item.Properties()
-                        .group(ModItemGroups.gem_tab), element));
+                        .tab(ModItemGroups.gem_tab), element));
                 chippedGemItem = RegistryHandler.ITEMS.register( "chipped_" + materialName + "_gem", () -> new GemItem(new Item.Properties()
-                        .group(ModItemGroups.gem_tab), element));
+                        .tab(ModItemGroups.gem_tab), element));
                 flawedGemItem = RegistryHandler.ITEMS.register( "flawed_" + materialName + "_gem", () -> new GemItem(new Item.Properties()
-                        .group(ModItemGroups.gem_tab), element));
+                        .tab(ModItemGroups.gem_tab), element));
                 flawlessGemItem = RegistryHandler.ITEMS.register( "flawless_" + materialName + "_gem", () -> new GemItem(new Item.Properties()
-                        .group(ModItemGroups.gem_tab), element));
+                        .tab(ModItemGroups.gem_tab), element));
                 legendaryGemItem = RegistryHandler.ITEMS.register( "legendary_" + materialName + "_gem", () -> new GemItem(new Item.Properties()
-                        .group(ModItemGroups.gem_tab), element));
+                        .tab(ModItemGroups.gem_tab), element));
             }
 
             if(flag == INGOT){
                 ingotItem = RegistryHandler.ITEMS.register(materialName + "_" + INGOT.name(), () ->
-                        new IngotItem(new Item.Properties().group(ModItemGroups.item_tab), boilingPoint, meltingPoint, element));
+                        new IngotItem(new Item.Properties().tab(ModItemGroups.item_tab), boilingPoint, meltingPoint, element));
             }
 
             if(flag == TOOL_HEAD){
                 dullPickaxeItem = RegistryHandler.ITEMS.register("dull_" + materialName + "_pickaxe_head", () ->
-                        new DullToolHeadItem(new Item.Properties().group(ModItemGroups.tool_parts_tab)));
+                        new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
                 pickaxeHeadItem = RegistryHandler.ITEMS.register( materialName + "_pickaxe_head", () ->
-                        new ToolHeadItem(new Item.Properties().group(ModItemGroups.tool_parts_tab), boilingPoint, meltingPoint, speed, durability, element));
+                        new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), boilingPoint, meltingPoint, speed, durability, element));
             }
         }
     }
@@ -189,11 +185,11 @@ public class MaterialHandler {
     }
 
     public void setupABlockColor(RegistryObject<Block> block){
-            RenderTypeLookup.setRenderLayer(block.get(), RenderType.getCutout());
+            RenderTypeLookup.setRenderLayer(block.get(), RenderType.cutout());
             Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
                 if (tintIndex != 0)
                     return 0xFFFFFFFF;
-                return ColorToInt();
+                return color;
             }, block.get());
     }
 
@@ -202,14 +198,14 @@ public class MaterialHandler {
                 Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                     if (tintIndex != 0)
                         return 0xFFFFFFFF;
-                    return ColorToInt();
+                    return color;
                 }, item.get());
             }
         for (RegistryObject<Item> item : smallOreItem) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 if (tintIndex != 0)
                     return 0xFFFFFFFF;
-                return ColorToInt();
+                return color;
             }, item.get());
         }
 
@@ -217,7 +213,7 @@ public class MaterialHandler {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 if (tintIndex != 0)
                     return 0xFFFFFFFF;
-                return ColorToInt();
+                return color;
             }, item.get());
         }
         registerAItemColor(dustItem, 0);
@@ -239,7 +235,7 @@ public class MaterialHandler {
         if(item != null) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 if (tintIndex == layerNumberIn)
-                    return ColorToInt();
+                    return color;
                 else
                     return 0xFFFFFFFF;
             }, item.get());
@@ -250,9 +246,11 @@ public class MaterialHandler {
         return stone_variants.add(blockStateIn);
     }
 
+    /*
     public int ColorToInt() {
         int ret = 0;
         ret += red; ret = ret << 8; ret += green; ret = ret << 8; ret += blue;
         return ret;
     }
+     */
 }

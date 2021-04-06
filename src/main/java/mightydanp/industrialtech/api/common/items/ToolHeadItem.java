@@ -28,33 +28,33 @@ public class ToolHeadItem extends Item {
         speed = speedIn;
         durability = durabilityIn;
 
-        properties.maxStackSize(1);
+        properties.stacksTo(1);
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(ITextComponent.getTextComponentOrEmpty(element));
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+        tooltip.add(ITextComponent.nullToEmpty(element));
         if(speed != 0) {
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("speed:" + speed));
+            tooltip.add(ITextComponent.nullToEmpty("speed:" + speed));
         }
         if(durability != 0) {
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("max durability:" + durability));
+            tooltip.add(ITextComponent.nullToEmpty("max durability:" + durability));
         }
 
         if (meltingPoint != 0) {
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("Melting Point of" + " §5" + meltingPoint));
+            tooltip.add(ITextComponent.nullToEmpty("Melting Point of" + " §5" + meltingPoint));
         }
         if (boilingPoint != 0) {
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("Boiling Point of" + " §5" + boilingPoint));
+            tooltip.add(ITextComponent.nullToEmpty("Boiling Point of" + " §5" + boilingPoint));
         }
 
         if (temperature == boilingPoint) {
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("§5" + "Hot"));
+            tooltip.add(ITextComponent.nullToEmpty("§5" + "Hot"));
         }
 
         if(element != null) {
-            tooltip.add(ITextComponent.getTextComponentOrEmpty(element));
+            tooltip.add(ITextComponent.nullToEmpty(element));
         }
     }
     public void setElement(String elementIn) {

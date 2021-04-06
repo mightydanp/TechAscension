@@ -2,6 +2,7 @@ package mightydanp.industrialtech.common;
 
 import mightydanp.industrialtech.api.common.ISidedReference;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
+import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.server.DedicatedServerReference;
@@ -43,6 +44,7 @@ public class IndustrialTech {
         ModItems.init();
         ModBlocks.init();
         ModItems.initBlockItems();
+        new ToolHandler();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::common_event);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client_event);
         modLoadingContext.registerConfig(ModConfig.Type.SERVER, DataConfig.SERVER_SPEC);
@@ -59,6 +61,7 @@ public class IndustrialTech {
     private void client_event(final FMLClientSetupEvent event) {
         ClientEvent.init(event);
         ModMaterials.clientInit();
+        ToolHandler.clientInit();
     }
 
 }

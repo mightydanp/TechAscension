@@ -11,6 +11,8 @@ import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 /**
  * Created by MightyDanp on 9/26/2020.
  */
@@ -25,12 +27,12 @@ public class OreBlock extends Block {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState iBlockState) {
+    public BlockRenderType getRenderShape(BlockState iBlockState) {
         return BlockRenderType.MODEL;
     }
 }

@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SurfaceGenerationHandler {
-    public static final RegistryObject<Feature<RandomlyOnSurfaceGenFeatureConfig>> randomSurface = RegistryHandler.createFeature("random_surface", () -> new RandomlyOnSurfaceGenFeature(RandomlyOnSurfaceGenFeatureConfig.field_236566_a_));
+    public static final RegistryObject<Feature<RandomlyOnSurfaceGenFeatureConfig>> randomSurface = RegistryHandler.createFeature("random_surface", () -> new RandomlyOnSurfaceGenFeature(RandomlyOnSurfaceGenFeatureConfig.CODEC));
 
     protected static List<Object> topWaterGenerateList = new ArrayList<>();
 

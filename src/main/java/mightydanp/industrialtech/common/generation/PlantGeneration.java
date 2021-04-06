@@ -23,23 +23,23 @@ public class PlantGeneration {
     };
 
     public static List<BlockState> cattailSoilBlocks = new ArrayList<BlockState>(){{
-        add(Blocks.DIRT.getDefaultState());
-        add(Blocks.COARSE_DIRT.getDefaultState());
-        add(Blocks.PODZOL.getDefaultState());
+        add(Blocks.DIRT.defaultBlockState());
+        add(Blocks.COARSE_DIRT.defaultBlockState());
+        add(Blocks.PODZOL.defaultBlockState());
         }};
 
     public static List<BlockState> rockSoilBlocks = new ArrayList<BlockState>(){{
-        add(Blocks.DIRT.getDefaultState());
-        add(Blocks.COARSE_DIRT.getDefaultState());
-        add(Blocks.PODZOL.getDefaultState());
-        add(Blocks.STONE.getDefaultState());
-        add(Blocks.GRASS_BLOCK.getDefaultState());
-        add(Blocks.GRAVEL.getDefaultState());
-        add(Blocks.SAND.getDefaultState());
+        add(Blocks.DIRT.defaultBlockState());
+        add(Blocks.COARSE_DIRT.defaultBlockState());
+        add(Blocks.PODZOL.defaultBlockState());
+        add(Blocks.STONE.defaultBlockState());
+        add(Blocks.GRASS_BLOCK.defaultBlockState());
+        add(Blocks.GRAVEL.defaultBlockState());
+        add(Blocks.SAND.defaultBlockState());
     }};
 
     public static void init() {
-        PlantGenerationHandler.addTopCrop("cattail", (ModBlocks.cattail_plant_top_block.get().getDefaultState().with(CatTailPlantTopBlock.AGE, 7)), (ModBlocks.cattail_plant_bottom_block.get().getDefaultState().with(CatTailPlantBottomBlock.AGE, 15)), cattailSoilBlocks, 10, true, true, 1, Biome.Category.RIVER, Biome.Category.OCEAN, Biome.Category.BEACH);
-        PlantGenerationHandler.addtopBlockSurfaceGenerate("rocks", ModBlocks.rock_block.get().getDefaultState(), rockSoilBlocks, 50, OverWorldBiomes);
+        PlantGenerationHandler.addTopCrop("cattail", (ModBlocks.cattail_plant_top_block.get().defaultBlockState().setValue(CatTailPlantTopBlock.AGE, 7)), (ModBlocks.cattail_plant_bottom_block.get().defaultBlockState().setValue(CatTailPlantBottomBlock.AGE, 15)), cattailSoilBlocks, 10, true, true, 1, Biome.Category.RIVER, Biome.Category.OCEAN, Biome.Category.BEACH);
+        PlantGenerationHandler.addtopBlockSurfaceGenerate("rocks", ModBlocks.rock_block.get().defaultBlockState(), rockSoilBlocks, 50, OverWorldBiomes);
     }
 }

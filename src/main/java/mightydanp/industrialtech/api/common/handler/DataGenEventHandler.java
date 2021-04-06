@@ -21,10 +21,10 @@ public class DataGenEventHandler {
         if (event.includeClient())
         {
             GenBlockTags blockTags = new GenBlockTags(gen, Ref.mod_id, event.getExistingFileHelper());
-            gen.addProvider(new Language(gen));
-            gen.addProvider(new BlockStates(gen, event.getExistingFileHelper()));
+            gen.addProvider(new GenLanguage(gen));
+            gen.addProvider(new GenBlockStates(gen, event.getExistingFileHelper()));
             gen.addProvider(new GenLootTables(gen));
-            gen.addProvider(new ItemModel(gen, Ref.mod_id, event.getExistingFileHelper()));
+            gen.addProvider(new GenItemModel(gen, Ref.mod_id, event.getExistingFileHelper()));
             gen.addProvider(blockTags);
             gen.addProvider(new GenFluidTags(gen, Ref.mod_id, event.getExistingFileHelper()));
             gen.addProvider(new GenItemTags(gen, blockTags, Ref.mod_id, event.getExistingFileHelper()));

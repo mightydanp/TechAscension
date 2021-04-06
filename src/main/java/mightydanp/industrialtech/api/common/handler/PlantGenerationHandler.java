@@ -29,9 +29,9 @@ import java.util.List;
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PlantGenerationHandler {
-    public static final RegistryObject<Feature<TopWaterCropConfig>> topWaterCrop = RegistryHandler.createFeature("top_water_crop", () -> new TopWaterCrop(TopWaterCropConfig.field_236566_a_));
+    public static final RegistryObject<Feature<TopWaterCropConfig>> topWaterCrop = RegistryHandler.createFeature("top_water_crop", () -> new TopWaterCrop(TopWaterCropConfig.CODEC));
 
-    public static final RegistryObject<Feature<RandomlyOnSurfaceGenFeatureConfig>> topBlockSurface = RegistryHandler.createFeature("top_block_surface", () -> new RandomlyOnSurfaceGenFeature(RandomlyOnSurfaceGenFeatureConfig.field_236566_a_));
+    public static final RegistryObject<Feature<RandomlyOnSurfaceGenFeatureConfig>> topBlockSurface = RegistryHandler.createFeature("top_block_surface", () -> new RandomlyOnSurfaceGenFeature(RandomlyOnSurfaceGenFeatureConfig.CODEC));
 
     protected static List<ConfiguredFeature<?, ?>> topWaterGenerateList = new ArrayList<>();
     protected static List<List<Biome.Category>> topWaterBiomesGenerateList = new ArrayList<>();
@@ -42,7 +42,7 @@ public class PlantGenerationHandler {
     public static void addTopCrop(String cropNameIn, BlockState TopStateIn, BlockState BellowStateIn, List<BlockState>  soilsIn, int rarityIn, boolean shallowWaterIn, boolean goesAboveWaterIn, int howTallIn, Biome.Category... biomesIn){
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
         TopWaterCropConfig topWaterCropConfig = new TopWaterCropConfig(cropNameIn, TopStateIn, BellowStateIn, soilsIn, rarityIn, shallowWaterIn, goesAboveWaterIn, howTallIn);
-        ConfiguredFeature<?, ?> topWaterCropFeature = topWaterCrop.get().withConfiguration(topWaterCropConfig);
+        ConfiguredFeature<?, ?> topWaterCropFeature = topWaterCrop.get().configured(topWaterCropConfig);
         Registry.register(registry, new ResourceLocation(Ref.mod_id, topWaterCropConfig.cropName), topWaterCropFeature);
         topWaterGenerateList.add(topWaterCropFeature);
         topWaterBiomesGenerateList.add(Arrays.asList(biomesIn));
@@ -51,7 +51,7 @@ public class PlantGenerationHandler {
     public static void addtopBlockSurfaceGenerate(String cropNameIn, BlockState blockStateIn, List<BlockState> soilsIn, int rarityIn, Biome.Category... biomesIn){
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
         RandomlyOnSurfaceGenFeatureConfig topBlockSurfaceConfig = new RandomlyOnSurfaceGenFeatureConfig(cropNameIn, blockStateIn, soilsIn, 100, rarityIn);
-        ConfiguredFeature<?, ?> topBlockSurfaceFeature = topBlockSurface.get().withConfiguration(topBlockSurfaceConfig);
+        ConfiguredFeature<?, ?> topBlockSurfaceFeature = topBlockSurface.get().configured(topBlockSurfaceConfig);
         Registry.register(registry, new ResourceLocation(Ref.mod_id, topBlockSurfaceConfig.generationName), topBlockSurfaceFeature);
 
         topBlockSurfaceGenerateList.add(topBlockSurfaceFeature);
@@ -62,14 +62,14 @@ public class PlantGenerationHandler {
     public static boolean checkAndInitBiome(BiomeLoadingEvent event) {
         for(int i = 0; i < topWaterGenerateList.size(); i++){
             if(topWaterBiomesGenerateList.get(i).contains(event.getCategory())){
-                event.getGeneration().withFeature(GenerationStage.Decoration.VEGETAL_DECORATION, topWaterGenerateList.get(i));
+                event.getGeneration().addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, topWaterGenerateList.get(i));
                 return true;
             }
         }
 
         for(int i = 0; i < topBlockSurfaceGenerateList.size(); i++){
             if(topBlockSurfaceBiomesGenerateList.get(i).contains(event.getCategory())){
-                event.getGeneration().withFeature(GenerationStage.Decoration.VEGETAL_DECORATION, topBlockSurfaceGenerateList.get(i));
+                event.getGeneration().addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, topBlockSurfaceGenerateList.get(i));
                 return true;
             }
         }

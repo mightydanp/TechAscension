@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 
 import mightydanp.industrialtech.api.common.handler.MaterialHandler;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
-import mightydanp.industrialtech.common.datagen.ModBlockLootTables;
+import mightydanp.industrialtech.common.datagen.ModBlockLootTable;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
@@ -60,13 +60,13 @@ public class GenLootTables extends LootTableProvider {
 
                     int i = 0;
                     for(RegistryObject<Block> blockRegistered : material.denseOreBlock) {
-                        LootTable.Builder tableBuilder = LootTable.builder();
-                        LootPool.Builder poolBuilder = LootPool.builder();
+                        LootTable.Builder tableBuilder = LootTable.lootTable();
+                        LootPool.Builder poolBuilder = LootPool.lootPool();
 
-                        blockTable(blockRegistered.get(), tableBuilder.addLootPool(poolBuilder.rolls(ConstantRange.of(1))
-                                        .addEntry(AlternativesLootEntry.builder().alternatively(ItemLootEntry.builder(blockRegistered.get())
-                                                .acceptCondition(MatchTool.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.IntBound.atLeast(1)))))))
-                                        .addEntry(ItemLootEntry.builder(material.oreBlock.get(i).get()))
+                        blockTable(blockRegistered.get(), tableBuilder.withPool(poolBuilder.setRolls(ConstantRange.exactly(1))
+                                        .add(AlternativesLootEntry.alternatives().otherwise(ItemLootEntry.lootTableItem(blockRegistered.get())
+                                                .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.IntBound.atLeast(1)))))))
+                                        .add(ItemLootEntry.lootTableItem(material.oreBlock.get(i).get()))
                         ));
                         i++;
                     }
@@ -74,12 +74,12 @@ public class GenLootTables extends LootTableProvider {
             }
         }
 
-        ModBlockLootTables.registerModBlockTables();
+        ModBlockLootTable.registerModBlockTables();
         return tables;
     }
 
     public static void standardDropTable(Block b) {
-        blockTable(b, LootTable.builder().addLootPool(createStandardDrops(b)));
+        blockTable(b, LootTable.lootTable().withPool(createStandardDrops(b)));
     }
 
     public static void blockTable(Block b, LootTable.Builder lootTable) {
@@ -91,11 +91,11 @@ public class GenLootTables extends LootTableProvider {
     }
 
     public static LootPool.Builder createStandardDrops(IItemProvider itemProvider) {
-        return LootPool.builder().rolls(ConstantRange.of(1)).acceptCondition(SurvivesExplosion.builder()).addEntry(ItemLootEntry.builder(itemProvider));
+        return LootPool.lootPool().setRolls(ConstantRange.exactly(1)).when(SurvivesExplosion.survivesExplosion()).add(ItemLootEntry.lootTableItem(itemProvider));
     }
 
     @Override
     protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationtracker) {
-        map.forEach((loc, table) -> LootTableManager.validateLootTable(validationtracker, loc, table));
+        map.forEach((loc, table) -> LootTableManager.validate(validationtracker, loc, table));
     }
 }

@@ -15,6 +15,8 @@ import net.minecraft.item.ToolItem;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraft.item.Item.Properties;
+
 /**
  * Created by MightyDanp on 3/8/2021.
  */
@@ -29,7 +31,7 @@ public class HammerToolItem extends ToolItem {
     /**
      * Check whether this Item can harvest the given Block
      */
-    public boolean canHarvestBlock(BlockState blockIn) {
+    public boolean isCorrectToolForDrops(BlockState blockIn) {
         boolean canHarvest = false;
 
         if(blockIn.getBlock() instanceof OreBlock || blockIn.getBlock() instanceof SmallOreBlock){
@@ -40,6 +42,6 @@ public class HammerToolItem extends ToolItem {
     }
 
     public float getDestroySpeed(ItemStack stack, BlockState state) {
-        return state.getBlock() instanceof OreBlock || state.getBlock() instanceof SmallOreBlock ? super.getDestroySpeed(stack, state) : this.efficiency;
+        return state.getBlock() instanceof OreBlock || state.getBlock() instanceof SmallOreBlock ? super.getDestroySpeed(stack, state) : this.speed;
     }
 }

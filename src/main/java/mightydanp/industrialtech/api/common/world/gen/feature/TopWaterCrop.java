@@ -20,10 +20,10 @@ public class TopWaterCrop extends Feature<TopWaterCropConfig> {
         super(codecIn);
     }
 
-    public boolean generate(ISeedReader iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, TopWaterCropConfig topWaterCropConfigIn) {
+    public boolean place(ISeedReader iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, TopWaterCropConfig topWaterCropConfigIn) {
         boolean canSpawn = false;
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
-        int groundHeight = chunkGeneratorIn.getGroundHeight();
+        int groundHeight = chunkGeneratorIn.getSpawnHeight();
         int x = blockPosIn.getX();
         int z = blockPosIn.getZ();
         for(int xx = 0; xx <= 16 ; xx++){
@@ -31,19 +31,19 @@ public class TopWaterCrop extends Feature<TopWaterCropConfig> {
             for(int zz = 0; zz <= 16; zz++){
                 int z2 = zz + z;
                 for(int yy = 0; yy <= groundHeight; yy++){
-                    blockpos$mutable.setPos(x2, yy, z2);
-                    BlockState blockStateUp = iSeedReaderIn.getBlockState(blockpos$mutable.up());
+                    blockpos$mutable.set(x2, yy, z2);
+                    BlockState blockStateUp = iSeedReaderIn.getBlockState(blockpos$mutable.above());
                     BlockState blockStateMiddle = iSeedReaderIn.getBlockState(blockpos$mutable);
-                    BlockState blockStateDown = iSeedReaderIn.getBlockState(blockpos$mutable.down());
-                    if(blockStateMiddle == Blocks.WATER.getDefaultState() && topWaterCropConfigIn.soils.contains(blockStateDown)){
+                    BlockState blockStateDown = iSeedReaderIn.getBlockState(blockpos$mutable.below());
+                    if(blockStateMiddle == Blocks.WATER.defaultBlockState() && topWaterCropConfigIn.soils.contains(blockStateDown)){
                         if(topWaterCropConfigIn.shallowWater && blockStateUp.isAir() && topWaterCropConfigIn.goAboveWater){
                             int randomNumber = randomIn.nextInt(100);
                             if(randomNumber < topWaterCropConfigIn.rarity) {
-                                iSeedReaderIn.setBlockState(blockpos$mutable.up(topWaterCropConfigIn.howTall), topWaterCropConfigIn.topState, 2);
+                                iSeedReaderIn.setBlock(blockpos$mutable.above(topWaterCropConfigIn.howTall), topWaterCropConfigIn.topState, 2);
                                 System.out.println(x2 + " " + yy + " " + z2 + " " + "/" + "cattail");
                                 for (int i = 0; i <= topWaterCropConfigIn.howTall; i++) {
-                                    if(blockStateUp == Blocks.WATER.getDefaultState()) {
-                                        iSeedReaderIn.setBlockState(blockpos$mutable.up(i), topWaterCropConfigIn.bellowState, 2);
+                                    if(blockStateUp == Blocks.WATER.defaultBlockState()) {
+                                        iSeedReaderIn.setBlock(blockpos$mutable.above(i), topWaterCropConfigIn.bellowState, 2);
                                     }
                                 }
                                 canSpawn= true;

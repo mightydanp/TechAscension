@@ -16,7 +16,7 @@ import java.util.List;
  * Created by MightyDanp on 2/19/2021.
  */
 public class TopWaterCropConfig implements IFeatureConfig {
-    public static final Codec<TopWaterCropConfig> field_236566_a_ = RecordCodecBuilder.create((a) -> {
+    public static final Codec<TopWaterCropConfig> CODEC = RecordCodecBuilder.create((a) -> {
         return a.group(Codec.STRING.fieldOf("crop_name").forGetter(z -> {
             return z.cropName;
                 }),BlockState.CODEC.fieldOf("top_state").forGetter(z -> {
@@ -58,8 +58,8 @@ public class TopWaterCropConfig implements IFeatureConfig {
     }
 
     public static final class FillerBlockType {
-        public static final RuleTest field_241882_a = new TagMatchRuleTest(BlockTags.BASE_STONE_OVERWORLD);
-        public static final RuleTest field_241883_b = new BlockMatchRuleTest(Blocks.NETHERRACK);
-        public static final RuleTest field_241884_c = new TagMatchRuleTest(BlockTags.BASE_STONE_NETHER);
+        public static final RuleTest NATURAL_STONE = new TagMatchRuleTest(BlockTags.BASE_STONE_OVERWORLD);
+        public static final RuleTest NETHERRACK = new BlockMatchRuleTest(Blocks.NETHERRACK);
+        public static final RuleTest NETHER_ORE_REPLACEABLES = new TagMatchRuleTest(BlockTags.BASE_STONE_NETHER);
     }
 }

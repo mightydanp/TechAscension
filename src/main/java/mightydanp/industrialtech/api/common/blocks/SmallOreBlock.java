@@ -5,6 +5,8 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.StateContainer;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 /**
  * Created by MightyDanp on 3/1/2021.
  */
@@ -19,12 +21,12 @@ public class SmallOreBlock extends Block {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState iBlockState) {
+    public BlockRenderType getRenderShape(BlockState iBlockState) {
         return BlockRenderType.MODEL;
     }
 }

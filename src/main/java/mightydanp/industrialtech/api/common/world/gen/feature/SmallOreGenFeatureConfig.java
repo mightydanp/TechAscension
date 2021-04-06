@@ -16,7 +16,7 @@ import java.util.List;
  * Created by MightyDanp on 3/1/2021.
  */
 public class SmallOreGenFeatureConfig implements IFeatureConfig {
-    public static final Codec<SmallOreGenFeatureConfig> field_236566_a_ = RecordCodecBuilder.create((p_236568_0_) -> {
+    public static final Codec<SmallOreGenFeatureConfig> CODEC = RecordCodecBuilder.create((p_236568_0_) -> {
         return p_236568_0_.group(Codec.STRING.fieldOf("small_ore_name").forGetter(z -> {
                     return z.smallOreName;
                 }), BlockState.CODEC.listOf().listOf().fieldOf("small_ore_blocks").forGetter((a) -> {
@@ -42,8 +42,8 @@ public class SmallOreGenFeatureConfig implements IFeatureConfig {
     }
 
     public static final class FillerBlockType {
-        public static final RuleTest field_241882_a = new TagMatchRuleTest(BlockTags.BASE_STONE_OVERWORLD);
-        public static final RuleTest field_241883_b = new BlockMatchRuleTest(Blocks.NETHERRACK);
-        public static final RuleTest field_241884_c = new TagMatchRuleTest(BlockTags.BASE_STONE_NETHER);
+        public static final RuleTest NATURAL_STONE = new TagMatchRuleTest(BlockTags.BASE_STONE_OVERWORLD);
+        public static final RuleTest NETHERRACK = new BlockMatchRuleTest(Blocks.NETHERRACK);
+        public static final RuleTest NETHER_ORE_REPLACEABLES = new TagMatchRuleTest(BlockTags.BASE_STONE_NETHER);
     }
 }

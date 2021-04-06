@@ -27,10 +27,10 @@ import java.util.Random;
  */
 public class RockBlock extends Block {
     private static final VoxelShape[] SHAPES = new VoxelShape[]{
-            Block.makeCuboidShape(3.0D, 0.0D, 3.0D, 13.0D, 1.0D, 13.0D)};
+            Block.box(3.0D, 0.0D, 3.0D, 13.0D, 1.0D, 13.0D)};
 
     public RockBlock() {
-        super(AbstractBlock.Properties.create(Material.PLANTS).doesNotBlockMovement().hardnessAndResistance(0.0f));
+        super(AbstractBlock.Properties.of(Material.PLANT).noCollission().strength(0.0f));
     }
 
     @Override

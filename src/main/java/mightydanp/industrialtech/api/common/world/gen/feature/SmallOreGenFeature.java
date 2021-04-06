@@ -24,10 +24,10 @@ public class SmallOreGenFeature extends Feature<SmallOreGenFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ISeedReader iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, SmallOreGenFeatureConfig SmallOreGenFeatureIn) {
+    public boolean place(ISeedReader iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, SmallOreGenFeatureConfig SmallOreGenFeatureIn) {
         boolean canSpawn = false;
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
-        int groundHeight = chunkGeneratorIn.getGroundHeight();
+        int groundHeight = chunkGeneratorIn.getSpawnHeight();
         int x = blockPosIn.getX();
         int z = blockPosIn.getZ();
         for(int xx = 0; xx <= 16 ; xx++){
@@ -35,11 +35,11 @@ public class SmallOreGenFeature extends Feature<SmallOreGenFeatureConfig> {
             for(int zz = 0; zz <= 16; zz++){
                 int z2 = zz + z;
                 for(int yy = 0; yy <= groundHeight; yy++){
-                    blockpos$mutable.setPos(x2, yy, z2);
+                    blockpos$mutable.set(x2, yy, z2);
                     BlockState blockState = iSeedReaderIn.getBlockState(blockpos$mutable);
                     BlockState blockThatCanBePlace = canReplaceStone(SmallOreGenFeatureIn, blockState);
                     if(randomIn.nextInt(2000) < SmallOreGenFeatureIn.rarity) {
-                        iSeedReaderIn.setBlockState(blockpos$mutable, blockThatCanBePlace, 2);
+                        iSeedReaderIn.setBlock(blockpos$mutable, blockThatCanBePlace, 2);
                         canSpawn = true;
                         if(blockThatCanBePlace.getBlock() instanceof SmallOreBlock) {
                             //System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + ((SmallOreBlock) blockThatCanBePlace.getBlock()).name);
@@ -54,8 +54,8 @@ public class SmallOreGenFeature extends Feature<SmallOreGenFeatureConfig> {
 
     public BlockState canReplaceStone(SmallOreGenFeatureConfig config, BlockState blockToBeReplacedIn) {
         Random rand = new Random();
-        BlockState blockToBePlaced = Blocks.AIR.getDefaultState();
-        while(blockToBePlaced == Blocks.AIR.getDefaultState()) {
+        BlockState blockToBePlaced = Blocks.AIR.defaultBlockState();
+        while(blockToBePlaced == Blocks.AIR.defaultBlockState()) {
             int chance200 = rand.nextInt(100);
             int randomPick = rand.nextInt(config.blocks.size());
             if (chance200 < config.chance.get(randomPick)) {

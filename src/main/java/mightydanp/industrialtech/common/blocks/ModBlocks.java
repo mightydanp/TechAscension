@@ -23,14 +23,14 @@ public class ModBlocks {
     public static RegistryObject<Block> rock_block;
 
     public static void init() {
-        cattail_plant_bottom_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_bottom_name, () -> new CatTailPlantBottomBlock(AbstractBlock.Properties.create(Material.PLANTS).doesNotBlockMovement().tickRandomly().zeroHardnessAndResistance().sound(SoundType.PLANT)));
-        cattail_plant_top_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_top_name, () -> new CatTailPlantTopBlock(AbstractBlock.Properties.create(Material.PLANTS).doesNotBlockMovement().tickRandomly().zeroHardnessAndResistance().sound(SoundType.PLANT)));
+        cattail_plant_bottom_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_bottom_name, () -> new CatTailPlantBottomBlock(AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
+        cattail_plant_top_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_top_name, () -> new CatTailPlantTopBlock(AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
         rock_block = RegistryHandler.BLOCKS.register(BlockRef.rock_block_name, () -> new RockBlock());
     }
 
     public static void setRenderType(){
-        RenderTypeLookup.setRenderLayer(cattail_plant_bottom_block.get(), RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(cattail_plant_top_block.get(), RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(rock_block.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(cattail_plant_bottom_block.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(cattail_plant_top_block.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(rock_block.get(), RenderType.cutout());
     }
 }

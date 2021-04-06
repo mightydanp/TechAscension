@@ -14,6 +14,8 @@ import net.minecraftforge.fml.RegistryObject;
 
 import java.util.List;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 /**
  * Created by MightyDanp on 3/15/2021.
  */
@@ -31,26 +33,26 @@ public class DenseOreBlock extends Block {
         replaceableBlock = replaceableBlockIn;
         blockDrop = blockDropIn;
         density = densityIn;
-        this.setDefaultState(this.stateContainer.getBaseState().with(densityProperty, density));
+        this.registerDefaultState(this.stateDefinition.any().setValue(densityProperty, density));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(densityProperty);
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState iBlockState) {
+    public BlockRenderType getRenderShape(BlockState iBlockState) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    public void onPlayerDestroy(IWorld worldIn, BlockPos pos, BlockState state) {
-        super.onPlayerDestroy(worldIn, pos, state);
-        if(state.getBlockState().get(densityProperty) > 1) {
-            worldIn.setBlockState(pos, state.with(densityProperty, state.getBlockState().get(densityProperty) - 1), 2);
+    public void destroy(IWorld worldIn, BlockPos pos, BlockState state) {
+        super.destroy(worldIn, pos, state);
+        if(state.getBlockState().getValue(densityProperty) > 1) {
+            worldIn.setBlock(pos, state.setValue(densityProperty, state.getBlockState().getValue(densityProperty) - 1), 2);
         }else{
-            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+            worldIn.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
         }
     }
     public int getDensity(){

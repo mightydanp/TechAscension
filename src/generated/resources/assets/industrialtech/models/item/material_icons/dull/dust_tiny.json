@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialtech:item/material_icons/dull/dust_tiny",
+    "layer1": "industrialtech:item/material_icons/dull/dust_tiny_overlay"
+  }
+}

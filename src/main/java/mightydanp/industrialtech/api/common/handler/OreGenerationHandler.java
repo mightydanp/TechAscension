@@ -35,8 +35,8 @@ import java.util.function.Supplier;
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class OreGenerationHandler {
 
-    public static final RegistryObject<Feature<OreGenFeatureConfig>> ore_vein = RegistryHandler.createFeature("ore_vein", () -> new OreGenFeature(OreGenFeatureConfig.field_236566_a_));
-    public static final RegistryObject<Feature<SmallOreGenFeatureConfig>> small_ore = RegistryHandler.createFeature("small_ore", () -> new SmallOreGenFeature(SmallOreGenFeatureConfig.field_236566_a_));
+    public static final RegistryObject<Feature<OreGenFeatureConfig>> ore_vein = RegistryHandler.createFeature("ore_vein", () -> new OreGenFeature(OreGenFeatureConfig.CODEC));
+    public static final RegistryObject<Feature<SmallOreGenFeatureConfig>> small_ore = RegistryHandler.createFeature("small_ore", () -> new SmallOreGenFeature(SmallOreGenFeatureConfig.CODEC));
 
     protected static List<ConfiguredFeature<?, ?>> smallOreGenList = new ArrayList<>();
     protected static List<List<Biome.Category>> smallOreBiomesList = new ArrayList<>();
@@ -70,20 +70,20 @@ public class OreGenerationHandler {
 
             if(obj instanceof MaterialHandler) {
                 for (RegistryObject<Block> ore : ((MaterialHandler) obj).smallOreBlock) {
-                    veinSmallOreBlocks.add(ore.get().getDefaultState());
+                    veinSmallOreBlocks.add(ore.get().defaultBlockState());
                 }
                 for (RegistryObject<Block> ore : ((MaterialHandler) obj).oreBlock) {
-                    veinOreBlocks.add(ore.get().getDefaultState());
+                    veinOreBlocks.add(ore.get().defaultBlockState());
                 }
                 for (RegistryObject<Block> ore : ((MaterialHandler) obj).denseOreBlock) {
-                    veinDenseOreBlocks.add(ore.get().getDefaultState());
+                    veinDenseOreBlocks.add(ore.get().defaultBlockState());
                 }
             }
         }
 
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
         OreGenFeatureConfig oreGenFeatureConfig = new OreGenFeatureConfig(veinNameIn, veinSmallOreBlocks, veinOreBlocks, veinDenseOreBlocks, intList, intBoolean, minRadiusIn, rarityIn, numberOfSmallOreLayers, minHeightIn, maxHeightIn);
-        ConfiguredFeature<?, ?> oreVeinFeature = ore_vein.get().withConfiguration(oreGenFeatureConfig).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(minHeightIn, 0, maxHeightIn)));
+        ConfiguredFeature<?, ?> oreVeinFeature = ore_vein.get().configured(oreGenFeatureConfig).decorated(Placement.RANGE.configured(new TopSolidRangeConfig(minHeightIn, 0, maxHeightIn)));
         Registry.register(registry, new ResourceLocation(Ref.mod_id, oreGenFeatureConfig.veinName), oreVeinFeature);
 
         if(rarityFlagIn == EnumVeinRarityFlags.common){
@@ -112,7 +112,7 @@ public class OreGenerationHandler {
             if(obj instanceof MaterialHandler) {
                 List<BlockState> tempList2 = new ArrayList<>();
                 for (RegistryObject<Block> ore : ((MaterialHandler) obj).smallOreBlock) {
-                    tempList2.add(ore.get().getDefaultState());
+                    tempList2.add(ore.get().defaultBlockState());
                 }
                 smallOreBlocks.add(tempList2);
             }
@@ -120,7 +120,7 @@ public class OreGenerationHandler {
 
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
         SmallOreGenFeatureConfig smallOreGenFeatureConfig = new SmallOreGenFeatureConfig(SmallOreNameIn, smallOreBlocks, intList, rarityIn);
-        ConfiguredFeature<?, ?> oreVeinFeature = small_ore.get().withConfiguration(smallOreGenFeatureConfig).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(minHeightIn, 0, maxHeightIn)));
+        ConfiguredFeature<?, ?> oreVeinFeature = small_ore.get().configured(smallOreGenFeatureConfig).decorated(Placement.RANGE.configured(new TopSolidRangeConfig(minHeightIn, 0, maxHeightIn)));
         Registry.register(registry, new ResourceLocation(Ref.mod_id, smallOreGenFeatureConfig.smallOreName), oreVeinFeature);
 
         smallOreGenList.add(oreVeinFeature);
@@ -137,7 +137,7 @@ public class OreGenerationHandler {
             int i = rand.nextInt(commonVeinList.size());
             if (biomeCheck(commonVeinBiomesList.get(i), event)) {
                 canSpawnCrop = true;
-                event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, commonVeinList.get(i));
+                event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, commonVeinList.get(i));
             }
 
         }
@@ -145,7 +145,7 @@ public class OreGenerationHandler {
             int i = rand.nextInt(uncommonVeinList.size());
             if (biomeCheck(uncommonVeinBiomesList.get(i), event)) {
                 canSpawnCrop = true;
-                event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, uncommonVeinList.get(i));
+                event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, uncommonVeinList.get(i));
             }
 
         }
@@ -153,14 +153,14 @@ public class OreGenerationHandler {
             int i = rand.nextInt(rareVeinList.size());
             if (biomeCheck(rareVeinBiomesList.get(i), event)) {
                 canSpawnCrop = true;
-                event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, rareVeinList.get(i));
+                event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, rareVeinList.get(i));
             }
         }
 
         for (int i = 0; i < smallOreGenList.size(); i++) {
             if (biomeCheck(smallOreBiomesList.get(i), event)) {
                 canSpawnCrop = true;
-                event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, smallOreGenList.get(i));
+                event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, smallOreGenList.get(i));
             }
         }
         return canSpawnCrop;
@@ -182,7 +182,7 @@ public class OreGenerationHandler {
     public static void overrideFeatures(Biome biome){
         List<ConfiguredFeature> features = new ArrayList<ConfiguredFeature>();
 
-        for (List<Supplier<ConfiguredFeature<?, ?>>> f : biome.getGenerationSettings().getFeatures()) {
+        for (List<Supplier<ConfiguredFeature<?, ?>>> f : biome.getGenerationSettings().features()) {
             for ( Supplier<ConfiguredFeature<?, ?>> d : f) {
                 if(d.get().feature instanceof OreFeature) {
                     if (((OreFeatureConfig) ((DecoratedFeatureConfig) d).feature.get().config).state.getBlock() == Blocks.COAL_ORE) {
@@ -209,6 +209,6 @@ public class OreGenerationHandler {
                 }
             }
         }
-        biome.getGenerationSettings().getFeatures().removeAll(features);
+        biome.getGenerationSettings().features().removeAll(features);
     }
 }

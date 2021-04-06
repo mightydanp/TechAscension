@@ -22,10 +22,10 @@ public class GemItem extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if(element != null) {
-            tooltip.add(ITextComponent.getTextComponentOrEmpty(element));
+            tooltip.add(ITextComponent.nullToEmpty(element));
         }
     }
 

@@ -17,7 +17,7 @@ public enum EnumGrate implements IStringSerializable
         return this.name;
     }
     @Override
-    public String getString()
+    public String getSerializedName()
     {
         return this.name;
     }

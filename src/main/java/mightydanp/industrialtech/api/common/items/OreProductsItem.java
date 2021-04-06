@@ -10,6 +10,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.item.Item.Properties;
+
 /**
  * Created by MightyDanp on 3/12/2021.
  */
@@ -26,17 +28,17 @@ public class OreProductsItem extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if (element != null) {
-            tooltip.add(ITextComponent.getTextComponentOrEmpty(element));
+            tooltip.add(ITextComponent.nullToEmpty(element));
         }
 
         if (meltingPoint != 0) {
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("Melting Point of" + " §5" + meltingPoint));
+            tooltip.add(ITextComponent.nullToEmpty("Melting Point of" + " §5" + meltingPoint));
         }
         if (boilingPoint != 0) {
-            tooltip.add(ITextComponent.getTextComponentOrEmpty("Boiling Point of" + " §5" + boilingPoint));
+            tooltip.add(ITextComponent.nullToEmpty("Boiling Point of" + " §5" + boilingPoint));
         }
     }
 
