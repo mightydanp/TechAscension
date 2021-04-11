@@ -24,6 +24,5 @@ public class DataGenEventHandler {
         gen.addProvider(new GenItemModel(gen, Ref.mod_id, event.getExistingFileHelper())); gen.addProvider(blockTags);
         gen.addProvider(new GenFluidTags(gen, Ref.mod_id, event.getExistingFileHelper()));
         gen.addProvider(new GenItemTags(gen, blockTags, Ref.mod_id, event.getExistingFileHelper()));
-
     }
 }
