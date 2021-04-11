@@ -17,12 +17,19 @@ public class DataGenEventHandler {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         DataGenerator gen = event.getGenerator();
-        GenBlockTags blockTags = new GenBlockTags(gen, Ref.mod_id, event.getExistingFileHelper());
 
-        gen.addProvider(new GenLanguage(gen));
-        gen.addProvider(new GenLootTables(gen));
-        gen.addProvider(new GenItemModel(gen, Ref.mod_id, event.getExistingFileHelper())); gen.addProvider(blockTags);
-        gen.addProvider(new GenFluidTags(gen, Ref.mod_id, event.getExistingFileHelper()));
-        gen.addProvider(new GenItemTags(gen, blockTags, Ref.mod_id, event.getExistingFileHelper()));
+        if (event.includeClient()){
+            GenBlockTags blockTags = new GenBlockTags(gen, Ref.mod_id, event.getExistingFileHelper());
+            gen.addProvider(new GenLanguage(gen));
+            gen.addProvider(new GenBlockStates(gen, event.getExistingFileHelper()));
+            gen.addProvider(new GenLootTables(gen));
+            gen.addProvider(new GenItemModel(gen, Ref.mod_id, event.getExistingFileHelper()));
+            gen.addProvider(blockTags);
+            gen.addProvider(new GenFluidTags(gen, Ref.mod_id, event.getExistingFileHelper()));
+            gen.addProvider(new GenItemTags(gen, blockTags, Ref.mod_id, event.getExistingFileHelper()));
+        }
+
+        if (event.includeServer()){
+        }
     }
 }
