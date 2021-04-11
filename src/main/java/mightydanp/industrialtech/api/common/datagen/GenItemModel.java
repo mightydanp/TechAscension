@@ -2,6 +2,9 @@ package mightydanp.industrialtech.api.common.datagen;
 
 import mightydanp.industrialtech.api.common.handler.MaterialHandler;
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
+import mightydanp.industrialtech.api.common.items.ToolBindingItem;
+import mightydanp.industrialtech.api.common.items.ToolHandleItem;
+import mightydanp.industrialtech.api.common.items.ToolHeadItem;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
 import mightydanp.industrialtech.common.items.ModItems;
 import mightydanp.industrialtech.common.materials.ModMaterials;
@@ -23,15 +26,14 @@ public class GenItemModel extends ItemModelProvider {
 
     public GenItemModel(DataGenerator generator, String modid, ExistingFileHelper existingFileHelper) {
         super(generator, modid, existingFileHelper);
+        registerModels();
     }
 
     @Override
     protected void registerModels() {
         for(MaterialHandler material : ModMaterials.materials) {
             for(EnumMaterialFlags flag : material.flags){
-                if(flag == EnumMaterialFlags.ORE) {
-
-                }
+                if(flag == EnumMaterialFlags.ORE) {}
 
                 if(flag == EnumMaterialFlags.GEM) {
                     coloredMaterialPart(material.gemItem.get(), material);
@@ -56,6 +58,18 @@ public class GenItemModel extends ItemModelProvider {
                     for(RegistryObject<Item> item: material.smallOreItem){
                         generatePrefixItemBlockSuffix(item.get(), material);
                     }
+                }
+
+                if(flag == EnumMaterialFlags.TOOL_HEAD){
+                    coloredToolPart(material.dullPickaxeItem.get(), material);
+                    coloredToolPart(material.pickaxeHeadItem.get(), material);
+                }
+                if(flag == EnumMaterialFlags.TOOL_BINDING) {
+                    coloredToolPart(material.bindingItem.get(), material);
+                }
+
+                if(flag == EnumMaterialFlags.TOOL_HANDLE){
+                  coloredToolPart(material.handleItem.get(), material);
                 }
             }
         }
@@ -195,6 +209,73 @@ public class GenItemModel extends ItemModelProvider {
         iconModel.texture("layer0", itemHeadIconTexture);
         iconModel.texture("layer1", itemBindingIconTexture);
         iconModel.texture("layer2", itemHandleIconTexture);
+
+        generatedModels.put(iconModel.getLocation(), iconModel);
+
+        final ResourceLocation toolLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/" + itemName);
+        final ModelFile iconParent = factory.apply(iconModel.getLocation());
+        final ItemModelBuilder itemBuilder = factory.apply(toolLocation);
+        itemBuilder.parent(iconParent);
+
+        generatedModels.put(toolLocation, itemBuilder);
+    }
+
+    public void coloredToolPart(Item item, MaterialHandler materialIn) {
+        String modId = item.getRegistryName().toString().split(":")[0];
+        String itemName = item.getRegistryName().toString().split(":")[1];
+        String textureFlag = materialIn.textureFlag.getName();
+
+        String materialName = itemName.replace(materialIn.materialName, "");
+        String prefix = materialName.split("_")[0];
+        String suffix = itemName.split("_")[itemName.split("_").length - 1];
+        StringBuilder partName = new StringBuilder();
+
+        StringBuilder toolName = new StringBuilder();
+        for(String string : materialName.split("_")){
+            if(!string.contains(suffix)){
+                toolName.append(string);
+            }
+        }
+
+        if (prefix.equals("")) {
+            if(itemName.contains("dull")){
+                partName.append(suffix);
+                partName.append("_");
+                partName.append(toolName);
+            }else{
+                partName.append(suffix);
+                partName.append("_");
+                partName.append(toolName);
+            }
+        } else {
+            if(itemName.contains("dull")){
+                String[] newName = materialName.split("_");
+                StringBuilder newPartName = new StringBuilder();
+                for(String string : newName){
+                    if(!string.contains(suffix) && !string.contains(prefix)){
+                        newPartName.append(string);
+                    }
+                }
+                partName.append(prefix);
+                partName.append("_");
+                partName.append(suffix);
+                partName.append("_");
+                partName.append(newPartName);
+            }else {
+                partName.append(suffix);
+                partName.append("_");
+                partName.append(prefix);
+                partName.append("_");
+                partName.append(toolName);
+            }
+        }
+
+        final ModelFile parent = factory.apply(mcLoc("item/generated"));
+        final ResourceLocation itemLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/material_icons/" + textureFlag + "/" + partName);
+        final ResourceLocation itemHeadIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/"+ textureFlag + "/" + partName);
+        final ItemModelBuilder iconModel = factory.apply(itemLocation);
+        iconModel.parent(parent);
+        iconModel.texture("layer0", itemHeadIconTexture);
 
         generatedModels.put(iconModel.getLocation(), iconModel);
 

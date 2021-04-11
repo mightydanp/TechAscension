@@ -1,10 +1,17 @@
 package mightydanp.industrialtech.common.materials;
 
+import com.google.common.collect.HashMultimap;
+import javafx.util.Pair;
 import mightydanp.industrialtech.api.common.handler.MaterialHandler;
+import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
+import mightydanp.industrialtech.api.common.libs.ITToolType;
+
 import static mightydanp.industrialtech.api.common.libs.EnumMaterialFlags.*;
 import static mightydanp.industrialtech.api.common.libs.EnumMaterialTextureFlags.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -22,6 +29,11 @@ public class ModMaterials {
             redstone, rocksalt, ruby,rutile, salt, sapphire, scheelite, sodalite, sperrylite, spessartine, sphalerite, spinel, spodumene, stannite, stibnite, subbituminous,
             tantalite, tetrahedrite, thorium, tiger_eye, tiger_iron, topaz, tungstate, uraninite, uvarovite, vanadium_magnetite, wolframite, yellow_jasper, yellow_limonite,
             yellow_sapphire, zircon;
+
+    public static MaterialHandler flint, stone;
+
+    public static List<Pair<ITToolType, Integer>> flintToolTypes, stoneToolTypes;
+
 
     public static void commonInit() { //materials.add(iron = new MaterialHandler("iron", 0, 51, 153, "", 8, ORE));
     //Materials that have ORES
@@ -138,6 +150,19 @@ public class ModMaterials {
         materials.add(yellow_limonite = new MaterialHandler("yellow_limonite", 0xc8c800, METALLIC, 8, ORE));
         materials.add(yellow_sapphire = new MaterialHandler("yellow_sapphire", 0xd0dc78, GEM_HORIZONTAL, 8, GEM));
         materials.add(zircon = new MaterialHandler("zircon", 0x63181d, SHINY, 8, ORE));
+
+        flintToolTypes = new ArrayList<Pair<ITToolType, Integer>>(){{
+                add(new Pair<>(ITToolType.PICKAXE, 0));
+        }};
+
+        stoneToolTypes = new ArrayList<Pair<ITToolType, Integer>>(){{
+            add(new Pair<>(ITToolType.PICKAXE, 0));
+        }};
+
+
+        materials.add(flint = new MaterialHandler("flint", 0x002040, CUBE, 20, 10, 20, 20F, 1F, flintToolTypes, TOOL_HEAD, TOOL_BINDING, TOOL_HANDLE));
+
+        materials.add(stone = new MaterialHandler("stone", 0x808080, CUBE_SHINY, 40, 20, 40, 40F, 2F, flintToolTypes, TOOL_HEAD, TOOL_BINDING, TOOL_HANDLE));
     }
 
     public static void clientInit() {

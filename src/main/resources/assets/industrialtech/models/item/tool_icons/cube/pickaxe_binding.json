@@ -1,0 +1,6 @@
+"parent": "forge:item/default",
+"textures": {
+	"layer0": "industrialtech:item/tool_icons/cube/pickaxe_handle"
+	"layer1": "industrialtech:item/tool_icons/cube/pickaxe_binding"
+	}
+        

@@ -1,0 +1,4 @@
+"parent": "forge:item/default",
+"textures": {
+	"layer0": "industrialtech:item/tool_icons/cube/pickaxe_head"
+}

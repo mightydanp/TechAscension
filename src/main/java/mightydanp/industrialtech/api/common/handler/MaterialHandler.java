@@ -1,5 +1,6 @@
 package mightydanp.industrialtech.api.common.handler;
 
+import javafx.util.Pair;
 import mightydanp.industrialtech.api.common.blocks.DenseOreBlock;
 import mightydanp.industrialtech.api.common.blocks.OreBlock;
 import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
@@ -20,6 +21,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.RegistryObject;
 
 import java.util.ArrayList;
@@ -38,7 +40,11 @@ public class MaterialHandler {
     public final EnumMaterialTextureFlags textureFlag;
     private int durability;
     private int speed;
-    private float damage;
+    private int damage;
+    private float attackDamage;
+    private float weight;
+    private List<Pair<ITToolType, Integer>> toolTypes;
+
     public static List<MaterialHandler> registeredMaterials = new ArrayList<>();
     public EnumMaterialFlags[] flags;
     public List<RegistryObject<Block>> oreBlock = new ArrayList<>();
@@ -50,6 +56,7 @@ public class MaterialHandler {
     public RegistryObject<Item> ingotItem, gemItem, chippedGemItem, flawedGemItem, flawlessGemItem, legendaryGemItem, crushedOreItem, purifiedOreItem, centrifugedOreItem, dustItem, smallDustItem, tinyDustItem;
     public RegistryObject<Item> dullAxeHeadItem, dullBuzzSawHeadItem, dullChiselHeadItem, dullHoeHeadItem, dullPickaxeItem, dullArrowHeadItem, dullSawHeadItem, dullSwordHeadItem;
     public RegistryObject<Item> drillHeadItem, axeHeadItem, buzzSawHeadItem, chiselHeadItem, fileHeadItem, hammerHeadItem, hoeHeadItem, pickaxeHeadItem, arrowHeadItem, sawHeadItem, shovelHeadItem, swordHeadItem, screwdriverHeadItem;
+    public RegistryObject<Item> bindingItem, handleItem;
 
     public static final List<BlockState> stone_variants = new ArrayList<BlockState>(){{
         add(Blocks.STONE.defaultBlockState());
@@ -92,12 +99,15 @@ public class MaterialHandler {
         registeredMaterials.add(this);
     }
 
-    public MaterialHandler(String materialNameIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int speedIn, int durabilityIn, float damageIn, EnumMaterialFlags... flagsIn) {
+    public MaterialHandler(String materialNameIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int speedIn, int durabilityIn, int damageIn, float attackDamageIn, float weightIn, List<Pair<ITToolType, Integer>> toolTypesIn, EnumMaterialFlags... flagsIn) {
         materialName = materialNameIn;
         this.color = colorIn;
         this.speed = speedIn;
         this.durability = durabilityIn;
         this.damage = damageIn;
+        this.attackDamage = attackDamageIn;
+        this.weight = weightIn;
+        this.toolTypes = toolTypesIn;
         this.textureFlag = textureFlagIn;
         this.flags = flagsIn;
         this.addFlag(flagsIn);
@@ -167,7 +177,18 @@ public class MaterialHandler {
                 dullPickaxeItem = RegistryHandler.ITEMS.register("dull_" + materialName + "_pickaxe_head", () ->
                         new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
                 pickaxeHeadItem = RegistryHandler.ITEMS.register( materialName + "_pickaxe_head", () ->
-                        new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), boilingPoint, meltingPoint, speed, durability, element));
+                        new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, speed, durability, attackDamage, weight, toolTypes));
+            }
+
+            if(flag == TOOL_BINDING){
+                bindingItem = RegistryHandler.ITEMS.register( materialName + "_pickaxe_binding", () ->
+                        new ToolBindingItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, durability, weight));
+            }
+
+            if(flag == TOOL_HANDLE){
+                handleItem = RegistryHandler.ITEMS.register( materialName + "_pickaxe_handle", () ->
+                        new ToolHandleItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, durability, weight));
+
             }
         }
     }

@@ -17,7 +17,9 @@ public enum  EnumMaterialFlags {
     BLOCK_METAL("", "_block"),
     BLOCK_GEM("", "_block"),
 
-    TOOL_HEAD("TOOL_", "_HEAD"),
+    TOOL_HEAD("tool_", "_head"),
+    TOOL_BINDING("tool_", "_binding"),
+    TOOL_HANDLE("tool_", "_handle"),
 
     NULL("", "");
 

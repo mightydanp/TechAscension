@@ -21,13 +21,7 @@ public class GenLanguage extends LanguageProvider {
             String itemName = translateUpperCase(item.get().getRegistryName().toString());
             add(item.get(), itemName);
         }
-/*
-        for(RegistryObject<Block> block : RegistryHandler.BLOCKS.getEntries()) {
-            String itemName = translateUpperCase(block.get().getRegistryName().toString());
-            add(block.get(), itemName);
-        }
 
- */
         for(RegistryObject<Item> blockItem : RegistryHandler.BLOCKITEMS.getEntries()) {
             String itemName = translateUpperCase(blockItem.get().getRegistryName().toString());
             add(blockItem.get(), itemName);
