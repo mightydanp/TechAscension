@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialtech:item/material_icons/diamond/purified_ore",
+    "layer1": "industrialtech:item/material_icons/diamond/purified_ore_overlay"
+  }
+}

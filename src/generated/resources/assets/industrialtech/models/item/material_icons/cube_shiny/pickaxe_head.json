@@ -1,4 +1,6 @@
-"parent": "forge:item/default",
-"textures": {
-	"layer0": "industrialtech:item/tool_icons/cube_shiny/pickaxe_head"
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialtech:item/material_icons/cube_shiny/pickaxe_head"
+  }
 }

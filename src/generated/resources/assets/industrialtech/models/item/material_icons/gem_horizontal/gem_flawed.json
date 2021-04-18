@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "industrialtech:item/material_icons/gem_horizontal/gem_flawed",
-    "layer1": "industrialtech:item/material_icons/gem_horizontal/gem_flawed_overlay"
-  }
-}

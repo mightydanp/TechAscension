@@ -1,5 +1,6 @@
 package mightydanp.industrialtech.api.common.items.capabilities;
 
+import mightydanp.industrialtech.api.common.inventory.container.ITToolItemContainer;
 import mightydanp.industrialtech.api.common.items.handler.ITToolItemItemStackHandler;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -47,5 +48,4 @@ public class ITToolItemCapabilityProvider implements ICapabilitySerializable<INB
     public void deserializeNBT(INBT nbt) {
         CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(getCachedInventory(), numberOfSlots, nbt);
     }
-
 }

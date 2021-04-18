@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.api.common.libs;
 
-import javafx.util.Pair;
+import com.mojang.datafixers.util.Pair;;
 
 import java.util.ArrayList;
 import java.util.List;

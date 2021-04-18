@@ -104,4 +104,7 @@ public class ToolModel extends CompositeModel {
             return obj instanceof QuickHash && Arrays.deepEquals(objs, ((QuickHash) obj).objs);
         }
     }
+
+    //need to create something like https://github.com/SlimeKnights/TinkersConstruct/blob/1.16/src/main/java/slimeknights/tconstruct/library/client/model/tools/MaterialModel.java
+    //https://github.com/SlimeKnights/TinkersConstruct/blob/1.16/src/main/resources/assets/tconstruct/models/item/pickaxe.json
 }

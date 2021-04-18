@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialtech:item/material_icons/none/hammer_handle",
+    "layer1": "industrialtech:item/material_icons/none/hammer_binding",
+    "layer2": "industrialtech:item/material_icons/none/hammer_head"
+  }
+}

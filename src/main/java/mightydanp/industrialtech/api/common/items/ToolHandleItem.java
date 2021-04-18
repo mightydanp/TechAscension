@@ -23,6 +23,7 @@ public class ToolHandleItem extends Item {
     public int boilingPoint;
     public int durability;
     public float weight;
+    public int maxDamage;
     public EnumMaterialTextureFlags textureFlag;
 
     public ToolHandleItem(Item.Properties properties, String materialIn, String elementIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int boilingPointIn, int meltingPointIn, int durabilityIn, float weightIn) {
@@ -36,7 +37,12 @@ public class ToolHandleItem extends Item {
         durability = durabilityIn;
         weight = weightIn;
         properties.stacksTo(1);
-        properties.durability(durabilityIn);
+        maxDamage = durabilityIn;
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return maxDamage;
     }
 
     @Override
@@ -52,7 +58,7 @@ public class ToolHandleItem extends Item {
         }
 
         if(durability != 0) {
-            tooltip.add(ITextComponent.nullToEmpty("durability: " + stack.getDamageValue() + "/" + durability));
+            tooltip.add(ITextComponent.nullToEmpty("durability: " + (durability -stack.getDamageValue()) + "/" + durability));
         }
 
         if (meltingPoint != 0) {

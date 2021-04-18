@@ -19,7 +19,8 @@ public enum  EnumMaterialFlags {
 
     TOOL_HEAD("tool_", "_head"),
     TOOL_BINDING("tool_", "_binding"),
-    TOOL_HANDLE("tool_", "_handle"),
+    TOOL_WEDGE("tool_", "_wedge"),
+    TOOL_WEDGE_HANDLE("tool_", "_wedge_handle"),
 
     NULL("", "");
 

@@ -1,66 +1,8 @@
 {
-	"loader": "industrialtech:tool"
-    "parent": "forge:composite",
-    "parts": {
-        "head": {
-            "parent": "forge:item/default",
-            "textures": {
-                "layer0": "industrialtech:item/material_icons/pickaxe_head"
-            },
-            "overrides": [
-			{
-                 "predicate": {
-                     "industrialtech:binding_texture_flag": 0
-                 },
-                "model": "industrialtech:item/material_icons/cube/pickaxe_head"
-            },
-			{
-                 "predicate": {
-                     "industrialtech:binding_texture_flag": 1
-                 },
-                "model": "industrialtech:item/material_icons/cube_shiny/pickaxe_head"
-            }]
-        },
-        "handle": {
-            "parent": "item/generated",
-           "textures": {
-                "layer0": "industrialtech:item/material_icons/pickaxe_binding"
-				"layer1": "industrialtech:item/material_icons/pickaxe_binding"
-            },
-            "overrides": [
-			{
-                 "predicate": {
-                     "industrialtech:binding_texture_flag": 0
-                 },
-                "model": "industrialtech:item/material_icons/cube/pickaxe_binding"
-            },
-			{
-                 "predicate": {
-                     "industrialtech:binding_texture_flag": 1
-                 },
-                "model": "industrialtech:item/material_icons/cube_shiny/pickaxe_binding"
-            }]
-        },
-        "binding": {
-            "parent": "forge:item/default",
-            "textures": {
-                "layer0": "industrialtech:item/material_icons/pickaxe_handle"
-				"layer1": "industrialtech:item/material_icons/pickaxe_handle"
-            },
-            "overrides": [
-			{
-                 "predicate": {
-                     "industrialtech:binding_texture_flag": 0
-                 },
-                "model": "industrialtech:item/material_icons/cube/pickaxe_handle"
-            },
-			{
-                 "predicate": {
-                     "industrialtech:binding_texture_flag": 1
-                 },
-                "model": "industrialtech:item/material_icons/cube_shiny/pickaxe_handle"
-            }]
-        }
-    },
-    "transform": "forge:default-tool"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "industrialtech:item/material_icons/none/pickaxe_handle",
+    "layer1": "industrialtech:item/material_icons/none/pickaxe_binding",
+    "layer2": "industrialtech:item/material_icons/none/pickaxe_head"
+  }
 }

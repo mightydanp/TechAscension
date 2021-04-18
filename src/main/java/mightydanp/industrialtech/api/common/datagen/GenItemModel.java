@@ -2,9 +2,7 @@ package mightydanp.industrialtech.api.common.datagen;
 
 import mightydanp.industrialtech.api.common.handler.MaterialHandler;
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
-import mightydanp.industrialtech.api.common.items.ToolBindingItem;
-import mightydanp.industrialtech.api.common.items.ToolHandleItem;
-import mightydanp.industrialtech.api.common.items.ToolHeadItem;
+import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
 import mightydanp.industrialtech.common.items.ModItems;
 import mightydanp.industrialtech.common.materials.ModMaterials;
@@ -18,6 +16,9 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.fml.RegistryObject;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by MightyDanp on 3/9/2021.
@@ -42,6 +43,7 @@ public class GenItemModel extends ItemModelProvider {
                     coloredMaterialPart(material.flawlessGemItem.get(), material);
                     coloredMaterialPart(material.legendaryGemItem.get(), material);
                 }
+
                 if(flag == EnumMaterialFlags.GEM || flag == EnumMaterialFlags.ORE){
                     coloredMaterialPart(material.crushedOreItem.get(), material);
                     coloredMaterialPart(material.purifiedOreItem.get(), material);
@@ -63,19 +65,23 @@ public class GenItemModel extends ItemModelProvider {
                 if(flag == EnumMaterialFlags.TOOL_HEAD){
                     coloredToolPart(material.dullPickaxeItem.get(), material);
                     coloredToolPart(material.pickaxeHeadItem.get(), material);
+                    coloredToolPart(material.hammerHeadItem.get(), material);
+                    coloredToolPart(material.dullChiselHeadItem.get(), material);
+                    coloredToolPart(material.chiselHeadItem.get(), material);
                 }
-                if(flag == EnumMaterialFlags.TOOL_BINDING) {
-                    coloredToolPart(material.bindingItem.get(), material);
+                if(flag == EnumMaterialFlags.TOOL_WEDGE) {
+                    coloredToolPart(material.wedgeItem.get(), material);
                 }
 
-                if(flag == EnumMaterialFlags.TOOL_HANDLE){
-                  coloredToolPart(material.handleItem.get(), material);
+                if(flag == EnumMaterialFlags.TOOL_WEDGE_HANDLE){
+                  coloredToolPart(material.wedgeHandleItem.get(), material);
                 }
+
             }
         }
 
         for(RegistryObject<Item> tool : ToolHandler.tools){
-            coloredTool(tool.get());
+            coloredTool(tool.get(), ((ITToolItem)tool.get()).getPartsToWork());
         }
 
         singleTextureItem(ModItems.plant_fiber.get());
@@ -164,21 +170,10 @@ public class GenItemModel extends ItemModelProvider {
         String materialName = itemName.replace(materialIn.materialName, "");
         String prefix = materialName.split("_")[0];
         String suffix = itemName.split("_")[itemName.split("_").length - 1];
-        StringBuilder partName = new StringBuilder();
-
-        if (prefix.equals("")) {
-            partName.append(suffix);
-        } else {
-            partName.append(suffix);
-            partName.append("_");
-            partName.append(prefix);
-        }
-
-
 
         final ModelFile parent = factory.apply(mcLoc("item/generated"));
-        final ResourceLocation itemIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/" + materialIn.textureFlag.getName() + "/" + partName);
-        final ResourceLocation itemIconOverlayTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/" + materialIn.textureFlag.getName() + "/" + partName + "_overlay");
+        final ResourceLocation itemIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/" + materialIn.textureFlag.getName() + "/" + baseString(item, materialIn.materialName));
+        final ResourceLocation itemIconOverlayTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/" + materialIn.textureFlag.getName() + "/" + baseString(item, materialIn.materialName) + "_overlay");
         final ItemModelBuilder iconModel = factory.apply(itemIconTexture);
         iconModel.parent(parent);
         iconModel.texture("layer0", itemIconTexture);
@@ -194,21 +189,36 @@ public class GenItemModel extends ItemModelProvider {
         generatedModels.put(gemLocation, gem);
     }
 
-    public void coloredTool(Item item) {
+    public void coloredTool(Item item, int partsToWorkIn) {
         String modId = item.getRegistryName().toString().split(":")[0];
         String itemName = item.getRegistryName().toString().split(":")[1];
-        //String materialName = itemName.replaceAll(materialIn.materialName + "_", "");
+
+        String prefix = itemName.split("_")[0];
+        String suffix = itemName.split("_")[itemName.split("_").length - 1];
+
 
         final ModelFile parent = factory.apply(mcLoc("item/generated"));
         final ResourceLocation itemLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/tool_icons/" + itemName);
-        final ResourceLocation itemHeadIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/tool_icons/" + itemName + "_head");
-        final ResourceLocation itemBindingIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/tool_icons/" + itemName + "_binding");
-        final ResourceLocation itemHandleIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/tool_icons/" + itemName + "_handle");
+        final ResourceLocation itemHeadIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/" + "none/" + itemName + "_head");
+        final ResourceLocation itemBindingIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/" + "none/" + itemName + "_binding");
+        final ResourceLocation itemHandleIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/" + "none/" + itemName + "_handle");
         final ItemModelBuilder iconModel = factory.apply(itemLocation);
+
         iconModel.parent(parent);
-        iconModel.texture("layer0", itemHeadIconTexture);
-        iconModel.texture("layer1", itemBindingIconTexture);
-        iconModel.texture("layer2", itemHandleIconTexture);
+        if(partsToWorkIn == 1){
+            iconModel.texture("layer0", itemHandleIconTexture);
+        }
+
+        if(partsToWorkIn == 2){
+            iconModel.texture("layer0", itemHandleIconTexture);
+            iconModel.texture("layer1", itemHeadIconTexture);
+        }
+
+        if(partsToWorkIn == 3){
+            iconModel.texture("layer0", itemHandleIconTexture);
+            iconModel.texture("layer1", itemBindingIconTexture);
+            iconModel.texture("layer2", itemHeadIconTexture);
+        }
 
         generatedModels.put(iconModel.getLocation(), iconModel);
 
@@ -228,51 +238,11 @@ public class GenItemModel extends ItemModelProvider {
         String materialName = itemName.replace(materialIn.materialName, "");
         String prefix = materialName.split("_")[0];
         String suffix = itemName.split("_")[itemName.split("_").length - 1];
-        StringBuilder partName = new StringBuilder();
 
-        StringBuilder toolName = new StringBuilder();
-        for(String string : materialName.split("_")){
-            if(!string.contains(suffix)){
-                toolName.append(string);
-            }
-        }
-
-        if (prefix.equals("")) {
-            if(itemName.contains("dull")){
-                partName.append(suffix);
-                partName.append("_");
-                partName.append(toolName);
-            }else{
-                partName.append(suffix);
-                partName.append("_");
-                partName.append(toolName);
-            }
-        } else {
-            if(itemName.contains("dull")){
-                String[] newName = materialName.split("_");
-                StringBuilder newPartName = new StringBuilder();
-                for(String string : newName){
-                    if(!string.contains(suffix) && !string.contains(prefix)){
-                        newPartName.append(string);
-                    }
-                }
-                partName.append(prefix);
-                partName.append("_");
-                partName.append(suffix);
-                partName.append("_");
-                partName.append(newPartName);
-            }else {
-                partName.append(suffix);
-                partName.append("_");
-                partName.append(prefix);
-                partName.append("_");
-                partName.append(toolName);
-            }
-        }
 
         final ModelFile parent = factory.apply(mcLoc("item/generated"));
-        final ResourceLocation itemLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/material_icons/" + textureFlag + "/" + partName);
-        final ResourceLocation itemHeadIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/"+ textureFlag + "/" + partName);
+        final ResourceLocation itemLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/material_icons/" + textureFlag + "/" + baseString(item, materialIn.materialName));
+        final ResourceLocation itemHeadIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/"+ textureFlag + "/" + baseString(item, materialIn.materialName));
         final ItemModelBuilder iconModel = factory.apply(itemLocation);
         iconModel.parent(parent);
         iconModel.texture("layer0", itemHeadIconTexture);
@@ -420,6 +390,40 @@ public class GenItemModel extends ItemModelProvider {
         String stoneVariant = itemName.replace(suffix, "").split("_")[0];
 
         translatedName.append(stoneVariant).append(suffix);
+
+        return translatedName.toString();
+    }
+
+    public String baseString(Item itemIn, String takeOf){
+        String modId = itemIn.getRegistryName().toString().split(":")[0];
+        String itemName = itemIn.getRegistryName().toString().split(":")[1];
+
+        String materialName = itemName.replace(takeOf, "");
+        String prefix = materialName.split("_")[0];
+        String suffix = itemName.split("_")[itemName.split("_").length - 1];
+
+        StringBuilder translatedName = new StringBuilder();
+
+        List<String> StringList = Arrays.asList(takeOf.split("_"));
+
+        if(takeOf.equals("flint")){
+            itemIn.asItem();
+        }
+
+        int i=0;
+        for (String string : itemName.split("_")) {
+            if (!StringList.contains(string)) {
+                if (i == 0) {
+                    i++;
+                    translatedName.append(string);
+                } else {
+                    if(!StringList.contains(string)) {
+                        translatedName.append("_");
+                        translatedName.append(string);
+                    }
+                }
+            }
+        }
 
         return translatedName.toString();
     }

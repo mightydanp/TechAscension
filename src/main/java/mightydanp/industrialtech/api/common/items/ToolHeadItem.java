@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.api.common.items;
 
-import javafx.util.Pair;
+import com.mojang.datafixers.util.Pair;;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialTextureFlags;
 import mightydanp.industrialtech.api.common.libs.ITToolType;
 import net.minecraft.client.util.ITooltipFlag;
@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -26,11 +27,12 @@ public class ToolHeadItem extends Item {
     public int boilingPoint;
     public int efficiency;
     public int durability;
-    public List<Pair<ITToolType,Integer>> itToolType;
+    public List<Pair<ToolType,Integer>> itToolType;
     public float attackDamage;
     public float weight;
+    public int maxDamage;
 
-    public ToolHeadItem(Item.Properties properties, String materialIn, String elementIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int boilingPointIn, int meltingPointIn, int efficiencyIn, int durabilityIn, float attackDamageIn, float weightIn, List<Pair<ITToolType, Integer>> itToolTypeIn) {
+    public ToolHeadItem(Item.Properties properties, String materialIn, String elementIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int boilingPointIn, int meltingPointIn, int efficiencyIn, int durabilityIn, float attackDamageIn, float weightIn, List<Pair<ToolType, Integer>> itToolTypeIn) {
         super(properties);
         material = materialIn;
         color = colorIn;
@@ -44,7 +46,12 @@ public class ToolHeadItem extends Item {
         weight = weightIn;
         itToolType = itToolTypeIn;
         properties.stacksTo(1);
-        properties.durability(durabilityIn);
+        maxDamage = durabilityIn;
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return maxDamage;
     }
 
     @Override
@@ -52,7 +59,7 @@ public class ToolHeadItem extends Item {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         tooltip.add(ITextComponent.nullToEmpty(element));
         if(durability != 0) {
-            tooltip.add(ITextComponent.nullToEmpty("durability:" + stack.getDamageValue() + "/" + durability));
+            tooltip.add(ITextComponent.nullToEmpty("durability:" + (durability -stack.getDamageValue()) + "/" + durability));
         }
         if(efficiency != 0) {
             tooltip.add(ITextComponent.nullToEmpty("efficiency:" + efficiency));
@@ -74,8 +81,8 @@ public class ToolHeadItem extends Item {
         }
 
         if(itToolType != null) {
-            for(Pair<ITToolType,Integer> toolType : itToolType) {
-                tooltip.add(ITextComponent.nullToEmpty(toolType.getKey().toString() + " level: " + toolType.getValue()));
+            for(Pair<ToolType,Integer> toolType : itToolType) {
+                tooltip.add(ITextComponent.nullToEmpty(toolType.getFirst().getName() + " level: " + toolType.getSecond()));
             }
         }
     }
@@ -93,5 +100,9 @@ public class ToolHeadItem extends Item {
 
     public int getTemperature(){
         return temperature;
+    }
+
+    public List<Pair<ToolType, Integer>> getItToolType() {
+        return itToolType;
     }
 }

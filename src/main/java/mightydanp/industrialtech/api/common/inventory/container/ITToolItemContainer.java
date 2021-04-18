@@ -41,7 +41,7 @@ public class ITToolItemContainer extends Container {
     public static final int firstSlotStartingIndex = vanillaFirstSlotIndex + vanillaSlotCount;
 
 
-    private  ITToolItemContainer(int containerIdIn, PlayerInventory playerInventoryIn, ITToolItemItemStackHandler itToolItemItemStackHandlerIn, ItemStack itemStackBeingHeldIn) {
+    private ITToolItemContainer(int containerIdIn, PlayerInventory playerInventoryIn, ITToolItemItemStackHandler itToolItemItemStackHandlerIn, ItemStack itemStackBeingHeldIn) {
         super(Containers.itToolItemContainer, containerIdIn);
         itToolItemContainerType = Containers.itToolItemContainer;
         itToolItemItemStackHandler = itToolItemItemStackHandlerIn;
@@ -60,10 +60,9 @@ public class ITToolItemContainer extends Container {
                 addSlot(new Slot(playerInventoryIn, slotNumber, xpos, ypos));
             }
         }
-
-        addSlot(new ToolHeadSlotItemHandler(itToolItemItemStackHandler, firstSlotStartingIndex + 1, 8, 8));
-        addSlot(new ToolBindingSlotItemHandler(itToolItemItemStackHandler, firstSlotStartingIndex + 2, 8, 33));
-        addSlot(new ToolHandleSlotHandler(itToolItemItemStackHandler, firstSlotStartingIndex + 3, 8, 58));
+        addSlot(new SlotItemHandler(itToolItemItemStackHandler, 0, 8, 58));
+        addSlot(new SlotItemHandler(itToolItemItemStackHandler, 1, 8, 8));
+        addSlot(new SlotItemHandler(itToolItemItemStackHandler, 2, 8, 33));
     }
 
     public static ITToolItemContainer createContainerServerSide(int windowIDIn, PlayerInventory playerInventoryIn, ITToolItemItemStackHandler itToolItemItemStackHandlerIn, ItemStack itemStackIn) {
@@ -84,24 +83,6 @@ public class ITToolItemContainer extends Container {
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerEntityIn, int slotIn) {
-        ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotIn);
-        if (slot != null && slot.hasItem()) {
-            ItemStack itemstack1 = slot.getItem();
-            itemstack = itemstack1.copy();
-            if (slotIn == firstSlotStartingIndex + 1) {
-                if(itemstack.getItem() instanceof ToolHeadItem){
-                    if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
-                        return ItemStack.EMPTY;
-                    }
-                }
-            }
-        }
-        return itemstack;
-    }
-
-    @Override
     public void broadcastChanges() {
         if (itToolItemItemStackHandler.isDirty()) {
             CompoundNBT nbt = itemStackBeingHeld.getOrCreateTag();
@@ -116,6 +97,8 @@ public class ITToolItemContainer extends Container {
     public boolean stillValid(PlayerEntity playerEntityIn) {
         return true;
     }
+
+
 
 
 }

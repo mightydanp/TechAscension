@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.api.common.handler;
 
-import javafx.util.Pair;
+import com.mojang.datafixers.util.Pair;;
 import mightydanp.industrialtech.api.common.blocks.DenseOreBlock;
 import mightydanp.industrialtech.api.common.blocks.OreBlock;
 import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.RegistryObject;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class MaterialHandler {
     private int damage;
     private float attackDamage;
     private float weight;
-    private List<Pair<ITToolType, Integer>> toolTypes;
+    private List<Pair<ToolType, Integer>> toolTypes;
 
     public static List<MaterialHandler> registeredMaterials = new ArrayList<>();
     public EnumMaterialFlags[] flags;
@@ -56,7 +56,7 @@ public class MaterialHandler {
     public RegistryObject<Item> ingotItem, gemItem, chippedGemItem, flawedGemItem, flawlessGemItem, legendaryGemItem, crushedOreItem, purifiedOreItem, centrifugedOreItem, dustItem, smallDustItem, tinyDustItem;
     public RegistryObject<Item> dullAxeHeadItem, dullBuzzSawHeadItem, dullChiselHeadItem, dullHoeHeadItem, dullPickaxeItem, dullArrowHeadItem, dullSawHeadItem, dullSwordHeadItem;
     public RegistryObject<Item> drillHeadItem, axeHeadItem, buzzSawHeadItem, chiselHeadItem, fileHeadItem, hammerHeadItem, hoeHeadItem, pickaxeHeadItem, arrowHeadItem, sawHeadItem, shovelHeadItem, swordHeadItem, screwdriverHeadItem;
-    public RegistryObject<Item> bindingItem, handleItem;
+    public RegistryObject<Item> wedgeItem, wedgeHandleItem;
 
     public static final List<BlockState> stone_variants = new ArrayList<BlockState>(){{
         add(Blocks.STONE.defaultBlockState());
@@ -99,7 +99,7 @@ public class MaterialHandler {
         registeredMaterials.add(this);
     }
 
-    public MaterialHandler(String materialNameIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int speedIn, int durabilityIn, int damageIn, float attackDamageIn, float weightIn, List<Pair<ITToolType, Integer>> toolTypesIn, EnumMaterialFlags... flagsIn) {
+    public MaterialHandler(String materialNameIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int speedIn, int durabilityIn, int damageIn, float attackDamageIn, float weightIn, List<Pair<ToolType, Integer>> toolTypesIn, EnumMaterialFlags... flagsIn) {
         materialName = materialNameIn;
         this.color = colorIn;
         this.speed = speedIn;
@@ -178,17 +178,23 @@ public class MaterialHandler {
                         new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
                 pickaxeHeadItem = RegistryHandler.ITEMS.register( materialName + "_pickaxe_head", () ->
                         new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, speed, durability, attackDamage, weight, toolTypes));
+                hammerHeadItem = RegistryHandler.ITEMS.register( materialName + "_hammer_head", () ->
+                        new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, speed, durability, attackDamage, weight, toolTypes));
+                dullChiselHeadItem = RegistryHandler.ITEMS.register("dull_" + materialName + "_chisel_head", () ->
+                        new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
+                chiselHeadItem = RegistryHandler.ITEMS.register( materialName + "_chisel_head", () ->
+                        new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, speed, durability, attackDamage, weight, toolTypes));
+
             }
 
-            if(flag == TOOL_BINDING){
-                bindingItem = RegistryHandler.ITEMS.register( materialName + "_pickaxe_binding", () ->
+            if(flag == TOOL_WEDGE){
+                wedgeItem = RegistryHandler.ITEMS.register( materialName + "_wedge", () ->
                         new ToolBindingItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, durability, weight));
             }
 
-            if(flag == TOOL_HANDLE){
-                handleItem = RegistryHandler.ITEMS.register( materialName + "_pickaxe_handle", () ->
+            if(flag == TOOL_WEDGE_HANDLE){
+                wedgeHandleItem = RegistryHandler.ITEMS.register( materialName + "_wedge_handle", () ->
                         new ToolHandleItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, durability, weight));
-
             }
         }
     }
@@ -250,6 +256,14 @@ public class MaterialHandler {
         registerAItemColor(crushedOreItem, 0);
         registerAItemColor(purifiedOreItem, 0);
         registerAItemColor(centrifugedOreItem, 0);
+        registerAItemColor(dullPickaxeItem, 0);
+        registerAItemColor(pickaxeHeadItem, 0);
+        registerAItemColor(hammerHeadItem, 0);
+        registerAItemColor(wedgeItem, 0);
+        registerAItemColor(wedgeHandleItem, 0);
+        registerAItemColor(dullChiselHeadItem, 0);
+        registerAItemColor(chiselHeadItem, 0);
+
     }
 
     public void registerAItemColor(RegistryObject<Item> item, int layerNumberIn){

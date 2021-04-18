@@ -10,6 +10,7 @@ import mightydanp.industrialtech.api.common.items.ToolHeadItem;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -52,22 +53,34 @@ public class ITToolItemContainerScreen extends ContainerScreen<ITToolItemContain
 
     @Override
     public void onClose() {
-        ItemStack toolHeadItemStack = itToolItemContainer.getSlot(ITToolItemContainer.firstSlotStartingIndex + 1).getItem();
-        ItemStack bindingItemStack = itToolItemContainer.getSlot(ITToolItemContainer.firstSlotStartingIndex + 2).getItem();
-        ItemStack toolHandleItemStack = itToolItemContainer.getSlot(ITToolItemContainer.firstSlotStartingIndex + 3).getItem();
-        ToolHeadItem toolHeadItem = (ToolHeadItem)toolHeadItemStack.getItem();
-        ToolBindingItem bindingItem = (ToolBindingItem)bindingItemStack.getItem();
-        ToolHandleItem toolHandleItem = (ToolHandleItem)toolHandleItemStack.getItem();
-        ItemStack heldItem = itToolItemContainer.itemStackBeingHeld;
-        ITToolItem toolItem = (ITToolItem)heldItem.getItem();
-        toolItem.setEfficiency(heldItem, toolHeadItem.efficiency);
-        toolItem.setAttackDamage(heldItem, toolHeadItem.attackDamage);
-        toolItem.setAttackSpeed(heldItem, toolHeadItem.weight + bindingItem.weight + toolHandleItem.weight);
-        toolItem.setHarvestLevel(heldItem, toolHeadItem.itToolType);
-        toolItem.setHeadColor(heldItem, toolHeadItem.color);
-        toolItem.setBindingColor(heldItem, toolHeadItem.color);
-        toolItem.setHandleColor(heldItem, toolHeadItem.color);
-        super.onClose();
+        ItemStack toolHandleItemStack = itToolItemContainer.getSlot(0).getItem();
+        ItemStack toolHeadItemStack = itToolItemContainer.getSlot(1).getItem();
+        ItemStack bindingItemStack = itToolItemContainer.getSlot(2).getItem();
+        Item HeadItem = toolHeadItemStack.getItem();
+        Item bindingItem = bindingItemStack.getItem();
+        Item HandleItem = toolHandleItemStack.getItem();
+        ItemStack heldItem = this.inventory.player.getMainHandItem();
 
+        ITToolItem toolItem = (ITToolItem)heldItem.getItem();
+        if(!toolHeadItemStack.isEmpty()){
+            toolItem.setEfficiency(heldItem, ((ToolHeadItem)HeadItem).efficiency);
+            toolItem.setAttackDamage(heldItem, ((ToolHeadItem)HeadItem).attackDamage);
+            toolItem.setHarvestLevel(heldItem, ((ToolHeadItem)HeadItem).itToolType);
+            toolItem.setHeadColor(heldItem, ((ToolHeadItem)HeadItem).color);
+        }
+
+        if(!bindingItemStack.isEmpty()){
+            toolItem.setBindingColor(heldItem, ((ToolBindingItem)bindingItem).color);
+        }
+
+        if(!toolHandleItemStack.isEmpty()){
+            toolItem.setHandleColor(heldItem, ((ToolHandleItem)HandleItem).color);
+        }
+
+        if(!toolHeadItemStack.isEmpty() && !bindingItemStack.isEmpty() && !toolHandleItemStack.isEmpty()){
+            toolItem.setAttackSpeed(heldItem, ((ToolHeadItem)HeadItem).weight + ((ToolBindingItem)bindingItem).weight + ((ToolHandleItem)HandleItem).weight);
+        }
+
+        super.onClose();
     }
 }

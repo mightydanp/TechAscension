@@ -15,29 +15,12 @@ import javax.annotation.Nonnull;
  * Created by MightyDanp on 4/7/2021.
  */
 public class ITToolItemItemStackHandler extends ItemStackHandler {
-    public static final int numberOfSlots = 3;
+    public static int numberOfSlots;
     private boolean isDirty = true;
 
-    public ITToolItemItemStackHandler(int numberOfSlots) {
-        super(numberOfSlots);
-        if (numberOfSlots > numberOfSlots) {
-            throw new IllegalArgumentException("Invalid number of flower slots:"+numberOfSlots);
-        }
-    }
-
-    @Override
-    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        if (numberOfSlots < slot) {
-            throw new IllegalArgumentException("Invalid slot number:"+ slot);
-        }
-
-        if (stack.isEmpty()) {
-            return false;
-        }
-
-        Item item = stack.getItem();
-        if (item.is(ItemTags.SMALL_FLOWERS) || item.is(ItemTags.TALL_FLOWERS)) return true;
-        return false;
+    public ITToolItemItemStackHandler(int numberOfSlotsIn) {
+        super(numberOfSlotsIn);
+        numberOfSlots = numberOfSlotsIn;
     }
 
     public int getNumberOfEmptySlots() {
@@ -62,27 +45,59 @@ public class ITToolItemItemStackHandler extends ItemStackHandler {
         isDirty = true;
     }
 
-    public ToolHeadItem getToolHead() {
-        ItemStack itemStack = getStackInSlot(ITToolItemContainer.firstSlotStartingIndex + 1);
-        if(itemStack.getItem() instanceof ToolHeadItem){
-            return (ToolHeadItem)itemStack.getItem();
-        }
-        return null;
-    }
-
-    public ToolBindingItem getToolBinding() {
-        ItemStack itemStack = getStackInSlot(ITToolItemContainer.firstSlotStartingIndex + 2);
-        if(itemStack.getItem() instanceof ToolBindingItem){
-            return (ToolBindingItem)itemStack.getItem();
-        }
-        return null;
-    }
-
-    public ToolHandleItem getToolHandle() {
-        ItemStack itemStack = getStackInSlot(ITToolItemContainer.firstSlotStartingIndex + 3);
+    public ItemStack getToolHandle() {
+        ItemStack itemStack = getStackInSlot(0);
         if(itemStack.getItem() instanceof ToolHandleItem){
-            return (ToolHandleItem)itemStack.getItem();
+            return itemStack;
         }
         return null;
+    }
+
+    public void setToolHandle(ItemStack itemStackIn) {
+        if(itemStackIn.getItem() instanceof ToolHandleItem){
+            setStackInSlot(0, itemStackIn);
+        }
+    }
+
+    public ItemStack getToolHead() {
+        ItemStack itemStack = getStackInSlot(1);
+        if(itemStack.getItem() instanceof ToolHeadItem){
+            return itemStack;
+        }
+        return null;
+    }
+
+    public void setToolHead(ItemStack itemStackIn) {
+        if(itemStackIn.getItem() instanceof ToolHeadItem){
+            setStackInSlot(1, itemStackIn);
+        }
+    }
+
+    public ItemStack getToolBinding() {
+        ItemStack itemStack = getStackInSlot(2);
+        if(itemStack.getItem() instanceof ToolBindingItem){
+            return itemStack;
+        }
+        return null;
+    }
+
+    public void setToolBinding(ItemStack itemStackIn) {
+        if(itemStackIn.getItem() instanceof ToolBindingItem){
+            setStackInSlot(2, itemStackIn);
+        }
+    }
+
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        if(slot == 0 && stack.getItem() instanceof ToolHandleItem){
+            return true;
+        }
+        if(slot == 1 && stack.getItem() instanceof ToolHeadItem){
+            return true;
+        }
+        if(slot == 2 && stack.getItem() instanceof ToolBindingItem){
+            return true;
+        }
+        return false;
     }
 }

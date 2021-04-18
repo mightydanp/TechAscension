@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.api.common.handler;
 
-import javafx.util.Pair;
+import com.mojang.datafixers.util.Pair;;
 import mightydanp.industrialtech.api.client.models.tools.ToolModelLoader;
 import mightydanp.industrialtech.api.common.items.PickaxeToolItem;
 import mightydanp.industrialtech.api.common.libs.ITToolType;
@@ -16,6 +16,7 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -58,8 +59,8 @@ public class EventHandler {
             ((PickaxeToolItem)itemStack.getItem()).setAttackDamage(itemStack, 12F);
             ((PickaxeToolItem)itemStack.getItem()).setEfficiency(itemStack, 12F);
             ((PickaxeToolItem)itemStack.getItem()).setAttackSpeed(itemStack, 12F);
-            List<Pair<ITToolType, Integer>> itToolTypesList = new ArrayList<Pair<ITToolType, Integer>>(){{
-                add(new Pair<>(ITToolType.PICKAXE, 0));
+            List<Pair<ToolType, Integer>> itToolTypesList = new ArrayList<Pair<ToolType, Integer>>(){{
+                add(new Pair<>(ToolType.PICKAXE, 0));
             }};
 
             ((PickaxeToolItem)itemStack.getItem()).setHarvestLevel(itemStack, itToolTypesList);
@@ -76,8 +77,8 @@ public class EventHandler {
             ((PickaxeToolItem)itemStack.getItem()).setAttackDamage(itemStack,6F);
             ((PickaxeToolItem)itemStack.getItem()).setEfficiency(itemStack,6F);
             ((PickaxeToolItem)itemStack.getItem()).setAttackSpeed(itemStack,6F);
-            List<Pair<ITToolType, Integer>> itToolTypesList = new ArrayList<Pair<ITToolType, Integer>>(){{
-                add(new Pair<>(ITToolType.PICKAXE, 0));
+            List<Pair<ToolType, Integer>> itToolTypesList = new ArrayList<Pair<ToolType, Integer>>(){{
+                add(new Pair<>(ToolType.PICKAXE, 0));
             }};
             ((PickaxeToolItem)itemStack.getItem()).setHarvestLevel(itemStack, itToolTypesList);
 

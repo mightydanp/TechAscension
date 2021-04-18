@@ -24,6 +24,7 @@ public class ToolBindingItem extends Item {
     public ITToolType[] itToolType;
     public float weight;
     public int color;
+    public int maxDamage;
     public EnumMaterialTextureFlags textureFlag;
 
     public ToolBindingItem(Item.Properties properties, String materialIn, String elementIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int boilingPointIn, int meltingPointIn, int durabilityIn, float weightIn) {
@@ -36,8 +37,13 @@ public class ToolBindingItem extends Item {
         element = elementIn;
         durability = durabilityIn;
         weight = weightIn;
+        maxDamage = durabilityIn;
         properties.stacksTo(1);
-        properties.durability(durabilityIn);
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return maxDamage;
     }
 
     @Override
@@ -53,7 +59,7 @@ public class ToolBindingItem extends Item {
         }
 
         if(durability != 0) {
-            tooltip.add(ITextComponent.nullToEmpty("durability: " + stack.getDamageValue() + "/" + durability));
+            tooltip.add(ITextComponent.nullToEmpty("durability: " + (durability - stack.getDamageValue()) + "/" + durability));
         }
 
         if (meltingPoint != 0) {
@@ -64,7 +70,7 @@ public class ToolBindingItem extends Item {
         }
 
         if (temperature == boilingPoint) {
-            tooltip.add(ITextComponent.nullToEmpty("§5" + "Hot"));
+            tooltip.add(ITextComponent.nullToEmpty("5" + "Hot"));
         }
     }
     public void setElement(String elementIn) {

@@ -6,8 +6,10 @@ import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.Event;
@@ -27,6 +29,11 @@ public class ClientEvent {
 
     @SubscribeEvent
     public static void registerModelLoaders(ModelRegistryEvent event) {
-        ModelLoaderRegistry.registerLoader(new ResourceLocation(Ref.mod_id, "tool"), ToolModelLoader.INSTANCE);
+        //ModelLoaderRegistry.registerLoader(new ResourceLocation(Ref.mod_id, "tool"), ToolModelLoader.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public static void onModelBakeEvent(ModelBakeEvent event){
+        //ModelResourceLocation itemModelResourceLocation = ChessboardModel.modelResourceLocation;
     }
 }
