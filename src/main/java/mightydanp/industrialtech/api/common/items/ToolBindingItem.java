@@ -7,8 +7,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -75,17 +78,5 @@ public class ToolBindingItem extends Item {
     }
     public void setElement(String elementIn) {
         element = elementIn;
-    }
-
-    public void setBoilingPoint(int boilingPointIn){
-        this.boilingPoint = boilingPointIn;
-    }
-
-    public void setMeltingPoint (int meltingPointIn){
-        meltingPoint = meltingPointIn;
-    }
-
-    public int getTemperature(){
-        return temperature;
     }
 }

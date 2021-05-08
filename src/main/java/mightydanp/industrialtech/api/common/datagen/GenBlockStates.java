@@ -10,8 +10,6 @@ import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.fml.RegistryObject;
 
-import java.util.function.Supplier;
-
 /**
  * Created by MightyDanp on 10/2/2020.
  */
@@ -33,7 +31,7 @@ public class GenBlockStates extends BlockStateProvider {
     private void materialHandlerHelper(MaterialHandler material) {
         for(EnumMaterialFlags flag : material.flags){
             if(flag == EnumMaterialFlags.ORE){
-                for(RegistryObject<Block> blockRegistered : material.oreBlock) {
+                for(RegistryObject<Block> blockRegistered : material.ore) {
                     Block oreBlock = blockRegistered.get();
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
@@ -45,7 +43,7 @@ public class GenBlockStates extends BlockStateProvider {
             }
 
             if(flag == EnumMaterialFlags.GEM){
-                for(RegistryObject<Block> blockRegistered : material.oreBlock) {
+                for(RegistryObject<Block> blockRegistered : material.ore) {
                     Block oreBlock = blockRegistered.get();
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
@@ -57,7 +55,7 @@ public class GenBlockStates extends BlockStateProvider {
             }
 
             if(flag == EnumMaterialFlags.ORE || flag == EnumMaterialFlags.GEM){
-                for(RegistryObject<Block> blockRegistered : material.smallOreBlock) {
+                for(RegistryObject<Block> blockRegistered : material.smallOre) {
                     Block oreBlock = blockRegistered.get();
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
@@ -67,7 +65,7 @@ public class GenBlockStates extends BlockStateProvider {
                     simpleBlock(oreBlock , ore);
                 }
 
-                for(RegistryObject<Block> blockRegistered : material.denseOreBlock) {
+                for(RegistryObject<Block> blockRegistered : material.denseOre) {
                     Block oreBlock = blockRegistered.get();
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];

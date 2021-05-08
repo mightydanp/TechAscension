@@ -23,7 +23,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @Mod.EventBusSubscriber(modid = Ref.mod_id, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientEvent {
     public static void init(FMLClientSetupEvent event){
-        ToolHandler.clientInit(event);
         ScreenManager.register(Containers.itToolItemContainer, ITToolItemContainerScreen::new);
     }
 

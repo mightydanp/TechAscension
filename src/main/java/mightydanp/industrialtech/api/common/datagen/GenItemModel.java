@@ -6,6 +6,7 @@ import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
 import mightydanp.industrialtech.common.items.ModItems;
 import mightydanp.industrialtech.common.materials.ModMaterials;
+import mightydanp.industrialtech.common.tools.ModTools;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
@@ -37,20 +38,20 @@ public class GenItemModel extends ItemModelProvider {
                 if(flag == EnumMaterialFlags.ORE) {}
 
                 if(flag == EnumMaterialFlags.GEM) {
-                    coloredMaterialPart(material.gemItem.get(), material);
-                    coloredMaterialPart(material.chippedGemItem.get(), material);
-                    coloredMaterialPart(material.flawedGemItem.get(), material);
-                    coloredMaterialPart(material.flawlessGemItem.get(), material);
-                    coloredMaterialPart(material.legendaryGemItem.get(), material);
+                    coloredMaterialPart(material.gem.get(), material);
+                    coloredMaterialPart(material.chippedGem.get(), material);
+                    coloredMaterialPart(material.flawedGem.get(), material);
+                    coloredMaterialPart(material.flawlessGem.get(), material);
+                    coloredMaterialPart(material.legendaryGem.get(), material);
                 }
 
                 if(flag == EnumMaterialFlags.GEM || flag == EnumMaterialFlags.ORE){
-                    coloredMaterialPart(material.crushedOreItem.get(), material);
-                    coloredMaterialPart(material.purifiedOreItem.get(), material);
-                    coloredMaterialPart(material.centrifugedOreItem.get(), material);
-                    coloredMaterialPart(material.dustItem.get(), material);
-                    coloredMaterialPart(material.smallDustItem.get(), material);
-                    coloredMaterialPart(material.tinyDustItem.get(), material);
+                    coloredMaterialPart(material.crushedOre.get(), material);
+                    coloredMaterialPart(material.purifiedOre.get(), material);
+                    coloredMaterialPart(material.centrifugedOre.get(), material);
+                    coloredMaterialPart(material.dust.get(), material);
+                    coloredMaterialPart(material.smallDust.get(), material);
+                    coloredMaterialPart(material.tinyDust.get(), material);
                     for(RegistryObject<Item> item: material.oreItem){
                         generateItemBlockSuffix(item.get(), material);
                     }
@@ -63,25 +64,25 @@ public class GenItemModel extends ItemModelProvider {
                 }
 
                 if(flag == EnumMaterialFlags.TOOL_HEAD){
-                    coloredToolPart(material.dullPickaxeItem.get(), material);
-                    coloredToolPart(material.pickaxeHeadItem.get(), material);
-                    coloredToolPart(material.hammerHeadItem.get(), material);
-                    coloredToolPart(material.dullChiselHeadItem.get(), material);
-                    coloredToolPart(material.chiselHeadItem.get(), material);
+                    coloredToolPart(material.dullPickaxe.get(), material);
+                    coloredToolPart(material.pickaxeHead.get(), material);
+                    coloredToolPart(material.hammerHead.get(), material);
+                    coloredToolPart(material.dullChiselHead.get(), material);
+                    coloredToolPart(material.chiselHead.get(), material);
                 }
                 if(flag == EnumMaterialFlags.TOOL_WEDGE) {
-                    coloredToolPart(material.wedgeItem.get(), material);
+                    coloredToolPart(material.wedge.get(), material);
                 }
 
                 if(flag == EnumMaterialFlags.TOOL_WEDGE_HANDLE){
-                  coloredToolPart(material.wedgeHandleItem.get(), material);
+                  coloredToolPart(material.wedgeHandle.get(), material);
                 }
 
             }
         }
 
-        for(RegistryObject<Item> tool : ToolHandler.tools){
-            coloredTool(tool.get(), ((ITToolItem)tool.get()).getPartsToWork());
+        for(ToolHandler tool : ModTools.tools){
+            coloredTool(tool.toolItem.get(), ((ITToolItem)tool.toolItem.get()).partsToWork);
         }
 
         singleTextureItem(ModItems.plant_fiber.get());
@@ -219,6 +220,10 @@ public class GenItemModel extends ItemModelProvider {
             iconModel.texture("layer1", itemBindingIconTexture);
             iconModel.texture("layer2", itemHeadIconTexture);
         }
+
+        iconModel.texture("layer0", itemHandleIconTexture);
+        iconModel.texture("layer1", itemBindingIconTexture);
+        iconModel.texture("layer2", itemHeadIconTexture);
 
         generatedModels.put(iconModel.getLocation(), iconModel);
 

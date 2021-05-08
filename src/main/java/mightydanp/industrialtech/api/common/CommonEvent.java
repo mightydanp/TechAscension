@@ -15,7 +15,6 @@ public class CommonEvent {
     public static ContainerType<ITToolItemContainer> itToolItemContainerContainerType;
 
     public static void init(FMLCommonSetupEvent event) {
-        ToolHandler.commonInit();
         OreGeneration.init();
         PlantGeneration.init();
     }

@@ -1,8 +1,3 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "industrialtech:item/material_icons/none/pickaxe_handle",
-    "layer1": "industrialtech:item/material_icons/none/pickaxe_binding",
-    "layer2": "industrialtech:item/material_icons/none/pickaxe_head"
-  }
+  "parent": "minecraft:item/generated"
 }

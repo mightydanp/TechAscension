@@ -1,7 +1,11 @@
 package mightydanp.industrialtech.api.common.handler;
 
+import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.items.*;
 import mightydanp.industrialtech.api.common.items.handler.ITToolItemItemStackHandler;
+import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
+import mightydanp.industrialtech.api.common.libs.EnumMaterialTextureFlags;
+import mightydanp.industrialtech.api.common.libs.EnumToolFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +22,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -26,27 +29,42 @@ import java.util.List;
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class ToolHandler {
-    public static List<RegistryObject<Item>> tools = new ArrayList<>();
+    public static List<ToolHandler> registeredTools = new ArrayList<>();
+    public List<EnumToolFlags> flags = new ArrayList<>();
 
-    public static RegistryObject<Item> pickaxeItem, hammerItem, fileItem;
-    public static ITToolItem pickaxe, hammer, file;
+    public String toolName;
+
+    public RegistryObject<Item> toolItem;
+    public Item tool;
+
+    public List<Pair<Item, Integer>> toolParts;
+    public List<Item> toolDisassembleTools;
+    public List<Pair<Item, Integer>> toolCraftingTools;
+    public int damageTool;
 
 
-    public ToolHandler() {
+    public ToolHandler(String toolNameIn, int damageToolIn, EnumToolFlags flagIn, ITToolItem tool) {
+        toolItem = RegistryHandler.ITEMS.register(toolNameIn, () -> tool);
+        toolName = toolNameIn;
+        toolCraftingTools = tool.craftingToolsNeeded;
+        toolParts = tool.toolParts;
+        toolDisassembleTools = tool.toolsNeededForDisassemble;
+        damageTool = damageToolIn;
+        this.tool = tool;
+        this.flags.add(flagIn);
+        this.addFlag(flagIn);
+        registeredTools.add(this);
+    }
 
-        tools.add(pickaxeItem = RegistryHandler.ITEMS.register("pickaxe", () -> pickaxe = new PickaxeToolItem(new Item.Properties().tab(ModItemGroups.tool_tab), 3)));
-        tools.add(hammerItem = RegistryHandler.ITEMS.register("hammer", () -> hammer = new HammerToolItem(new Item.Properties().tab(ModItemGroups.tool_tab), 3)));
-        tools.add(fileItem = RegistryHandler.ITEMS.register("file", () -> file = new FileToolItem(new Item.Properties().tab(ModItemGroups.tool_tab), 2)));
+    protected void addFlag(EnumToolFlags... flagsIn) {
 
     }
 
-    public static void registerColorForItem() {
-        registerAToolItemColor(pickaxeItem);
-        registerAToolItemColor(hammerItem);
-        registerAToolItemColor(fileItem);
+    public void registerColorForItem() {
+        registerAToolItemColor(toolItem);
     }
 
-    public static void registerAToolItemColor(RegistryObject<Item> item) {
+    public void registerAToolItemColor(RegistryObject<Item> item) {
         if (item != null) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 if (tintIndex == 0) {
@@ -70,103 +88,81 @@ public class ToolHandler {
         return ret;
     }
 
-    public static void clientInit(FMLClientSetupEvent event) {
-        registerColorForItem();
-        ItemModelsProperties.register(pickaxeItem.get(), new ResourceLocation(Ref.mod_id, "head_texture_flag"), (stack, world, living) -> {
-            Item item = stack.getItem();
-            ItemStack itemStack = stack;
-            if (item instanceof ITToolItem) {
-                ITToolItem toolItem = (ITToolItem) item;
-                ITToolItemItemStackHandler itToolItemItemStackHandler = toolItem.getItemStackHandler(itemStack);
-                ToolHeadItem toolHeadItem = (ToolHeadItem) itToolItemItemStackHandler.getToolHead().getItem();
-
-                if (toolHeadItem != null) {
-                    return toolHeadItem.textureFlag.getID();
-                } else {
-                    return 0;
-                }
-            } else {
-                return 0;
-            }
-        });
-        ItemModelsProperties.register(pickaxeItem.get(), new ResourceLocation(Ref.mod_id, "binding_texture_flag"), (stack, world, living) -> {
-            Item item = stack.getItem();
-            ItemStack itemStack = stack;
-            if (item instanceof ITToolItem) {
-                ITToolItem toolItem = (ITToolItem) item;
-                ITToolItemItemStackHandler itToolItemItemStackHandler = toolItem.getItemStackHandler(itemStack);
-                ToolBindingItem toolBindingItem = (ToolBindingItem) itToolItemItemStackHandler.getToolBinding().getItem();
-
-                if (toolBindingItem != null) {
-                    return toolBindingItem.textureFlag.getID();
-                } else {
-                    return 0;
-                }
-            } else {
-                return 0;
-            }
-        });
-        ItemModelsProperties.register(pickaxeItem.get(), new ResourceLocation(Ref.mod_id, "handle_texture_flag"), (stack, world, living) -> {
-            Item item = stack.getItem();
-            ItemStack itemStack = stack;
-            if (item instanceof ITToolItem) {
-                ITToolItem toolItem = (ITToolItem) item;
-                ITToolItemItemStackHandler itToolItemItemStackHandler = toolItem.getItemStackHandler(itemStack);
-                ToolHandleItem toolHandleItem = (ToolHandleItem) itToolItemItemStackHandler.getToolHandle().getItem();
-
-                if (toolHandleItem != null) {
-                    return toolHandleItem.textureFlag.getID();
-                } else {
-                    return 0;
-                }
-            } else {
-                return 0;
-            }
-        });
-    }
-
-    public static void commonInit() {
-    }
-
     @SubscribeEvent
     public static void onItemRightClickEvent(final PlayerInteractEvent.RightClickItem event) {
-        handToolCrafting(pickaxe, event, 1, hammerItem.get());;
+        //handToolCrafting(pickaxe, event, 1, pickaxeToolsNeeded);
     }
 
-    public static void handToolCrafting(ITToolItem toolItemIn, PlayerInteractEvent.RightClickItem event, int toolNeededDamage, Item... toolNeededIn) {
+    public static void handToolCrafting(ITToolItem toolItemIn, PlayerInteractEvent.RightClickItem event, int toolNeededDamage, List<Pair<Item, Integer>> toolNeededIn) {
         PlayerEntity playerEntity = event.getPlayer();
         ItemStack mainHand = playerEntity.getMainHandItem();
         ItemStack offHand = playerEntity.getOffhandItem();
         ItemStack toolItem = new ItemStack(toolItemIn.getItem());
         ITToolItemItemStackHandler itemStackHandler = toolItemIn.getItemStackHandler(toolItem);
+        List<Item> firstItemsNeeded = compareAndAddToNewArray(1, toolNeededIn);
+        List<Item> firstItemsThatCanBeUsed = compareAndAddToNewArray(-1, toolNeededIn);
+        List<Item> secondItemsNeeded = compareAndAddToNewArray(2, toolNeededIn);
+        List<Item> secondItemsThatCanBeUsed = compareAndAddToNewArray(-2, toolNeededIn);
 
-        if (toolItemIn.getPartsToWork() == 3) {
-            if ((mainHand.getItem() instanceof ToolHeadItem && offHand.getItem() instanceof ToolHandleItem) || (offHand.getItem() instanceof ToolHeadItem && mainHand.getItem() instanceof ToolHandleItem)) {
-                for (Item toolNeeded : toolNeededIn) {
-                    if (inventoryToolCheck(playerEntity, toolNeededIn)){
-                        toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, toolNeededIn);
-                        itemStackHandler.setToolHead(mainHand.getItem() instanceof ToolHeadItem ? mainHand : offHand);
-                        itemStackHandler.setToolHandle(mainHand.getItem() instanceof ToolHandleItem ? mainHand : offHand);
 
-                        ItemStack handleItemStack = itemStackHandler.getToolHandle();
-                        ItemStack headItemStack = itemStackHandler.getToolHead();
-
-                        toolItemIn.setHandleColor(toolItem, ((ToolHandleItem) handleItemStack.getItem()).color);
-                        toolItemIn.setHeadColor(toolItem, ((ToolHeadItem) headItemStack.getItem()).color);
-
-                        playerEntity.setItemInHand(Hand.MAIN_HAND, toolItem);
-                        playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? Hand.OFF_HAND : Hand.MAIN_HAND, ItemStack.EMPTY);
+        if (toolItemIn.getPartsToWork() == 3 || toolItemIn.getPartsToWork() == 2) {
+            ItemStack mainHandCheck = playerEntity.getMainHandItem().getItem() == toolItemIn.toolParts.get(0).getFirst() ? playerEntity.getMainHandItem() : (playerEntity.getMainHandItem().getItem() == toolItemIn.toolParts.get(1).getFirst() ? playerEntity.getMainHandItem() : null);
+            ItemStack offHandCheck = playerEntity.getOffhandItem().getItem() == toolItemIn.toolParts.get(0).getFirst() ? playerEntity.getOffhandItem() : (playerEntity.getOffhandItem().getItem() == toolItemIn.toolParts.get(1).getFirst() ? playerEntity.getOffhandItem() : null);
+            if (mainHandCheck != null && offHandCheck != null) {
+                if (inventoryToolCheck(playerEntity, firstItemsNeeded) || inventoryToolCheck(playerEntity, firstItemsThatCanBeUsed)) {
+                    if(inventoryToolCheck(playerEntity, firstItemsNeeded)){
+                        toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, firstItemsNeeded);
                     }
+
+                    if(inventoryToolCheck(playerEntity, firstItemsThatCanBeUsed)){
+                        toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, firstItemsThatCanBeUsed);
+                    }
+                    itemStackHandler.setToolHead(mainHandCheck.getItem() instanceof ToolHeadItem ? mainHandCheck : offHandCheck);
+                    itemStackHandler.setToolHandle(mainHandCheck.getItem() instanceof ToolHandleItem ? mainHandCheck : offHandCheck);
+
+                    ItemStack handleItemStack = itemStackHandler.getToolHandle();
+                    ItemStack headItemStack = itemStackHandler.getToolHead();
+
+                    ToolHandleItem toolHandleItem = (ToolHandleItem) handleItemStack.getItem();
+                    ToolHeadItem toolHeadItem = (ToolHeadItem) headItemStack.getItem();
+
+                    toolItemIn.setHandleColor(toolItem, toolHandleItem.color);
+                    toolItemIn.setHeadColor(toolItem, toolHeadItem.color);
+
+                    toolItemIn.setAttackDamage(toolItem, toolHeadItem.attackDamage);
+                    toolItemIn.setEfficiency(toolItem, toolHeadItem.efficiency);
+                    toolItemIn.setHarvestLevel(toolItem, toolHeadItem.getItToolType());
+
+                    if (toolItemIn.getPartsToWork() == 2) {
+                        toolItemIn.setAttackSpeed(toolItem, toolHandleItem.weight + toolHeadItem.weight);
+                    }
+
+                    playerEntity.setItemInHand(Hand.MAIN_HAND, toolItem);
+                    playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? Hand.OFF_HAND : Hand.MAIN_HAND, ItemStack.EMPTY);
                 }
             }
+        }
 
+        if (toolItemIn.getPartsToWork() == 3){
+            ItemStack mainHandNew = playerEntity.getMainHandItem();
+            ItemStack offHandNew = playerEntity.getOffhandItem();
+            ItemStack mainHandCheck = mainHandNew.getItem() == toolItemIn.toolParts.get(2).getFirst() ? mainHandNew : (mainHandNew.getItem() instanceof ITToolItem ? playerEntity.getMainHandItem() : null);
+            ItemStack offHandCheck = offHandNew.getItem() == toolItemIn.toolParts.get(2).getFirst() ? offHandNew : (offHandNew.getItem() instanceof ITToolItem ? playerEntity.getOffhandItem() : null);
 
-            if ((mainHand.getItem() instanceof ITToolItem && offHand.getItem() instanceof ToolBindingItem)) {
-                if (inventoryToolCheck(playerEntity, toolNeededIn)) {
-                    ItemStack newToolItemStack = (mainHand.getItem() instanceof ITToolItem ? mainHand : offHand);
-                    ITToolItem newToolItem = (ITToolItem) newToolItemStack.getItem();
-                    ITToolItemItemStackHandler itemStackHandlerNew = newToolItem.getItemStackHandler(mainHand.getItem() instanceof ITToolItem ? mainHand : offHand);
-                    itemStackHandlerNew.setToolBinding(mainHand.getItem() instanceof ToolBindingItem ? mainHand : offHand);
+            if ((mainHandCheck != null && offHandCheck!= null)) {
+                if (inventoryToolCheck(playerEntity, secondItemsNeeded) || inventoryToolCheck(playerEntity, secondItemsThatCanBeUsed)) {
+                    if(inventoryToolCheck(playerEntity, secondItemsNeeded)){
+                        toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, secondItemsNeeded);
+                    }
+
+                    if(inventoryToolCheck(playerEntity, secondItemsThatCanBeUsed)){
+                        toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, secondItemsThatCanBeUsed);
+                    }
+
+                    ItemStack newToolItemStack = (mainHandCheck.getItem() instanceof ITToolItem ? mainHandCheck : offHandCheck);
+                    ITToolItem newToolItem = (ITToolItem)newToolItemStack.getItem();
+                    ITToolItemItemStackHandler itemStackHandlerNew = newToolItem.getItemStackHandler(mainHandCheck.getItem() instanceof ITToolItem ? mainHandCheck : offHandCheck);
+                    itemStackHandlerNew.setToolBinding(mainHandCheck.getItem() instanceof ToolBindingItem ? mainHandCheck : offHandCheck);
                     ItemStack handleItemStack = itemStackHandlerNew.getToolHandle();
                     ItemStack headItemStack = itemStackHandlerNew.getToolHead();
                     ItemStack bindingItemStack = itemStackHandlerNew.getToolBinding();
@@ -185,65 +181,52 @@ public class ToolHandler {
                 }
             }
         }
-
-        if (toolItemIn.getPartsToWork() == 2) {
-            if (inventoryToolCheck(playerEntity, toolNeededIn)) {
-                itemStackHandler.setToolHead(mainHand.getItem() instanceof ToolHeadItem ? mainHand : offHand);
-                itemStackHandler.setToolHandle(mainHand.getItem() instanceof ToolHandleItem ? mainHand : offHand);
-                ItemStack handleItemStack = itemStackHandler.getToolHandle();
-                ItemStack headItemStack = itemStackHandler.getToolHead();
-                ItemStack bindingItemStack = itemStackHandler.getToolBinding();
-                ToolHandleItem handleItem = (ToolHandleItem) handleItemStack.getItem();
-                ToolHeadItem headItem = (ToolHeadItem) headItemStack.getItem();
-                ToolBindingItem bindingItem = (ToolBindingItem) bindingItemStack.getItem();
-
-                toolItemIn.setHandleColor(toolItem, handleItem.color);
-                toolItemIn.setHeadColor(toolItem, headItem.color);
-                toolItemIn.setBindingColor(toolItem, bindingItem.color);
-                toolItemIn.setAttackDamage(toolItem, headItem.attackDamage);
-                toolItemIn.setEfficiency(toolItem, headItem.efficiency);
-                toolItemIn.setAttackSpeed(toolItem, handleItem.weight + headItem.weight + bindingItem.weight);
-                toolItemIn.setHarvestLevel(toolItem, headItem.getItToolType());
-
-                playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? Hand.MAIN_HAND : Hand.OFF_HAND, toolItem);
-                playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? Hand.OFF_HAND : Hand.MAIN_HAND, ItemStack.EMPTY);
-            }
-        }
     }
 
-    public static boolean inventoryToolCheck(PlayerEntity playerIn, Item... toolNeededIn){
-        List<Item> newList = Arrays.asList(toolNeededIn.clone());
+    public static boolean inventoryToolCheck(PlayerEntity playerIn, List<Item> toolNeededIn){
         for(int i = 9; i <= 45; i++){
             ItemStack toolNeeded = playerIn.inventory.getItem(i);
-            if(newList.contains(toolNeeded.getItem())){
+            if(toolNeededIn.contains(toolNeeded.getItem())){
                 if(toolNeeded.getItem() instanceof ITToolItem){
                     ITToolItem toolNeededItem = (ITToolItem)playerIn.inventory.getItem(i).getItem();
                     ITToolItemItemStackHandler itemStackHandler = toolNeededItem.getItemStackHandler(toolNeeded);
 
                     if((toolNeededItem.partsToWork == 1 || toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHead() != null){
                         if(itemStackHandler.getToolHead().getDamageValue() < itemStackHandler.getToolHead().getMaxDamage()) {
-                            newList.remove(toolNeeded.getItem());
+                            toolNeededIn.remove(toolNeeded.getItem());
                         }
                     }
 
                     if((toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHandle() != null){
                         if(itemStackHandler.getToolHandle().getDamageValue() < itemStackHandler.getToolHandle().getDamageValue()){
-                            newList.remove(toolNeeded.getItem());
+                            toolNeededIn.remove(toolNeeded.getItem());
                         }
                     }
 
                     if(toolNeededItem.partsToWork == 3 & itemStackHandler.getToolBinding() != null){
                         if(itemStackHandler.getToolBinding().getDamageValue() < itemStackHandler.getToolBinding().getDamageValue()){
-                            newList.remove(toolNeeded.getItem());
+                            toolNeededIn.remove(toolNeeded.getItem());
                         }
                     }
                 }else{
                     if(toolNeeded.getDamageValue() < toolNeeded.getMaxDamage()) {
-                        newList.remove(toolNeeded.getItem());
+                        toolNeededIn.remove(toolNeeded.getItem());
                     }
                 }
             }
         }
-        return newList.size() == 0;
+        return toolNeededIn.size() == 0;
+    }
+
+    public static List<Item> compareAndAddToNewArray(int numberIn, List<Pair<Item, Integer>> pairArrayIn){
+        List<Item> newArray = new ArrayList<>();
+
+        for(Pair<Item, Integer> pair : pairArrayIn){
+            if(pair.getSecond() == numberIn) {
+                newArray.add(pair.getFirst());
+            }
+        }
+
+        return newArray;
     }
 }

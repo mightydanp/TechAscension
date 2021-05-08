@@ -51,12 +51,18 @@ public class ITToolItem extends Item {
     private final Item.Properties properties;
     public final int partsToWork;
     public boolean preformAction;
+    public List<Pair<Item, Integer>> craftingToolsNeeded;
+    public List<Pair<Item, Integer>> toolParts;
+    public List<Item> toolsNeededForDisassemble;
 
-    public ITToolItem(Set<Block> effectiveBlocksIn, int partsToWorkIn, Properties propertiesIn) {
+    public ITToolItem(Set<Block> effectiveBlocksIn, Properties propertiesIn, List<Pair<Item, Integer>> craftingToolsNeededIn, List<Pair<Item, Integer>> partsNeededToBuildIn, List<Item> toolsNeededForDisassembleIn) {
         super(propertiesIn.stacksTo(1));
-        this.effectiveBlocks = effectiveBlocksIn;
+        craftingToolsNeeded = craftingToolsNeededIn;
+        toolParts = partsNeededToBuildIn;
+        effectiveBlocks = effectiveBlocksIn;
         properties = propertiesIn;
-        partsToWork = partsToWorkIn;
+        partsToWork = partsNeededToBuildIn.size();
+        toolsNeededForDisassemble = toolsNeededForDisassembleIn;
     }
 
     @Override
@@ -162,7 +168,7 @@ public class ITToolItem extends Item {
         }
 
         if (!canWork(mainHandItemStack)){
-            disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 1, ToolHandler.file, ToolHandler.hammer);
+            disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 1, toolsNeededForDisassemble);
             playerEntityIn.setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
         }
 
@@ -430,8 +436,6 @@ public class ITToolItem extends Item {
         return false;
     }
 
-    //todo make method for take appart tool and have a seperate one for damage item putting tool together works as intended, look into more
-    //to see if the tool can mine tool levels that its not sepost to be able to mine
     public void damageToolParts(ItemStack itemStackIn, PlayerEntity playerIn, World worldIn, int amountIn) {
         ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(itemStackIn);
         ITToolItem toolItem = (ITToolItem) itemStackIn.getItem();
@@ -475,13 +479,11 @@ public class ITToolItem extends Item {
         }
     }
 
-    public void disassembleTool(ItemStack itemStackIn, PlayerEntity playerIn, World worldIn, int toolInDamage, Item... toolNeededIn) {
+    public void disassembleTool(ItemStack itemStackIn, PlayerEntity playerIn, World worldIn, int toolInDamage, List<Item> toolNeededIn) {
         ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(itemStackIn);
         ItemStack toolHeadItemStack = itemStackHandler.getToolHead();
         ItemStack toolBindingItemStack = itemStackHandler.getToolBinding();
         ItemStack toolHandleItemStack = itemStackHandler.getToolHandle();
-        Set<Item> toolNeeded = new HashSet<>(Arrays.asList(toolNeededIn));
-        List<Item> toolsNeededList = Arrays.asList(toolNeededIn);
 
         damageToolsNeededInPlayerInventory(playerIn, worldIn, toolInDamage, toolNeededIn);
 
@@ -521,18 +523,19 @@ public class ITToolItem extends Item {
         }
     }
 
-    public void damageToolsNeededInPlayerInventory(PlayerEntity playerIn, World worldIn, int Damage, Item... toolNeededIn){
-        List<Item> newList = Arrays.asList(toolNeededIn);
-        if(inventoryToolCheck(playerIn, toolNeededIn) && newList.size() != 0){
+    public void damageToolsNeededInPlayerInventory(PlayerEntity playerIn, World worldIn, int Damage, List<Item> toolNeededIn){
+        if(inventoryToolCheck(playerIn, toolNeededIn) && toolNeededIn.size() != 0){
             for(Item toolThatIsNeeded : toolNeededIn){
                 for(int i = 9; i <= 45; i++){
                     if (toolThatIsNeeded == playerIn.inventory.getItem(i).getItem()){
-                        newList.remove(playerIn.inventory.getItem(i).getItem());
+                        toolNeededIn.remove(playerIn.inventory.getItem(i).getItem());
                         ItemStack toolItem = playerIn.inventory.getItem(i);
                         if(toolThatIsNeeded instanceof ITToolItem) {
                             damageToolParts(toolItem, playerIn, worldIn, 1);
                         }else{
-                            toolItem.setDamageValue(toolItem.getDamageValue() + Damage);
+                            if(toolItem.getMaxDamage() > 0) {
+                                toolItem.setDamageValue(toolItem.getDamageValue() + Damage);
+                            }
                         }
                     }
                 }
@@ -540,40 +543,39 @@ public class ITToolItem extends Item {
         }
     }
 
-    public boolean inventoryToolCheck(PlayerEntity playerIn, Item... toolNeededIn){
-        List<Item> newList = Arrays.asList(toolNeededIn);
+    public boolean inventoryToolCheck(PlayerEntity playerIn, List<Item> toolNeededIn){
         for(int i = 9; i <= 45; i++){
             ItemStack toolNeeded = playerIn.inventory.getItem(i);
-            if(newList.contains(toolNeeded.getItem())){
+            if(toolNeededIn.contains(toolNeeded.getItem())){
                 if(toolNeeded.getItem() instanceof ITToolItem){
                     ITToolItem toolNeededItem = (ITToolItem)playerIn.inventory.getItem(i).getItem();
                     ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(toolNeeded);
 
                     if((toolNeededItem.partsToWork == 1 || toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHead() != null){
                         if(itemStackHandler.getToolHead().getDamageValue() < itemStackHandler.getToolHead().getMaxDamage()) {
-                            newList.remove(toolNeeded.getItem());
+                            toolNeededIn.remove(toolNeeded.getItem());
                         }
                     }
 
                     if((toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHandle() != null){
                        if(itemStackHandler.getToolHandle().getDamageValue() < itemStackHandler.getToolHandle().getDamageValue()){
-                           newList.remove(toolNeeded.getItem());
+                           toolNeededIn.remove(toolNeeded.getItem());
                        }
                     }
 
                     if(toolNeededItem.partsToWork == 3 & itemStackHandler.getToolBinding() != null){
                        if(itemStackHandler.getToolBinding().getDamageValue() < itemStackHandler.getToolBinding().getDamageValue()){
-                           newList.remove(toolNeeded.getItem());
+                           toolNeededIn.remove(toolNeeded.getItem());
                        }
                     }
                 }else{
                     if(toolNeeded.getDamageValue() < toolNeeded.getMaxDamage()) {
-                        newList.remove(toolNeeded.getItem());
+                        toolNeededIn.remove(toolNeeded.getItem());
                     }
                 }
             }
         }
-        return newList.size() == 0;
+        return toolNeededIn.size() == 0;
     }
 
     public List<Pair<String, String>> getPartsDamage(ItemStack itemstackIn) {

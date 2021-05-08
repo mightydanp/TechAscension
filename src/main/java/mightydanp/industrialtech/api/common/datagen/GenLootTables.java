@@ -44,29 +44,29 @@ public class GenLootTables extends LootTableProvider {
         for (MaterialHandler material : ModMaterials.materials) {
             for (EnumMaterialFlags flag : material.flags) {
                 if (flag == EnumMaterialFlags.ORE) {
-                    for(RegistryObject<Block> blockRegistered : material.oreBlock) {
+                    for(RegistryObject<Block> blockRegistered : material.ore) {
                         standardDropTable(blockRegistered.get());
                     }
                 }
                 if (flag == EnumMaterialFlags.GEM) {
-                    for(RegistryObject<Block> blockRegistered : material.oreBlock) {
+                    for(RegistryObject<Block> blockRegistered : material.ore) {
                         standardDropTable(blockRegistered.get());
                     }
                 }
                 if (flag == EnumMaterialFlags.ORE || flag == EnumMaterialFlags.GEM) {
-                    for(RegistryObject<Block> blockRegistered : material.smallOreBlock) {
+                    for(RegistryObject<Block> blockRegistered : material.smallOre) {
                         standardDropTable(blockRegistered.get());
                     }
 
                     int i = 0;
-                    for(RegistryObject<Block> blockRegistered : material.denseOreBlock) {
+                    for(RegistryObject<Block> blockRegistered : material.denseOre) {
                         LootTable.Builder tableBuilder = LootTable.lootTable();
                         LootPool.Builder poolBuilder = LootPool.lootPool();
 
                         blockTable(blockRegistered.get(), tableBuilder.withPool(poolBuilder.setRolls(ConstantRange.exactly(1))
                                         .add(AlternativesLootEntry.alternatives().otherwise(ItemLootEntry.lootTableItem(blockRegistered.get())
                                                 .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.IntBound.atLeast(1)))))))
-                                        .add(ItemLootEntry.lootTableItem(material.oreBlock.get(i).get()))
+                                        .add(ItemLootEntry.lootTableItem(material.ore.get(i).get()))
                         ));
                         i++;
                     }

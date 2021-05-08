@@ -4,10 +4,14 @@ import mightydanp.industrialtech.api.common.blocks.RockBlock;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.libs.BlockRef;
+import mightydanp.industrialtech.common.tileentities.CampfireTileEntityOverride;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.tileentity.CampfireTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -21,16 +25,20 @@ public class ModBlocks {
     public static RegistryObject<Block> cattail_plant_top_block;
 
     public static RegistryObject<Block> rock_block;
+    public static RegistryObject<Block> campfire_override;
+
 
     public static void init() {
         cattail_plant_bottom_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_bottom_name, () -> new CatTailPlantBottomBlock(AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
         cattail_plant_top_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_top_name, () -> new CatTailPlantTopBlock(AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
-        rock_block = RegistryHandler.BLOCKS.register(BlockRef.rock_block_name, () -> new RockBlock());
+        rock_block = RegistryHandler.BLOCKS.register(BlockRef.rock_block_name, RockBlock::new);
+        campfire_override = RegistryHandler.BLOCKS.register(BlockRef.campfire_override_name, ()-> new CampfireBlockOverride(true, 1));
     }
 
     public static void setRenderType(){
         RenderTypeLookup.setRenderLayer(cattail_plant_bottom_block.get(), RenderType.cutout());
         RenderTypeLookup.setRenderLayer(cattail_plant_top_block.get(), RenderType.cutout());
         RenderTypeLookup.setRenderLayer(rock_block.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(campfire_override.get(), RenderType.cutout());
     }
 }

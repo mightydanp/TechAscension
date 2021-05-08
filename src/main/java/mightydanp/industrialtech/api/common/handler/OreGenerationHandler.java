@@ -69,13 +69,13 @@ public class OreGenerationHandler {
             }
 
             if(obj instanceof MaterialHandler) {
-                for (RegistryObject<Block> ore : ((MaterialHandler) obj).smallOreBlock) {
+                for (RegistryObject<Block> ore : ((MaterialHandler) obj).smallOre) {
                     veinSmallOreBlocks.add(ore.get().defaultBlockState());
                 }
-                for (RegistryObject<Block> ore : ((MaterialHandler) obj).oreBlock) {
+                for (RegistryObject<Block> ore : ((MaterialHandler) obj).ore) {
                     veinOreBlocks.add(ore.get().defaultBlockState());
                 }
-                for (RegistryObject<Block> ore : ((MaterialHandler) obj).denseOreBlock) {
+                for (RegistryObject<Block> ore : ((MaterialHandler) obj).denseOre) {
                     veinDenseOreBlocks.add(ore.get().defaultBlockState());
                 }
             }
@@ -111,7 +111,7 @@ public class OreGenerationHandler {
 
             if(obj instanceof MaterialHandler) {
                 List<BlockState> tempList2 = new ArrayList<>();
-                for (RegistryObject<Block> ore : ((MaterialHandler) obj).smallOreBlock) {
+                for (RegistryObject<Block> ore : ((MaterialHandler) obj).smallOre) {
                     tempList2.add(ore.get().defaultBlockState());
                 }
                 smallOreBlocks.add(tempList2);

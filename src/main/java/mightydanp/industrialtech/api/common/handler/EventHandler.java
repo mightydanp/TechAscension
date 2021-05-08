@@ -49,42 +49,5 @@ public class EventHandler {
     @SubscribeEvent
     public static void overrideInventoryEvent(GuiOpenEvent event) {}
 
-    @SubscribeEvent
-    public static void onItemRightClickEvent(final PlayerInteractEvent.RightClickItem event) {
-        if(event.getItemStack().getItem() == Items.STICK) {
-            ItemStack itemStack = new ItemStack(ToolHandler.pickaxe);
-            ((PickaxeToolItem)itemStack.getItem()).setHeadColor(itemStack, 0);
-            ((PickaxeToolItem)itemStack.getItem()).setBindingColor(itemStack, 0);
-            ((PickaxeToolItem)itemStack.getItem()).setHandleColor(itemStack, 0);
-            ((PickaxeToolItem)itemStack.getItem()).setAttackDamage(itemStack, 12F);
-            ((PickaxeToolItem)itemStack.getItem()).setEfficiency(itemStack, 12F);
-            ((PickaxeToolItem)itemStack.getItem()).setAttackSpeed(itemStack, 12F);
-            List<Pair<ToolType, Integer>> itToolTypesList = new ArrayList<Pair<ToolType, Integer>>(){{
-                add(new Pair<>(ToolType.PICKAXE, 0));
-            }};
-
-            ((PickaxeToolItem)itemStack.getItem()).setHarvestLevel(itemStack, itToolTypesList);
-
-            event.getWorld().addFreshEntity(new ItemEntity(event.getWorld(), event.getPlayer().getX(), event.getPlayer().getY(), event.getPlayer().getZ(), itemStack));
-        }
-
-
-        if(event.getItemStack().getItem() == Items.IRON_INGOT){
-            ItemStack itemStack = new ItemStack(ToolHandler.pickaxe);
-            ((PickaxeToolItem)itemStack.getItem()).setHeadColor(itemStack, 0);
-            ((PickaxeToolItem)itemStack.getItem()).setBindingColor(itemStack, 0);
-            ((PickaxeToolItem)itemStack.getItem()).setHandleColor(itemStack, 0);
-            ((PickaxeToolItem)itemStack.getItem()).setAttackDamage(itemStack,6F);
-            ((PickaxeToolItem)itemStack.getItem()).setEfficiency(itemStack,6F);
-            ((PickaxeToolItem)itemStack.getItem()).setAttackSpeed(itemStack,6F);
-            List<Pair<ToolType, Integer>> itToolTypesList = new ArrayList<Pair<ToolType, Integer>>(){{
-                add(new Pair<>(ToolType.PICKAXE, 0));
-            }};
-            ((PickaxeToolItem)itemStack.getItem()).setHarvestLevel(itemStack, itToolTypesList);
-
-            event.getWorld().addFreshEntity(new ItemEntity(event.getWorld(), event.getPlayer().getX(), event.getPlayer().getY(), event.getPlayer().getZ(), itemStack));
-        }
-    }
-
 
 }

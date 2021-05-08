@@ -2,8 +2,11 @@ package mightydanp.industrialtech.client;
 
 import mightydanp.industrialtech.api.common.ISidedReference;
 
+import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.materials.ModMaterials;
+import mightydanp.industrialtech.common.tileentities.ModTileEntities;
+import mightydanp.industrialtech.common.tools.ModTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -18,6 +21,8 @@ public class ModClientEvent implements ISidedReference {
     public static void init(FMLClientSetupEvent event) {
         ModBlocks.setRenderType();
         ModMaterials.clientInit();
+        ModTools.clientInit();
+        ModTileEntities.clientInit();
     }
 
     @Override

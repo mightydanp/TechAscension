@@ -3,6 +3,7 @@ package mightydanp.industrialtech.api.common.items;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
@@ -26,5 +27,18 @@ public class RockBlockItem extends BlockItem {
     @Override
     protected boolean placeBlock(BlockItemUseContext context, BlockState state) {
         return false;
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return 1;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack itemStackIn, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+        super.inventoryTick(itemStackIn, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
+        if(itemStackIn.getDamageValue() == 0){
+            itemStackIn.shrink(1);
+        }
     }
 }

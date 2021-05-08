@@ -10,43 +10,29 @@ import java.util.regex.Pattern;
  * Created by MightyDanp on 3/8/2021.
  */
 public class ITToolType{
-    ToolType toolType;
-
-    private static final Pattern VALID_NAME = Pattern.compile("[^a-z_]"); //Only a-z and _ are allowed, meaning names must be lower case. And use _ to separate words.
-    private static final Map<String, ITToolType> VALUES = new ConcurrentHashMap<>();
-
-    public static final ITToolType AXE = get("axe");
-    public static final ITToolType HAMMER = get("hammer");
-    public static final ITToolType HOE = get("hoe");
-    public static final ITToolType KNIFE = get("knife");
-    public static final ITToolType PICKAXE = get("pickaxe");
-    public static final ITToolType SHOVEL = get("shovel");
-    public static final ITToolType SOFT_HAMMER = get("soft_hammer");
-    public static final ITToolType WRENCH = get("wrench");
+    public static final ToolType AXE = ToolType.get("axe");
+    public static final ToolType HAMMER = ToolType.get("hammer");
+    public static final ToolType HOE = ToolType.get("hoe");
+    public static final ToolType KNIFE = ToolType.get("knife");
+    public static final ToolType PICKAXE = ToolType.get("pickaxe");
+    public static final ToolType SHOVEL = ToolType.get("shovel");
+    public static final ToolType SOFT_HAMMER = ToolType.get("soft_hammer");
+    public static final ToolType WRENCH = ToolType.get("wrench");
+    public static final ToolType FILE = ToolType.get("file");
+    public static final ToolType CHISEL = ToolType.get("chisel");
 
     /**
      * Gets the ToolType for the specified name, or creates a new one if none for that name does yet exist.
      * This method can be called during parallel loading
      */
-    public static ITToolType get(String name)
-    {
-        return VALUES.computeIfAbsent(name, k ->
-        {
-            if (VALID_NAME.matcher(name).find())
-                throw new IllegalArgumentException("ITToolType.get() called with invalid name: " + name);
-            return new ITToolType(name);
-        });
-    }
 
     private final String name;
 
-    private ITToolType(String name)
-    {
-        this.name = name;
+    private ITToolType(String name){
+        this.name = ToolType.get(name).getName();
     }
 
-    public String getName()
-    {
+    public String getName(){
         return name;
     }
 }

@@ -10,7 +10,6 @@ import static mightydanp.industrialtech.api.common.libs.EnumMaterialFlags.*;
 
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialTextureFlags;
-import mightydanp.industrialtech.api.common.libs.ITToolType;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -47,16 +46,20 @@ public class MaterialHandler {
 
     public static List<MaterialHandler> registeredMaterials = new ArrayList<>();
     public EnumMaterialFlags[] flags;
-    public List<RegistryObject<Block>> oreBlock = new ArrayList<>();
-    public List<RegistryObject<Block>> smallOreBlock = new ArrayList<>();
-    public List<RegistryObject<Block>> denseOreBlock = new ArrayList<>();
+    public List<RegistryObject<Block>> ore = new ArrayList<>();
+    public List<RegistryObject<Block>> smallOre = new ArrayList<>();
+    public List<RegistryObject<Block>> denseOre = new ArrayList<>();
     public List<RegistryObject<Item>> oreItem = new ArrayList<>();
     public List<RegistryObject<Item>> smallOreItem = new ArrayList<>();
     public List<RegistryObject<Item>> denseOreItem = new ArrayList<>();
-    public RegistryObject<Item> ingotItem, gemItem, chippedGemItem, flawedGemItem, flawlessGemItem, legendaryGemItem, crushedOreItem, purifiedOreItem, centrifugedOreItem, dustItem, smallDustItem, tinyDustItem;
-    public RegistryObject<Item> dullAxeHeadItem, dullBuzzSawHeadItem, dullChiselHeadItem, dullHoeHeadItem, dullPickaxeItem, dullArrowHeadItem, dullSawHeadItem, dullSwordHeadItem;
-    public RegistryObject<Item> drillHeadItem, axeHeadItem, buzzSawHeadItem, chiselHeadItem, fileHeadItem, hammerHeadItem, hoeHeadItem, pickaxeHeadItem, arrowHeadItem, sawHeadItem, shovelHeadItem, swordHeadItem, screwdriverHeadItem;
-    public RegistryObject<Item> wedgeItem, wedgeHandleItem;
+    public RegistryObject<Item> ingot, gem, chippedGem, flawedGem, flawlessGem, legendaryGem, crushedOre, purifiedOre, centrifugedOre, dust, smallDust, tinyDust;
+    public static Item ingotItem, gemItem, chippedGemItem, flawedGemItem, flawlessGemItem, legendaryGemItem, crushedOreItem, purifiedOreItem, centrifugedOreItem, dustItem, smallDustItem, tinyDustItem;
+    public RegistryObject<Item> dullAxeHead, dullBuzzSawHead, dullChiselHead, dullHoeHead, dullPickaxe, dullArrowHead, dullSawHead, dullSwordHead;
+    public static Item dullAxeHeadItem, dullBuzzSawHeadItem, dullChiselHeadItem, dullHoeHeadItem, dullPickaxeItem, dullArrowHeadItem, dullSawHeadItem, dullSwordHeadItem;
+    public RegistryObject<Item> drillHead, axeHead, buzzSawHead, chiselHead, fileHead, hammerHead, hoeHead, pickaxeHead, arrowHead, sawHead, shovelHead, swordHead, screwdriverHead;
+    public static Item drillHeadItem, axeHeadItem, buzzSawHeadItem, chiselHeadItem, fileHeadItem, hammerHeadItem, hoeHeadItem, pickaxeHeadItem, arrowHeadItem, sawHeadItem, shovelHeadItem, swordHeadItem, screwdriverHeadItem;
+    public RegistryObject<Item> wedge, wedgeHandle;
+    public static Item wedgeItem, wedgeHandleItem;
 
     public static final List<BlockState> stone_variants = new ArrayList<BlockState>(){{
         add(Blocks.STONE.defaultBlockState());
@@ -120,34 +123,34 @@ public class MaterialHandler {
                 for(BlockState stone : stone_variants){
                     RegistryObject<Block> oreBlockR = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new OreBlock(materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), stone));
-                    oreBlock.add(oreBlockR);
+                    ore.add(oreBlockR);
                     RegistryObject<Item> oreItemR = RegistryHandler.ITEMS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new BlockOreItem(oreBlockR.get(), new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, element));
                     oreItem.add(oreItemR);
                     RegistryObject<Block> smallOreBlockR = RegistryHandler.BLOCKS.register("small_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new SmallOreBlock("small_" + materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), stone));
-                    smallOreBlock.add(smallOreBlockR);
+                    smallOre.add(smallOreBlockR);
                     RegistryObject<Item> smallOreItemR = RegistryHandler.ITEMS.register("small_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new BlockItem(smallOreBlockR.get(), new Item.Properties().tab(ModItemGroups.ore_tab)));
                     smallOreItem.add(smallOreItemR);
                     RegistryObject<Block> denseOreBlockR = RegistryHandler.BLOCKS.register("dense_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new DenseOreBlock("dense_" + materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), density, stone, oreItem));
-                    denseOreBlock.add(denseOreBlockR);
+                    denseOre.add(denseOreBlockR);
                     RegistryObject<Item> denseOreItemR = RegistryHandler.ITEMS.register("dense_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new BlockOreItem(denseOreBlockR.get(), new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, element));
                     denseOreItem.add(denseOreItemR);
                 }
-                crushedOreItem = RegistryHandler.ITEMS.register( "crushed_" + materialName + "_ore", () -> new OreProductsItem(new Item.Properties()
+                crushedOre = RegistryHandler.ITEMS.register( "crushed_" + materialName + "_ore", () -> crushedOreItem = new OreProductsItem(new Item.Properties()
                         .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
-                purifiedOreItem = RegistryHandler.ITEMS.register( "purified_" + materialName + "_ore", () -> new OreProductsItem(new Item.Properties()
+                purifiedOre = RegistryHandler.ITEMS.register( "purified_" + materialName + "_ore", () -> purifiedOreItem = new OreProductsItem(new Item.Properties()
                         .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
-                centrifugedOreItem = RegistryHandler.ITEMS.register( "centrifuged_" + materialName + "_ore", () -> new OreProductsItem(new Item.Properties()
+                centrifugedOre = RegistryHandler.ITEMS.register( "centrifuged_" + materialName + "_ore", () -> centrifugedOreItem = new OreProductsItem(new Item.Properties()
                         .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
-                dustItem = RegistryHandler.ITEMS.register( "" + materialName + "_dust", () -> new OreProductsItem(new Item.Properties()
+                dust = RegistryHandler.ITEMS.register( "" + materialName + "_dust", () -> dustItem = new OreProductsItem(new Item.Properties()
                         .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
-                smallDustItem = RegistryHandler.ITEMS.register( "small_" + materialName + "_dust", () -> new OreProductsItem(new Item.Properties()
+                smallDust = RegistryHandler.ITEMS.register( "small_" + materialName + "_dust", () -> smallDustItem = new OreProductsItem(new Item.Properties()
                         .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
-                tinyDustItem = RegistryHandler.ITEMS.register( "tiny_" + materialName + "_dust", () -> new OreProductsItem(new Item.Properties()
+                tinyDust = RegistryHandler.ITEMS.register( "tiny_" + materialName + "_dust", () -> tinyDustItem = new OreProductsItem(new Item.Properties()
                         .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, element));
 
 
@@ -156,57 +159,57 @@ public class MaterialHandler {
             if(flag == ORE){}
 
             if(flag == GEM){
-                gemItem = RegistryHandler.ITEMS.register( materialName + "_gem", () -> new GemItem(new Item.Properties()
+                gem = RegistryHandler.ITEMS.register( materialName + "_gem", () -> gemItem = new GemItem(new Item.Properties()
                         .tab(ModItemGroups.gem_tab), element));
-                chippedGemItem = RegistryHandler.ITEMS.register( "chipped_" + materialName + "_gem", () -> new GemItem(new Item.Properties()
+                chippedGem = RegistryHandler.ITEMS.register( "chipped_" + materialName + "_gem", () -> chippedGemItem = new GemItem(new Item.Properties()
                         .tab(ModItemGroups.gem_tab), element));
-                flawedGemItem = RegistryHandler.ITEMS.register( "flawed_" + materialName + "_gem", () -> new GemItem(new Item.Properties()
+                flawedGem = RegistryHandler.ITEMS.register( "flawed_" + materialName + "_gem", () -> flawedGemItem = new GemItem(new Item.Properties()
                         .tab(ModItemGroups.gem_tab), element));
-                flawlessGemItem = RegistryHandler.ITEMS.register( "flawless_" + materialName + "_gem", () -> new GemItem(new Item.Properties()
+                flawlessGem = RegistryHandler.ITEMS.register( "flawless_" + materialName + "_gem", () -> flawlessGemItem = new GemItem(new Item.Properties()
                         .tab(ModItemGroups.gem_tab), element));
-                legendaryGemItem = RegistryHandler.ITEMS.register( "legendary_" + materialName + "_gem", () -> new GemItem(new Item.Properties()
+                legendaryGem = RegistryHandler.ITEMS.register( "legendary_" + materialName + "_gem", () -> legendaryGemItem = new GemItem(new Item.Properties()
                         .tab(ModItemGroups.gem_tab), element));
             }
 
             if(flag == INGOT){
-                ingotItem = RegistryHandler.ITEMS.register(materialName + "_" + INGOT.name(), () ->
-                        new IngotItem(new Item.Properties().tab(ModItemGroups.item_tab), boilingPoint, meltingPoint, element));
+                ingot = RegistryHandler.ITEMS.register(materialName + "_" + INGOT.name(), () ->
+                        ingotItem = new IngotItem(new Item.Properties().tab(ModItemGroups.item_tab), boilingPoint, meltingPoint, element));
             }
 
             if(flag == TOOL_HEAD){
-                dullPickaxeItem = RegistryHandler.ITEMS.register("dull_" + materialName + "_pickaxe_head", () ->
-                        new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
-                pickaxeHeadItem = RegistryHandler.ITEMS.register( materialName + "_pickaxe_head", () ->
-                        new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, speed, durability, attackDamage, weight, toolTypes));
-                hammerHeadItem = RegistryHandler.ITEMS.register( materialName + "_hammer_head", () ->
-                        new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, speed, durability, attackDamage, weight, toolTypes));
-                dullChiselHeadItem = RegistryHandler.ITEMS.register("dull_" + materialName + "_chisel_head", () ->
-                        new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
-                chiselHeadItem = RegistryHandler.ITEMS.register( materialName + "_chisel_head", () ->
-                        new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, speed, durability, attackDamage, weight, toolTypes));
+                dullPickaxe = RegistryHandler.ITEMS.register("dull_" + materialName + "_pickaxe_head", () ->
+                        dullPickaxeItem = new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
+                pickaxeHead = RegistryHandler.ITEMS.register( materialName + "_pickaxe_head", () ->
+                        pickaxeHeadItem = new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, speed, durability, attackDamage, weight, toolTypes));
+                hammerHead = RegistryHandler.ITEMS.register( materialName + "_hammer_head", () ->
+                        hammerHeadItem = new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, speed, durability, attackDamage, weight, toolTypes));
+                dullChiselHead = RegistryHandler.ITEMS.register("dull_" + materialName + "_chisel_head", () ->
+                        dullChiselHeadItem = new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
+                chiselHead = RegistryHandler.ITEMS.register( materialName + "_chisel_head", () ->
+                        chiselHeadItem = new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, speed, durability, attackDamage, weight, toolTypes));
 
             }
 
             if(flag == TOOL_WEDGE){
-                wedgeItem = RegistryHandler.ITEMS.register( materialName + "_wedge", () ->
-                        new ToolBindingItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, durability, weight));
+                wedge = RegistryHandler.ITEMS.register( materialName + "_wedge", () ->
+                        wedgeItem = new ToolBindingItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, durability, weight));
             }
 
             if(flag == TOOL_WEDGE_HANDLE){
-                wedgeHandleItem = RegistryHandler.ITEMS.register( materialName + "_wedge_handle", () ->
-                        new ToolHandleItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, durability, weight));
+                wedgeHandle = RegistryHandler.ITEMS.register( materialName + "_wedge_handle", () ->
+                        wedgeHandleItem = new ToolHandleItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), materialName, element, color, textureFlag, boilingPoint, meltingPoint, durability, weight));
             }
         }
     }
 
     public void registerColorHandlerForBlock() {
-        for (RegistryObject<Block> block : oreBlock) {
+        for (RegistryObject<Block> block : ore) {
             setupABlockColor(block);
         }
-        for (RegistryObject<Block> block : smallOreBlock) {
+        for (RegistryObject<Block> block : smallOre) {
             setupABlockColor(block);
         }
-        for (RegistryObject<Block> block : denseOreBlock) {
+        for (RegistryObject<Block> block : denseOre) {
             setupABlockColor(block);
         }
     }
@@ -243,26 +246,26 @@ public class MaterialHandler {
                 return color;
             }, item.get());
         }
-        registerAItemColor(dustItem, 0);
-        registerAItemColor(smallDustItem, 0);
-        registerAItemColor(tinyDustItem, 0);
-        registerAItemColor(ingotItem, 0);
-        registerAItemColor(gemItem, 0);
-        registerAItemColor(chippedGemItem, 0);
-        registerAItemColor(flawedGemItem, 0);
-        registerAItemColor(flawedGemItem, 0);
-        registerAItemColor(flawlessGemItem, 0);
-        registerAItemColor(legendaryGemItem, 0);
-        registerAItemColor(crushedOreItem, 0);
-        registerAItemColor(purifiedOreItem, 0);
-        registerAItemColor(centrifugedOreItem, 0);
-        registerAItemColor(dullPickaxeItem, 0);
-        registerAItemColor(pickaxeHeadItem, 0);
-        registerAItemColor(hammerHeadItem, 0);
-        registerAItemColor(wedgeItem, 0);
-        registerAItemColor(wedgeHandleItem, 0);
-        registerAItemColor(dullChiselHeadItem, 0);
-        registerAItemColor(chiselHeadItem, 0);
+        registerAItemColor(dust, 0);
+        registerAItemColor(smallDust, 0);
+        registerAItemColor(tinyDust, 0);
+        registerAItemColor(ingot, 0);
+        registerAItemColor(gem, 0);
+        registerAItemColor(chippedGem, 0);
+        registerAItemColor(flawedGem, 0);
+        registerAItemColor(flawedGem, 0);
+        registerAItemColor(flawlessGem, 0);
+        registerAItemColor(legendaryGem, 0);
+        registerAItemColor(crushedOre, 0);
+        registerAItemColor(purifiedOre, 0);
+        registerAItemColor(centrifugedOre, 0);
+        registerAItemColor(dullPickaxe, 0);
+        registerAItemColor(pickaxeHead, 0);
+        registerAItemColor(hammerHead, 0);
+        registerAItemColor(wedge, 0);
+        registerAItemColor(wedgeHandle, 0);
+        registerAItemColor(dullChiselHead, 0);
+        registerAItemColor(chiselHead, 0);
 
     }
 
