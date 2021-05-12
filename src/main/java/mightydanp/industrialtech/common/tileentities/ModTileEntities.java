@@ -2,8 +2,8 @@ package mightydanp.industrialtech.common.tileentities;
 
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.client.rendering.tileentities.CampfireTileEntityRenderer;
-import net.minecraft.block.Blocks;
-import net.minecraft.tileentity.CampfireTileEntity;
+import mightydanp.industrialtech.common.blocks.ModBlocks;
+import net.minecraft.item.BlockItem;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -15,7 +15,7 @@ public class ModTileEntities {
     public static RegistryObject<TileEntityType<CampfireTileEntityOverride>> campfire_tile_entity;
 
     public static void init(){
-        campfire_tile_entity = RegistryHandler.TILES.register("campfire_override", ()-> TileEntityType.Builder.of(CampfireTileEntityOverride::new, Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE).build(null));
+        campfire_tile_entity = RegistryHandler.TILES.register("campfire_override", ()-> TileEntityType.Builder.of(CampfireTileEntityOverride::new, ModBlocks.campfire_override.get()).build(null));
     }
 
     public static void clientInit(){

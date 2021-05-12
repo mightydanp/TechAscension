@@ -48,22 +48,7 @@ public class RegistryHandler {
         FEATURES.register(IEventBus);
     }
 
-    @SubscribeEvent
-    public void registerBlocks(RegistryEvent.Register<Block> event) {
-        for(Block block : blocks) {
-            event.getRegistry().register(block);
-        }
-    }
-
-    @SubscribeEvent
-    public void registerItems(RegistryEvent.Register<Item> event) {
-        for(Item item : items) {
-            event.getRegistry().register(item);
-        }
-    }
-
-    public static <F extends Feature<?>> RegistryObject<F> createFeature(String name, Supplier<F> feature)
-    {
+    public static <F extends Feature<?>> RegistryObject<F> createFeature(String name, Supplier<F> feature){
         return FEATURES.register(name, feature);
     }
 }

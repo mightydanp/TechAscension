@@ -1,41 +1,69 @@
 package mightydanp.industrialtech.client.rendering.tileentities;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import mightydanp.industrialtech.client.rendering.models.CampFireModel;
+import mightydanp.industrialtech.common.blocks.state.CampfireStateController;
 import mightydanp.industrialtech.common.tileentities.CampfireTileEntityOverride;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.model.RenderMaterial;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3f;
 
 /**
  * Created by MightyDanp on 5/6/2021.
  */
 public class CampfireTileEntityRenderer extends TileEntityRenderer<CampfireTileEntityOverride> {
-    public static final RenderMaterial SHELL_TEXTURE = new RenderMaterial(AtlasTexture.LOCATION_BLOCKS, new ResourceLocation("entity/conduit/base"));
-    public static final RenderMaterial ACTIVE_SHELL_TEXTURE = new RenderMaterial(AtlasTexture.LOCATION_BLOCKS, new ResourceLocation("entity/conduit/cage"));
-    public static final RenderMaterial WIND_TEXTURE = new RenderMaterial(AtlasTexture.LOCATION_BLOCKS, new ResourceLocation("entity/conduit/wind"));
-    public static final RenderMaterial VERTICAL_WIND_TEXTURE = new RenderMaterial(AtlasTexture.LOCATION_BLOCKS, new ResourceLocation("entity/conduit/wind_vertical"));
-    public static final RenderMaterial OPEN_EYE_TEXTURE = new RenderMaterial(AtlasTexture.LOCATION_BLOCKS, new ResourceLocation("entity/conduit/open_eye"));
-    public static final RenderMaterial CLOSED_EYE_TEXTURE = new RenderMaterial(AtlasTexture.LOCATION_BLOCKS, new ResourceLocation("entity/conduit/closed_eye"));
-
-    private final ModelRenderer log1 = new ModelRenderer(32, 32, 0, 0);
-
+    private static final ResourceLocation campfireOffTexture = new ResourceLocation("textures/block/campfire_log.png");
+    private static final ResourceLocation campfireOnTexture = new ResourceLocation("textures/block/campfire/campfire_log_lit.png");
 
     public CampfireTileEntityRenderer(TileEntityRendererDispatcher tileEntityRendererDispatcherIn) {
         super(tileEntityRendererDispatcherIn);
-        log1.addBox(0F, 0F, 0F, 6F, 6F, 6F);
     }
 
     @Override
-    public void render(CampfireTileEntityOverride campfireTileEntityOverride, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int x, int y) {
-        //this.eye.addBox(-4.0F, -4.0F, 0.0F, 8.0F, 8.0F, 0.0F, 0.01F);
-        this.log1.render(matrixStack, CLOSED_EYE_TEXTURE.buffer(iRenderTypeBuffer, RenderType::entityCutoutNoCull), x, y);
+    public void render(CampfireTileEntityOverride campfireTileEntityOverride, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLight, int combinedOverlay) {
+        matrixStack.pushPose();
+        CampfireStateController campfireStateController = campfireTileEntityOverride.getCampfireNBT();
+        Model model = new CampFireModel(campfireStateController);
+
+        matrixStack.translate(0.5, 0, 0.5D);
+
+        switch (campfireStateController.getDirection()) {
+            case "east":
+                matrixStack.mulPose(Vector3f.YP.rotationDegrees(90F));
+                break;
+            case "south":
+                matrixStack.mulPose(Vector3f.YP.rotationDegrees(180F));
+                break;
+            case "west":
+                matrixStack.mulPose(Vector3f.YP.rotationDegrees(270F));
+                break;
+        }
+
+        IVertexBuilder renderBuffer = iRenderTypeBuffer.getBuffer(model.renderType(getCampfireOffTextureLocation()));
+        model.renderToBuffer(matrixStack, renderBuffer, combinedLight, combinedOverlay, 1.0F, 1.0F, 1.0F, 1.0F); // white, fully opaque
         matrixStack.popPose();
 
+        /*
+        matrixStack.pushPose();
+        matrixStack.scale(0.65F, 0.7F, 0.65F);
+        matrixStack.translate(0.26225, (double) 0.05F, 0.2625);
+        Minecraft.getInstance().getBlockRenderer().renderBlock(Blocks.FIRE.defaultBlockState(), matrixStack, iRenderTypeBuffer, combinedLight, combinedOverlay, EmptyModelData.INSTANCE);
+        matrixStack.popPose();
+
+         */
+    }
+
+
+    public ResourceLocation getCampfireOffTextureLocation() {
+        return campfireOffTexture;
+    }
+
+    public ResourceLocation getCampfireOnTextureLocation() {
+        return campfireOnTexture;
     }
 
 }

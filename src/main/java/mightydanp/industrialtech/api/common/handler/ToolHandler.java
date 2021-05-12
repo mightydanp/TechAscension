@@ -1,27 +1,21 @@
 package mightydanp.industrialtech.api.common.handler;
 
 import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
 import mightydanp.industrialtech.api.common.items.*;
-import mightydanp.industrialtech.api.common.items.handler.ITToolItemItemStackHandler;
-import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
-import mightydanp.industrialtech.api.common.libs.EnumMaterialTextureFlags;
 import mightydanp.industrialtech.api.common.libs.EnumToolFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

@@ -1,4 +1,4 @@
-package mightydanp.industrialtech.api.common.items.handler;
+package mightydanp.industrialtech.api.common.handler.itemstack;
 
 import mightydanp.industrialtech.api.common.inventory.container.ITToolItemContainer;
 import mightydanp.industrialtech.api.common.items.ToolBindingItem;

@@ -9,4 +9,5 @@ import net.minecraft.state.BooleanProperty;
  */
 public class ModBlockStateProperties {
     public static BooleanProperty isTopBlock = RegisterHelper.createBlockState(BlockStateRef.is_top_block);
+
 }

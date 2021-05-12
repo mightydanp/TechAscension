@@ -1,5 +1,6 @@
-package mightydanp.industrialtech.api.common.handler;
+package mightydanp.industrialtech.api.common.handler.generation;
 
+import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.RandomlyOnSurfaceGenFeature;
 import mightydanp.industrialtech.api.common.world.gen.feature.RandomlyOnSurfaceGenFeatureConfig;

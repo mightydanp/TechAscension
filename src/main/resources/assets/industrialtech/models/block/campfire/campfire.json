@@ -1,7 +1,5 @@
 {
-  "parent": "industrialtech:block/campfire/template_campfire",
-  "textures": {
-    "fire": "industrialtech:block/campfire_fire",
-    "lit_log": "industrialtech:block/campfire_log_lit"
-  }
+    "textures": {
+        "all": "block/campfire_fire"
+    }
 }

@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.common.generation;
 
-import mightydanp.industrialtech.api.common.handler.PlantGenerationHandler;
+import mightydanp.industrialtech.api.common.handler.generation.PlantGenerationHandler;
 import mightydanp.industrialtech.common.blocks.CatTailPlantBottomBlock;
 import mightydanp.industrialtech.common.blocks.CatTailPlantTopBlock;
 import mightydanp.industrialtech.common.blocks.ModBlocks;

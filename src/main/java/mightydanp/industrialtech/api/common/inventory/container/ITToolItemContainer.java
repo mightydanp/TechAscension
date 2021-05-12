@@ -1,7 +1,6 @@
 package mightydanp.industrialtech.api.common.inventory.container;
 
-import mightydanp.industrialtech.api.common.items.ToolHeadItem;
-import mightydanp.industrialtech.api.common.items.handler.ITToolItemItemStackHandler;
+import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
 import mightydanp.industrialtech.api.common.libs.ContainerRef;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.entity.player.PlayerEntity;

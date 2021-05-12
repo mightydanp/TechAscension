@@ -1,5 +1,7 @@
-package mightydanp.industrialtech.api.common.handler;
+package mightydanp.industrialtech.api.common.handler.generation;
 
+import mightydanp.industrialtech.api.common.handler.MaterialHandler;
+import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.libs.EnumVeinRarityFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeature;
@@ -57,7 +59,7 @@ public class OreGenerationHandler {
 
         for(Object obj :materialOreIn){
             if(obj instanceof Integer){
-                for(BlockState state :MaterialHandler.stone_variants){
+                for(BlockState state : MaterialHandler.stone_variants){
                     intList.add((Integer)obj);
                 }
             }

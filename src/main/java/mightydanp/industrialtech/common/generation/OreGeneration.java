@@ -1,9 +1,9 @@
 package mightydanp.industrialtech.common.generation;
 
-import mightydanp.industrialtech.api.common.handler.OreGenerationHandler;
+import mightydanp.industrialtech.api.common.handler.generation.OreGenerationHandler;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import static net.minecraft.world.biome.Biome.Category.*;
-import static net.minecraft.world.biome.Biome.*;
+
 import net.minecraft.world.biome.Biome;
 import java.util.ArrayList;
 import java.util.List;

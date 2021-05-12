@@ -1,7 +1,7 @@
-package mightydanp.industrialtech.api.common.items.capabilities;
+package mightydanp.industrialtech.common.capabilities;
 
-import mightydanp.industrialtech.api.common.inventory.container.ITToolItemContainer;
-import mightydanp.industrialtech.api.common.items.handler.ITToolItemItemStackHandler;
+import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
+import mightydanp.industrialtech.common.handler.itemstack.CampFireItemStackHandler;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -14,26 +14,27 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Created by MightyDanp on 4/7/2021.
+ * Created by MightyDanp on 5/10/2021.
  */
-public class ITToolItemCapabilityProvider implements ICapabilitySerializable<INBT> {
+public class CampFireCapabilityProvider implements ICapabilitySerializable<INBT> {
 
     private final Direction numberOfSlots = null;
     private static final int maxSlots = 3;
-    private ITToolItemItemStackHandler itToolItemItemStackHandler;
+    private CampFireItemStackHandler campFireItemStackHandler;
 
-    private ITToolItemItemStackHandler getCachedInventory() {
-        if (itToolItemItemStackHandler == null) {
-            itToolItemItemStackHandler = new ITToolItemItemStackHandler(maxSlots);
+    private CampFireItemStackHandler getCachedInventory() {
+        if (campFireItemStackHandler == null) {
+            campFireItemStackHandler = new CampFireItemStackHandler(maxSlots);
         }
-        return itToolItemItemStackHandler;
+        return campFireItemStackHandler;
     }
 
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capabilityIn, @Nullable Direction sideIn) {
-        if (CapabilityItemHandler.ITEM_HANDLER_CAPABILITY == capabilityIn) return (LazyOptional<T>)(lazyInitialisionSupplier);
+        if (CapabilityItemHandler.ITEM_HANDLER_CAPABILITY == capabilityIn)
+            return (LazyOptional<T>) (lazyInitialisionSupplier);
         return LazyOptional.empty();
     }
 
@@ -41,7 +42,7 @@ public class ITToolItemCapabilityProvider implements ICapabilitySerializable<INB
 
     @Override
     public INBT serializeNBT() {
-        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(getCachedInventory(), numberOfSlots);
+        return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(getCachedInventory(), null);
     }
 
     @Override

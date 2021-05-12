@@ -32,7 +32,7 @@ public class ModBlocks {
         cattail_plant_bottom_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_bottom_name, () -> new CatTailPlantBottomBlock(AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
         cattail_plant_top_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_top_name, () -> new CatTailPlantTopBlock(AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
         rock_block = RegistryHandler.BLOCKS.register(BlockRef.rock_block_name, RockBlock::new);
-        campfire_override = RegistryHandler.BLOCKS.register(BlockRef.campfire_override_name, ()-> new CampfireBlockOverride(true, 1));
+        campfire_override = RegistryHandler.BLOCKS.register(BlockRef.campfire_override_name, CampfireBlockOverride::new);
     }
 
     public static void setRenderType(){
