@@ -22,7 +22,7 @@ public class GenLanguage extends LanguageProvider {
             add(item.get(), itemName);
         }
 
-        for(RegistryObject<Item> blockItem : RegistryHandler.BLOCKITEMS.getEntries()) {
+        for(RegistryObject<Item> blockItem : RegistryHandler.BLOCK_ITEMS.getEntries()) {
             String itemName = translateUpperCase(blockItem.get().getRegistryName().toString());
             add(blockItem.get(), itemName);
         }

@@ -1,0 +1,8 @@
+package mightydanp.industrialtech.common.libs;
+
+/**
+ * Created by MightyDanp on 5/12/2021.
+ */
+public class KeyBindingsRef {
+    public static String activate_block_previewer = "activate_block_previewer";
+}

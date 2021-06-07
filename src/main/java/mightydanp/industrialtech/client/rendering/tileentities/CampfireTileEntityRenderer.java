@@ -2,7 +2,7 @@ package mightydanp.industrialtech.client.rendering.tileentities;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import mightydanp.industrialtech.client.rendering.models.CampFireModel;
+import mightydanp.industrialtech.client.rendering.models.CampfireModel;
 import mightydanp.industrialtech.common.blocks.state.CampfireStateController;
 import mightydanp.industrialtech.common.tileentities.CampfireTileEntityOverride;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -27,7 +27,7 @@ public class CampfireTileEntityRenderer extends TileEntityRenderer<CampfireTileE
     public void render(CampfireTileEntityOverride campfireTileEntityOverride, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLight, int combinedOverlay) {
         matrixStack.pushPose();
         CampfireStateController campfireStateController = campfireTileEntityOverride.getCampfireNBT();
-        Model model = new CampFireModel(campfireStateController);
+        Model model = new CampfireModel(campfireTileEntityOverride);
 
         matrixStack.translate(0.5, 0, 0.5D);
 

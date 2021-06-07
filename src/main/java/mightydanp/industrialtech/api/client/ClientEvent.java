@@ -2,6 +2,7 @@ package mightydanp.industrialtech.api.client;
 
 import mightydanp.industrialtech.api.client.inventory.container.ITToolItemContainerScreen;
 import mightydanp.industrialtech.api.client.models.tools.ToolModelLoader;
+import mightydanp.industrialtech.api.common.handler.KeyBindingHandler;
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.libs.Ref;
@@ -24,6 +25,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class ClientEvent {
     public static void init(FMLClientSetupEvent event){
         ScreenManager.register(Containers.itToolItemContainer, ITToolItemContainerScreen::new);
+        KeyBindingHandler.clientInit();
     }
 
     @SubscribeEvent

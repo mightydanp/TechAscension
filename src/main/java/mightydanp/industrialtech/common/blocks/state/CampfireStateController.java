@@ -64,4 +64,35 @@ public class CampfireStateController {
         campfireNBT.putBoolean("keep_logs_formed", keepLogsFormedIn);
     }
 
+    public int getBurnTime() {
+        return campfireNBT.contains("burn_time") ? campfireNBT.getInt("burn_time") : 0;
+    }
+
+    public void putBurnTime(int burnTimeIn) {
+        campfireNBT.putInt("burn_time", burnTimeIn);
+    }
+
+    public int getBurnProgress() {
+        return campfireNBT.contains("burn_progress") ? campfireNBT.getInt("burn_progress") : 0;
+    }
+
+    public void putBurnProgress(int burnProgressIn) {
+        campfireNBT.putInt("burn_progress", burnProgressIn);
+    }
+
+    public int[] getCookingTimes() {
+        return campfireNBT.contains("cooking_times") ? campfireNBT.getIntArray("cooking_times") : new int[0];
+    }
+
+    public void putCookingTimes(int[] cookingTimesIn) {
+        campfireNBT.putIntArray("cooking_times", cookingTimesIn);
+    }
+
+    public int[] getCookingTotalTimes() {
+        return campfireNBT.contains("cooking_total_times") ? campfireNBT.getIntArray("cooking_total_times") : new int[0];
+    }
+
+    public void putCookingTotalTimes(int[] cookingTotalTimesIn) {
+        campfireNBT.putIntArray("cooking_total_times", cookingTotalTimesIn);
+    }
 }

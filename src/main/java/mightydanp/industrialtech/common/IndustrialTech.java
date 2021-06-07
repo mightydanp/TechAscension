@@ -1,6 +1,7 @@
 package mightydanp.industrialtech.common;
 
 import mightydanp.industrialtech.api.client.ClientEvent;
+import mightydanp.industrialtech.api.client.settings.keybindings.KeyBindings;
 import mightydanp.industrialtech.api.common.CommonEvent;
 import mightydanp.industrialtech.api.common.ISidedReference;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
@@ -8,7 +9,9 @@ import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.server.DedicatedServerReference;
 import mightydanp.industrialtech.client.ModClientEvent;
+import mightydanp.industrialtech.client.settings.KeyBindings.ModKeyBindings;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
+import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
 import mightydanp.industrialtech.common.items.ModItems;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import mightydanp.industrialtech.common.tileentities.ModTileEntities;
@@ -46,6 +49,10 @@ public class IndustrialTech {
         ModItems.initBlockItems();
         Containers.init();
         ModTileEntities.init();
+        KeyBindings.init();
+        ModKeyBindings.init();
+
+        ModRecipes.init();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(CommonEvent::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModCommonEvent::init);
 

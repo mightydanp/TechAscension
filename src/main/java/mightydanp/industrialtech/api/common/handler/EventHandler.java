@@ -3,6 +3,7 @@ package mightydanp.industrialtech.api.common.handler;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Pair;;
 import mightydanp.industrialtech.api.client.models.tools.ToolModelLoader;
+import mightydanp.industrialtech.api.client.settings.keybindings.KeyBindings;
 import mightydanp.industrialtech.api.common.items.PickaxeToolItem;
 import mightydanp.industrialtech.api.common.libs.ITToolType;
 import mightydanp.industrialtech.api.common.libs.Ref;
@@ -71,11 +72,23 @@ public class EventHandler {
 
     public static boolean newPosition = false;
 
+    public static boolean hasBeenPressed = false;
+
     @SubscribeEvent
     public static void blockPlacementPreviewEvent(DrawHighlightEvent.HighlightBlock event) {
         Minecraft instance = Minecraft.getInstance();
 
-        if(instance.player != null && instance.player.level != null && !instance.player.getMainHandItem().isEmpty() && instance.player.getMainHandItem().getItem() instanceof BlockItem) {
+
+        //fix by tick https://www.google.com/search?q=forge+get+tick+for+cooldown&oq=forge+get+tick+for+cooldown&aqs=chrome..69i57j33i160.20679j0j7&sourceid=chrome&ie=UTF-8
+        if(KeyBindings.activateBlockPreViewer.keyBinding.isDown()){
+            if(!hasBeenPressed){
+                hasBeenPressed = true;
+            }else{
+                hasBeenPressed = false;
+            }
+        }
+
+        if(hasBeenPressed && instance.player != null && instance.player.level != null && !instance.player.getMainHandItem().isEmpty() && instance.player.getMainHandItem().getItem() instanceof BlockItem) {
             ClientPlayerEntity player = instance.player;
             World world = player.level;
 
@@ -133,8 +146,7 @@ public class EventHandler {
 
                 event.getMatrix().popPose();
 
-                player.sendMessage(ITextComponent.nullToEmpty(itemUseContext.getClickedFace().getName() + ", "+ x + ", " + y + ", "+ z), player.getUUID());
-
+                //player.sendMessage(ITextComponent.nullToEmpty(itemUseContext.getClickedFace().getName() + ", "+ x + ", " + y + ", "+ z), player.getUUID());
             }
 
             copyBlockPos = blockPos;

@@ -12,13 +12,13 @@ import javax.annotation.Nonnull;
 /**
  * Created by MightyDanp on 5/10/2021.
  */
-public class CampFireItemStackHandler extends ItemStackHandler {
+public class CampfireItemStackHandler extends ItemStackHandler {
     public static int numberOfSlots;
     private boolean isDirty = true;
 
     public ItemStack logs = addNewSlotOrGetSlotItemStack(0);
 
-    public CampFireItemStackHandler(int numberOfSlotsIn) {
+    public CampfireItemStackHandler(int numberOfSlotsIn) {
         super(numberOfSlotsIn);
         numberOfSlots = numberOfSlotsIn;
     }

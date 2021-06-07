@@ -221,9 +221,9 @@ public class GenItemModel extends ItemModelProvider {
             iconModel.texture("layer2", itemHeadIconTexture);
         }
 
-        iconModel.texture("layer0", itemHandleIconTexture);
-        iconModel.texture("layer1", itemBindingIconTexture);
-        iconModel.texture("layer2", itemHeadIconTexture);
+        //iconModel.texture("layer0", itemHandleIconTexture);
+        //iconModel.texture("layer1", itemBindingIconTexture);
+        //iconModel.texture("layer2", itemHeadIconTexture);
 
         generatedModels.put(iconModel.getLocation(), iconModel);
 
