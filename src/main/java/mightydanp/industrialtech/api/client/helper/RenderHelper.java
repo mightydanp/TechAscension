@@ -46,16 +46,16 @@ public class RenderHelper {
         int three = up.getReverseIndex(2);
         int four = up.getReverseIndex(3);
 
-        bufferIn.vertex(vertex1.x(), vertex1.y(), vertex1.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 1 : 0)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 2 : 3)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);
-        bufferIn.vertex(vertex2.x(), vertex2.y(), vertex2.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 1 : 2)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 0 : 3)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);
-        bufferIn.vertex(vertex6.x(), vertex6.y(), vertex6.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 3 : 2)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 0 : 1)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);
-        bufferIn.vertex(vertex5.x(), vertex5.y(), vertex5.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 3 : 0)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 2 : 1)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);
+        bufferIn.vertex(vertex1.x(), vertex1.y(), vertex1.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 3 : 0)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 0 : 3)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);
+        bufferIn.vertex(vertex2.x(), vertex2.y(), vertex2.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 3 : 2)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 2 : 3)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);
+        bufferIn.vertex(vertex6.x(), vertex6.y(), vertex6.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 1 : 2)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 2 : 1)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);
+        bufferIn.vertex(vertex5.x(), vertex5.y(), vertex5.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 1 : 0)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 0 : 1)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);
 
         // Bottom side
-        bufferIn.vertex(vertex4.x(), vertex4.y(), vertex4.z(), red, green, blue, alpha, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 1 : 0)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 2 : 3)] / texHeight, packedOverlayIn, packedLightIn, 0, -1, 0);
-        bufferIn.vertex(vertex3.x(), vertex3.y(), vertex3.z(), red, green, blue, alpha, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 1 : 2)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 0 : 3)] / texHeight, packedOverlayIn, packedLightIn, 0, -1, 0);
-        bufferIn.vertex(vertex7.x(), vertex7.y(), vertex7.z(), red, green, blue, alpha, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 3 : 2)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 0 : 1)] / texHeight, packedOverlayIn, packedLightIn, 0, -1, 0);
-        bufferIn.vertex(vertex.x(), vertex.y(), vertex.z(), red, green, blue, alpha, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 3 : 0)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 2 : 1)] / texHeight, packedOverlayIn, packedLightIn, 0, -1, 0);
+        bufferIn.vertex(vertex4.x(), vertex4.y(), vertex4.z(), red, green, blue, alpha, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 3 : 0)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 0 : 3)] / texHeight, packedOverlayIn, packedLightIn, 0, -1, 0);
+        bufferIn.vertex(vertex3.x(), vertex3.y(), vertex3.z(), red, green, blue, alpha, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 3 : 2)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 2 : 3)] / texHeight, packedOverlayIn, packedLightIn, 0, -1, 0);
+        bufferIn.vertex(vertex7.x(), vertex7.y(), vertex7.z(), red, green, blue, alpha, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 1 : 2)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 2 : 1)] / texHeight, packedOverlayIn, packedLightIn, 0, -1, 0);
+        bufferIn.vertex(vertex.x(), vertex.y(), vertex.z(), red, green, blue, alpha,    down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 1 : 0)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 0 : 1)] / texHeight, packedOverlayIn, packedLightIn, 0, -1, 0);
 
         // West side
         bufferIn.vertex(vertex7.x(), vertex7.y(), vertex7.z(), red, green, blue, alpha, west.uvs[west.getReverseIndex(0)] / texWidth, west.uvs[west.getReverseIndex(3)] / texHeight, packedOverlayIn, packedLightIn, -1, 0, 0);
@@ -65,21 +65,23 @@ public class RenderHelper {
 
         // East side
         bufferIn.vertex(vertex4.x(), vertex4.y(), vertex4.z(), red, green, blue, alpha, east.uvs[east.getReverseIndex(0)] / texWidth, east.uvs[east.getReverseIndex(3)] / texHeight, packedOverlayIn, packedLightIn, 1, 0, 0);
-        bufferIn.vertex(vertex.x(), vertex.y(), vertex.z(), red, green, blue, alpha, east.uvs[east.getReverseIndex(2)] / texWidth, east.uvs[east.getReverseIndex(3)]/ texHeight, packedOverlayIn, packedLightIn, 1, 0, 0);
+        bufferIn.vertex(vertex.x(), vertex.y(), vertex.z(), red, green, blue, alpha,    east.uvs[east.getReverseIndex(2)] / texWidth, east.uvs[east.getReverseIndex(3)]/ texHeight, packedOverlayIn, packedLightIn, 1, 0, 0);
         bufferIn.vertex(vertex1.x(), vertex1.y(), vertex1.z(), red, green, blue, alpha, east.uvs[east.getReverseIndex(2)] / texWidth, east.uvs[east.getReverseIndex(1)] / texHeight,  packedOverlayIn, packedLightIn, 1, 0, 0);
         bufferIn.vertex(vertex5.x(), vertex5.y(), vertex5.z(), red, green, blue, alpha, east.uvs[east.getReverseIndex(0)] / texWidth, east.uvs[east.getReverseIndex(1)] / texHeight,  packedOverlayIn, packedLightIn, 1, 0, 0);
 
         // North side
-        bufferIn.vertex(vertex.x(), vertex.y(), vertex.z(), red, green, blue, alpha, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(3)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, -1);
-        bufferIn.vertex(vertex7.x(), vertex7.y(), vertex7.z(), red, green, blue, alpha, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[north.getReverseIndex(3)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, -1);
-        bufferIn.vertex(vertex2.x(), vertex2.y(), vertex2.z(), red, green, blue, alpha, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[north.getReverseIndex(1)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, -1);
-        bufferIn.vertex(vertex1.x(), vertex1.y(), vertex1.z(), red, green, blue, alpha, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(1)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, -1);
+        bufferIn.vertex(vertex3.x(), vertex3.y(), vertex3.z(), red, green, blue, alpha, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(3)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, 1);
+        bufferIn.vertex(vertex4.x(), vertex4.y(), vertex4.z(), red, green, blue, alpha, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[north.getReverseIndex(3)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, 1);
+        bufferIn.vertex(vertex5.x(), vertex5.y(), vertex5.z(), red, green, blue, alpha, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[north.getReverseIndex(1)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, 1);
+        bufferIn.vertex(vertex6.x(), vertex6.y(), vertex6.z(), red, green, blue, alpha, north.uvs[north.getReverseIndex(0)]/ texWidth, north.uvs[north.getReverseIndex(1)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, 1);
+
 
         // South side
-        bufferIn.vertex(vertex3.x(), vertex3.y(), vertex3.z(), red, green, blue, alpha, south.uvs[south.getReverseIndex(0)] / texWidth, south.uvs[south.getReverseIndex(3)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, 1);
-        bufferIn.vertex(vertex4.x(), vertex4.y(), vertex4.z(), red, green, blue, alpha, south.uvs[south.getReverseIndex(2)] / texWidth, south.uvs[south.getReverseIndex(3)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, 1);
-        bufferIn.vertex(vertex5.x(), vertex5.y(), vertex5.z(), red, green, blue, alpha, south.uvs[south.getReverseIndex(2)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, 1);
-        bufferIn.vertex(vertex6.x(), vertex6.y(), vertex6.z(), red, green, blue, alpha, south.uvs[south.getReverseIndex(0)]/ texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, 1);
+        bufferIn.vertex(vertex.x(), vertex.y(), vertex.z(), red, green, blue, alpha,    south.uvs[south.getReverseIndex(0)] / texWidth, south.uvs[south.getReverseIndex(3)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, -1);
+        bufferIn.vertex(vertex7.x(), vertex7.y(), vertex7.z(), red, green, blue, alpha, south.uvs[south.getReverseIndex(2)] / texWidth, south.uvs[south.getReverseIndex(3)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, -1);
+        bufferIn.vertex(vertex2.x(), vertex2.y(), vertex2.z(), red, green, blue, alpha, south.uvs[south.getReverseIndex(2)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, -1);
+        bufferIn.vertex(vertex1.x(), vertex1.y(), vertex1.z(), red, green, blue, alpha, south.uvs[south.getReverseIndex(0)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, -1);
+
 
         matrixStack.popPose();
     }

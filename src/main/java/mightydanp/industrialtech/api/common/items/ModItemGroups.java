@@ -65,4 +65,11 @@ public class ModItemGroups {
             return new ItemStack(Items.STONE_AXE);
         }
     };
+
+    public static final ItemGroup tree_tab = new ItemGroup(Ref.tree_tab) {
+        @Override
+        public ItemStack makeIcon() {
+            return new ItemStack(Items.OAK_LOG);
+        }
+    };
 }

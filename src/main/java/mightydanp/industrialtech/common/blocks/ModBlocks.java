@@ -2,25 +2,19 @@ package mightydanp.industrialtech.common.blocks;
 
 import mightydanp.industrialtech.api.common.blocks.RockBlock;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
-import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.libs.BlockRef;
-import mightydanp.industrialtech.common.tileentities.CampfireTileEntityOverride;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.tileentity.CampfireTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.ObjectHolder;
 
 /**
  * Created by MightyDanp on 9/30/2020.
  */
 public class ModBlocks {
-    @ObjectHolder(Ref.mod_id + ":" + "stone_iron_ore")
-    public static Block stone_iron_ore = null;
+    //@ObjectHolder(Ref.mod_id + ":" + "stone_iron_ore")
+    //public static Block stone_iron_ore = null;
     public static RegistryObject<Block> cattail_plant_bottom_block;
     public static RegistryObject<Block> cattail_plant_top_block;
 

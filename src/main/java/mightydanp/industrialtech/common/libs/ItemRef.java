@@ -21,4 +21,6 @@ public class ItemRef {
     public static String rock_name = "rock";
     public static String rock_block_name = "rock_block";
     public static String campfire_block_name = "campfire_block";
+    public static String slab_block_name = "slab_block";
+    public static String leg_block_name = "leg_block";
 }

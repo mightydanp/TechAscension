@@ -42,7 +42,7 @@ public class TopWaterCrop extends Feature<TopWaterCropConfig> {
                                 iSeedReaderIn.setBlock(blockpos$mutable.above(topWaterCropConfigIn.howTall), topWaterCropConfigIn.topState, 2);
                                 System.out.println(x2 + " " + yy + " " + z2 + " " + "/" + "cattail");
                                 for (int i = 0; i <= topWaterCropConfigIn.howTall; i++) {
-                                    if(blockStateUp == Blocks.WATER.defaultBlockState()) {
+                                    if(blockStateDown == Blocks.WATER.defaultBlockState()) {
                                         iSeedReaderIn.setBlock(blockpos$mutable.above(i), topWaterCropConfigIn.bellowState, 2);
                                     }
                                 }

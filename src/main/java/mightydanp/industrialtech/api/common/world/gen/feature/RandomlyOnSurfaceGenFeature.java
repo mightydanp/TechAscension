@@ -38,7 +38,7 @@ public class RandomlyOnSurfaceGenFeature extends Feature<RandomlyOnSurfaceGenFea
                         if(randomlyOnSurfaceGenFeatureConfigIn.soilBlocks.contains(blockStateDown) && blockState == Blocks.AIR.defaultBlockState()){
                             iSeedReaderIn.setBlock(blockpos$mutable, randomlyOnSurfaceGenFeatureConfigIn.blocks, 2);
                             canSpawn = true;
-                            System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + randomlyOnSurfaceGenFeatureConfigIn.blocks.getBlock().toString().split(":")[1]);
+                            //System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + randomlyOnSurfaceGenFeatureConfigIn.blocks.getBlock().toString().split(":")[1]);
                         }
                     }
                 }

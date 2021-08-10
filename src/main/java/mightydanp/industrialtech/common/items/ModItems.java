@@ -52,5 +52,6 @@ public class ModItems {
         rock_block = RegistryHandler.BLOCK_ITEMS.register(ItemRef.rock_block_name, () -> new RockBlockItem(ModBlocks.rock_block.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
         campfire_block = RegistryHandler.BLOCK_ITEMS.register(ItemRef.campfire_block_name, () -> new BlockItem(ModBlocks.campfire_override.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
 
+
     }
 }

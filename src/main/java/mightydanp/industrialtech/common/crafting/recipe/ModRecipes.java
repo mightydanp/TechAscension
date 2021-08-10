@@ -12,12 +12,14 @@ import net.minecraftforge.fml.RegistryObject;
 public class ModRecipes{
     //RecipeType
     public static final IRecipeType<CampfireOverrideRecipe> campfireType = IRecipeType.register(Ref.mod_id + ":campfire");
-
     //public CookingRecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING_RECIPE = RegistryHandler.RECIPE_SERIALIZER.register("campfire_cooking", new CookingRecipeSerializer<>(CampFireOverrideRecipe::new, 100));
-
+    public static final IRecipeType<CampfireOverrideCharRecipe> campfireCharType = IRecipeType.register(Ref.mod_id + ":campfire_char");;
     public static RegistryObject<IRecipeSerializer<?>> CampfireSerializer;
+    public static RegistryObject<IRecipeSerializer<?>> CampfireCharSerializer;
+
 
     public static void init() {
         CampfireSerializer = RegistryHandler.RECIPE_SERIALIZER.register("campfire", CampfireOverrideRecipeSerializer::new);
+        CampfireCharSerializer = RegistryHandler.RECIPE_SERIALIZER.register("campfire_char", CampfireOverrideCharRecipeSerializer::new);
     }
 }

@@ -1,7 +1,7 @@
 package mightydanp.industrialtech.common.tileentities;
 
 import mightydanp.industrialtech.common.blocks.CampfireBlockOverride;
-import mightydanp.industrialtech.common.blocks.state.CampfireStateController;
+import mightydanp.industrialtech.common.crafting.recipe.CampfireOverrideCharRecipe;
 import mightydanp.industrialtech.common.crafting.recipe.CampfireOverrideRecipe;
 import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
 import net.minecraft.block.BlockState;
@@ -11,8 +11,8 @@ import net.minecraft.inventory.*;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -36,26 +36,64 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
 
     @Nullable
     private BlockState cachedBlockState;
-    private CampfireStateController campfireStateController;
-
-    public static int numberOfFuelSlots = 1;
-    private final NonNullList<ItemStack> logItemSlots = NonNullList.withSize(numberOfFuelSlots, ItemStack.EMPTY);
-
-    private int burnProgress;
-    private int burnTime;
 
     public static int numberOfCookSlots = 4;
-    private final NonNullList<ItemStack> cookItemSlots = NonNullList.withSize(numberOfCookSlots, ItemStack.EMPTY);
-    private final int[] cookingProgresses = new int[4];
-    private final int[] cookingTimes = new int[4];
+    public static int numberOfFuelSlots = 1;
+    public static int numberOfAshSlots = 1;
+    public static int numberOfTinderSlots = 1;
+    public static int numberOfSlots = numberOfCookSlots + numberOfFuelSlots + numberOfAshSlots + numberOfTinderSlots;
+
+    private int fuelBurnProgress = 0;
+    private int fuelBurnTime = 1;
+
+    private final int[] cookingProgresses = new int[]{0,0,0,0};
+    private final int[] cookingTimes      = new int[]{1,1,1,1};
+    private final int[] cookedSlotChecker = new int[]{0,0,0,0};
+
+    private final NonNullList<ItemStack> inventory = NonNullList.withSize(numberOfSlots, ItemStack.EMPTY);
+
+    public final int cookSlot1Number = 0;
+    public final int cookSlot2Number = 1;
+    public final int cookSlot3Number = 2;
+    public final int cookSlot4Number = 3;
+    public final int fuelSlotNumber  = 4;
+    public final int ashSlotNumber   = 5;
+    public final int tinderSlotNumber= 6;
+
+    public boolean isLit = false;
+    public Direction direction = Direction.NORTH;
+    public boolean signalFire = false;
+    public boolean keepLogsFormed = false;
+    public boolean canPlaceRecipeItems = false;
 
     public CampfireTileEntityOverride() {
         super(ModTileEntities.campfire_tile_entity.get());
-        campfireStateController = new CampfireStateController(new CompoundNBT());
+    }
+
+    public ItemStack getCookSlot1(){
+        return inventory.get(cookSlot1Number);
+    }
+
+    public ItemStack getCookSlot2(){
+        return inventory.get(cookSlot2Number);
+    }
+    public ItemStack getCookSlot3(){
+        return inventory.get(cookSlot3Number);
+    }
+    public ItemStack getCookSlot4(){
+        return inventory.get(cookSlot4Number);
+    }
+    public ItemStack getFuelSlot(){
+        return inventory.get(fuelSlotNumber);
+    }
+    public ItemStack getAshSlot(){
+        return inventory.get(ashSlotNumber);
+    }
+    public ItemStack getTinderSlot(){
+        return inventory.get(tinderSlotNumber);
     }
 
     public void tick() {
-        boolean isLit = this.campfireStateController.getIsLit();
 
         if (level.isClientSide) {
             if (isLit) {
@@ -64,14 +102,16 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
         } else {
             if (isLit) {
                 cook();
-                burn();
+                burnLogs();
+                ash();
 
-                if(logItemSlots.get(0).isEmpty()){
-                    campfireStateController.putIsLit(false);
+                if(getFuelSlot().isEmpty()){
+                    isLit = false;
                     dowse();
+                    canPlaceRecipeItems = false;
                 }
             } else {
-                for(int i = 0; i < cookItemSlots.size(); ++i) {
+                for(int i = 0; i < numberOfCookSlots; ++i) {
                     if (this.cookingProgresses[i] > 0) {
                         this.cookingProgresses[i] = MathHelper.clamp(this.cookingProgresses[i] - 2, 0, this.cookingTimes[i]);
                     }
@@ -81,35 +121,61 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     }
 
     private void cook() {
-        for(int i = 0; i < cookItemSlots.size(); ++i) {
-            ItemStack itemstack = cookItemSlots.get(i);
+        for(int i = 0; i < numberOfCookSlots; ++i) {
+            ItemStack itemstack = inventory.get(i);
             if (!itemstack.isEmpty()) {
-                if (this.cookingProgresses[i] >= this.cookingTimes[i]) {
+                this.cookingProgresses[i]++;
+                if (this.cookingProgresses[i] >= this.cookingTimes[i] && this.cookedSlotChecker[i] == 0) {
                     IInventory iinventory = new Inventory(itemstack);
-                    //change
-                    ItemStack itemstack1 = this.level.getRecipeManager().getRecipeFor(IRecipeType.CAMPFIRE_COOKING, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
+                    ItemStack itemStack1 = this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireType, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
                     BlockPos blockpos = this.getBlockPos();
-                    InventoryHelper.dropItemStack(this.level, blockpos.getX(), blockpos.getY(), blockpos.getZ(), itemstack1);
-                    this.cookItemSlots.set(i, ItemStack.EMPTY);
+                    //InventoryHelper.dropItemStack(this.level, blockpos.getX(), blockpos.getY(), blockpos.getZ(), itemStack1);
+                    this.inventory.set(i, itemStack1);
+                    this.cookedSlotChecker[i] = 1;
                     this.markUpdated();
+                }else{
+                    if(this.cookedSlotChecker[i] == 1){
+                        IInventory iinventory = new Inventory(itemstack);
+                        ItemStack itemStack1 = this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireCharType, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
+                        this.inventory.set(i, itemStack1);
+                    }
                 }
+            }else{
+                this.cookedSlotChecker[i] = 0;
             }
         }
     }
 
-    private void burn() {
-            ItemStack itemstack = logItemSlots.get(0);
+    private void burnLogs() {
+            ItemStack itemstack = getFuelSlot();
             if (!itemstack.isEmpty()) {
-                int j = this.burnProgress++;
-                burnTime = getItemBurnTime(this.getLevel(), itemstack);
-                if (this.burnProgress >= this.burnTime) {
-                    logItemSlots.get(0).shrink(1);
+                int j = this.fuelBurnProgress++;
+                fuelBurnTime = getItemBurnTime(this.getLevel(), itemstack);
+                if (this.fuelBurnProgress >= this.fuelBurnTime) {
+                    itemstack.shrink(1);
+                    inventory.set(fuelSlotNumber, itemstack);
+                    this.fuelBurnProgress = 0;
                     this.markUpdated();
                 }
             }else{
-                campfireStateController.putIsLit(false);
+                isLit = false;
                 this.markUpdated();
             }
+    }
+
+    private void ash() {
+        ItemStack itemstack = getFuelSlot();
+        Random rand = new Random();
+        if (rand.nextInt(2000) == 0) {
+            if (!itemstack.isEmpty()) {
+                itemstack.shrink(1);
+                //needs ash
+                //ashItemSlots.set(ashSlotNumber, itemstack);
+                this.markUpdated();
+            }else {
+                this.markUpdated();
+            }
+        }
     }
 
     private void makeParticles() {
@@ -123,13 +189,13 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
                 }
             }
 
-            Direction directionA = Direction.byName(this.getCampfireNBT().getDirection());
+            Direction directionA = direction;
 
 
             int l = directionA.get2DDataValue();
 
-            for(int j = 0; j < cookItemSlots.size(); ++j) {
-                if (!cookItemSlots.get(j).isEmpty() && random.nextFloat() < 0.2F) {
+            for(int j = 0; j < numberOfCookSlots; ++j) {
+                if (!inventory.get(j).isEmpty() && random.nextFloat() < 0.2F) {
                     Direction direction = Direction.from2DDataValue(Math.floorMod(j + l, 4));
                     float f = 0.3125F;
                     double d0 = (double)blockpos.getX() + 0.5D - (double)((float)direction.getStepX() * 0.3125F) + (double)((float)direction.getClockWise().getStepX() * 0.3125F);
@@ -144,41 +210,48 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
         }
     }
 
-    public NonNullList<net.minecraft.item.ItemStack> getCookItemSlots() {
-        return cookItemSlots;
-    }
-    public NonNullList<net.minecraft.item.ItemStack> getLogItemSlots() {
-        return logItemSlots;
+    public NonNullList<net.minecraft.item.ItemStack> getInventory() {
+        return inventory;
     }
 
     @Override
     public void load(BlockState blockState, CompoundNBT nbt) {
+        loadMetadataAndItems(blockState, nbt);
+    }
+
+    private CompoundNBT loadMetadataAndItems(BlockState blockState, CompoundNBT nbt) {
         super.load(blockState, nbt);
-        cookItemSlots.clear();
-        campfireStateController = new CampfireStateController(nbt.getCompound("campfire"));
+        Direction directionNew = Direction.byName(nbt.getString("direction"));
 
-        this.burnTime = campfireStateController.getBurnTime();
-        this.burnProgress = campfireStateController.getBurnProgress();
+        fuelBurnTime = nbt.getInt("fuel_burn_time");
+        fuelBurnProgress = nbt.getInt("fuel_burn_progress");
+        isLit = nbt.getBoolean("is_lit");
+        direction = directionNew;
+        signalFire = nbt.getBoolean("signal_fire");
+        keepLogsFormed = nbt.getBoolean("keep_logs_formed");
+        canPlaceRecipeItems = nbt.getBoolean("can_place_recipe_items");
 
-        ItemStackHelper.loadAllItems(nbt, this.cookItemSlots);
+        ItemStackHelper.loadAllItems(nbt, this.inventory);
+
         if (nbt.contains("cooking_times", 11)) {
-            int[] aint = campfireStateController.getCookingTimes();
-            System.arraycopy(aint, 0, this.cookingProgresses, 0, Math.min(this.cookingTimes.length, aint.length));
+            int[] aint = nbt.getIntArray("cooking_times");
+            System.arraycopy(aint, 0, this.cookingProgresses, 0, Math.min(this.cookingProgresses.length, aint.length));
         }
 
         if (nbt.contains("cooking_total_times", 11)) {
-            int[] aint1 = campfireStateController.getCookingTotalTimes();
+            int[] aint1 = nbt.getIntArray("cooking_total_times");
             System.arraycopy(aint1, 0, this.cookingTimes, 0, Math.min(this.cookingTimes.length, aint1.length));
         }
+
+        if (nbt.contains("cooked_checker", 11)) {
+            int[] aint1 = nbt.getIntArray("cooked_checker");
+            System.arraycopy(aint1, 0, this.cookedSlotChecker, 0, Math.min(this.cookedSlotChecker.length, aint1.length));
+        }
+        return nbt;
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
-        nbt.put("campfire", campfireStateController.getCampfireNBT());
-        campfireStateController.putBurnTime(this.burnTime);
-        campfireStateController.putBurnProgress(this.burnProgress);
-        campfireStateController.putCookingTimes(this.cookingProgresses);
-        campfireStateController.putCookingTotalTimes(this.cookingTimes);
         this.saveMetadataAndItems(nbt);
 
         return super.save(nbt);
@@ -186,8 +259,18 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
 
     private CompoundNBT saveMetadataAndItems(CompoundNBT nbt) {
         super.save(nbt);
-        ItemStackHelper.saveAllItems(nbt, this.cookItemSlots, true);
-        ItemStackHelper.saveAllItems(nbt, this.logItemSlots, true);
+        nbt.putInt("fuel_burn_time", fuelBurnTime);
+        nbt.putInt("fuel_burn_progress", fuelBurnProgress);
+        nbt.putIntArray("cooking_times", cookingProgresses);
+        nbt.putIntArray("cooking_total_times", cookingTimes);
+        nbt.putIntArray("cooked_checker", cookedSlotChecker);
+        nbt.putBoolean("is_lit", isLit);
+        nbt.putString("direction", direction.getName());
+        nbt.putBoolean("signal_fire", signalFire);
+        nbt.putBoolean("keep_logs_formed", keepLogsFormed);
+        nbt.putBoolean("can_place_recipe_items", canPlaceRecipeItems);
+
+        ItemStackHelper.saveAllItems(nbt, this.inventory, true);
         return nbt;
     }
 
@@ -202,22 +285,44 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
         return this.saveMetadataAndItems(new CompoundNBT());
     }
 
-    public Optional<CampfireOverrideRecipe> getCookableRecipe(ItemStack p_213980_1_) {
-        return this.cookItemSlots.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireType, new Inventory(p_213980_1_), this.level);
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+        load(this.getBlockState(), pkt.getTag());
     }
 
-    public boolean placeFood(ItemStack p_213984_1_, int p_213984_2_) {
-        for(int i = 0; i < this.cookItemSlots.size(); ++i) {
-            ItemStack itemstack = this.cookItemSlots.get(i);
-            if (itemstack.isEmpty()) {
-                this.cookingTimes[i] = p_213984_2_;
-                this.cookingProgresses[i] = 0;
-                this.cookItemSlots.set(i, p_213984_1_.split(1));
+    public Optional<CampfireOverrideRecipe> getCookableRecipe(ItemStack p_213980_1_) {
+        NonNullList<ItemStack> inventoryCopy = NonNullList.withSize(numberOfCookSlots, ItemStack.EMPTY);
+        for(int i = 0; i == numberOfCookSlots; i++){
+            inventoryCopy.set(i, inventory.get(i));
+        }
+        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireType, new Inventory(p_213980_1_), this.level);
+    }
+
+    public Optional<CampfireOverrideCharRecipe> getCookedChardRecipe(ItemStack p_213980_1_) {
+        NonNullList<ItemStack> inventoryCopy = NonNullList.withSize(numberOfCookSlots, ItemStack.EMPTY);
+        for(int i = 0; i == numberOfCookSlots; i++){
+            inventoryCopy.set(i, inventory.get(i));
+        }
+        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireCharType, new Inventory(p_213980_1_), this.level);
+    }
+
+    public boolean placeFood(ItemStack p_213984_1_, int slotNumber, int cookTime) {
+            if (inventory.get(slotNumber).isEmpty()) {
+                this.cookingTimes[slotNumber] = cookTime;
+                this.cookingProgresses[slotNumber] = 0;
+                this.inventory.set(slotNumber, p_213984_1_.split(1));
                 this.markUpdated();
                 return true;
             }
-        }
+        return false;
+    }
 
+    public boolean placeItemStack(ItemStack p_213984_1_, int slotNumber) {
+        if (inventory.get(slotNumber).isEmpty()) {
+            this.inventory.set(slotNumber, p_213984_1_.split(1));
+            this.markUpdated();
+            return true;
+        }
         return false;
     }
 
@@ -228,27 +333,26 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     }
 
     public void clearContent() {
-        this.cookItemSlots.clear();
-        this.logItemSlots.clear();
+        this.inventory.clear();
     }
 
     public void dowse() {
         if (this.level != null) {
             if (!this.level.isClientSide) {
-                InventoryHelper.dropContents(this.level, this.getBlockPos(), this.getCookItemSlots());
+                NonNullList<ItemStack> inventoryCopy = NonNullList.withSize(numberOfCookSlots, ItemStack.EMPTY);
+                for(int i = 0; i == numberOfCookSlots; i++){
+                    inventoryCopy.set(i, inventory.get(i));
+                    inventory.set(i, ItemStack.EMPTY);
+                }
+                InventoryHelper.dropContents(this.level, this.getBlockPos(), inventoryCopy);
             }
 
             this.markUpdated();
         }
-
     }
 
     public CampfireBlockOverride getCampfireBlock(){
         return (CampfireBlockOverride)getBlockState().getBlock();
-    }
-
-    public CampfireStateController getCampfireNBT(){
-        return campfireStateController;
     }
 
     public BlockState getBlockState() {
@@ -302,11 +406,10 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
 
     //Start of main code\\
     public boolean keepLogsFormed(){
-        if(!campfireStateController.getKeepLogsFormed()){
-            boolean keepFormed = campfireStateController.getKeepLogsFormed();
-            if(logItemSlots.get(0).getCount() >= 4){
-                campfireStateController.putKeepLogsFormed(true);
-                return keepFormed;
+        if(!keepLogsFormed){
+            if(getFuelSlot().getCount() >= 4){
+                keepLogsFormed = true;
+                return true;
             }
         }
         return false;
