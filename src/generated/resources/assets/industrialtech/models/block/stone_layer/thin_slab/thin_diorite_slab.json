@@ -1,0 +1,7 @@
+{
+  "parent": "industrialtech:block/stone_layer/state/thin_slab",
+  "textures": {
+    "particle": "minecraft:block/diorite",
+    "texture": "minecraft:block/diorite"
+  }
+}
