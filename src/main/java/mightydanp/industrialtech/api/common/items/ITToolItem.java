@@ -410,10 +410,9 @@ public class ITToolItem extends Item {
         itemStackHandlerFlowerBag.deserializeNBT(capabilityTag);
     }
 
-    public boolean canWork(ItemStack itemStackIn) {
+    public boolean canWork(ItemStack itemStackIn){
         ITToolItemItemStackHandler handler = getItemStackHandler(itemStackIn);
         ITToolItem toolItem = (ITToolItem) itemStackIn.getItem();
-        List<Boolean> booleanList = new ArrayList<>();
         if ((toolItem.partsToWork == 1 || toolItem.partsToWork == 2 || toolItem.partsToWork == 3) & handler.getToolHead() != null) {
             if(handler.getToolHead().getDamageValue() < handler.getToolHead().getMaxDamage()){
                 return true;
@@ -435,7 +434,7 @@ public class ITToolItem extends Item {
         return false;
     }
 
-    public void damageToolParts(ItemStack itemStackIn, PlayerEntity playerIn, World worldIn, int amountIn) {
+    public Boolean damageToolParts(ItemStack itemStackIn, PlayerEntity playerIn, World worldIn, int amountIn) {
         ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(itemStackIn);
         ITToolItem toolItem = (ITToolItem) itemStackIn.getItem();
         ItemStack toolHeadOnTool = itemStackHandler.getToolHead();
@@ -448,9 +447,11 @@ public class ITToolItem extends Item {
 
             if (headDamage != headMaxDamage) {
                 toolHeadOnTool.setDamageValue(headDamage + amountIn);
+                return true;
             } else {
                 playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
                 worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                return false;
             }
         }
 
@@ -460,9 +461,11 @@ public class ITToolItem extends Item {
 
             if (handleDamage != handleMaxDamage) {
                 toolHandleOnTool.setDamageValue(handleDamage + amountIn);
+                return true;
             } else {
                 playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
                 worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                return false;
             }
         }
 
@@ -471,11 +474,19 @@ public class ITToolItem extends Item {
             int bindingMaxDamage = toolBindingOnTool.getMaxDamage();
             if (bindingDamage != bindingMaxDamage) {
                 toolBindingOnTool.setDamageValue(bindingDamage + amountIn);
+                return true;
             } else {
                 playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
                 worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                return false;
             }
         }
+
+        if(!canWork(itemStackIn)){
+            return false;
+        }
+
+        return true;
     }
 
     public void disassembleTool(ItemStack itemStackIn, PlayerEntity playerIn, World worldIn, int toolInDamage, List<Item> toolNeededIn) {

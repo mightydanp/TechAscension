@@ -5,7 +5,7 @@ import mightydanp.industrialtech.api.common.handler.TreeHandler;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
 import mightydanp.industrialtech.api.common.libs.EnumTreeFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.common.handler.StoneLayerHandler;
+import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
 import mightydanp.industrialtech.common.libs.StoneLayerFlagsEnum;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
@@ -95,7 +95,8 @@ public class GenBlockStates extends BlockStateProvider {
                 String modId = thinSlab.getRegistryName().toString().split(":")[0];
                 String oreName = thinSlab.getRegistryName().toString().split(":")[1];
                 //String stoneVariant = thinSlab.getRegistryName().toString().split(":")[1].split("_")[1];
-                ModelFile ore = models().withExistingParent("block/stone_layer/" + "thin_slab" + stoneLayer.layerBlock.getRegistryName(), modId + ":block/stone_layer/state/thin_slab").texture("particle", stoneLayer.layerBlock.getRegistryName());
+                ModelFile ore = models().withExistingParent("block/stone_layer/thin_slab/" + "thin_" + stoneLayer.name + "_slab", modId + ":block/stone_layer/state/thin_slab").texture("particle", "minecraft:block/" + stoneLayer.name).texture("texture", "minecraft:block/" + stoneLayer.name);
+
                 simpleBlock(thinSlab, new ConfiguredModel(ore));
             }
         }

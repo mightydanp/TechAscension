@@ -25,6 +25,7 @@ public class ITToolItemCapabilityProvider implements ICapabilitySerializable<INB
         if (itToolItemItemStackHandler == null) {
             itToolItemItemStackHandler = new ITToolItemItemStackHandler(maxSlots);
         }
+
         return itToolItemItemStackHandler;
     }
 

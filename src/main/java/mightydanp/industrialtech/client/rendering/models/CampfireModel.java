@@ -88,16 +88,4 @@ public class CampfireModel extends Model {
 
         matrixStack.popPose();
     }
-
-
-/*
-    public void drawTextureQuad(AxisAlignedBB axisAlignedBB, Vector4f north, Vector4f east, Vector4f south, Vector4f west, Vector4f top, Vector4f bottom){
-        ModelRenderer.PositionTextureVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ, minU, minV);
-        ModelRenderer.PositionTextureVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ, minU, minV);
-        ModelRenderer.PositionTextureVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ, 0.0F, 0.0F);
-        ModelRenderer.PositionTextureVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ, 0.0F, 0.0F);
-    }
-    */
-        //uv is x, y                                                                                                                       u,   v
-        //ModelRenderer.PositionTextureVertex modelrenderer$positiontexturevertex7 = new ModelRenderer.PositionTextureVertex(x, y, z, 0.0F, 0.0F);
 }

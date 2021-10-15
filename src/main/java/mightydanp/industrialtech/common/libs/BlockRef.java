@@ -10,4 +10,5 @@ public class BlockRef {
     public static final String campfire_override_name = "campfire";
     public static final String slab_block_name = "slab";
     public static final String leg_block_name = "leg";
+    public static final String hole_name = "hole";
 }

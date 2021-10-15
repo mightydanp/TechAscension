@@ -2,6 +2,7 @@ package mightydanp.industrialtech.client.rendering.tileentities;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.client.rendering.models.CampfireModel;
 import mightydanp.industrialtech.common.tileentities.CampfireTileEntityOverride;
 import net.minecraft.block.Blocks;
@@ -23,8 +24,9 @@ import javax.annotation.Nonnull;
  * Created by MightyDanp on 5/6/2021.
  */
 public class CampfireTileEntityRenderer extends TileEntityRenderer<CampfireTileEntityOverride> {
-    private static final ResourceLocation campfireOffTexture = new ResourceLocation("textures/block/campfire_log.png");
-    private static final ResourceLocation campfireOnTexture = new ResourceLocation("textures/block/campfire/campfire_log_lit.png");
+    private static final ResourceLocation campfireOffTexture = new ResourceLocation(Ref.mod_id, "textures/block/campfire/campfire_log.png");
+    private static final ResourceLocation campfireOnTexture = new ResourceLocation(Ref.mod_id, "textures/block/campfire/campfire_log_lit.png");
+    private static final ResourceLocation campfireOff2Texture = new ResourceLocation(Ref.mod_id, "textures/block/campfire/campfire_off.png");
 
     public CampfireTileEntityRenderer(TileEntityRendererDispatcher tileEntityRendererDispatcherIn) {
         super(tileEntityRendererDispatcherIn);
@@ -51,13 +53,25 @@ public class CampfireTileEntityRenderer extends TileEntityRenderer<CampfireTileE
                 break;
         }
 
-        IVertexBuilder renderBuffer = iRenderTypeBuffer.getBuffer(model.renderType(getCampfireOffTextureLocation()));
-        model.renderToBuffer(matrixStack, renderBuffer, combinedLight, combinedOverlay, 1.0F, 1.0F, 1.0F, 1.0F); // white, fully opaque
+        if(campfireTileEntityOverride.isLit) {
+            IVertexBuilder renderBuffer = iRenderTypeBuffer.getBuffer(model.renderType(getCampfireOnTextureLocation()));
+            model.renderToBuffer(matrixStack, renderBuffer, combinedLight, combinedOverlay, 1.0F, 1.0F, 1.0F, 1.0F); // white, fully opaque
+        }else{
+            if(campfireTileEntityOverride.keepLogsFormed) {
+                IVertexBuilder renderBuffer = iRenderTypeBuffer.getBuffer(model.renderType(getCampfireOff2TextureLocation()));
+                model.renderToBuffer(matrixStack, renderBuffer, combinedLight, combinedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+            }else{
+                IVertexBuilder renderBuffer = iRenderTypeBuffer.getBuffer(model.renderType(getCampfireOffTextureLocation()));
+                model.renderToBuffer(matrixStack, renderBuffer, combinedLight, combinedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+            }
+        }
+
         matrixStack.popPose();
 
         if(campfireTileEntityOverride.isLit) {
-            matrixStack.pushPose();
 
+
+            matrixStack.pushPose();
             matrixStack.scale(0.65F, 0.7F, 0.65F);
             matrixStack.translate(0.26225, (double) 0.05F, 0.2625);
             Minecraft.getInstance().getBlockRenderer().renderBlock(Blocks.FIRE.defaultBlockState(), matrixStack, iRenderTypeBuffer, combinedLight, combinedOverlay, EmptyModelData.INSTANCE);
@@ -127,4 +141,7 @@ public class CampfireTileEntityRenderer extends TileEntityRenderer<CampfireTileE
         return campfireOnTexture;
     }
 
+    public ResourceLocation getCampfireOff2TextureLocation() {
+        return campfireOff2Texture;
+    }
 }

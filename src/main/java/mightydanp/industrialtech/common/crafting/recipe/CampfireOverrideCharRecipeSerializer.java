@@ -20,7 +20,7 @@ public class CampfireOverrideCharRecipeSerializer extends ForgeRegistryEntry<IRe
 
     public CampfireOverrideCharRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
         String s = JSONUtils.getAsString(jsonObject, "group", "");
-        JsonElement jsonelement = (JsonElement)(JSONUtils.isArrayNode(jsonObject, "ingredient") ? JSONUtils.getAsJsonArray(jsonObject, "ingredient") : JSONUtils.getAsJsonObject(jsonObject, "ingredient"));
+        JsonElement jsonelement = JSONUtils.isArrayNode(jsonObject, "ingredient") ? JSONUtils.getAsJsonArray(jsonObject, "ingredient") : JSONUtils.getAsJsonObject(jsonObject, "ingredient");
         Ingredient ingredient = Ingredient.fromJson(jsonelement);
         //Forge: Check if primitive string to keep vanilla or a object which can contain a count field.
         if (!jsonObject.has("result")) throw new com.google.gson.JsonSyntaxException("Missing result, expected to find a string or object");

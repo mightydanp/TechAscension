@@ -10,6 +10,7 @@ import static mightydanp.industrialtech.api.common.libs.EnumMaterialFlags.*;
 
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialTextureFlags;
+import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -60,13 +61,6 @@ public class MaterialHandler {
     public static Item drillHeadItem, axeHeadItem, buzzSawHeadItem, chiselHeadItem, fileHeadItem, hammerHeadItem, hoeHeadItem, pickaxeHeadItem, arrowHeadItem, sawHeadItem, shovelHeadItem, swordHeadItem, screwdriverHeadItem;
     public RegistryObject<Item> wedge, wedgeHandle;
     public static Item wedgeItem, wedgeHandleItem;
-
-    public static final List<BlockState> stone_variants = new ArrayList<BlockState>(){{
-        add(Blocks.STONE.defaultBlockState());
-        add(Blocks.ANDESITE.defaultBlockState());
-        add(Blocks.GRANITE.defaultBlockState());
-        add(Blocks.DIORITE.defaultBlockState());
-    }};
 
     public MaterialHandler(String materialNameIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int densityIn, String elementIn, int meltingPointIn, int boilingPointIn, EnumMaterialFlags... flagsIn) {
         materialName = materialNameIn;
@@ -120,23 +114,23 @@ public class MaterialHandler {
     protected void addFlag(EnumMaterialFlags... flagsIn) {
         for(EnumMaterialFlags flag : flagsIn){
             if(flag == ORE || flag == GEM){
-                for(BlockState stone : stone_variants){
-                    RegistryObject<Block> oreBlockR = RegistryHandler.BLOCKS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new OreBlock(materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), stone));
+                for(StoneLayerHandler stoneLayerHandler : ModStoneLayers.stoneLayerList){
+                    RegistryObject<Block> oreBlockR = RegistryHandler.BLOCKS.register(stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                            new OreBlock(materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), stoneLayerHandler.layerBlock.defaultBlockState()));
                     ore.add(oreBlockR);
-                    RegistryObject<Item> oreItemR = RegistryHandler.ITEMS.register(stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                    RegistryObject<Item> oreItemR = RegistryHandler.ITEMS.register(stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new BlockOreItem(oreBlockR.get(), new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, element));
                     oreItem.add(oreItemR);
-                    RegistryObject<Block> smallOreBlockR = RegistryHandler.BLOCKS.register("small_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new SmallOreBlock("small_" + materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), stone));
+                    RegistryObject<Block> smallOreBlockR = RegistryHandler.BLOCKS.register("small_" + stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                            new SmallOreBlock("small_" + materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), stoneLayerHandler.layerBlock.defaultBlockState()));
                     smallOre.add(smallOreBlockR);
-                    RegistryObject<Item> smallOreItemR = RegistryHandler.ITEMS.register("small_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                    RegistryObject<Item> smallOreItemR = RegistryHandler.ITEMS.register("small_" + stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new BlockItem(smallOreBlockR.get(), new Item.Properties().tab(ModItemGroups.ore_tab)));
                     smallOreItem.add(smallOreItemR);
-                    RegistryObject<Block> denseOreBlockR = RegistryHandler.BLOCKS.register("dense_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
-                            new DenseOreBlock("dense_" + materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), density, stone, oreItem));
+                    RegistryObject<Block> denseOreBlockR = RegistryHandler.BLOCKS.register("dense_" + stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                            new DenseOreBlock("dense_" + materialName + "_ore", AbstractBlock.Properties.of(Material.STONE), density, stoneLayerHandler.layerBlock.defaultBlockState(), oreItem));
                     denseOre.add(denseOreBlockR);
-                    RegistryObject<Item> denseOreItemR = RegistryHandler.ITEMS.register("dense_" + stone.getBlock().getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
+                    RegistryObject<Item> denseOreItemR = RegistryHandler.ITEMS.register("dense_" + stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + materialName + "_ore", () ->
                             new BlockOreItem(denseOreBlockR.get(), new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, element));
                     denseOreItem.add(denseOreItemR);
                 }
@@ -278,10 +272,6 @@ public class MaterialHandler {
                     return 0xFFFFFFFF;
             }, item.get());
         }
-    }
-
-    public static boolean addStoneVariant(BlockState blockStateIn){
-        return stone_variants.add(blockStateIn);
     }
 
     /*

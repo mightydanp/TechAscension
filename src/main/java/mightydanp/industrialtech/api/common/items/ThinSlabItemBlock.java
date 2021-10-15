@@ -1,13 +1,19 @@
-package mightydanp.industrialtech.common.items;
+package mightydanp.industrialtech.api.common.items;
 
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 /**
  * Created by MightyDanp on 7/3/2021.
@@ -25,11 +31,12 @@ public class ThinSlabItemBlock extends BlockItem {
             PlayerEntity playerEntity = (PlayerEntity)entity;
 
             if(!playerEntity.isCreative() && playerEntity.inventory.contains(new ItemStack(this))){
-                playerEntity.getSpeed();
-
-                playerEntity.setSpeed(0.1F);
+                EffectInstance effect = new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 1, 1);
+                effect.setNoCounter(true);
+                playerEntity.addEffect(effect);
+                playerEntity.setSprinting(false);
             }else{
-                playerEntity.setSpeed(1F);
+                playerEntity.removeEffect(Effects.MOVEMENT_SLOWDOWN);
             }
         }
     }

@@ -36,7 +36,7 @@ public class RenderHelper {
         vertex6.transform(matrix4f);
         vertex7.transform(matrix4f);
 
-        // Top side
+
         float minU = up.uvs[up.getReverseIndex(0)];
         float minV = up.uvs[up.getReverseIndex(1)];
         float maxU = up.uvs[up.getReverseIndex(2)];
@@ -46,6 +46,7 @@ public class RenderHelper {
         int three = up.getReverseIndex(2);
         int four = up.getReverseIndex(3);
 
+        // Top side
         bufferIn.vertex(vertex1.x(), vertex1.y(), vertex1.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 3 : 0)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 0 : 3)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);
         bufferIn.vertex(vertex2.x(), vertex2.y(), vertex2.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 3 : 2)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 2 : 3)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);
         bufferIn.vertex(vertex6.x(), vertex6.y(), vertex6.z(), red, green, blue, alpha, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 1 : 2)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 2 : 1)] / texHeight, packedOverlayIn, packedLightIn, 0, 1, 0);

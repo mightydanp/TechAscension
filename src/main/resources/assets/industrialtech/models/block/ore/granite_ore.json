@@ -1,7 +1,0 @@
-{
-  "parent": "industrialtech:block/ore/state/ore",
-  "textures": {
-    "particle": "minecraft:block/granite",
-    "sourceblock": "minecraft:block/granite"
-  }
-}

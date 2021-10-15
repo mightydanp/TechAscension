@@ -20,7 +20,7 @@ public class CampfireOverrideCharRecipe extends AbstractCookingRecipe {
     }
 
     public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.CampfireCharSerializer.get();
+        return ModRecipes.campfireCharSerializer.get();
     }
 
 }

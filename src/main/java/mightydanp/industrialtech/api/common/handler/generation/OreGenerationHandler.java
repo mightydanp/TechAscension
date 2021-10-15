@@ -2,12 +2,14 @@ package mightydanp.industrialtech.api.common.handler.generation;
 
 import mightydanp.industrialtech.api.common.handler.MaterialHandler;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
+import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
 import mightydanp.industrialtech.api.common.libs.EnumVeinRarityFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeature;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeatureConfig;
 import mightydanp.industrialtech.api.common.world.gen.feature.SmallOreGenFeature;
 import mightydanp.industrialtech.api.common.world.gen.feature.SmallOreGenFeatureConfig;
+import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -59,13 +61,13 @@ public class OreGenerationHandler {
 
         for(Object obj :materialOreIn){
             if(obj instanceof Integer){
-                for(BlockState state : MaterialHandler.stone_variants){
+                for(StoneLayerHandler state : ModStoneLayers.stoneLayerList){
                     intList.add((Integer)obj);
                 }
             }
 
             if(obj instanceof Boolean){
-                for(BlockState state :MaterialHandler.stone_variants){
+                for(StoneLayerHandler state : ModStoneLayers.stoneLayerList){
                     intBoolean.add((Boolean)obj);
                 }
             }
@@ -116,6 +118,7 @@ public class OreGenerationHandler {
                 for (RegistryObject<Block> ore : ((MaterialHandler) obj).smallOre) {
                     tempList2.add(ore.get().defaultBlockState());
                 }
+
                 smallOreBlocks.add(tempList2);
             }
         }

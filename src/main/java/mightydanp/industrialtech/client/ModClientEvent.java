@@ -8,6 +8,7 @@ import mightydanp.industrialtech.common.materials.ModMaterials;
 import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import mightydanp.industrialtech.common.tileentities.ModTileEntities;
 import mightydanp.industrialtech.common.tools.ModTools;
+import mightydanp.industrialtech.common.trees.ModTrees;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -24,6 +25,7 @@ public class ModClientEvent implements ISidedReference {
         ModMaterials.clientInit();
         ModStoneLayers.clientInit();
         ModTools.clientInit();
+        ModTrees.clientInit();
         ModTileEntities.clientInit();
     }
 

@@ -94,7 +94,6 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     }
 
     public void tick() {
-
         if (level.isClientSide) {
             if (isLit) {
                 this.makeParticles();
@@ -121,27 +120,29 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     }
 
     private void cook() {
-        for(int i = 0; i < numberOfCookSlots; ++i) {
-            ItemStack itemstack = inventory.get(i);
-            if (!itemstack.isEmpty()) {
-                this.cookingProgresses[i]++;
-                if (this.cookingProgresses[i] >= this.cookingTimes[i] && this.cookedSlotChecker[i] == 0) {
-                    IInventory iinventory = new Inventory(itemstack);
-                    ItemStack itemStack1 = this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireType, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
-                    BlockPos blockpos = this.getBlockPos();
-                    //InventoryHelper.dropItemStack(this.level, blockpos.getX(), blockpos.getY(), blockpos.getZ(), itemStack1);
-                    this.inventory.set(i, itemStack1);
-                    this.cookedSlotChecker[i] = 1;
-                    this.markUpdated();
-                }else{
-                    if(this.cookedSlotChecker[i] == 1){
+        if(this.level!= null) {
+            for (int i = 0; i < numberOfCookSlots; ++i) {
+                ItemStack itemstack = inventory.get(i);
+                if (!itemstack.isEmpty()) {
+                    this.cookingProgresses[i]++;
+                    if (this.cookingProgresses[i] >= this.cookingTimes[i] && this.cookedSlotChecker[i] == 0) {
                         IInventory iinventory = new Inventory(itemstack);
-                        ItemStack itemStack1 = this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireCharType, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
+                        ItemStack itemStack1 = this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireType, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
+                        BlockPos blockpos = this.getBlockPos();
+                        //InventoryHelper.dropItemStack(this.level, blockpos.getX(), blockpos.getY(), blockpos.getZ(), itemStack1);
                         this.inventory.set(i, itemStack1);
+                        this.cookedSlotChecker[i] = 1;
+                        this.markUpdated();
+                    } else {
+                        if (this.cookedSlotChecker[i] == 1) {
+                            IInventory iinventory = new Inventory(itemstack);
+                            ItemStack itemStack1 = this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireCharType, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
+                            this.inventory.set(i, itemStack1);
+                        }
                     }
+                } else {
+                    this.cookedSlotChecker[i] = 0;
                 }
-            }else{
-                this.cookedSlotChecker[i] = 0;
             }
         }
     }

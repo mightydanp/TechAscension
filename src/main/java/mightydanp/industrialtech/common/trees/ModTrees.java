@@ -1,7 +1,6 @@
 package mightydanp.industrialtech.common.trees;
 
 import mightydanp.industrialtech.api.common.handler.TreeHandler;
-import net.minecraft.block.trees.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +9,17 @@ import java.util.List;
  * Created by MightyDanp on 7/31/2021.
  */
 public class ModTrees {
-    List<TreeHandler> Trees = new ArrayList<>();
-    public static TreeHandler nullet;
+    public static List<TreeHandler> trees = new ArrayList<>();
+    public static TreeHandler nulled;
 
-    //todo generation of tree
+    public static void commonInit() {
+
+    }
+
+    public static void clientInit() {
+        for(TreeHandler tree : trees) {
+            tree.registerColorHandlerForBlock();
+            tree.registerColorForItem();
+        }
+    }
 }

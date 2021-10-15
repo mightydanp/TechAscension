@@ -6,6 +6,7 @@ import mightydanp.industrialtech.api.common.handler.KeyBindingHandler;
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.api.common.tileentities.TileEntities;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
@@ -26,6 +27,7 @@ public class ClientEvent {
     public static void init(FMLClientSetupEvent event){
         ScreenManager.register(Containers.itToolItemContainer, ITToolItemContainerScreen::new);
         KeyBindingHandler.clientInit();
+        TileEntities.clientInit();
     }
 
     @SubscribeEvent

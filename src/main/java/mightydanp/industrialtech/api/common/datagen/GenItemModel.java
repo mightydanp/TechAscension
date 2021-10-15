@@ -4,8 +4,11 @@ import mightydanp.industrialtech.api.common.handler.MaterialHandler;
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
+import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
 import mightydanp.industrialtech.common.items.ModItems;
+import mightydanp.industrialtech.common.libs.StoneLayerFlagsEnum;
 import mightydanp.industrialtech.common.materials.ModMaterials;
+import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import mightydanp.industrialtech.common.tools.ModTools;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
@@ -53,13 +56,13 @@ public class GenItemModel extends ItemModelProvider {
                     coloredMaterialPart(material.smallDust.get(), material);
                     coloredMaterialPart(material.tinyDust.get(), material);
                     for(RegistryObject<Item> item: material.oreItem){
-                        generateItemBlockSuffix(item.get(), material);
+                        generateItemBlockSuffix(item.get());
                     }
                     for(RegistryObject<Item> item: material.denseOreItem){
-                        generatePrefixItemBlockSuffix(item.get(), material);
+                        generatePrefixItemBlockSuffix(item.get(), null);
                     }
                     for(RegistryObject<Item> item: material.smallOreItem){
-                        generatePrefixItemBlockSuffix(item.get(), material);
+                        generatePrefixItemBlockSuffix(item.get(), null);
                     }
                 }
 
@@ -81,6 +84,17 @@ public class GenItemModel extends ItemModelProvider {
             }
         }
 
+        for(StoneLayerHandler layer : ModStoneLayers.stoneLayerList ){
+            for(StoneLayerFlagsEnum flag : layer.flags){
+                if(flag == StoneLayerFlagsEnum.leg) {
+                    generatePrefixItemBlockSuffix(layer.leg_block.get().asItem(), "stone_layer/");
+                }
+                if(flag == StoneLayerFlagsEnum.thinSlab) {
+                    generatePrefixItemBlockSuffix(layer.thin_slab_block.get().asItem(), "stone_layer/");
+                }
+            }
+        }
+
         for(ToolHandler tool : ModTools.tools){
             coloredTool(tool.toolItem.get(), ((ITToolItem)tool.toolItem.get()).partsToWork);
         }
@@ -99,7 +113,7 @@ public class GenItemModel extends ItemModelProvider {
         coloredItem(baseLoc, parent, base, appendPath(baseLoc, "_body"), appendPath(baseLoc, "_overlay"));
     }
  */
-    public void generatePrefixItemBlock(Item itemIn, MaterialHandler materialIn) {
+    public void generatePrefixItemBlock(Item itemIn) {
         String modId = itemIn.getRegistryName().toString().split(":")[0];
         String itemName = itemIn.getRegistryName().toString().split(":")[1];
         String prefix = itemName.split("_")[0]+ "_";
@@ -112,13 +126,13 @@ public class GenItemModel extends ItemModelProvider {
         generatedModels.put(denseOreLocation, denseOre);
     }
 
-    public void generatePrefixItemBlockSuffix(Item itemIn, MaterialHandler materialIn) {
+    public void generatePrefixItemBlockSuffix(Item itemIn, String name) {
         String modId = itemIn.getRegistryName().toString().split(":")[0];
         String itemName = itemIn.getRegistryName().toString().split(":")[1];
         String prefix = itemName.split("_")[0]+ "_";
         String suffix = "_" + itemName.split("_")[itemName.split("_").length- 1];
         String materialName = prefix.replace("_", "") + "_" + suffix.replace("_", "");
-        final ItemModelBuilder denseOreIconModel = factory.apply((new ResourceLocation( modId, "block/" + materialName + "/" + materialToMaterialPrefixStoneVariantSuffix(itemIn))));
+        final ItemModelBuilder denseOreIconModel = factory.apply((new ResourceLocation( modId, "block/" + (name == null ? "" : name) + materialName + "/" + materialToMaterialPrefixStoneVariantSuffix(itemIn))));
         final ResourceLocation denseOreLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/" + itemName);
 
         final ItemModelBuilder denseOre = factory.apply(denseOreLocation);
@@ -127,7 +141,7 @@ public class GenItemModel extends ItemModelProvider {
         generatedModels.put(denseOreLocation, denseOre);
     }
 
-    public void generateItemBlockSuffix(Item itemIn, MaterialHandler materialIn) {
+    public void generateItemBlockSuffix(Item itemIn) {
         String modId = itemIn.getRegistryName().toString().split(":")[0];
         String itemName = itemIn.getRegistryName().toString().split(":")[1];
         String suffix = "_" + itemName.split("_")[itemName.split("_").length- 1];

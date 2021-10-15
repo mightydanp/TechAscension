@@ -1,14 +1,13 @@
 package mightydanp.industrialtech.api.common.handler;
 
 import mightydanp.industrialtech.api.common.datagen.*;
+import mightydanp.industrialtech.api.common.datagen.recipes.GenFurnaceRecipes;
+import mightydanp.industrialtech.api.common.datagen.recipes.GenHoleRecipes;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.datagen.ModGenCampfireRecipes;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 
 /**
@@ -33,6 +32,7 @@ public class DataGenEventHandler {
             gen.addProvider(new GenItemTags(gen, blockTags, Ref.mod_id, event.getExistingFileHelper()));
             gen.addProvider(modGenFurnaceRecipes.cookingRecipes);
             gen.addProvider(modGenCampfireRecipes.campfireRecipes);
+            gen.addProvider(new GenHoleRecipes(gen, Ref.mod_id, "hole"));
 
         }
 

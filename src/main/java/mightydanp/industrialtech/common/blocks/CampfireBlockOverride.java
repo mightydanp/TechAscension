@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particles.BasicParticleType;
@@ -23,6 +24,7 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.CampfireTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -221,6 +223,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
 
             if(!fuelSlot.isEmpty() && itemstack.getItem() == Items.FLINT_AND_STEEL){
                 tileEntity.isLit = true;
+                tileEntity.keepLogsFormed = true;
                 itemstack.setDamageValue(itemstack.getDamageValue() + 1);
             }
 
@@ -310,6 +313,14 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         }
 
         return ActionResultType.SUCCESS;
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(final BlockItemUseContext context) {
+        final FluidState fluidState = context.getLevel().getFluidState(context.getClickedPos());
+
+        return fluidState.is(FluidTags.WATER) && fluidState.getAmount() == 8 ? super.getStateForPlacement(context).setValue(WATERLOGGED, Boolean.valueOf(true)) : this.defaultBlockState();
     }
 
     public Vector3d click(PlayerEntity player, World world){

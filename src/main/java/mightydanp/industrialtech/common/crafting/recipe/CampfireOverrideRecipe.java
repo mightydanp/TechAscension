@@ -18,7 +18,7 @@ public class CampfireOverrideRecipe extends AbstractCookingRecipe {
     }
 
     public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.CampfireSerializer.get();
+        return ModRecipes.campfireSerializer.get();
     }
 
 }

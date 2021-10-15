@@ -1,4 +1,4 @@
-package mightydanp.industrialtech.api.common.datagen;
+package mightydanp.industrialtech.api.common.datagen.recipes.builder;
 
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
@@ -18,14 +18,15 @@ import net.minecraft.util.registry.Registry;
 /**
  * Created by MightyDanp on 4/2/2021.
  */
-public class CustomCookingRecipeBuilder
-{
+public class CustomCookingRecipeBuilder {
     // result itemstack json format isn't the same as the standard format for itemstacks, stupidly
     public static final Codec<ItemStack> ITEMSTACK_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Registry.ITEM.fieldOf("item").forGetter(itemstack -> itemstack.getItem()),
             Codec.INT.optionalFieldOf("count",1).forGetter(itemstack -> itemstack.getCount()),
             CompoundNBT.CODEC.optionalFieldOf("nbt", new CompoundNBT()).forGetter(ItemStack::getTag)
     ).apply(instance, ItemStack::new));
+
+
 
     public static final Codec<Ingredient> INGREDIENT_CODEC = Codec.PASSTHROUGH.comapFlatMap(dynamic ->
             {

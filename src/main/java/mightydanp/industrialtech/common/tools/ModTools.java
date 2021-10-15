@@ -16,12 +16,13 @@ import java.util.List;
  */
 public class ModTools {
     public static List<ToolHandler> tools = new ArrayList<>();
-    public static ToolHandler hammer, chisel, pickaxe;
+    public static ToolHandler hammer, chisel, pickaxe, knife;
 
     public static void init(){
         tools.add(chisel = new ToolHandler("chisel", 1, EnumToolFlags.NORMAL, new ChiselToolItem()));
         tools.add(hammer = new ToolHandler("hammer", 1, EnumToolFlags.NORMAL, new HammerToolItem()));
         tools.add(pickaxe = new ToolHandler("pickaxe", 1, EnumToolFlags.NORMAL, new PickaxeToolItem()));
+        tools.add(knife = new ToolHandler("knife", 1, EnumToolFlags.NORMAL, new KnifeToolItem()));
     }
 
     public static void handCraftingInit(PlayerInteractEvent.RightClickItem event){

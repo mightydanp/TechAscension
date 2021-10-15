@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredient_items": [
+    {
+      "item": "industrialtech:chisel"
+    }
+  ],
+  "ingredient_item_damage": 0,
+  "consume_ingredients": false,
+  "min_ticks": 1,
+  "max_ticks": 1,
+  "result_item": "minecraft:dirt",
+  "min_result": 1,
+  "max_result": 1,
+  "hole_color": 1111,
+  "resin_color": 5555
+}
