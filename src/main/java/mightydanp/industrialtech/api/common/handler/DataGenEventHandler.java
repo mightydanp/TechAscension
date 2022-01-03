@@ -4,7 +4,7 @@ import mightydanp.industrialtech.api.common.datagen.*;
 import mightydanp.industrialtech.api.common.datagen.recipes.GenFurnaceRecipes;
 import mightydanp.industrialtech.api.common.datagen.recipes.GenHoleRecipes;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.common.datagen.ModGenCampfireRecipes;
+import mightydanp.industrialtech.common.datagen.recipes.ModGenCampfireRecipes;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

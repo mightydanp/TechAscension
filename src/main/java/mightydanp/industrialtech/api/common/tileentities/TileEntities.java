@@ -21,7 +21,7 @@ public class TileEntities {
     }
 
     public static void clientInit(){
-        ClientRegistry.bindTileEntityRenderer(hole_tile_entity.get(), HoleTileEntityRenderer::new);
+        //ClientRegistry.bindTileEntityRenderer(hole_tile_entity.get(), HoleTileEntityRenderer::new);
     }
 
 }

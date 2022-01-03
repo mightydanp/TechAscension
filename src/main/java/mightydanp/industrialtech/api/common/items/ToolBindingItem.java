@@ -1,17 +1,17 @@
 package mightydanp.industrialtech.api.common.items;
 
-import mightydanp.industrialtech.api.common.libs.EnumMaterialTextureFlags;
+import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.material.icons.DefaultTextureIcon;
 import mightydanp.industrialtech.api.common.libs.ITToolType;
+import mightydanp.industrialtech.api.common.material.icons.ITextureIcon;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,17 +20,17 @@ import java.util.List;
 public class ToolBindingItem extends Item {
     public String material;
     public String element;
-    public int temperature;
-    public int meltingPoint;
-    public int boilingPoint;
-    public int durability;
+    public Integer temperature;
+    public Integer meltingPoint;
+    public Integer boilingPoint;
+    public Integer durability;
     public ITToolType[] itToolType;
-    public float weight;
-    public int color;
-    public int maxDamage;
-    public EnumMaterialTextureFlags textureFlag;
+    public Float weight;
+    public Integer color;
+    public Integer maxDamage;
+    public Pair<String, ITextureIcon> textureFlag;
 
-    public ToolBindingItem(Item.Properties properties, String materialIn, String elementIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int boilingPointIn, int meltingPointIn, int durabilityIn, float weightIn) {
+    public ToolBindingItem(Properties properties, String materialIn, String elementIn, Integer colorIn, Pair<String, ITextureIcon> textureFlagIn, Integer boilingPointIn, Integer meltingPointIn, Integer durabilityIn, Float weightIn) {
         super(properties);
         material = materialIn;
         color = colorIn;
@@ -61,20 +61,23 @@ public class ToolBindingItem extends Item {
             tooltip.add(ITextComponent.nullToEmpty(element));
         }
 
-        if(durability != 0) {
+        if(durability != null) {
             tooltip.add(ITextComponent.nullToEmpty("durability: " + (durability - stack.getDamageValue()) + "/" + durability));
         }
 
-        if (meltingPoint != 0) {
+        if (meltingPoint != null) {
             tooltip.add(ITextComponent.nullToEmpty("Melting Point of " + " §5" + meltingPoint));
         }
-        if (boilingPoint != 0) {
+        if (boilingPoint != null) {
             tooltip.add(ITextComponent.nullToEmpty("Boiling Point of " + " §5" + boilingPoint));
         }
 
-        if (temperature == boilingPoint) {
-            tooltip.add(ITextComponent.nullToEmpty("5" + "Hot"));
+        if (meltingPoint != null && boilingPoint != null) {
+            if (temperature == boilingPoint) {
+                tooltip.add(ITextComponent.nullToEmpty("5" + "Hot"));
+            }
         }
+        
     }
     public void setElement(String elementIn) {
         element = elementIn;

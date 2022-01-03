@@ -27,6 +27,7 @@ public class OreGeneration {
 
 
     public static void init() {
+        /*
         //small ore
         small_ore_gems = new ArrayList<Object>() {{
         add(ModMaterials.jasper);add(10);
@@ -342,5 +343,7 @@ public class OreGeneration {
             add(65);
         }};
         OreGenerationHandler.addOreGeneration("rutile_vein", 24, 3, 40, 250, 20, uncommon, rutileVein, OverWorldBiomes);
+
+         */
     }
 }

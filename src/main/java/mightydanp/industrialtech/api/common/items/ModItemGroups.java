@@ -72,4 +72,11 @@ public class ModItemGroups {
             return new ItemStack(Items.OAK_LOG);
         }
     };
+
+    public static final ItemGroup fluid_tab = new ItemGroup(Ref.fluid_tab) {
+        @Override
+        public ItemStack makeIcon() {
+            return new ItemStack(Items.BUCKET);
+        }
+    };
 }

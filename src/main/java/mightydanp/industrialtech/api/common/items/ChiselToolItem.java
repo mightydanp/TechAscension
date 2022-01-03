@@ -2,8 +2,7 @@ package mightydanp.industrialtech.api.common.items;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.handler.MaterialHandler;
-import mightydanp.industrialtech.common.tools.ModTools;
+import mightydanp.industrialtech.api.common.material.ITMaterial;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
@@ -29,8 +28,8 @@ public class ChiselToolItem extends ITToolItem {
         //craftingToolsNeeded.add(new Pair<>(ModTools.hammer.tool, 1));
         //craftingToolsNeeded.add(new Pair<>(ModTools.hammer.tool, 2));
 
-        parts.add(new Pair<>(MaterialHandler.chiselHeadItem, 1));
-        parts.add(new Pair<>(MaterialHandler.wedgeHandleItem, 2));
+        parts.add(new Pair<>(ITMaterial.chiselHeadItem, 1));
+        parts.add(new Pair<>(ITMaterial.wedgeHandleItem, 2));
 
         //disassembleTools.add(ModTools.hammer.tool);
     }

@@ -1,14 +1,10 @@
 package mightydanp.industrialtech.api.common.blocks;
 
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
-import mightydanp.industrialtech.common.blocks.CampfireBlockOverride;
-import mightydanp.industrialtech.common.blocks.CatTailPlantBottomBlock;
-import mightydanp.industrialtech.common.blocks.CatTailPlantTopBlock;
-import mightydanp.industrialtech.common.libs.BlockRef;
-import net.minecraft.block.AbstractBlock;
+import mightydanp.industrialtech.api.common.libs.ITBlockRef;
+import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.fml.RegistryObject;
@@ -21,9 +17,38 @@ public class ITBlocks {
 
 
     public static void init() {
-        hole_block = RegistryHandler.BLOCKS.register(BlockRef.hole_name, HoleBlock::new);
+        hole_block = RegistryHandler.BLOCKS.register(ITBlockRef.hole_name, HoleBlock::new);
     }
 
     public static void setRenderType(){
+    }
+
+    public static void colorBlock(){
+        setupAHoleBlockColor(hole_block);
+    }
+
+    public static void setupAHoleBlockColor(RegistryObject<Block> block){
+        //RenderTypeLookup.setRenderLayer(block.get(), RenderType.cutout());
+        Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
+            if (tintIndex == 0) {
+                if(world != null && pos!= null && block.get() instanceof HoleBlock){
+                    HoleTileEntity tileEntity = (HoleTileEntity)world.getBlockEntity(pos);
+                    if(tileEntity != null){
+                        return tileEntity.holeColor;
+                    }
+                }
+                return 0xFFFFFFFF;
+            }
+            if (tintIndex == 1) {
+                if(world != null && pos!= null && block.get() instanceof HoleBlock){
+                    HoleTileEntity tileEntity = (HoleTileEntity)world.getBlockEntity(pos);
+                    if(tileEntity != null){
+                        return tileEntity.resinColor;
+                    }
+                }
+                return 0xFFFFFFFF;
+            }
+            return 0xFFFFFFFF;
+        }, block.get());
     }
 }

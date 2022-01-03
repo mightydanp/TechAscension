@@ -1,10 +1,12 @@
 package mightydanp.industrialtech.api.common.items;
 
-import mightydanp.industrialtech.api.common.libs.EnumMaterialTextureFlags;
-import mightydanp.industrialtech.api.common.libs.ITToolType;
+import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.material.icons.DefaultTextureIcon;
+import mightydanp.industrialtech.api.common.material.icons.ITextureIcon;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
@@ -17,16 +19,16 @@ import java.util.List;
 public class ToolHandleItem extends Item {
     public String material;
     public String element;
-    public int color;
-    public int temperature;
-    public int meltingPoint;
-    public int boilingPoint;
-    public int durability;
-    public float weight;
-    public int maxDamage;
-    public EnumMaterialTextureFlags textureFlag;
+    public Integer color;
+    public Integer temperature;
+    public Integer meltingPoint;
+    public Integer boilingPoint;
+    public Integer durability;
+    public Float weight;
+    public Integer maxDamage;
+    public Pair<String, ITextureIcon> textureFlag;
 
-    public ToolHandleItem(Item.Properties properties, String materialIn, String elementIn, int colorIn, EnumMaterialTextureFlags textureFlagIn, int boilingPointIn, int meltingPointIn, int durabilityIn, float weightIn) {
+    public ToolHandleItem(Properties properties, String materialIn, String elementIn, Integer colorIn, Pair<String, ITextureIcon> textureFlagIn, Integer boilingPointIn, Integer meltingPointIn, Integer durabilityIn, Float weightIn) {
         super(properties);
         material = materialIn;
         color = colorIn;
@@ -57,34 +59,37 @@ public class ToolHandleItem extends Item {
             tooltip.add(ITextComponent.nullToEmpty(element));
         }
 
-        if(durability != 0) {
+        if(durability != null) {
             tooltip.add(ITextComponent.nullToEmpty("durability: " + (durability -stack.getDamageValue()) + "/" + durability));
         }
 
-        if (meltingPoint != 0) {
+        if (meltingPoint != null) {
             tooltip.add(ITextComponent.nullToEmpty("Melting Point of " + " §5" + meltingPoint));
         }
-        if (boilingPoint != 0) {
+        if (boilingPoint != null) {
             tooltip.add(ITextComponent.nullToEmpty("Boiling Point of " + " §5" + boilingPoint));
         }
 
-        if (temperature == boilingPoint) {
-            tooltip.add(ITextComponent.nullToEmpty("§5" + "Hot"));
+        if (meltingPoint != null && boilingPoint != null) {
+            if (temperature.equals(boilingPoint)) {
+                tooltip.add(ITextComponent.nullToEmpty("§5" + "Hot"));
+            }
         }
+        
     }
     public void setElement(String elementIn) {
         element = elementIn;
     }
 
-    public void setBoilingPoint(int boilingPointIn){
+    public void setBoilingPoint(Integer boilingPointIn){
         this.boilingPoint = boilingPointIn;
     }
 
-    public void setMeltingPoint (int meltingPointIn){
+    public void setMeltingPoint (Integer meltingPointIn){
         meltingPoint = meltingPointIn;
     }
 
-    public int getTemperature(){
+    public Integer getTemperature(){
         return temperature;
     }
 }

@@ -367,7 +367,7 @@ public class ITToolItem extends Item {
     @Nonnull
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundNBT oldCapNbt) {
-        return new ITToolItemCapabilityProvider();
+        return new ITToolItemCapabilityProvider();//bucket
     }
 
     public ITToolItemItemStackHandler getItemStackHandler(ItemStack itemStack) {

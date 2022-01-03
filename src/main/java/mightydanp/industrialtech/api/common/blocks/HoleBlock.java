@@ -4,6 +4,7 @@ import mightydanp.industrialtech.api.common.crafting.recipe.HoleRecipe;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
+import mightydanp.industrialtech.common.blocks.state.ModBlockStateProperties;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.item.ItemEntity;
@@ -11,10 +12,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -27,11 +34,23 @@ import java.util.Optional;
  */
 public class HoleBlock extends ContainerBlock {
 
-    public static int holeColor = 0;
-    public static int resinColor = 0;
+    private static final VoxelShape SHAPES = Block.box(0.0D, 0.0D, 0.0D, 15.99D, 16.0D, 15.99D);
+    public static final DirectionProperty FACING = HorizontalBlock.FACING;
+    public static final BooleanProperty RESIN = ModBlockStateProperties.RESIN;
+
 
     public HoleBlock() {
         super(Properties.of(Material.WOOD));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(RESIN, false));
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return SHAPES;
+    }
+
+    public BlockState getStateForPlacement(BlockItemUseContext p_196258_1_) {
+        return this.defaultBlockState().setValue(FACING, p_196258_1_.getHorizontalDirection().getOpposite());
     }
 
     @Override
@@ -45,7 +64,7 @@ public class HoleBlock extends ContainerBlock {
             ItemStack offHand = playerEntity.getOffhandItem();
 
             if(validRecipe.isPresent()) {
-                if (tileEntity.ingredientItems.size() == 2 && tileEntity.ingredientItems.contains(mainHand) && tileEntity.ingredientItems.contains(offHand) && blockRayTraceResult.getDirection() == blockRayTraceResult.getDirection() && blockRayTraceResult.getDirection() != Direction.UP && blockRayTraceResult.getDirection() != Direction.DOWN) {
+                if (validRecipe.get().getIngredients().size() == 2 && validRecipe.get().getIngredients().contains(mainHand) && validRecipe.get().getIngredients().contains(offHand) && blockRayTraceResult.getDirection() == blockRayTraceResult.getDirection() && blockRayTraceResult.getDirection() != Direction.UP && blockRayTraceResult.getDirection() != Direction.DOWN) {
                     if (!validRecipe.get().getConsumeIngredients()) {
                         if (mainHand.getItem() instanceof ITToolItem && offHand.getItem() instanceof ITToolItem) {
                             ITToolItem mainHandTool = (ITToolItem) mainHand.getItem();
@@ -71,9 +90,9 @@ public class HoleBlock extends ContainerBlock {
                     return ActionResultType.SUCCESS;
                 }
 
-                if (tileEntity.ingredientItems.size() == 1 && blockRayTraceResult.getDirection() == blockRayTraceResult.getDirection() && blockRayTraceResult.getDirection() != Direction.UP && blockRayTraceResult.getDirection() != Direction.DOWN) {
+                if (validRecipe.get().getIngredients().size() == 1 && blockRayTraceResult.getDirection() == blockRayTraceResult.getDirection() && blockRayTraceResult.getDirection() != Direction.UP && blockRayTraceResult.getDirection() != Direction.DOWN) {
                     if (!validRecipe.get().getConsumeIngredients()) {
-                        if (!tileEntity.ingredientItems.contains(mainHand)) {
+                        if (!validRecipe.get().getIngredients().contains(mainHand)) {
                             if (mainHand.getItem() instanceof ITToolItem) {
                                 ITToolItem mainHandTool = (ITToolItem) mainHand.getItem();
                                 mainHandTool.damageToolParts(playerEntity.getMainHandItem(), playerEntity, world, tileEntity.ingredientItemDamage);
@@ -88,7 +107,7 @@ public class HoleBlock extends ContainerBlock {
                     }
 
                     if (!validRecipe.get().getConsumeIngredients()) {
-                        if (tileEntity.ingredientItems.contains(offHand)) {
+                        if (validRecipe.get().getIngredients().contains(offHand)) {
                             if (offHand.getItem() instanceof ITToolItem) {
                                 ITToolItem offHandTool = (ITToolItem) offHand.getItem();
                                 offHandTool.damageToolParts(playerEntity.getOffhandItem(), playerEntity, world, tileEntity.ingredientItemDamage);
@@ -135,6 +154,18 @@ public class HoleBlock extends ContainerBlock {
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new HoleTileEntity();
+    }
+
+    public BlockState rotate(BlockState p_185499_1_, Rotation p_185499_2_) {
+        return p_185499_1_.setValue(FACING, p_185499_2_.rotate(p_185499_1_.getValue(FACING)));
+    }
+
+    public BlockState mirror(BlockState p_185471_1_, Mirror p_185471_2_) {
+        return p_185471_1_.rotate(p_185471_2_.getRotation(p_185471_1_.getValue(FACING)));
+    }
+
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> p_206840_1_) {
+        p_206840_1_.add(FACING, RESIN);
     }
 
 }

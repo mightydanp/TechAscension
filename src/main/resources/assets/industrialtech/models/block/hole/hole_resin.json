@@ -1,0 +1,206 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "industrialtech:block/tree/hole/hole",
+		"1": "industrialtech:block/tree/hole/resin_hole",
+		"particle": "industrialtech:block/tree/hole/hole"
+	},
+	"elements": [
+		{
+			"name": "hole_0",
+			"from": [6, 11, 16],
+			"to": [10, 12, 16.5],
+			"faces": {
+				"north": {"uv": [10, 4, 6, 5], "texture": "#0", "cullface": "north", "tintindex": 0},
+				"east": {"uv": [9, 4, 10, 5], "texture": "#0", "cullface": "east", "tintindex": 0},
+				"south": {"uv": [6, 4, 10, 5], "texture": "#0", "cullface": "south", "tintindex": 0},
+				"west": {"uv": [6, 4, 7, 5], "texture": "#0", "cullface": "west", "tintindex": 0},
+				"up": {"uv": [6, 4, 10, 4], "texture": "#0", "cullface": "up", "tintindex": 0},
+				"down": {"uv": [6, 4, 10, 4], "texture": "#0", "cullface": "down", "tintindex": 0}
+			}
+		},
+		{
+			"name": "hole_1",
+			"from": [5, 6, 16],
+			"to": [6, 11, 16.5],
+			"faces": {
+				"north": {"uv": [6, 5, 5, 9], "texture": "#0", "cullface": "north", "tintindex": 0},
+				"east": {"uv": [5, 5, 6, 9], "rotation": 90, "texture": "#0", "cullface": "east", "tintindex": 0},
+				"south": {"uv": [5, 5, 6, 9], "texture": "#0", "cullface": "south", "tintindex": 0},
+				"west": {"uv": [5, 5, 6, 9], "texture": "#0", "cullface": "west", "tintindex": 0},
+				"up": {"uv": [5, 5, 6, 6], "texture": "#0", "cullface": "up", "tintindex": 0},
+				"down": {"uv": [5, 9, 6, 8], "texture": "#0", "cullface": "down", "tintindex": 0}
+			}
+		},
+		{
+			"name": "hole_2",
+			"from": [10, 6, 16],
+			"to": [11, 11, 16.5],
+			"faces": {
+				"north": {"uv": [11, 5, 10, 9], "texture": "#0", "cullface": "north", "tintindex": 0},
+				"east": {"uv": [10, 5, 11, 9], "texture": "#0", "cullface": "east", "tintindex": 0},
+				"south": {"uv": [10, 5, 11, 9], "texture": "#0", "cullface": "south", "tintindex": 0},
+				"west": {"uv": [10, 5, 11, 9], "rotation": 270, "texture": "#0", "cullface": "west", "tintindex": 0},
+				"up": {"uv": [10, 5, 11, 6], "texture": "#0", "cullface": "up", "tintindex": 0},
+				"down": {"uv": [10, 9, 11, 8], "texture": "#0", "cullface": "down", "tintindex": 0}
+			}
+		},
+		{
+			"name": "hole_3",
+			"from": [6, 4, 16],
+			"to": [10, 5, 16.5],
+			"faces": {
+				"north": {"uv": [10, 10, 6, 11], "texture": "#0", "cullface": "north", "tintindex": 0},
+				"east": {"uv": [9, 10, 10, 11], "texture": "#0", "cullface": "east", "tintindex": 0},
+				"south": {"uv": [6, 10, 10, 11], "texture": "#0", "cullface": "south", "tintindex": 0},
+				"west": {"uv": [6, 10, 7, 11], "texture": "#0", "cullface": "west", "tintindex": 0},
+				"up": {"uv": [6, 10, 10, 11], "texture": "#0", "cullface": "up", "tintindex": 0},
+				"down": {"uv": [6, 11, 10, 10], "texture": "#0", "cullface": "down", "tintindex": 0}
+			}
+		},
+		{
+			"name": "hole_4",
+			"from": [6, 5, 16],
+			"to": [7, 6, 16.5],
+			"faces": {
+				"north": {"uv": [7, 9, 6, 10], "texture": "#0", "cullface": "north", "tintindex": 0},
+				"east": {"uv": [6, 9, 7, 10], "texture": "#0", "cullface": "east", "tintindex": 0},
+				"south": {"uv": [6, 9, 7, 10], "texture": "#0", "cullface": "south", "tintindex": 0},
+				"west": {"uv": [6, 9, 7, 10], "texture": "#0", "cullface": "west", "tintindex": 0},
+				"up": {"uv": [6, 9, 7, 10], "texture": "#0", "cullface": "up", "tintindex": 0},
+				"down": {"uv": [6, 10, 7, 9], "texture": "#0", "cullface": "down", "tintindex": 0}
+			}
+		},
+		{
+			"name": "hole_5",
+			"from": [9.01, 5, 16],
+			"to": [10, 6, 16.5],
+			"faces": {
+				"north": {"uv": [10, 9, 9, 10], "texture": "#0", "cullface": "north", "tintindex": 0},
+				"east": {"uv": [9, 9, 10, 10], "texture": "#0", "cullface": "east", "tintindex": 0},
+				"south": {"uv": [9, 9, 10, 10], "texture": "#0", "cullface": "south", "tintindex": 0},
+				"west": {"uv": [9, 9, 10, 10], "texture": "#0", "cullface": "west", "tintindex": 0},
+				"up": {"uv": [9, 9, 10, 10], "texture": "#0", "cullface": "up", "tintindex": 0},
+				"down": {"uv": [9, 10, 10, 9], "texture": "#0", "cullface": "down", "tintindex": 0}
+			}
+		},
+		{
+			"name": "hole_6",
+			"from": [6, 5, 15.99],
+			"to": [10, 11, 16.24],
+			"faces": {
+				"north": {"uv": [10, 5, 6, 10], "texture": "#0", "cullface": "north", "tintindex": 0},
+				"east": {"uv": [6, 5, 10, 10], "texture": "#0", "cullface": "east", "tintindex": 0},
+				"south": {"uv": [6, 5, 10, 10], "texture": "#0", "cullface": "south", "tintindex": 0},
+				"west": {"uv": [6, 5, 10, 10], "texture": "#0", "cullface": "west", "tintindex": 0},
+				"up": {"uv": [6, 5, 10, 6], "texture": "#0", "cullface": "up", "tintindex": 0},
+				"down": {"uv": [6, 10, 10, 9], "texture": "#0", "cullface": "down", "tintindex": 0}
+			}
+		},
+		{
+			"name": "resin_hole_0",
+			"from": [7, 7, 16],
+			"to": [9, 10, 16.75],
+			"faces": {
+				"north": {"uv": [9, 6, 7, 9], "texture": "#1", "cullface": "north", "tintindex": 1},
+				"east": {"uv": [8, 6, 9, 9], "texture": "#1", "cullface": "east", "tintindex": 1},
+				"south": {"uv": [7, 6, 9, 9], "texture": "#1", "cullface": "south", "tintindex": 1},
+				"west": {"uv": [7, 6, 8, 9], "texture": "#1", "cullface": "west", "tintindex": 1},
+				"up": {"uv": [7, 6, 9, 7], "texture": "#1", "cullface": "up", "tintindex": 1},
+				"down": {"uv": [7, 9, 9, 8], "texture": "#1", "cullface": "down", "tintindex": 1}
+			}
+		},
+		{
+			"name": "resin_hole_1",
+			"from": [6, 7, 16],
+			"to": [7, 9, 16.75],
+			"faces": {
+				"north": {"uv": [7, 7, 6, 9], "texture": "#1", "cullface": "north", "tintindex": 1},
+				"east": {"uv": [6, 7, 7, 9], "texture": "#1", "cullface": "east", "tintindex": 1},
+				"south": {"uv": [6, 7, 7, 9], "texture": "#1", "cullface": "south", "tintindex": 1},
+				"west": {"uv": [6, 7, 7, 9], "texture": "#1", "cullface": "west", "tintindex": 1},
+				"up": {"uv": [6, 7, 7, 8], "texture": "#1", "cullface": "up", "tintindex": 1},
+				"down": {"uv": [6, 9, 7, 8], "texture": "#1", "cullface": "down", "tintindex": 1}
+			}
+		},
+		{
+			"name": "resin_hole_2",
+			"from": [9, 3.99, 16],
+			"to": [10.01, 9, 16.75],
+			"faces": {
+				"north": {"uv": [10, 7, 9, 12], "texture": "#1", "cullface": "north", "tintindex": 1},
+				"east": {"uv": [9, 7, 10, 12], "texture": "#1", "cullface": "east", "tintindex": 1},
+				"south": {"uv": [9, 7, 10, 12], "texture": "#1", "cullface": "south", "tintindex": 1},
+				"west": {"uv": [9, 7, 10, 12], "texture": "#1", "cullface": "west", "tintindex": 1},
+				"up": {"uv": [9, 7, 10, 8], "texture": "#1", "cullface": "up", "tintindex": 1},
+				"down": {"uv": [9, 12, 10, 11], "texture": "#1", "cullface": "down", "tintindex": 1}
+			}
+		},
+		{
+			"name": "resin_hole_3",
+			"from": [8, 6, 16],
+			"to": [9, 7, 16.75],
+			"faces": {
+				"north": {"uv": [9, 9, 8, 10], "texture": "#1", "cullface": "north", "tintindex": 1},
+				"east": {"uv": [8, 9, 9, 10], "texture": "#1", "cullface": "east", "tintindex": 1},
+				"south": {"uv": [8, 9, 9, 10], "texture": "#1", "cullface": "south", "tintindex": 1},
+				"west": {"uv": [8, 9, 9, 10], "texture": "#1", "cullface": "west", "tintindex": 1},
+				"up": {"uv": [8, 9, 9, 10], "texture": "#1", "cullface": "up", "tintindex": 1},
+				"down": {"uv": [8, 10, 9, 9], "texture": "#1", "cullface": "down", "tintindex": 1}
+			}
+		},
+		{
+			"name": "resin_hole_4",
+			"from": [8, 2, 16],
+			"to": [9, 4, 16.75],
+			"faces": {
+				"north": {"uv": [9, 12, 8, 14], "texture": "#1", "cullface": "north", "tintindex": 1},
+				"east": {"uv": [8, 12, 9, 14], "texture": "#1", "cullface": "east", "tintindex": 1},
+				"south": {"uv": [8, 12, 9, 14], "texture": "#1", "cullface": "south", "tintindex": 1},
+				"west": {"uv": [8, 12, 9, 14], "texture": "#1", "cullface": "west", "tintindex": 1},
+				"up": {"uv": [8, 12, 9, 13], "texture": "#1", "cullface": "up", "tintindex": 1},
+				"down": {"uv": [8, 14, 9, 13], "texture": "#1", "cullface": "down", "tintindex": 1}
+			}
+		},
+		{
+			"name": "resin_hole_5",
+			"from": [10, 1, 16],
+			"to": [11, 4, 16.75],
+			"faces": {
+				"north": {"uv": [11, 12, 10, 15], "texture": "#1", "cullface": "north", "tintindex": 1},
+				"east": {"uv": [10, 12, 11, 15], "texture": "#1", "cullface": "east", "tintindex": 1},
+				"south": {"uv": [10, 12, 11, 15], "texture": "#1", "cullface": "south", "tintindex": 1},
+				"west": {"uv": [10, 12, 11, 15], "texture": "#1", "cullface": "west", "tintindex": 1},
+				"up": {"uv": [10, 12, 11, 13], "texture": "#1", "cullface": "up", "tintindex": 1},
+				"down": {"uv": [10, 15, 11, 14], "texture": "#1", "cullface": "down", "tintindex": 1}
+			}
+		},
+		{
+			"name": "resin_hole_6",
+			"from": [7, 1, 16],
+			"to": [8, 2, 16.75],
+			"faces": {
+				"north": {"uv": [8, 14, 7, 15], "texture": "#1", "cullface": "north", "tintindex": 1},
+				"east": {"uv": [7, 14, 8, 15], "texture": "#1", "cullface": "east", "tintindex": 1},
+				"south": {"uv": [7, 14, 8, 15], "texture": "#1", "cullface": "south", "tintindex": 1},
+				"west": {"uv": [7, 14, 8, 15], "texture": "#1", "cullface": "west", "tintindex": 1},
+				"up": {"uv": [7, 14, 8, 15], "texture": "#1", "cullface": "up", "tintindex": 1},
+				"down": {"uv": [7, 15, 8, 14], "texture": "#1", "cullface": "down", "tintindex": 1}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "hole",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1, 2, 3, 4, 5, 6]
+		},
+		{
+			"name": "resin_hole",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [7, 8, 9, 10, 11, 12, 13]
+		}
+	]
+}

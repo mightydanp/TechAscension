@@ -1,7 +1,6 @@
 package mightydanp.industrialtech.api.common.handler;
 
 import mightydanp.industrialtech.api.common.blocks.LeaveBlock;
-import mightydanp.industrialtech.api.common.blocks.HoleBlock;
 import mightydanp.industrialtech.api.common.items.BlockFuelItem;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
@@ -34,9 +33,9 @@ public class TreeHandler {
     public List<ITToolItem> toolForLogHole;
     public Tree treeFeature;
 
-    public RegistryObject<Block> log_block, plank_block, leave_block, sapling_block;
+    public RegistryObject<Block> log_block, plank_block, leave_block, sapling_block, resin_block;
 
-    public RegistryObject<Item> log_item, plank_item, leave_item, sapling_item;
+    public RegistryObject<Item> log_item, plank_item, leave_item, sapling_item, resin_item;
 
     public List<EnumTreeFlags> treeFlags = new ArrayList<>();
 
@@ -74,14 +73,8 @@ public class TreeHandler {
                 leave_item = RegistryHandler.ITEMS.register(treeName + "_leave", () -> new BlockFuelItem(leave_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), leafBurnTime));
             }
 
-            if (flag == EnumTreeFlags.NORMAL_LOG) {
-                if (treeFlags.contains(EnumTreeFlags.NORMAL_LOG)) {
-                    log_block = RegistryHandler.BLOCKS.register(treeName + "_log", () -> new RotatedPillarBlock(AbstractBlock.Properties.of(Material.WOOD)));
-                }else{
-                    if(treeFlags.contains(EnumTreeFlags.LOG_SIDE_HOLE)) {
-                        //log_block = RegistryHandler.BLOCKS.register(treeName + "_log", () -> new HoleBlock(AbstractBlock.Properties.of(Material.WOOD), toolForLogHole));
-                    }
-                }
+            if (flag == EnumTreeFlags.LOG) {
+                log_block = RegistryHandler.BLOCKS.register(treeName + "_log", () -> new RotatedPillarBlock(AbstractBlock.Properties.of(Material.WOOD)));
                 log_item = RegistryHandler.ITEMS.register(treeName + "_log", () -> new BlockFuelItem(log_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), logBurnTime));
             }
 
@@ -93,6 +86,10 @@ public class TreeHandler {
             if (flag == EnumTreeFlags.SAPLING) {
                 sapling_block = RegistryHandler.BLOCKS.register(treeName + "_sapling", () -> new SaplingBlock(new OakTree(), AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
                 sapling_item = RegistryHandler.ITEMS.register(treeName + "_sapling", () -> new BlockFuelItem(sapling_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), saplingBurnTime));
+            }
+            if (flag == EnumTreeFlags.RESIN) {
+                //sapling_block = RegistryHandler.BLOCKS.register(treeName + "_sapling", () -> new SaplingBlock(new OakTree(), AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
+                //sapling_item = RegistryHandler.ITEMS.register(treeName + "_sapling", () -> new BlockFuelItem(sapling_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), saplingBurnTime));
             }
         }
     }

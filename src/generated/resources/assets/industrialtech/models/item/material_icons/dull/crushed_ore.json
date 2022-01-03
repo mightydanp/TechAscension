@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "industrialtech:item/material_icons/dull/crushed_ore",
-    "layer1": "industrialtech:item/material_icons/dull/crushed_ore_overlay"
-  }
-}

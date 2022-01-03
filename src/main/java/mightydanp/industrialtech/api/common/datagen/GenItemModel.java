@@ -1,10 +1,13 @@
 package mightydanp.industrialtech.api.common.datagen;
 
-import mightydanp.industrialtech.api.common.handler.MaterialHandler;
+import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
-import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
+import mightydanp.industrialtech.api.common.material.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
+import mightydanp.industrialtech.api.common.material.flag.IMaterialFlag;
+import mightydanp.industrialtech.api.common.material.tool.part.flag.DefaultToolPart;
+import mightydanp.industrialtech.api.common.material.tool.part.flag.IToolPart;
 import mightydanp.industrialtech.common.items.ModItems;
 import mightydanp.industrialtech.common.libs.StoneLayerFlagsEnum;
 import mightydanp.industrialtech.common.materials.ModMaterials;
@@ -36,49 +39,52 @@ public class GenItemModel extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        for(MaterialHandler material : ModMaterials.materials) {
-            for(EnumMaterialFlags flag : material.flags){
-                if(flag == EnumMaterialFlags.ORE) {}
-
-                if(flag == EnumMaterialFlags.GEM) {
-                    coloredMaterialPart(material.gem.get(), material);
-                    coloredMaterialPart(material.chippedGem.get(), material);
-                    coloredMaterialPart(material.flawedGem.get(), material);
-                    coloredMaterialPart(material.flawlessGem.get(), material);
-                    coloredMaterialPart(material.legendaryGem.get(), material);
+        for(ITMaterial ITMaterial : ModMaterials.ITMaterials) {
+            for(IMaterialFlag flag : ITMaterial.materialFlags) {
+                if (flag == DefaultMaterialFlag.ORE) {
                 }
 
-                if(flag == EnumMaterialFlags.GEM || flag == EnumMaterialFlags.ORE){
-                    coloredMaterialPart(material.crushedOre.get(), material);
-                    coloredMaterialPart(material.purifiedOre.get(), material);
-                    coloredMaterialPart(material.centrifugedOre.get(), material);
-                    coloredMaterialPart(material.dust.get(), material);
-                    coloredMaterialPart(material.smallDust.get(), material);
-                    coloredMaterialPart(material.tinyDust.get(), material);
-                    for(RegistryObject<Item> item: material.oreItem){
+                if (flag == DefaultMaterialFlag.GEM) {
+                    coloredMaterialPart(ITMaterial.gem.get(), ITMaterial);
+                    coloredMaterialPart(ITMaterial.chippedGem.get(), ITMaterial);
+                    coloredMaterialPart(ITMaterial.flawedGem.get(), ITMaterial);
+                    coloredMaterialPart(ITMaterial.flawlessGem.get(), ITMaterial);
+                    coloredMaterialPart(ITMaterial.legendaryGem.get(), ITMaterial);
+                }
+
+                if (flag == DefaultMaterialFlag.GEM || flag == DefaultMaterialFlag.ORE) {
+                    coloredMaterialPart(ITMaterial.crushedOre.get(), ITMaterial);
+                    coloredMaterialPart(ITMaterial.purifiedOre.get(), ITMaterial);
+                    coloredMaterialPart(ITMaterial.centrifugedOre.get(), ITMaterial);
+                    coloredMaterialPart(ITMaterial.dust.get(), ITMaterial);
+                    coloredMaterialPart(ITMaterial.smallDust.get(), ITMaterial);
+                    coloredMaterialPart(ITMaterial.tinyDust.get(), ITMaterial);
+                    for (RegistryObject<Item> item : ITMaterial.oreItem) {
                         generateItemBlockSuffix(item.get());
                     }
-                    for(RegistryObject<Item> item: material.denseOreItem){
+                    for (RegistryObject<Item> item : ITMaterial.denseOreItem) {
                         generatePrefixItemBlockSuffix(item.get(), null);
                     }
-                    for(RegistryObject<Item> item: material.smallOreItem){
+                    for (RegistryObject<Item> item : ITMaterial.smallOreItem) {
                         generatePrefixItemBlockSuffix(item.get(), null);
                     }
                 }
+            }
 
-                if(flag == EnumMaterialFlags.TOOL_HEAD){
-                    coloredToolPart(material.dullPickaxe.get(), material);
-                    coloredToolPart(material.pickaxeHead.get(), material);
-                    coloredToolPart(material.hammerHead.get(), material);
-                    coloredToolPart(material.dullChiselHead.get(), material);
-                    coloredToolPart(material.chiselHead.get(), material);
+            for(IToolPart flag : ITMaterial.toolParts){
+                if(flag == DefaultToolPart.TOOL_HEAD){
+                    coloredToolPart(ITMaterial.dullPickaxe.get(), ITMaterial);
+                    coloredToolPart(ITMaterial.pickaxeHead.get(), ITMaterial);
+                    coloredToolPart(ITMaterial.hammerHead.get(), ITMaterial);
+                    coloredToolPart(ITMaterial.dullChiselHead.get(), ITMaterial);
+                    coloredToolPart(ITMaterial.chiselHead.get(), ITMaterial);
                 }
-                if(flag == EnumMaterialFlags.TOOL_WEDGE) {
-                    coloredToolPart(material.wedge.get(), material);
+                if(flag == DefaultToolPart.TOOL_WEDGE) {
+                    coloredToolPart(ITMaterial.wedge.get(), ITMaterial);
                 }
 
-                if(flag == EnumMaterialFlags.TOOL_WEDGE_HANDLE){
-                  coloredToolPart(material.wedgeHandle.get(), material);
+                if(flag == DefaultToolPart.TOOL_WEDGE_HANDLE){
+                  coloredToolPart(ITMaterial.wedgeHandle.get(), ITMaterial);
                 }
 
             }
@@ -154,10 +160,10 @@ public class GenItemModel extends ItemModelProvider {
         generatedModels.put(denseOreLocation, denseOre);
     }
 
-    public void coloredMaterial(Item item, MaterialHandler materialIn) {
+    public void coloredMaterial(Item item, ITMaterial ITMaterialIn) {
         String modId = item.getRegistryName().toString().split(":")[0];
         String itemName = item.getRegistryName().toString().split(":")[1];
-        String materialName = itemName.replaceAll(materialIn.materialName + "_", "");
+        String materialName = itemName.replaceAll(ITMaterialIn.name + "_", "");
         String prefix = itemName.split("_")[0]+ "_";
         String suffix = "_" + itemName.split("_")[itemName.split("_").length - 1];
 
@@ -179,16 +185,16 @@ public class GenItemModel extends ItemModelProvider {
         generatedModels.put(gemLocation, gem);
     }
 
-    public void coloredMaterialPart(Item item, MaterialHandler materialIn) {
+    public void coloredMaterialPart(Item item, ITMaterial ITMaterialIn) {
         String modId = item.getRegistryName().toString().split(":")[0];
         String itemName = item.getRegistryName().toString().split(":")[1];
-        String materialName = itemName.replace(materialIn.materialName, "");
+        String materialName = itemName.replace(ITMaterialIn.name, "");
         String prefix = materialName.split("_")[0];
         String suffix = itemName.split("_")[itemName.split("_").length - 1];
 
         final ModelFile parent = factory.apply(mcLoc("item/generated"));
-        final ResourceLocation itemIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/" + materialIn.textureFlag.getName() + "/" + baseString(item, materialIn.materialName));
-        final ResourceLocation itemIconOverlayTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/" + materialIn.textureFlag.getName() + "/" + baseString(item, materialIn.materialName) + "_overlay");
+        final ResourceLocation itemIconTexture = new ResourceLocation(ITMaterialIn.textureIcon.getFirst(), ModelProvider.ITEM_FOLDER + "/material_icons/" + ITMaterialIn.textureIcon.getSecond().getName() + "/" + baseString(item, ITMaterialIn.name));
+        final ResourceLocation itemIconOverlayTexture = new ResourceLocation(ITMaterialIn.textureIcon.getFirst(), ModelProvider.ITEM_FOLDER + "/material_icons/" + ITMaterialIn.textureIcon.getSecond().getName() + "/" + baseString(item, ITMaterialIn.name) + "_overlay");
         final ItemModelBuilder iconModel = factory.apply(itemIconTexture);
         iconModel.parent(parent);
         iconModel.texture("layer0", itemIconTexture);
@@ -249,19 +255,19 @@ public class GenItemModel extends ItemModelProvider {
         generatedModels.put(toolLocation, itemBuilder);
     }
 
-    public void coloredToolPart(Item item, MaterialHandler materialIn) {
+    public void coloredToolPart(Item item, ITMaterial ITMaterialIn) {
         String modId = item.getRegistryName().toString().split(":")[0];
         String itemName = item.getRegistryName().toString().split(":")[1];
-        String textureFlag = materialIn.textureFlag.getName();
+        String textureFlag = ITMaterialIn.textureIcon.getSecond().getName();
 
-        String materialName = itemName.replace(materialIn.materialName, "");
+        String materialName = itemName.replace(ITMaterialIn.name, "");
         String prefix = materialName.split("_")[0];
         String suffix = itemName.split("_")[itemName.split("_").length - 1];
 
 
         final ModelFile parent = factory.apply(mcLoc("item/generated"));
-        final ResourceLocation itemLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/material_icons/" + textureFlag + "/" + baseString(item, materialIn.materialName));
-        final ResourceLocation itemHeadIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/"+ textureFlag + "/" + baseString(item, materialIn.materialName));
+        final ResourceLocation itemLocation = new ResourceLocation(modId + ":" + ModelProvider.ITEM_FOLDER + "/material_icons/" + textureFlag + "/" + baseString(item, ITMaterialIn.name));
+        final ResourceLocation itemHeadIconTexture = new ResourceLocation(modId, ModelProvider.ITEM_FOLDER + "/material_icons/"+ textureFlag + "/" + baseString(item, ITMaterialIn.name));
         final ItemModelBuilder iconModel = factory.apply(itemLocation);
         iconModel.parent(parent);
         iconModel.texture("layer0", itemHeadIconTexture);

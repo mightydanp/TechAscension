@@ -3,18 +3,18 @@ package mightydanp.industrialtech.api.common.tileentities;
 import mightydanp.industrialtech.api.common.blocks.HoleBlock;
 import mightydanp.industrialtech.api.common.crafting.recipe.HoleRecipe;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
-import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -22,7 +22,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelProperty;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -38,6 +45,13 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
     public static int desiredBlockSlot = 0;
     public static int outputSlot = 1;
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(numberOfSlots, ItemStack.EMPTY);
+    private FluidStack outputFluid = new FluidStack(Fluids.EMPTY, 0);
+
+    private HoleRecipe recipe;
+
+    public BlockState desiredBlockState;
+
+    public static final ModelProperty<BlockState> desiredBlock = new ModelProperty<>();
 
     public int minTicksForHoleToFill;
     public int maxTicksForHoleToFill;
@@ -50,12 +64,8 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
 
     public int ingredientItemDamage;
 
-    public List<ItemStack> ingredientItems = new ArrayList<>();
-
     public int progress;
     public int finishedProgress;
-    public Direction direction = Direction.NORTH;
-    public boolean hasResin;
 
     public Random random = new Random();
 
@@ -66,8 +76,6 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
     public ItemStack getDesiredBlockSlot() {
         return inventory.get(desiredBlockSlot);
     }
-
-    //public HoleBlock holeBlock = (HoleBlock)this.getBlockState().getBlock();
 
     public void setDesiredBlockSlot(ItemStack stackIn) {
         inventory.set(desiredBlockSlot, stackIn);
@@ -81,39 +89,72 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
         inventory.set(outputSlot, stackIn);
     }
 
+    public FluidStack getOutputFluid() {
+        return outputFluid;
+    }
+
+    public void setOutputFluid(FluidStack outputTank) {
+        this.outputFluid = outputTank;
+    }
+
+    public void setDesiredBlockState(BlockState desiredBlockStateIn) {
+        this.desiredBlockState = desiredBlockStateIn;
+        setChanged();
+        if(level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+        }
+    }
 
 
     @Override
     public void tick() {
         HoleBlock holeBlock = (HoleBlock) this.getBlockState().getBlock();
         if (level != null){
-            Optional<HoleRecipe> validRecipe = getValidRecipe(new ItemStack(getDesiredBlockSlot().getItem()));
-                if (validRecipe.isPresent()){
-                        if (ingredientItems.isEmpty() && validRecipe.get().getIngredients() != null) {
-                            for (Ingredient ingredient : validRecipe.get().getIngredients()) {
-                                ingredientItems.addAll(Arrays.asList(ingredient.getItems()));
+            if(recipe == null){
+                Optional<HoleRecipe> validRecipe = getValidRecipe(new ItemStack(getDesiredBlockSlot().getItem()));
+                if(validRecipe.isPresent()){
+                    recipe = validRecipe.get();
+                    minTicksForHoleToFill = recipe.getMinTicks();
+                    maxTicksForHoleToFill = recipe.getMaxTicks();
+                    minResult = recipe.getMinResult();
+                    maxResult = recipe.getMaxResult();
+                    holeColor = recipe.getHoleColor();
+                    resinColor = recipe.getResinColor();
+                    ingredientItemDamage = recipe.getIngredientItemDamage();
+                }
+            }else {
+                progress++;
+                    if (progress >= minTicksForHoleToFill) {
+                        int randomTickNumber = random.nextInt((maxTicksForHoleToFill + 1 - minTicksForHoleToFill) + minTicksForHoleToFill);
+                        if (0 == randomTickNumber) {
+                            ItemStack output = recipe.getResultItem();
+                            FluidStack outputFluid = new FluidStack(recipe.getResultFluid(), 0);
+                            level.setBlockAndUpdate(getBlockPos(), getBlockState().setValue(HoleBlock.RESIN, true));
+
+                            progress = 0;
+
+                            int randomResultNumber = random.nextInt(maxResult + 1 - minResult) + minResult;
+
+                            if(!output.isEmpty()) {
+                                if (getOutputSlot().isEmpty()) {
+                                    setOutputSlot(new ItemStack(output.getItem(), randomResultNumber));
+                                } else {
+                                    getOutputSlot().setCount(getOutputSlot().getCount() + randomResultNumber);
+                                }
                             }
-                        }
 
-                        if (progress >= minTicksForHoleToFill && !ingredientItems.isEmpty()) {
-                            if (0 == (random.nextInt(maxTicksForHoleToFill - minTicksForHoleToFill)) + minTicksForHoleToFill || progress == maxTicksForHoleToFill) {
-                                ItemStack output = validRecipe.get().getResultItem();
-                                hasResin = true;
-                                progress = 0;
-
-                                if(getOutputSlot() == null) {
-                                    setOutputSlot(new ItemStack(output.getItem(), random.nextInt(maxResult - minResult) + minResult));
-                                }else{
-                                    getOutputSlot().setCount(getOutputSlot().getCount() + 1);
+                            if(!outputFluid.isEmpty()) {
+                                if (getOutputFluid().isEmpty()) {
+                                    setOutputFluid(outputFluid);
+                                } else {
+                                    getOutputFluid().grow(outputFluid.getAmount());
                                 }
                             }
                         }
-                } else {
-                    IndustrialTech.LOGGER.warn("hole at cords(" + getBlockPos() + ")does not have valid recipe for the hole. Removing hole");
-                    level.setBlockAndUpdate(this.worldPosition, Blocks.AIR.defaultBlockState());
+                    }
+                }
             }
         }
-    }
 
     public Optional<HoleRecipe> getValidRecipe(ItemStack p_213980_1_) {
         NonNullList<ItemStack> inventoryCopy = NonNullList.withSize(numberOfLogSlots, ItemStack.EMPTY);
@@ -144,9 +185,7 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
         super.load(blockState, nbt);
         Direction directionNew = Direction.byName(nbt.getString("direction"));
 
-        direction = directionNew;
-        hasResin = nbt.getBoolean("has_resin");
-
+        desiredBlockState = NBTUtil.readBlockState(nbt.getCompound("desired_block_state"));
         progress = nbt.getInt("progress");
         finishedProgress = nbt.getInt("finished_progress");
         minTicksForHoleToFill = nbt.getInt("min_ticks");
@@ -158,24 +197,25 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
         ingredientItemDamage = nbt.getInt("harvest_tool_damage");
 
         ItemStackHelper.loadAllItems(nbt, this.inventory);
+        CompoundNBT outputFluidCompound = nbt.getCompound("output_fluid");
+
+        outputFluid = FluidStack.loadFluidStackFromNBT(outputFluidCompound);
+
         return nbt;
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
         this.saveMetadataAndItems(nbt);
-
         return super.save(nbt);
     }
 
     private CompoundNBT saveMetadataAndItems(CompoundNBT nbt) {
         super.save(nbt);
 
-        nbt.putString("direction", direction.getName());
-        nbt.putBoolean("has_resin", hasResin);
+        nbt.put("desired_block_state", NBTUtil.writeBlockState(desiredBlockState));
         nbt.putInt("progress", progress);
         nbt.putInt("finished_progress", finishedProgress);
-
         nbt.putInt("min_ticks", minTicksForHoleToFill);
         nbt.putInt("max_ticks", maxTicksForHoleToFill);
         nbt.putInt("min_result", minResult);
@@ -185,6 +225,10 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
         nbt.putInt("harvest_tool_damage", ingredientItemDamage);
 
         ItemStackHelper.saveAllItems(nbt, this.inventory, true);
+
+        CompoundNBT outputTankCompound = outputFluid.writeToNBT(new CompoundNBT());
+        nbt.put("output_tank", outputTankCompound);
+
         return nbt;
     }
 
@@ -207,5 +251,13 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
     private void markUpdated() {
         this.setChanged();
         this.getLevel().sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
+    }
+
+    @Nonnull
+    @Override
+    public IModelData getModelData() {
+        return new ModelDataMap.Builder()
+                .withInitial(desiredBlock, desiredBlockState)
+                .build();
     }
 }

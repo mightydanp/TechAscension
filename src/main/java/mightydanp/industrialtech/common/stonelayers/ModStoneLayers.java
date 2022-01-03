@@ -1,19 +1,14 @@
 package mightydanp.industrialtech.common.stonelayers;
 
 import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
+import mightydanp.industrialtech.api.common.stonelayer.ITStoneLayers;
 import mightydanp.industrialtech.common.libs.StoneLayerFlagsEnum;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by MightyDanp on 7/6/2021.
  */
-public class ModStoneLayers {
-    public static List<StoneLayerHandler> stoneLayerList = new ArrayList<>();
-
+public class ModStoneLayers extends ITStoneLayers {
     public static StoneLayerHandler stone, andesite, granite, diorite;
 
     public static void init(){

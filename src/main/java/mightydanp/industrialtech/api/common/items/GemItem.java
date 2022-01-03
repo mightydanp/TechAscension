@@ -1,6 +1,5 @@
 package mightydanp.industrialtech.api.common.items;
 
-import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

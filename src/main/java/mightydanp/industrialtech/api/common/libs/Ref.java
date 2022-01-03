@@ -19,4 +19,5 @@ public class Ref {
     public static final String tool_parts_tab = "tool_parts_tab";
     public static final String tool_tab = "tool_tab";
     public static final String tree_tab = "tree_tab";
+    public static final String fluid_tab = "fluid_tab";
 }

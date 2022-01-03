@@ -83,7 +83,7 @@ public class RenderHelper {
         bufferIn.vertex(vertex2.x(), vertex2.y(), vertex2.z(), red, green, blue, alpha, south.uvs[south.getReverseIndex(2)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, -1);
         bufferIn.vertex(vertex1.x(), vertex1.y(), vertex1.z(), red, green, blue, alpha, south.uvs[south.getReverseIndex(0)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, packedOverlayIn, packedLightIn, 0, 0, -1);
 
-
+        //matrixStack.translate(0.5, 0, 0.5);
         matrixStack.popPose();
     }
 }

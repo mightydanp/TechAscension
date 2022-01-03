@@ -2,27 +2,14 @@ package mightydanp.industrialtech.api.common.items;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
-import mightydanp.industrialtech.api.common.handler.MaterialHandler;
-import mightydanp.industrialtech.api.common.libs.ITToolType;
-import mightydanp.industrialtech.common.tools.ModTools;
+import mightydanp.industrialtech.api.common.material.ITMaterial;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.OreBlock;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import net.minecraft.item.Item.Properties;
-import net.minecraftforge.common.ToolType;
 
 /**
  * Created by MightyDanp on 3/8/2021.
@@ -41,9 +28,9 @@ public class HammerToolItem extends ITToolItem {
         craftingToolsNeeded.add(new Pair<>(this, 1));
         craftingToolsNeeded.add(new Pair<>(this, 2));
 
-        parts.add(new Pair<>(MaterialHandler.hammerHeadItem, 1));
-        parts.add(new Pair<>(MaterialHandler.wedgeHandleItem, 2));
-        parts.add(new Pair<>(MaterialHandler.wedgeItem, 3));
+        parts.add(new Pair<>(ITMaterial.hammerHeadItem, 1));
+        parts.add(new Pair<>(ITMaterial.wedgeHandleItem, 2));
+        parts.add(new Pair<>(ITMaterial.wedgeItem, 3));
 // need to figure out a first tool.
         //disassembleTools.add(ModTools.chisel.tool);
         disassembleTools.add(this);

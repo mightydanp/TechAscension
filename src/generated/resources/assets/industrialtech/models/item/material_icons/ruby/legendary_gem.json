@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "industrialtech:item/material_icons/ruby/legendary_gem",
-    "layer1": "industrialtech:item/material_icons/ruby/legendary_gem_overlay"
-  }
-}

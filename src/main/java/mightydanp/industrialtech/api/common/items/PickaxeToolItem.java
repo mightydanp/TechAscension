@@ -2,7 +2,7 @@ package mightydanp.industrialtech.api.common.items;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.handler.MaterialHandler;
+import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.tools.ModTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -30,9 +30,9 @@ public class PickaxeToolItem extends ITToolItem {
         craftingToolsNeeded.add(new Pair<>(ModTools.hammer.tool, 1));
         craftingToolsNeeded.add(new Pair<>(ModTools.hammer.tool, 2));
 
-        parts.add(new Pair<>(MaterialHandler.pickaxeHeadItem, 1));
-        parts.add(new Pair<>(MaterialHandler.wedgeHandleItem, 2));
-        parts.add(new Pair<>(MaterialHandler.wedgeItem, 3));
+        parts.add(new Pair<>(ITMaterial.pickaxeHeadItem, 1));
+        parts.add(new Pair<>(ITMaterial.wedgeHandleItem, 2));
+        parts.add(new Pair<>(ITMaterial.wedgeItem, 3));
 
         disassembleTools.add(ModTools.chisel.tool);
         disassembleTools.add(ModTools.hammer.tool);

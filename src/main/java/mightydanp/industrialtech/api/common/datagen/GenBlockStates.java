@@ -1,11 +1,12 @@
 package mightydanp.industrialtech.api.common.datagen;
 
-import mightydanp.industrialtech.api.common.handler.MaterialHandler;
+import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.handler.TreeHandler;
-import mightydanp.industrialtech.api.common.libs.EnumMaterialFlags;
+import mightydanp.industrialtech.api.common.material.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.libs.EnumTreeFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
+import mightydanp.industrialtech.api.common.material.flag.IMaterialFlag;
 import mightydanp.industrialtech.common.libs.StoneLayerFlagsEnum;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
@@ -28,8 +29,8 @@ public class GenBlockStates extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        for(MaterialHandler material : ModMaterials.materials) {
-            materialHandlerHelper(material);
+        for(ITMaterial ITMaterial : ModMaterials.ITMaterials) {
+            materialHandlerHelper(ITMaterial);
         }
 
         for(StoneLayerHandler stoneLayer: ModStoneLayers.stoneLayerList){
@@ -37,10 +38,10 @@ public class GenBlockStates extends BlockStateProvider {
         }
     }
 
-    private void materialHandlerHelper(MaterialHandler material) {
-        for(EnumMaterialFlags flag : material.flags){
-            if(flag == EnumMaterialFlags.ORE){
-                for(RegistryObject<Block> blockRegistered : material.ore) {
+    private void materialHandlerHelper(ITMaterial ITMaterial) {
+        for(IMaterialFlag flag : ITMaterial.materialFlags){
+            if(flag == DefaultMaterialFlag.ORE){
+                for(RegistryObject<Block> blockRegistered : ITMaterial.ore) {
                     Block oreBlock = blockRegistered.get();
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
@@ -51,8 +52,8 @@ public class GenBlockStates extends BlockStateProvider {
                 }
             }
 
-            if(flag == EnumMaterialFlags.GEM){
-                for(RegistryObject<Block> blockRegistered : material.ore) {
+            if(flag == DefaultMaterialFlag.GEM){
+                for(RegistryObject<Block> blockRegistered : ITMaterial.ore) {
                     Block oreBlock = blockRegistered.get();
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
@@ -63,8 +64,8 @@ public class GenBlockStates extends BlockStateProvider {
                 }
             }
 
-            if(flag == EnumMaterialFlags.ORE || flag == EnumMaterialFlags.GEM){
-                for(RegistryObject<Block> blockRegistered : material.smallOre) {
+            if(flag == DefaultMaterialFlag.ORE || flag == DefaultMaterialFlag.GEM){
+                for(RegistryObject<Block> blockRegistered : ITMaterial.smallOre) {
                     Block oreBlock = blockRegistered.get();
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
@@ -74,7 +75,7 @@ public class GenBlockStates extends BlockStateProvider {
                     simpleBlock(oreBlock , ore);
                 }
 
-                for(RegistryObject<Block> blockRegistered : material.denseOre) {
+                for(RegistryObject<Block> blockRegistered : ITMaterial.denseOre) {
                     Block oreBlock = blockRegistered.get();
                     VariantBlockStateBuilder builder = getVariantBuilder(oreBlock);
                     String modId = oreBlock.getRegistryName().toString().split(":")[0];
@@ -83,6 +84,13 @@ public class GenBlockStates extends BlockStateProvider {
                     ModelFile ore = models().withExistingParent("block/dense_ore/" + "dense_"+ stoneVariant + "_ore", modId + ":block/ore/state/dense_ore").texture("particle", "minecraft:block/" + stoneVariant).texture("sourceblock", "minecraft:block/" + stoneVariant);
                     simpleBlock(oreBlock , new ConfiguredModel(ore));
                 }
+            }
+
+            if(flag == DefaultMaterialFlag.FLUID || flag == DefaultMaterialFlag.GAS){
+                Block block = ITMaterial.fluidBlock.get();
+
+                ModelFile ore = models().withExistingParent("block/fluid/" + ITMaterial.name, "block/lava").texture("particle", block.getRegistryName() + "_still");
+                simpleBlock(block , new ConfiguredModel(ore));
             }
         }
     }

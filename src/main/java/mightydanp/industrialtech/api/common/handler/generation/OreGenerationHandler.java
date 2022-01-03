@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.api.common.handler.generation;
 
-import mightydanp.industrialtech.api.common.handler.MaterialHandler;
+import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
 import mightydanp.industrialtech.api.common.libs.EnumVeinRarityFlags;
@@ -72,14 +72,14 @@ public class OreGenerationHandler {
                 }
             }
 
-            if(obj instanceof MaterialHandler) {
-                for (RegistryObject<Block> ore : ((MaterialHandler) obj).smallOre) {
+            if(obj instanceof ITMaterial) {
+                for (RegistryObject<Block> ore : ((ITMaterial) obj).smallOre) {
                     veinSmallOreBlocks.add(ore.get().defaultBlockState());
                 }
-                for (RegistryObject<Block> ore : ((MaterialHandler) obj).ore) {
+                for (RegistryObject<Block> ore : ((ITMaterial) obj).ore) {
                     veinOreBlocks.add(ore.get().defaultBlockState());
                 }
-                for (RegistryObject<Block> ore : ((MaterialHandler) obj).denseOre) {
+                for (RegistryObject<Block> ore : ((ITMaterial) obj).denseOre) {
                     veinDenseOreBlocks.add(ore.get().defaultBlockState());
                 }
             }
@@ -113,9 +113,9 @@ public class OreGenerationHandler {
                 intList.add((Integer)obj);
             }
 
-            if(obj instanceof MaterialHandler) {
+            if(obj instanceof ITMaterial) {
                 List<BlockState> tempList2 = new ArrayList<>();
-                for (RegistryObject<Block> ore : ((MaterialHandler) obj).smallOre) {
+                for (RegistryObject<Block> ore : ((ITMaterial) obj).smallOre) {
                     tempList2.add(ore.get().defaultBlockState());
                 }
 
@@ -138,6 +138,7 @@ public class OreGenerationHandler {
         boolean canSpawnCrop = false;
         int randomNumber = rand.nextInt(100);
 
+        /*
         if(randomNumber > 0 && randomNumber <= 50) {
             int i = rand.nextInt(commonVeinList.size());
             if (biomeCheck(commonVeinBiomesList.get(i), event)) {
@@ -168,6 +169,7 @@ public class OreGenerationHandler {
                 event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, smallOreGenList.get(i));
             }
         }
+        */
         return canSpawnCrop;
     }
 

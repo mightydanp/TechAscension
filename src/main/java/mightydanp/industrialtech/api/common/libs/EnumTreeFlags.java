@@ -6,9 +6,9 @@ package mightydanp.industrialtech.api.common.libs;
 public enum EnumTreeFlags {
     SAPLING("", "_sapling"),
     LEAVE("", "_leave"),
-    NORMAL_LOG("", "_log"),
-    LOG_SIDE_HOLE("", "_log_side_hole"),
+    LOG("", "_log"),
     PLANK("", "_plank"),
+    RESIN("", "_resin"),
     NULL("", "");
 
     private final String prefix;

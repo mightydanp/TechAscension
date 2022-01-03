@@ -58,6 +58,8 @@ public class CustomCookingRecipeBuilder {
     private final float experience; public float getExperience() { return this.experience; }
     private final int cookingtime; public int getCookingTime() { return this.cookingtime; }
 
+
+
     public CustomCookingRecipeBuilder(ResourceLocation type, Ingredient ingredient, Either<Item,ItemStack> result, float experience, int cookingtime)
     {
         this.type = type;

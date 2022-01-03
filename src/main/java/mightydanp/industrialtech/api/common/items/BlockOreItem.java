@@ -18,10 +18,10 @@ import net.minecraft.item.Item.Properties;
  */
 public class BlockOreItem extends BlockItem {
     public String element;
-    public int meltingPoint;
-    public int boilingPoint;
+    public Integer meltingPoint;
+    public Integer boilingPoint;
 
-    public BlockOreItem(Block blockIn, Properties builder, int boilingPointIn, int meltingPointIn, String elementIn) {
+    public BlockOreItem(Block blockIn, Properties builder, Integer boilingPointIn, Integer meltingPointIn, String elementIn) {
         super(blockIn, builder);
         meltingPoint = meltingPointIn;
         boilingPoint = boilingPointIn;
@@ -35,10 +35,10 @@ public class BlockOreItem extends BlockItem {
             tooltip.add(ITextComponent.nullToEmpty(element));
         }
 
-        if (meltingPoint != 0) {
+        if (meltingPoint != null) {
             tooltip.add(ITextComponent.nullToEmpty("Melting Point of" + " §5" + meltingPoint));
         }
-        if (boilingPoint != 0) {
+        if (boilingPoint != null) {
             tooltip.add(ITextComponent.nullToEmpty("Boiling Point of" + " §5" + boilingPoint));
         }
     }

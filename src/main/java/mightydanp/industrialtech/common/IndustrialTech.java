@@ -10,7 +10,12 @@ import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.items.ITItems;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.api.common.material.ITMaterials;
+import mightydanp.industrialtech.api.common.material.data.MaterialJsonProvider;
+import mightydanp.industrialtech.api.common.material.data.MaterialRegistry;
+import mightydanp.industrialtech.api.common.material.data.MaterialSerializer;
 import mightydanp.industrialtech.api.common.tileentities.TileEntities;
+import mightydanp.industrialtech.api.common.material.tool.ITTools;
 import mightydanp.industrialtech.api.server.DedicatedServerReference;
 import mightydanp.industrialtech.client.ModClientEvent;
 import mightydanp.industrialtech.client.settings.KeyBindings.ModKeyBindings;
@@ -23,6 +28,7 @@ import mightydanp.industrialtech.common.tileentities.ModTileEntities;
 import mightydanp.industrialtech.common.tools.ModTools;
 import mightydanp.industrialtech.common.trees.ModTrees;
 import mightydanp.industrialtech.data.config.DataConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -33,6 +39,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.file.Paths;
+
 /**
  * Created by MightyDanp on 9/26/2020.
  */
@@ -42,15 +50,31 @@ public class IndustrialTech {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final ISidedReference SIDED_SYSTEM = DistExecutor.safeRunForDist(() -> ModClientEvent::new, () -> DedicatedServerReference::new);
 
+    public static MaterialRegistry materialRegistryInstance = new MaterialRegistry();
+
     public IndustrialTech(){
         INSTANCE = this;
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus(), forge = MinecraftForge.EVENT_BUS;
+
         SIDED_SYSTEM.setup(modEventBus, forge);
+
+        modLoadingContext.registerConfig(ModConfig.Type.SERVER, DataConfig.SERVER_SPEC);
+        modLoadingContext.registerConfig(ModConfig.Type.CLIENT, DataConfig.CLIENT_SPEC);
+        modLoadingContext.registerConfig(ModConfig.Type.COMMON, DataConfig.COMMON_SPEC);
 
         RegistryHandler.init(modEventBus);
         ModStoneLayers.init();
-        ModMaterials.commonInit();
+        //ITMaterials.commonInit();
+        new ModMaterials().commonInit();
+        new MaterialJsonProvider();
+        materialRegistryInstance.initiateMaterials();
+
+        //String minecraftFolder = Minecraft.getInstance().gameDirectory.getAbsoluteFile().toString().replace(".", "");
+        //String materialConfigFolder = minecraftFolder + "config/" + Ref.mod_id + "/material/";
+        //MaterialSerializer.getFromJson(MaterialSerializer.getJsonObject(Paths.get(materialConfigFolder + "alexandrite.json")));
+
+        ITTools.init();
         ModTools.init();
         ITItems.init();
         ModItems.init();
@@ -74,9 +98,5 @@ public class IndustrialTech {
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientEvent::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientEvent::init);
-
-        modLoadingContext.registerConfig(ModConfig.Type.SERVER, DataConfig.SERVER_SPEC);
-        modLoadingContext.registerConfig(ModConfig.Type.CLIENT, DataConfig.CLIENT_SPEC);
-        modLoadingContext.registerConfig(ModConfig.Type.COMMON, DataConfig.COMMON_SPEC);
     }
 }

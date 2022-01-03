@@ -1,12 +1,18 @@
 package mightydanp.industrialtech.api.common.crafting.recipe;
 
 import mightydanp.industrialtech.api.common.blocks.ITBlocks;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.*;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
+
+import javax.annotation.Nullable;
 
 /**
  * Created by MightyDanp on 10/9/2021.
@@ -21,12 +27,13 @@ public class HoleRecipe implements IRecipe<IInventory> {
     protected final int minTicks;
     protected final int maxTicks;
     protected final ItemStack result;
+    protected Fluid resultFluid;
     protected final int minResult;
     protected final int maxResult;
     protected final int holeColor;
     protected final int resinColor;
 
-    public HoleRecipe(ResourceLocation resourceLocationIn, String groupIn, ItemStack desiredBlockIn, NonNullList<Ingredient> ingredientItemsIn, int ingredientItemDamageIn, boolean consumeIngredientsIn, int minTicksIn, int maxTicksIn, ItemStack resultIn, int minResultIn, int maxResultIn, int holeColorIn, int resinColorIn) {
+    public HoleRecipe(ResourceLocation resourceLocationIn, String groupIn, ItemStack desiredBlockIn, NonNullList<Ingredient> ingredientItemsIn, int ingredientItemDamageIn, boolean consumeIngredientsIn, int minTicksIn, int maxTicksIn, @Nullable ItemStack resultIn, @Nullable Fluid resultFluidIn, int minResultIn, int maxResultIn, int holeColorIn, int resinColorIn) {
         id = resourceLocationIn;
         group = groupIn;
         desiredBlock = desiredBlockIn;
@@ -35,7 +42,16 @@ public class HoleRecipe implements IRecipe<IInventory> {
         consumeIngredients = consumeIngredientsIn;
         minTicks = minTicksIn;
         maxTicks = maxTicksIn;
-        result = resultIn;
+        if(resultIn != null) {
+            result = resultIn;
+        }else{
+            result = ItemStack.EMPTY;
+        }
+        if(resultFluidIn != null) {
+            resultFluid = resultFluidIn;
+        }else{
+            resultFluid = Fluids.EMPTY;
+        }
         minResult = minResultIn;
         maxResult = maxResultIn;
         holeColor = holeColorIn;
@@ -43,14 +59,7 @@ public class HoleRecipe implements IRecipe<IInventory> {
     }
 
     public boolean matches(IInventory inventory, World world) {
-        NonNullList<Ingredient> list = new NonNullList<Ingredient>(){};
-        for(Ingredient item : ingredientItems){
-            if(item.test(inventory.getItem(0))){
-                list.add(item);
-            }
-        }
-
-        return list.size() == ingredientItems.size();
+        return inventory.getItem(0).sameItem(desiredBlock);
     }
 
     public ItemStack assemble(IInventory p_77572_1_) {
@@ -126,6 +135,10 @@ public class HoleRecipe implements IRecipe<IInventory> {
 
     public IRecipeSerializer<?> getSerializer() {
         return Recipes.holeSerializer.get();
+    }
+
+    public Fluid getResultFluid() {
+        return resultFluid;
     }
 }
 

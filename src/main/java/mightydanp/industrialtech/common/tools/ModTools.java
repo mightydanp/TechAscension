@@ -1,21 +1,15 @@
 package mightydanp.industrialtech.common.tools;
 
-import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.handler.MaterialHandler;
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.api.common.items.*;
-import mightydanp.industrialtech.api.common.libs.EnumToolFlags;
-import net.minecraft.item.Item;
+import mightydanp.industrialtech.api.common.material.tool.EnumToolFlags;
+import mightydanp.industrialtech.api.common.material.tool.ITTools;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by MightyDanp on 4/23/2021.
  */
-public class ModTools {
-    public static List<ToolHandler> tools = new ArrayList<>();
+public class ModTools extends ITTools {
     public static ToolHandler hammer, chisel, pickaxe, knife;
 
     public static void init(){

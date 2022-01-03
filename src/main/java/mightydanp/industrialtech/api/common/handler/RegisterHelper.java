@@ -1,6 +1,14 @@
 package mightydanp.industrialtech.api.common.handler;
 
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.ForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.RegistryBuilder;
+
+import java.util.function.Supplier;
 
 /**
  * Created by MightyDanp on 1/31/2021.
@@ -8,5 +16,18 @@ import net.minecraft.state.BooleanProperty;
 public class RegisterHelper {
     public static BooleanProperty createBlockState(String stateName){
         return BooleanProperty.create(stateName);
+    }
+
+    public static <F extends Feature<?>> RegistryObject<F> createFeature(String name, Supplier<F> feature){
+        return RegistryHandler.FEATURES.register(name, feature);
+    }
+
+    public static <T extends IForgeRegistryEntry<T>> ForgeRegistry<T> makeRegistry(String name, Class<T> clazz, String modID, boolean data) {
+        RegistryBuilder<T> builder = new RegistryBuilder<T>().setType(clazz).setName(new ResourceLocation(modID, name)).allowModification();
+        if (data) {
+            builder.disableSaving();
+            builder.disableSync();
+        }
+        return (ForgeRegistry<T>) builder.create();
     }
 }

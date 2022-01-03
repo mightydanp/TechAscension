@@ -3,7 +3,7 @@ package mightydanp.industrialtech.api.common.handler;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
 import mightydanp.industrialtech.api.common.items.*;
-import mightydanp.industrialtech.api.common.libs.EnumToolFlags;
+import mightydanp.industrialtech.api.common.material.tool.EnumToolFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;

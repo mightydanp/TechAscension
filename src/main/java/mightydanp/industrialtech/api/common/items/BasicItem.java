@@ -13,4 +13,6 @@ public class BasicItem extends Item {
         super(properties);
         properties.tab(ModItemGroups.item_tab);
     }
+
+
 }

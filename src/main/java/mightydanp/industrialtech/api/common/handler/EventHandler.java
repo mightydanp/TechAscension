@@ -43,6 +43,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawHighlightEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -80,9 +81,14 @@ public class EventHandler {
     public static boolean hasBeenPressed = false;
 
     @SubscribeEvent
+    public static void setModelProperties(FMLClientSetupEvent event) {
+
+    }
+
+
+        @SubscribeEvent
     public static void blockPlacementPreviewEvent(DrawHighlightEvent.HighlightBlock event) {
         Minecraft instance = Minecraft.getInstance();
-
 
         //fix by tick https://www.google.com/search?q=forge+get+tick+for+cooldown&oq=forge+get+tick+for+cooldown&aqs=chrome..69i57j33i160.20679j0j7&sourceid=chrome&ie=UTF-8
         if(KeyBindings.activateBlockPreViewer.keyBinding.isDown()){
@@ -97,7 +103,7 @@ public class EventHandler {
             ClientPlayerEntity player = instance.player;
             World world = player.level;
 
-            Double rayLength = new Double(100);
+            int rayLength = 100;
             Vector3d playerRotation = player.getViewVector(0);
             Vector3d rayPath = playerRotation.scale(rayLength);
 

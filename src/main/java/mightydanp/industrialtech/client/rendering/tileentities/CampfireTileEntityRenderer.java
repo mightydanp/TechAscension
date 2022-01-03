@@ -37,8 +37,6 @@ public class CampfireTileEntityRenderer extends TileEntityRenderer<CampfireTileE
         matrixStack.pushPose();
         Model model = new CampfireModel(campfireTileEntityOverride);
 
-        matrixStack.translate(0.5, 0, 0.5D);
-
         Direction direction = campfireTileEntityOverride.direction;
 
         switch (direction.getName().toLowerCase()){

@@ -53,14 +53,13 @@ public class KnifeToolItem extends ITToolItem{
         Direction clickedFace = itemUseContext.getClickedFace();
         BlockState clickedBlockState = world.getBlockState(blockPos);
 
-        IInventory iinventory = new Inventory(new ItemStack(clickedBlockState.getBlock().asItem()));
+        IInventory iinventory = new Inventory(new ItemStack(clickedBlockState.getBlock()));
+        List<HoleRecipe> recipe = world.getRecipeManager().getRecipesFor(Recipes.holeType, iinventory, world);
         Optional<HoleRecipe> validRecipe = world.getRecipeManager().getRecipeFor(Recipes.holeType, iinventory, world);
-
-        Optional<HoleRecipe> recipe = world.getRecipeManager().getRecipeFor(Recipes.holeType, iinventory, world);
 
         int harvestToolDamage = validRecipe.map(HoleRecipe::getIngredientItemDamage).orElse(1);
 
-        if(recipe.isPresent()) {
+        if(validRecipe.isPresent()) {
             BlockState newBlockState;
             newBlockState = ITBlocks.hole_block.get().defaultBlockState();
             world.setBlockAndUpdate(blockPos, newBlockState);
@@ -68,8 +67,16 @@ public class KnifeToolItem extends ITToolItem{
             HoleTileEntity tileEntity = (HoleTileEntity) world.getBlockEntity(blockPos);
 
             if (playerEntity != null && tileEntity != null) {
-                tileEntity.direction = clickedFace;
-                tileEntity.setDesiredBlockSlot(recipe.get().getDesiredBlock());
+                tileEntity.desiredBlockState = clickedBlockState;
+                tileEntity.setDesiredBlockSlot(validRecipe.get().getDesiredBlock());
+                tileEntity.minTicksForHoleToFill = validRecipe.get().getMinTicks();
+                tileEntity.maxTicksForHoleToFill = validRecipe.get().getMaxTicks();
+                tileEntity.minResult = validRecipe.get().getMinResult();
+                tileEntity.maxResult = validRecipe.get().getMaxResult();
+                tileEntity.holeColor = validRecipe.get().getHoleColor();
+                tileEntity.resinColor = validRecipe.get().getResinColor();
+                tileEntity.ingredientItemDamage = validRecipe.get().getIngredientItemDamage();
+
 
                 if (clickedFace != Direction.UP && clickedFace != Direction.DOWN) {
                     if (itemUseContext.getItemInHand().getItem() instanceof ITToolItem) {
@@ -85,6 +92,7 @@ public class KnifeToolItem extends ITToolItem{
                         }
                     }
 
+                    newBlockState = newBlockState.setValue(HoleBlock.FACING, clickedFace).setValue(HoleBlock.RESIN, false);
                     world.setBlockAndUpdate(blockPos, newBlockState);
                     return ActionResultType.SUCCESS;
                 }

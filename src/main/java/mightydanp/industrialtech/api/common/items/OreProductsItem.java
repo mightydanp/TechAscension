@@ -17,10 +17,10 @@ import net.minecraft.item.Item.Properties;
  */
 public class OreProductsItem extends Item {
     public String element;
-    public int meltingPoint;
-    public int boilingPoint;
+    public Integer meltingPoint;
+    public Integer boilingPoint;
 
-    public OreProductsItem(Properties properties, int boilingPointIn, int meltingPointIn, String elementIn) {
+    public OreProductsItem(Properties properties, Integer boilingPointIn, Integer meltingPointIn, String elementIn) {
         super(properties);
         meltingPoint = meltingPointIn;
         boilingPoint = boilingPointIn;
@@ -34,10 +34,10 @@ public class OreProductsItem extends Item {
             tooltip.add(ITextComponent.nullToEmpty(element));
         }
 
-        if (meltingPoint != 0) {
+        if (meltingPoint != null) {
             tooltip.add(ITextComponent.nullToEmpty("Melting Point of" + " §5" + meltingPoint));
         }
-        if (boilingPoint != 0) {
+        if (boilingPoint != null) {
             tooltip.add(ITextComponent.nullToEmpty("Boiling Point of" + " §5" + boilingPoint));
         }
     }

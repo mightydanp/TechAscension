@@ -1,21 +1,15 @@
 package mightydanp.industrialtech.api.common.handler.generation;
 
-import mightydanp.industrialtech.api.common.handler.MaterialHandler;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
-import mightydanp.industrialtech.api.common.libs.EnumVeinRarityFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.*;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.*;
-import net.minecraft.world.gen.placement.Placement;
-import net.minecraft.world.gen.placement.TopSolidRangeConfig;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,8 +19,6 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.function.Supplier;
 
 /**
  * Created by MightyDanp on 9/8/2021.

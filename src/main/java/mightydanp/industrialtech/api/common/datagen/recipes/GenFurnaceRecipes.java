@@ -1,22 +1,34 @@
 package mightydanp.industrialtech.api.common.datagen.recipes;
 
+import com.mojang.datafixers.util.Either;
 import mightydanp.industrialtech.api.common.datagen.recipes.builder.CustomCookingRecipeBuilder;
 import mightydanp.industrialtech.api.common.datagen.JsonDataProvider;
-import mightydanp.industrialtech.common.datagen.ModFurnaceRecipes;
+import mightydanp.industrialtech.common.datagen.recipes.ModFurnaceRecipes;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.data.RecipeProvider;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by MightyDanp on 6/6/2021.
  */
-public class GenFurnaceRecipes {
+public class GenFurnaceRecipes extends RecipeProvider {
     public JsonDataProvider<CustomCookingRecipeBuilder> cookingRecipes;
     public String modID;
     public String recipesName;
 
+    public List<CustomCookingRecipeBuilder> customCookingRecipeList = new ArrayList<>();
+
+
     public GenFurnaceRecipes(DataGenerator generator, String modID, String recipesName){
+        super(generator);
         cookingRecipes = new JsonDataProvider<>(generator, JsonDataProvider.ResourceType.DATA, "recipes", CustomCookingRecipeBuilder.CODEC);
         this.modID = modID;
         this.recipesName = recipesName;
@@ -24,11 +36,16 @@ public class GenFurnaceRecipes {
         new ModFurnaceRecipes(this);
     }
 
+    @Override
+    protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+
+    }
+
     public void furnaceRecipes(){
         //addFurnaceRecipe("test", Ingredient.of(Items.DIRT), Items.BAKED_POTATO, 0.35F, 200);
     }
 
-    public void addFurnaceRecipe(String recipeName, Ingredient ingredients, Item result, float xp, int cookTime){
-        cookingRecipes.with(new ResourceLocation(modID,recipeName), CustomCookingRecipeBuilder.forItemResult(new ResourceLocation("minecraft:smelting"), ingredients, result, xp, cookTime));
+    public void addFurnaceRecipe(String recipeName, Ingredient ingredients, Either<Item, ItemStack> result, float xp, int cookTime){
+        cookingRecipes.with(new ResourceLocation(modID,recipeName),  result.left().isPresent() ? CustomCookingRecipeBuilder.forItemResult(new ResourceLocation("minecraft:smelting") , ingredients, result.left().get(), xp, cookTime) : result.right().isPresent() ? CustomCookingRecipeBuilder.forItemStackResult(new ResourceLocation("minecraft:smelting") , ingredients, result.right().get(), xp, cookTime) : null);
     }
 }
