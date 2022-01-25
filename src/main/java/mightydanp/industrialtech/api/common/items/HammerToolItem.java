@@ -28,9 +28,9 @@ public class HammerToolItem extends ITToolItem {
         craftingToolsNeeded.add(new Pair<>(this, 1));
         craftingToolsNeeded.add(new Pair<>(this, 2));
 
-        parts.add(new Pair<>(ITMaterial.hammerHeadItem, 1));
-        parts.add(new Pair<>(ITMaterial.wedgeHandleItem, 2));
-        parts.add(new Pair<>(ITMaterial.wedgeItem, 3));
+        //parts.add(new Pair<>(ITMaterial.hammerHead, 1));
+        //parts.add(new Pair<>(ITMaterial.wedgeHandle, 2));
+        //parts.add(new Pair<>(ITMaterial.wedge, 3));
 // need to figure out a first tool.
         //disassembleTools.add(ModTools.chisel.tool);
         disassembleTools.add(this);

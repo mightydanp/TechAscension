@@ -1,7 +1,7 @@
 package mightydanp.industrialtech.api.common.material.fluid;
 
 import mightydanp.industrialtech.api.common.material.ITMaterial;
-import mightydanp.industrialtech.api.common.material.flag.DefaultMaterialFlag;
+import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.material.ITMaterials;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import net.minecraft.client.util.ITooltipFlag;

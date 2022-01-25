@@ -1,11 +1,19 @@
 package mightydanp.industrialtech.api.common.datagen;
 
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
+import mightydanp.industrialtech.api.common.libs.ITButtonRef;
+import mightydanp.industrialtech.api.common.libs.ITScreenRef;
+import mightydanp.industrialtech.api.common.libs.ITScreenTextRef;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
+import net.minecraft.util.RegistryKey;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by MightyDanp on 10/7/2020.
@@ -17,15 +25,19 @@ public class GenLanguage extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        for(RegistryObject<Item> item : RegistryHandler.ITEMS.getEntries()) {
-            String itemName = translateUpperCase(item.get().getRegistryName().toString());
-            add(item.get(), itemName);
+        for(Map.Entry<RegistryKey<Item>, Item> item : ForgeRegistries.ITEMS.getEntries().stream().filter(items -> items.getKey().location().getNamespace().equals(Ref.mod_id)).collect(Collectors.toList())) {
+            String itemName = translateUpperCase(item.getKey().location().toString());
+            add(item.getValue(), itemName);
         }
 
-        for(RegistryObject<Item> blockItem : RegistryHandler.BLOCK_ITEMS.getEntries()) {
-            String itemName = translateUpperCase(blockItem.get().getRegistryName().toString());
-            add(blockItem.get(), itemName);
-        }
+        add(ITButtonRef.returnToServerScreen, ITButtonRef.returnToServerScreenText);
+        add(ITButtonRef.syncClientConfigsWithServers, ITButtonRef.syncClientConfigsWithServersText);
+        add(ITScreenTextRef.syncWarningLine1, ITScreenTextRef.syncWarningLine1Text);
+        add(ITScreenTextRef.syncWarningLine2, ITScreenTextRef.syncWarningLine2Text);
+        add(ITScreenTextRef.syncWarningLine3, ITScreenTextRef.syncWarningLine3Text);
+        add(ITScreenTextRef.clientWorldWarningLine1, ITScreenTextRef.clientWorldWarningLine1Text);
+        add(ITScreenTextRef.clientWorldWarningLine2, ITScreenTextRef.clientWorldWarningLine2Text);
+
     }
 
     String translateUpperCase(String name){

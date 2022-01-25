@@ -30,9 +30,9 @@ public class PickaxeToolItem extends ITToolItem {
         craftingToolsNeeded.add(new Pair<>(ModTools.hammer.tool, 1));
         craftingToolsNeeded.add(new Pair<>(ModTools.hammer.tool, 2));
 
-        parts.add(new Pair<>(ITMaterial.pickaxeHeadItem, 1));
-        parts.add(new Pair<>(ITMaterial.wedgeHandleItem, 2));
-        parts.add(new Pair<>(ITMaterial.wedgeItem, 3));
+        //parts.add(new Pair<>(ITMaterial.pickaxeHead, 1));
+        //parts.add(new Pair<>(ITMaterial.wedgeHandle, 2));
+        //parts.add(new Pair<>(ITMaterial.wedge, 3));
 
         disassembleTools.add(ModTools.chisel.tool);
         disassembleTools.add(ModTools.hammer.tool);

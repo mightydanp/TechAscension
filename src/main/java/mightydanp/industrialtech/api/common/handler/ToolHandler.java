@@ -3,12 +3,13 @@ package mightydanp.industrialtech.api.common.handler;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
 import mightydanp.industrialtech.api.common.items.*;
-import mightydanp.industrialtech.api.common.material.tool.EnumToolFlags;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.DefaultToolType;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,7 +25,7 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class ToolHandler {
     public static List<ToolHandler> registeredTools = new ArrayList<>();
-    public List<EnumToolFlags> flags = new ArrayList<>();
+    public List<DefaultToolType> flags = new ArrayList<>();
 
     public String toolName;
 
@@ -37,7 +38,7 @@ public class ToolHandler {
     public int damageTool;
 
 
-    public ToolHandler(String toolNameIn, int damageToolIn, EnumToolFlags flagIn, ITToolItem tool) {
+    public ToolHandler(String toolNameIn, int damageToolIn, DefaultToolType flagIn, ITToolItem tool) {
         toolItem = RegistryHandler.ITEMS.register(toolNameIn, () -> tool);
         toolName = toolNameIn;
         toolCraftingTools = tool.craftingToolsNeeded;
@@ -50,7 +51,7 @@ public class ToolHandler {
         registeredTools.add(this);
     }
 
-    protected void addFlag(EnumToolFlags... flagsIn) {
+    protected void addFlag(DefaultToolType... flagsIn) {
 
     }
 
@@ -84,6 +85,9 @@ public class ToolHandler {
 
     @SubscribeEvent
     public static void onItemRightClickEvent(final PlayerInteractEvent.RightClickItem event) {
+        if(event.getItemStack().getItem() == Items.STICK){
+            //Minecraft.getInstance().setScreen(new SyncScreen(materialServer));
+        }
         //handToolCrafting(pickaxe, event, 1, pickaxeToolsNeeded);
     }
 

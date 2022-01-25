@@ -1,8 +1,7 @@
 package mightydanp.industrialtech.api.common.items;
 
 import com.mojang.datafixers.util.Pair;;
-import mightydanp.industrialtech.api.common.material.icons.DefaultTextureIcon;
-import mightydanp.industrialtech.api.common.material.icons.ITextureIcon;
+import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

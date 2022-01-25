@@ -10,33 +10,15 @@ import org.apache.commons.lang3.tuple.Pair;
  * Created by MightyDanp on 2/26/2021.
  */
 public class DataConfig {
-    public static final ServerConfig SERVER;
-    public static final ForgeConfigSpec SERVER_SPEC;
+    private static final Pair<ServerConfig, ForgeConfigSpec> serverSpecPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
+    public static final ServerConfig SERVER = serverSpecPair.getLeft();
+    public static final ForgeConfigSpec SERVER_SPEC = serverSpecPair.getRight();
 
-    static
-    {
-        final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
-        SERVER_SPEC = specPair.getRight();
-        SERVER = specPair.getLeft();
-    }
+    private static final Pair<ClientConfig, ForgeConfigSpec> clientSpecPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+    public static final ClientConfig CLIENT = clientSpecPair.getLeft();
+    public static final ForgeConfigSpec CLIENT_SPEC  = clientSpecPair.getRight();
 
-    public static final ClientConfig CLIENT;
-    public static final ForgeConfigSpec CLIENT_SPEC;
-
-    static
-    {
-        final Pair<ClientConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
-        CLIENT_SPEC = specPair.getRight();
-        CLIENT = specPair.getLeft();
-    }
-
-    public static final CommonConfig COMMON;
-    public static final ForgeConfigSpec COMMON_SPEC;
-
-    static
-    {
-        final Pair<CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
-        COMMON_SPEC = specPair.getRight();
-        COMMON = specPair.getLeft();
-    }
+    private static final Pair<CommonConfig, ForgeConfigSpec> commonSpecPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
+    public static final CommonConfig COMMON = commonSpecPair.getLeft();
+    public static final ForgeConfigSpec COMMON_SPEC = commonSpecPair.getRight();
 }

@@ -1,16 +1,16 @@
 package mightydanp.industrialtech.api.common.datagen;
 
+import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
-import mightydanp.industrialtech.api.common.material.flag.DefaultMaterialFlag;
+import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
-import mightydanp.industrialtech.api.common.material.flag.IMaterialFlag;
-import mightydanp.industrialtech.api.common.material.tool.part.flag.DefaultToolPart;
-import mightydanp.industrialtech.api.common.material.tool.part.flag.IToolPart;
+import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.part.DefaultToolPart;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.common.items.ModItems;
 import mightydanp.industrialtech.common.libs.StoneLayerFlagsEnum;
-import mightydanp.industrialtech.common.materials.ModMaterials;
 import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import mightydanp.industrialtech.common.tools.ModTools;
 import net.minecraft.data.DataGenerator;
@@ -22,7 +22,6 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.generators.*;
-import net.minecraftforge.fml.RegistryObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,52 +38,52 @@ public class GenItemModel extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        for(ITMaterial ITMaterial : ModMaterials.ITMaterials) {
-            for(IMaterialFlag flag : ITMaterial.materialFlags) {
+        for(ITMaterial material : RegistryHandler.MATERIAL.getValues()) {
+            for(IMaterialFlag flag : material.materialFlags) {
                 if (flag == DefaultMaterialFlag.ORE) {
                 }
 
                 if (flag == DefaultMaterialFlag.GEM) {
-                    coloredMaterialPart(ITMaterial.gem.get(), ITMaterial);
-                    coloredMaterialPart(ITMaterial.chippedGem.get(), ITMaterial);
-                    coloredMaterialPart(ITMaterial.flawedGem.get(), ITMaterial);
-                    coloredMaterialPart(ITMaterial.flawlessGem.get(), ITMaterial);
-                    coloredMaterialPart(ITMaterial.legendaryGem.get(), ITMaterial);
+                    coloredMaterialPart(material.gem, material);
+                    coloredMaterialPart(material.chippedGem, material);
+                    coloredMaterialPart(material.flawedGem, material);
+                    coloredMaterialPart(material.flawlessGem, material);
+                    coloredMaterialPart(material.legendaryGem, material);
                 }
 
                 if (flag == DefaultMaterialFlag.GEM || flag == DefaultMaterialFlag.ORE) {
-                    coloredMaterialPart(ITMaterial.crushedOre.get(), ITMaterial);
-                    coloredMaterialPart(ITMaterial.purifiedOre.get(), ITMaterial);
-                    coloredMaterialPart(ITMaterial.centrifugedOre.get(), ITMaterial);
-                    coloredMaterialPart(ITMaterial.dust.get(), ITMaterial);
-                    coloredMaterialPart(ITMaterial.smallDust.get(), ITMaterial);
-                    coloredMaterialPart(ITMaterial.tinyDust.get(), ITMaterial);
-                    for (RegistryObject<Item> item : ITMaterial.oreItem) {
-                        generateItemBlockSuffix(item.get());
+                    coloredMaterialPart(material.crushedOre, material);
+                    coloredMaterialPart(material.purifiedOre, material);
+                    coloredMaterialPart(material.centrifugedOre, material);
+                    //coloredMaterialPart(material.dust, material);
+                    //coloredMaterialPart(material.smallDust, material);
+                    //coloredMaterialPart(material.tinyDust, material);
+                    for (Item item : material.oreItemList) {
+                        generateItemBlockSuffix(item);
                     }
-                    for (RegistryObject<Item> item : ITMaterial.denseOreItem) {
-                        generatePrefixItemBlockSuffix(item.get(), null);
+                    for (Item item : material.denseOreItemList) {
+                        generatePrefixItemBlockSuffix(item, null);
                     }
-                    for (RegistryObject<Item> item : ITMaterial.smallOreItem) {
-                        generatePrefixItemBlockSuffix(item.get(), null);
+                    for (Item item : material.smallOreItemList) {
+                        generatePrefixItemBlockSuffix(item, null);
                     }
                 }
             }
 
-            for(IToolPart flag : ITMaterial.toolParts){
+            for(IToolPart flag : material.toolParts){
                 if(flag == DefaultToolPart.TOOL_HEAD){
-                    coloredToolPart(ITMaterial.dullPickaxe.get(), ITMaterial);
-                    coloredToolPart(ITMaterial.pickaxeHead.get(), ITMaterial);
-                    coloredToolPart(ITMaterial.hammerHead.get(), ITMaterial);
-                    coloredToolPart(ITMaterial.dullChiselHead.get(), ITMaterial);
-                    coloredToolPart(ITMaterial.chiselHead.get(), ITMaterial);
+                    coloredToolPart(material.dullPickaxe, material);
+                    coloredToolPart(material.pickaxeHead, material);
+                    coloredToolPart(material.hammerHead, material);
+                    coloredToolPart(material.dullChiselHead, material);
+                    coloredToolPart(material.chiselHead, material);
                 }
                 if(flag == DefaultToolPart.TOOL_WEDGE) {
-                    coloredToolPart(ITMaterial.wedge.get(), ITMaterial);
+                    coloredToolPart(material.wedge, material);
                 }
 
                 if(flag == DefaultToolPart.TOOL_WEDGE_HANDLE){
-                  coloredToolPart(ITMaterial.wedgeHandle.get(), ITMaterial);
+                  coloredToolPart(material.wedgeHandle, material);
                 }
 
             }

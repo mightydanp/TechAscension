@@ -22,12 +22,12 @@ import net.minecraft.block.AbstractBlock.Properties;
 public class DenseOreBlock extends Block {
     public String name;
     public BlockState replaceableBlock;
-    public List<RegistryObject<Item>> blockDrop;
+    public List<Item> blockDrop;
     public int density;
 
     public static IntegerProperty densityProperty = IntegerProperty.create("density", 0, 64);
 
-    public DenseOreBlock(String nameIn, Properties properties, int densityIn, BlockState replaceableBlockIn, List<RegistryObject<Item>> blockDropIn) {
+    public DenseOreBlock(String nameIn, Properties properties, int densityIn, BlockState replaceableBlockIn, List<Item> blockDropIn) {
         super(properties);
         name = nameIn;
         replaceableBlock = replaceableBlockIn;

@@ -1,10 +1,10 @@
 package mightydanp.industrialtech.api.common.blocks;
 
+import mightydanp.industrialtech.api.common.blocks.state.ITBlockStateProperties;
 import mightydanp.industrialtech.api.common.crafting.recipe.HoleRecipe;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
-import mightydanp.industrialtech.common.blocks.state.ModBlockStateProperties;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.item.ItemEntity;
@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -26,7 +25,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -36,7 +34,7 @@ public class HoleBlock extends ContainerBlock {
 
     private static final VoxelShape SHAPES = Block.box(0.0D, 0.0D, 0.0D, 15.99D, 16.0D, 15.99D);
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
-    public static final BooleanProperty RESIN = ModBlockStateProperties.RESIN;
+    public static final BooleanProperty RESIN = ITBlockStateProperties.RESIN;
 
 
     public HoleBlock() {

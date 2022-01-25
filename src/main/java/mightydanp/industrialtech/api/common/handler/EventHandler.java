@@ -22,6 +22,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.event.world.BlockEvent;
@@ -69,9 +71,11 @@ public class EventHandler {
     }
 
     @SubscribeEvent
+	@OnlyIn(Dist.CLIENT)
     public static void onInitGuiEvent(final GuiScreenEvent.InitGuiEvent event) {}
 
     @SubscribeEvent
+	@OnlyIn(Dist.CLIENT)
     public static void overrideInventoryEvent(GuiOpenEvent event) {}
 
     public static BlockPos copyBlockPos = new BlockPos(0, 0, 0);
@@ -86,7 +90,8 @@ public class EventHandler {
     }
 
 
-        @SubscribeEvent
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
     public static void blockPlacementPreviewEvent(DrawHighlightEvent.HighlightBlock event) {
         Minecraft instance = Minecraft.getInstance();
 

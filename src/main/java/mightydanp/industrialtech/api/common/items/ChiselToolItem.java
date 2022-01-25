@@ -28,8 +28,8 @@ public class ChiselToolItem extends ITToolItem {
         //craftingToolsNeeded.add(new Pair<>(ModTools.hammer.tool, 1));
         //craftingToolsNeeded.add(new Pair<>(ModTools.hammer.tool, 2));
 
-        parts.add(new Pair<>(ITMaterial.chiselHeadItem, 1));
-        parts.add(new Pair<>(ITMaterial.wedgeHandleItem, 2));
+        //parts.add(new Pair<>(ITMaterial.chiselHead, 1));
+        //parts.add(new Pair<>(ITMaterial.wedgeHandle, 2));
 
         //disassembleTools.add(ModTools.hammer.tool);
     }

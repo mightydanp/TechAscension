@@ -3,6 +3,7 @@ package mightydanp.industrialtech.client;
 import mightydanp.industrialtech.api.common.ISidedReference;
 
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
+import mightydanp.industrialtech.client.settings.KeyBindings.ModKeyBindings;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
@@ -27,6 +28,7 @@ public class ModClientEvent implements ISidedReference {
         ModTools.clientInit();
         ModTrees.clientInit();
         ModTileEntities.clientInit();
+        ModKeyBindings.init();
     }
 
     @Override

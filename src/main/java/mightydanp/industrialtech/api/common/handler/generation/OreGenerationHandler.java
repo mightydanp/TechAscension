@@ -17,7 +17,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraft.world.gen.placement.TopSolidRangeConfig;
@@ -73,14 +72,14 @@ public class OreGenerationHandler {
             }
 
             if(obj instanceof ITMaterial) {
-                for (RegistryObject<Block> ore : ((ITMaterial) obj).smallOre) {
-                    veinSmallOreBlocks.add(ore.get().defaultBlockState());
+                for (Block ore : ((ITMaterial) obj).smallOreList) {
+                    veinSmallOreBlocks.add(ore.defaultBlockState());
                 }
-                for (RegistryObject<Block> ore : ((ITMaterial) obj).ore) {
-                    veinOreBlocks.add(ore.get().defaultBlockState());
+                for (Block ore : ((ITMaterial) obj).oreList) {
+                    veinOreBlocks.add(ore.defaultBlockState());
                 }
-                for (RegistryObject<Block> ore : ((ITMaterial) obj).denseOre) {
-                    veinDenseOreBlocks.add(ore.get().defaultBlockState());
+                for (Block ore : ((ITMaterial) obj).denseOreList) {
+                    veinDenseOreBlocks.add(ore.defaultBlockState());
                 }
             }
         }
@@ -115,8 +114,8 @@ public class OreGenerationHandler {
 
             if(obj instanceof ITMaterial) {
                 List<BlockState> tempList2 = new ArrayList<>();
-                for (RegistryObject<Block> ore : ((ITMaterial) obj).smallOre) {
-                    tempList2.add(ore.get().defaultBlockState());
+                for (Block ore : ((ITMaterial) obj).smallOreList) {
+                    tempList2.add(ore.defaultBlockState());
                 }
 
                 smallOreBlocks.add(tempList2);

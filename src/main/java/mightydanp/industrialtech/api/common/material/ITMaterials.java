@@ -1,14 +1,12 @@
 package mightydanp.industrialtech.api.common.material;
 
-import mightydanp.industrialtech.api.common.material.data.MaterialJsonProvider;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by MightyDanp on 11/6/2021.
  */
-public class ITMaterials extends MaterialJsonProvider {
+public class ITMaterials {
     public static List<ITMaterial> ITMaterials = new ArrayList<>();
 
     /*

@@ -2,7 +2,7 @@ package mightydanp.industrialtech.common.tools;
 
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.api.common.items.*;
-import mightydanp.industrialtech.api.common.material.tool.EnumToolFlags;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.DefaultToolType;
 import mightydanp.industrialtech.api.common.material.tool.ITTools;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
@@ -13,10 +13,10 @@ public class ModTools extends ITTools {
     public static ToolHandler hammer, chisel, pickaxe, knife;
 
     public static void init(){
-        tools.add(chisel = new ToolHandler("chisel", 1, EnumToolFlags.NORMAL, new ChiselToolItem()));
-        tools.add(hammer = new ToolHandler("hammer", 1, EnumToolFlags.NORMAL, new HammerToolItem()));
-        tools.add(pickaxe = new ToolHandler("pickaxe", 1, EnumToolFlags.NORMAL, new PickaxeToolItem()));
-        tools.add(knife = new ToolHandler("knife", 1, EnumToolFlags.NORMAL, new KnifeToolItem()));
+        tools.add(chisel = new ToolHandler("chisel", 1, DefaultToolType.NORMAL, new ChiselToolItem()));
+        tools.add(hammer = new ToolHandler("hammer", 1, DefaultToolType.NORMAL, new HammerToolItem()));
+        tools.add(pickaxe = new ToolHandler("pickaxe", 1, DefaultToolType.NORMAL, new PickaxeToolItem()));
+        tools.add(knife = new ToolHandler("knife", 1, DefaultToolType.NORMAL, new KnifeToolItem()));
     }
 
     public static void handCraftingInit(PlayerInteractEvent.RightClickItem event){

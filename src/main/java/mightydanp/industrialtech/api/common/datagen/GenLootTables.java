@@ -2,11 +2,11 @@ package mightydanp.industrialtech.api.common.datagen;
 
 import com.mojang.datafixers.util.Pair;
 
+import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
-import mightydanp.industrialtech.api.common.material.flag.DefaultMaterialFlag;
-import mightydanp.industrialtech.api.common.material.flag.IMaterialFlag;
+import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
+import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.common.datagen.ModBlockLootTable;
-import mightydanp.industrialtech.common.materials.ModMaterials;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.MinMaxBounds;
@@ -19,7 +19,6 @@ import net.minecraft.loot.conditions.MatchTool;
 import net.minecraft.loot.conditions.SurvivesExplosion;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,32 +41,32 @@ public class GenLootTables extends LootTableProvider {
     protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
         tables.clear();
 
-        for (ITMaterial ITMaterial : ModMaterials.ITMaterials) {
-            for (IMaterialFlag flag : ITMaterial.materialFlags) {
+        for (ITMaterial material : RegistryHandler.MATERIAL.getValues()) {
+            for (IMaterialFlag flag : material.materialFlags) {
                 if (flag == DefaultMaterialFlag.ORE) {
-                    for(RegistryObject<Block> blockRegistered : ITMaterial.ore) {
-                        standardDropTable(blockRegistered.get());
+                    for(Block blockRegistered : material.oreList) {
+                        standardDropTable(blockRegistered);
                     }
                 }
                 if (flag == DefaultMaterialFlag.GEM) {
-                    for(RegistryObject<Block> blockRegistered : ITMaterial.ore) {
-                        standardDropTable(blockRegistered.get());
+                    for(Block blockRegistered : material.oreList) {
+                        standardDropTable(blockRegistered);
                     }
                 }
                 if (flag == DefaultMaterialFlag.ORE || flag == DefaultMaterialFlag.GEM) {
-                    for(RegistryObject<Block> blockRegistered : ITMaterial.smallOre) {
-                        standardDropTable(blockRegistered.get());
+                    for(Block blockRegistered : material.smallOreList) {
+                        standardDropTable(blockRegistered);
                     }
 
                     int i = 0;
-                    for(RegistryObject<Block> blockRegistered : ITMaterial.denseOre) {
+                    for(Block blockRegistered : material.denseOreList) {
                         LootTable.Builder tableBuilder = LootTable.lootTable();
                         LootPool.Builder poolBuilder = LootPool.lootPool();
 
-                        blockTable(blockRegistered.get(), tableBuilder.withPool(poolBuilder.setRolls(ConstantRange.exactly(1))
-                                        .add(AlternativesLootEntry.alternatives().otherwise(ItemLootEntry.lootTableItem(blockRegistered.get())
+                        blockTable(blockRegistered, tableBuilder.withPool(poolBuilder.setRolls(ConstantRange.exactly(1))
+                                        .add(AlternativesLootEntry.alternatives().otherwise(ItemLootEntry.lootTableItem(blockRegistered)
                                                 .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.IntBound.atLeast(1)))))))
-                                        .add(ItemLootEntry.lootTableItem(ITMaterial.ore.get(i).get()))
+                                        .add(ItemLootEntry.lootTableItem(material.oreList.get(i)))
                         ));
                         i++;
                     }

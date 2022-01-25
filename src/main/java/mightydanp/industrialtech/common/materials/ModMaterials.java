@@ -1,15 +1,17 @@
 package mightydanp.industrialtech.common.materials;
 
 import com.mojang.datafixers.util.Pair;;
+import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.material.ITMaterials;
-import mightydanp.industrialtech.api.common.material.data.MaterialBuilder;
-import mightydanp.industrialtech.api.common.material.ore.DefaultOreType;
+import mightydanp.industrialtech.api.common.jsonconfig.ore.DefaultOreType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ToolType;
 
-import static mightydanp.industrialtech.api.common.material.icons.DefaultTextureIcon.*;
-import static mightydanp.industrialtech.api.common.material.tool.part.flag.DefaultToolPart.*;
+import static mightydanp.industrialtech.api.common.jsonconfig.icons.DefaultTextureIcon.*;
+import static mightydanp.industrialtech.api.common.jsonconfig.tool.part.DefaultToolPart.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,20 +36,26 @@ public class ModMaterials extends ITMaterials {
     public static MaterialHandler flint, stone;
 */
     public static List<Pair<ToolType, Integer>> flintToolTypes, stoneToolTypes;
+    public static List<IToolPart> flintToolParts;
 
 
 
 
-    public void commonInit() {
-        addMaterial(MaterialBuilder.material("alexandrite", 0x6A4D6B, new ResourceLocation(Ref.mod_id, GEM_HORIZONTAL.getName())).setOreType(DefaultOreType.ORE).setDenseOreDensity(8), Ref.mod_id);
-        addMaterial(MaterialBuilder.material("almandine", 0xff0000, new ResourceLocation(Ref.mod_id, ROUGH.getName())).setOreType(DefaultOreType.GEM).setDenseOreDensity(8), Ref.mod_id);
+    public static void commonInit() {
+        MaterialRegistry.registerMaterial(new ITMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL)).setOreType(DefaultOreType.ORE).setDenseOreDensity(8));
+        MaterialRegistry.registerMaterial(new ITMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH)).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));
 
-        flintToolTypes = new ArrayList<>() {{
+        flintToolTypes = new ArrayList<Pair<ToolType, Integer>>() {{
             add(new Pair<>(ToolType.PICKAXE, 0));
         }};
 
-        addMaterial(MaterialBuilder.material("flint", 0x002040, new ResourceLocation(Ref.mod_id, CUBE.getName())).addToolProperties( 20, 10, 20F, 1F, flintToolTypes, TOOL_HEAD, TOOL_WEDGE, TOOL_WEDGE_HANDLE), Ref.mod_id);
-        buildMaterialJson();
+        flintToolParts = new ArrayList<IToolPart>() {{
+            add(TOOL_HEAD);
+            add(TOOL_WEDGE);
+            add(TOOL_WEDGE_HANDLE);
+        }};
+
+        MaterialRegistry.registerMaterial(new ITMaterial("flint", 0x002040, new Pair<>(Ref.mod_id, CUBE)).setToolProperties( 20, 10, 20F, 1F, flintToolTypes, flintToolParts));
         //materials.add(iron = new MaterialHandler("iron", 0, 51, 153, "").addOreProperties(8, false).save());
     //Materials that have ORES
         /*

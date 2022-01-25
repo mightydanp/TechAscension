@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.RegistryKey;
@@ -23,7 +24,6 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class RegistryHandler extends RegisterHelper{
     public static RegistryKey<Registry<ITMaterial>> material;
-    public static final IForgeRegistry<ITMaterial> MATERIAL = makeRegistry("material", ITMaterial.class, Ref.mod_id, false);
 
     public static List<Block> blocks = new ArrayList<>();
     public static List<Item> items = new ArrayList<>();
@@ -37,14 +37,15 @@ public class RegistryHandler extends RegisterHelper{
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Ref.mod_id);
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(ForgeRegistries.FEATURES, Ref.mod_id);
     public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Ref.mod_id);
-    public static final DeferredRegister<ITMaterial> MATERIALS = DeferredRegister.create(MATERIAL, Ref.mod_id);
+    public static final IForgeRegistry<ITMaterial> MATERIAL = makeRegistry("material", ITMaterial.class, Ref.mod_id, false);
+    private static final DeferredRegister<ITMaterial> MATERIALS = DeferredRegister.create(MATERIAL, Ref.mod_id);
 
     public void init(){
 
     }
 
     public static void init(IEventBus IEventBus) {
-        material = RegistryKey.createRegistryKey(new ResourceLocation("material"));
+        material = RegistryKey.createRegistryKey(new ResourceLocation(Ref.mod_id, "material"));
         MATERIALS.register(IEventBus);
         ITEMS.register(IEventBus);
         BLOCKS.register(IEventBus);
@@ -55,7 +56,23 @@ public class RegistryHandler extends RegisterHelper{
         ENTITIES.register(IEventBus);
         FEATURES.register(IEventBus);
         RECIPE_SERIALIZER.register(IEventBus);
+    }
 
+    public static Block registerBlock(String modID, String registryName, Block block){
+        block.setRegistryName(new ResourceLocation(modID, registryName));
+        ForgeRegistries.BLOCKS.register(block);
+        return block;
+    }
 
+    public static Item registerItem(String modID, String registryName, Item item){
+        item.setRegistryName(new ResourceLocation(modID, registryName));
+        ForgeRegistries.ITEMS.register(item);
+        return item;
+    }
+
+    public static Fluid registerFluid(String modID, String registryName, Fluid fluid){
+        fluid.setRegistryName(new ResourceLocation(modID, registryName));
+        ForgeRegistries.FLUIDS.register(fluid);
+        return fluid;
     }
 }
