@@ -3,6 +3,8 @@ package mightydanp.industrialtech.api.common.jsonconfig.fluidstate;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
+import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
@@ -101,5 +103,18 @@ public class FluidStateRegistry extends JsonConfigMultiFile {
                 return name;
             }
         };
+    }
+
+    public JsonObject toJsonObject(IFluidState fluidState) {
+        JsonObject jsonObject = new JsonObject();
+
+        JsonObject json = new JsonObject();
+        json.addProperty("name", fluidState.getName());
+
+        if (json.size() > 0) {
+            jsonObject.add("fluid_state", json);
+        }
+
+        return jsonObject;
     }
 }

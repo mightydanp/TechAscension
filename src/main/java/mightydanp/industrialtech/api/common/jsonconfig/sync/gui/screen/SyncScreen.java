@@ -48,6 +48,11 @@ public class SyncScreen extends Screen {
                 try {
                     if(!IndustrialTech.configSync.isSinglePlayer){
                         IndustrialTech.configSync.materialFlagServer.syncClientMaterialFlagsWithServers("");
+                        IndustrialTech.configSync.fluidStateServer.syncClientFluidStatesWithServers("");
+                        IndustrialTech.configSync.oreTypeServer.syncClientOreTypesWithServers("");
+                        IndustrialTech.configSync.toolTypeServer.syncClientToolTypesWithServers("");
+                        IndustrialTech.configSync.toolPartServer.syncClientToolPartsWithServers("");
+
                         IndustrialTech.configSync.materialServer.syncClientMaterialConfigsWithServers("");
 
                         IndustrialTech.mainJsonConfig.setFolderLocation("config/" + Ref.mod_id + "/server");

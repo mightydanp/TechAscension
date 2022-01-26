@@ -3,6 +3,7 @@ package mightydanp.industrialtech.api.common.jsonconfig.tool.part;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
@@ -16,7 +17,7 @@ import java.util.*;
  * Created by MightyDanp on 1/20/2022.
  */
 public class ToolPartRegistry extends JsonConfigMultiFile {
-    private final Map<Pair<String, String>, IToolPart> toolPartList = new HashMap<>();
+    private final Map<String, IToolPart> toolPartList = new HashMap<>();
 
     @Override
     public void initiate() {
@@ -35,15 +36,34 @@ public class ToolPartRegistry extends JsonConfigMultiFile {
     }
 
     public void register(IToolPart toolPartIn) {
-        Pair<String, String> fixes = new Pair<>(toolPartIn.getPrefix(), toolPartIn.getSuffix());
         if (IndustrialTech.toolPartRegistry.toolPartList.containsValue(toolPartIn)) {
             throw new IllegalArgumentException("Tool Part with the prefix:(" + toolPartIn.getPrefix() + "), and the suffix:(" + toolPartIn.getSuffix() + "), already exists.");
         }
 
-        IndustrialTech.toolPartRegistry.toolPartList.put(fixes, toolPartIn);
+        IndustrialTech.toolPartRegistry.toolPartList.put(fixesToName(new Pair<>(toolPartIn.getPrefix(), toolPartIn.getSuffix())), toolPartIn);
     }
 
-    public static IToolPart getToolPartByFixes(Pair<String, String> fixesIn) {
+    public String fixesToName(Pair<String, String> fixes){
+        String prefix = fixes.getFirst().replace("_", "");
+        String suffix = fixes.getSecond().replace("_", "");
+        String name = "";
+
+        if(!prefix.equals("") && !suffix.equals("")){
+            name = prefix + "_" + suffix;
+        }
+
+        if(prefix.equals("") && !suffix.equals("")){
+            name = suffix;
+        }
+
+        if(!prefix.equals("") && suffix.equals("")){
+            name = prefix;
+        }
+
+        return name;
+    }
+
+    public static IToolPart getToolPartByFixes(String fixesIn) {
         return IndustrialTech.toolPartRegistry.toolPartList.get(fixesIn);
     }
 
@@ -52,22 +72,10 @@ public class ToolPartRegistry extends JsonConfigMultiFile {
     }
 
     public void buildToolPartJson(){
-        for(Pair<String, String> toolPart : toolPartList.keySet()) {
-            String prefix = toolPart.getFirst().replace("_", "");
-            String suffix = toolPart.getSecond().replace("_", "");
-            String name = "";
-
-            if(!prefix.equals("") && !suffix.equals("")){
-                name = prefix + "_" + suffix;
-            }
-
-            if(prefix.equals("") && !suffix.equals("")){
-                name = suffix;
-            }
-
-            if(!prefix.equals("") && suffix.equals("")){
-                name = prefix;
-            }
+        for(IToolPart toolPart : toolPartList.values()) {
+            String prefix = toolPart.getPrefix().replace("_", "");
+            String suffix = toolPart.getSuffix().replace("_", "");
+            String name = fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix()));
 
             if(!name.equals("")) {
                 JsonObject jsonObject = getJsonObject(name);
@@ -76,8 +84,8 @@ public class ToolPartRegistry extends JsonConfigMultiFile {
                     JsonObject toolPartJson = new JsonObject();
                     {
                         toolPartJson.addProperty("name", name);
-                        toolPartJson.addProperty("prefix", toolPart.getFirst());
-                        toolPartJson.addProperty("suffix", toolPart.getSecond());
+                        toolPartJson.addProperty("prefix", toolPart.getPrefix());
+                        toolPartJson.addProperty("suffix", toolPart.getSuffix());
 
                         if (toolPartJson.size() > 0) {
                             jsonObject.add("tool_part", toolPartJson);
@@ -102,7 +110,7 @@ public class ToolPartRegistry extends JsonConfigMultiFile {
                         String toolPartName = toolPartJson.get("name").getAsString();
                         IToolPart toolPart = getIToolPart(jsonObject);
 
-                        toolPartList.put(toolPart.getFixes(), toolPart);
+                        toolPartList.put(fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix())), toolPart);
 
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to tool part list because a tool part already exist!!", file.getAbsolutePath());
@@ -138,5 +146,20 @@ public class ToolPartRegistry extends JsonConfigMultiFile {
                 return new Pair<>(prefix, suffix);
             }
         };
+    }
+
+    public JsonObject toJsonObject(IToolPart toolPart) {
+        JsonObject jsonObject = new JsonObject();
+
+        JsonObject json = new JsonObject();
+        json.addProperty("name", fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix())));
+        json.addProperty("prefix", toolPart.getPrefix());
+        json.addProperty("suffix", toolPart.getSuffix());
+
+        if (json.size() > 0) {
+            jsonObject.add("tool_part", json);
+        }
+
+        return jsonObject;
     }
 }

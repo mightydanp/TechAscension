@@ -2,9 +2,7 @@ package mightydanp.industrialtech.api.common.jsonconfig.flag;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
@@ -118,10 +116,10 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!materialFlagList.containsValue(getIMaterialFlag(jsonObject))) {
+                    if (!materialFlagList.containsValue(getMaterialFlag(jsonObject))) {
                         JsonObject materialFlagJson = jsonObject.getAsJsonObject("material_flag");
                         String materialFlagName = materialFlagJson.get("name").getAsString();
-                        IMaterialFlag materialFlag = getIMaterialFlag(jsonObject);
+                        IMaterialFlag materialFlag = getMaterialFlag(jsonObject);
 
                         materialFlagList.put(materialFlagName, materialFlag);
 
@@ -135,7 +133,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
         }
     }
 
-    public IMaterialFlag getIMaterialFlag(JsonObject jsonObjectIn){
+    public IMaterialFlag getMaterialFlag(JsonObject jsonObjectIn){
         JsonObject materialFlagJson = jsonObjectIn.getAsJsonObject("material_flag");
 
         String name = materialFlagJson.get("name").getAsString();
@@ -161,16 +159,16 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
         };
     }
 
-    public JsonObject materialFlagToJsonObject(IMaterialFlag material) {
+    public JsonObject toJsonObject(IMaterialFlag material) {
         JsonObject jsonObject = new JsonObject();
 
-        JsonObject materialFlagJson = new JsonObject();
-        materialFlagJson.addProperty("name", fixesToName(new Pair<>(material.getPrefix(), material.getSuffix())));
-        materialFlagJson.addProperty("prefix", material.getPrefix());
-        materialFlagJson.addProperty("suffix", material.getSuffix());
+        JsonObject json = new JsonObject();
+        json.addProperty("name", fixesToName(new Pair<>(material.getPrefix(), material.getSuffix())));
+        json.addProperty("prefix", material.getPrefix());
+        json.addProperty("suffix", material.getSuffix());
 
-        if (materialFlagJson.size() > 0) {
-            jsonObject.add("material_flag", materialFlagJson);
+        if (json.size() > 0) {
+            jsonObject.add("material_flag", json);
         }
 
         return jsonObject;

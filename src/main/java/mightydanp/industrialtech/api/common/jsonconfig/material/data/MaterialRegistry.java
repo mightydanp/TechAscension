@@ -113,6 +113,26 @@ public class MaterialRegistry extends JsonConfigMultiFile{
         return materialList;
     }
 
+    public static String fixesToName(Pair<String, String> fixes){
+        String prefix = fixes.getFirst().replace("_", "");
+        String suffix = fixes.getSecond().replace("_", "");
+        String name = "";
+
+        if(!prefix.equals("") && !suffix.equals("")){
+            name = prefix + "_" + suffix;
+        }
+
+        if(prefix.equals("") && !suffix.equals("")){
+            name = suffix;
+        }
+
+        if(!prefix.equals("") && suffix.equals("")){
+            name = prefix;
+        }
+
+        return name;
+    }
+
     public static JsonObject getJsonObject(ITMaterial materialIn) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", materialIn.name);
@@ -338,7 +358,7 @@ public class MaterialRegistry extends JsonConfigMultiFile{
                                 String toolPartPrefix = toolPartProperties.get("tool_part_prefix").getAsString();
                                 String toolPartSuffix = toolPartProperties.get("tool_part_suffix").getAsString();
 
-                                IToolPart toolPartJson = ToolPartRegistry.getToolPartByFixes(new Pair<>(toolPartPrefix, toolPartSuffix));
+                                IToolPart toolPartJson = ToolPartRegistry.getToolPartByFixes(fixesToName(new Pair<>(toolPartPrefix, toolPartSuffix)));
 
                                 toolPartJsonList.add(toolPartJson);
                             }

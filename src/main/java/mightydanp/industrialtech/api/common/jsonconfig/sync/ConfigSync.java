@@ -3,10 +3,15 @@ package mightydanp.industrialtech.api.common.jsonconfig.sync;
 import mightydanp.industrialtech.api.common.handler.NetworkHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagServer;
+import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateServer;
+import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconServer;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialServer;
+import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.gui.screen.SyncScreen;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartServer;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeServer;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.materials.ModMaterials;
@@ -47,6 +52,11 @@ public class ConfigSync {
     private static SyncMessage syncMessage;
     public Map<String, Boolean> syncedJson = new HashMap<>();
     public MaterialFlagServer materialFlagServer = new MaterialFlagServer();
+    public FluidStateServer fluidStateServer = new FluidStateServer();
+    public OreTypeServer oreTypeServer = new OreTypeServer();
+    public ToolPartServer toolPartServer = new ToolPartServer();
+    public ToolTypeServer toolTypeServer = new ToolTypeServer();
+    public TextureIconServer textureIconServer = new TextureIconServer();
     public MaterialServer materialServer = new MaterialServer();
 
     public String clientUUID;
@@ -271,6 +281,11 @@ public class ConfigSync {
                         if (!(new File("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id).exists()) && !IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id)) {
                             try {
                                 IndustrialTech.configSync.materialFlagServer.syncClientMaterialFlagsConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.fluidStateServer.syncClientFluidStatesConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.oreTypeServer.syncClientOreTypesConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.toolPartServer.syncClientToolPartsConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.toolTypeServer.syncClientToolTypesConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+
                                 IndustrialTech.configSync.materialServer.syncClientMaterialConfigsWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
 
                                 IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);

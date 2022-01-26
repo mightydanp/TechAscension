@@ -3,6 +3,7 @@ package mightydanp.industrialtech.api.common.jsonconfig.tool.type;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
@@ -42,6 +43,26 @@ public class ToolTypeRegistry extends JsonConfigMultiFile {
         }
 
         IndustrialTech.toolTypeRegistry.toolTypeList.put(fixes, toolTypeIn);
+    }
+
+    public String fixesToName(Pair<String, String> fixes){
+        String prefix = fixes.getFirst().replace("_", "");
+        String suffix = fixes.getSecond().replace("_", "");
+        String name = "";
+
+        if(!prefix.equals("") && !suffix.equals("")){
+            name = prefix + "_" + suffix;
+        }
+
+        if(prefix.equals("") && !suffix.equals("")){
+            name = suffix;
+        }
+
+        if(!prefix.equals("") && suffix.equals("")){
+            name = prefix;
+        }
+
+        return name;
     }
 
     public IToolType getToolTypeByFixes(Pair<String, String> fixesIn) {
@@ -140,5 +161,20 @@ public class ToolTypeRegistry extends JsonConfigMultiFile {
                 return new Pair<>(prefix, suffix);
             }
         };
+    }
+
+    public JsonObject toJsonObject(IToolType toolType) {
+        JsonObject jsonObject = new JsonObject();
+
+        JsonObject json = new JsonObject();
+        json.addProperty("name", fixesToName(new Pair<>(toolType.getPrefix(), toolType.getSuffix())));
+        json.addProperty("prefix", toolType.getPrefix());
+        json.addProperty("suffix", toolType.getSuffix());
+
+        if (json.size() > 0) {
+            jsonObject.add("tool_type", json);
+        }
+
+        return jsonObject;
     }
 }

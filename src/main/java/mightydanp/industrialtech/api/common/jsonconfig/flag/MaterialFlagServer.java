@@ -81,8 +81,8 @@ public class MaterialFlagServer {
 
                 if(optional.isPresent()) {
                     IMaterialFlag serverMaterialFlag = optional.get();
-                    JsonObject jsonMaterial = IndustrialTech.materialFlagRegistry.materialFlagToJsonObject(materialFlag);
-                    JsonObject materialJson = IndustrialTech.materialFlagRegistry.materialFlagToJsonObject(serverMaterialFlag);
+                    JsonObject jsonMaterial = IndustrialTech.materialFlagRegistry.toJsonObject(materialFlag);
+                    JsonObject materialJson = IndustrialTech.materialFlagRegistry.toJsonObject(serverMaterialFlag);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -121,7 +121,7 @@ public class MaterialFlagServer {
 
             for(File file : files){
                 JsonObject jsonObject = materialFlagRegistry.getJsonObject(file.getAbsolutePath());
-                IMaterialFlag materialFlag = materialFlagRegistry.getIMaterialFlag(jsonObject);
+                IMaterialFlag materialFlag = materialFlagRegistry.getMaterialFlag(jsonObject);
                 clientMaterialFlags.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag);
             }
 
@@ -130,8 +130,8 @@ public class MaterialFlagServer {
 
                 if(sync.get()) {
                     IMaterialFlag clientMaterialFlag = getServerMaterialFlagsMap().get(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix()));
-                    JsonObject jsonMaterial = materialFlagRegistry.materialFlagToJsonObject(serverMaterialFlag);
-                    JsonObject materialJson = materialFlagRegistry.materialFlagToJsonObject(clientMaterialFlag);
+                    JsonObject jsonMaterial = materialFlagRegistry.toJsonObject(serverMaterialFlag);
+                    JsonObject materialJson = materialFlagRegistry.toJsonObject(clientMaterialFlag);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -157,7 +157,7 @@ public class MaterialFlagServer {
         for (IMaterialFlag materialFlag : getServerMaterialFlagsMap().values()) {
             String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = materialFlagRegistry.materialFlagToJsonObject(materialFlag);
+            JsonObject jsonObject = materialFlagRegistry.toJsonObject(materialFlag);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -178,7 +178,7 @@ public class MaterialFlagServer {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = materialFlagRegistry.getJsonObject(file.getName());
-                    IMaterialFlag materialFlag = materialFlagRegistry.getIMaterialFlag(jsonObject);
+                    IMaterialFlag materialFlag = materialFlagRegistry.getMaterialFlag(jsonObject);
 
                     String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
 
