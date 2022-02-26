@@ -1,8 +1,11 @@
 package mightydanp.industrialtech.api.common.handler.generation;
 
+import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.IStoneLayer;
+import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerRegistry;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
-import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
 import mightydanp.industrialtech.api.common.libs.EnumVeinRarityFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeature;
@@ -13,10 +16,12 @@ import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraft.world.gen.placement.TopSolidRangeConfig;
@@ -26,11 +31,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by MightyDanp on 9/29/2020.
@@ -41,66 +44,26 @@ public class OreGenerationHandler {
     public static final RegistryObject<Feature<OreGenFeatureConfig>> ore_vein = RegistryHandler.createFeature("ore_vein", () -> new OreGenFeature(OreGenFeatureConfig.CODEC));
     public static final RegistryObject<Feature<SmallOreGenFeatureConfig>> small_ore = RegistryHandler.createFeature("small_ore", () -> new SmallOreGenFeature(SmallOreGenFeatureConfig.CODEC));
 
-    protected static List<ConfiguredFeature<?, ?>> smallOreGenList = new ArrayList<>();
-    protected static List<List<Biome.Category>> smallOreBiomesList = new ArrayList<>();
+    protected static Map<ConfiguredFeature<?, ?>, List<Biome.Category>> oreGenList = new HashMap<>();
+    protected static Map<ConfiguredFeature<?, ?>, List<Biome.Category>> smallOreGenList = new HashMap<>();
 
-    protected static List<ConfiguredFeature<?, ?>> commonVeinList = new ArrayList<>();
-    protected static final List<List<Biome.Category>> commonVeinBiomesList = new ArrayList<>();
-    protected static List<ConfiguredFeature<?, ?>> uncommonVeinList = new ArrayList<>();
-    protected static final List<List<Biome.Category>> uncommonVeinBiomesList = new ArrayList<>();
-    protected static List<ConfiguredFeature<?, ?>> rareVeinList = new ArrayList<>();
-    protected static final List<List<Biome.Category>> rareVeinBiomesList = new ArrayList<>();
+    public static void addOreGeneration(String veinNameIn, int minRadiusIn, int numberOfSmallOreLayers, int minHeightIn, int maxHeightIn, int rarityIn, Map<Block, Integer> materialOreIn, Biome.Category[] worldsIn){
+        List<Pair<String, Integer>> veinBlocksAndChances = new ArrayList<>();
 
-    public static void addOreGeneration(String veinNameIn, int minRadiusIn, int numberOfSmallOreLayers, int minHeightIn, int maxHeightIn, int rarityIn, EnumVeinRarityFlags rarityFlagIn, List<Object> materialOreIn, Biome.Category[] worldsIn){
-        List<Integer> intList = new ArrayList<>();
-        List<BlockState> veinSmallOreBlocks = new ArrayList<>();
-        List<BlockState> veinOreBlocks = new ArrayList<>();
-        List<BlockState> veinDenseOreBlocks = new ArrayList<>();
-        List<Boolean> intBoolean = new ArrayList<>();
-
-        for(Object obj :materialOreIn){
-            if(obj instanceof Integer){
-                for(StoneLayerHandler state : ModStoneLayers.stoneLayerList){
-                    intList.add((Integer)obj);
-                }
+        materialOreIn.forEach(((block, integer) -> {
+            if(block.getRegistryName() != null) {
+                Pair<String, Integer> veinBlockAndChance = new Pair<>(block.getRegistryName().toString(), integer);
+                veinBlocksAndChances.add(veinBlockAndChance);
             }
-
-            if(obj instanceof Boolean){
-                for(StoneLayerHandler state : ModStoneLayers.stoneLayerList){
-                    intBoolean.add((Boolean)obj);
-                }
-            }
-
-            if(obj instanceof ITMaterial) {
-                for (Block ore : ((ITMaterial) obj).smallOreList) {
-                    veinSmallOreBlocks.add(ore.defaultBlockState());
-                }
-                for (Block ore : ((ITMaterial) obj).oreList) {
-                    veinOreBlocks.add(ore.defaultBlockState());
-                }
-                for (Block ore : ((ITMaterial) obj).denseOreList) {
-                    veinDenseOreBlocks.add(ore.defaultBlockState());
-                }
-            }
-        }
+        }));
 
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
-        OreGenFeatureConfig oreGenFeatureConfig = new OreGenFeatureConfig(veinNameIn, veinSmallOreBlocks, veinOreBlocks, veinDenseOreBlocks, intList, intBoolean, minRadiusIn, rarityIn, numberOfSmallOreLayers, minHeightIn, maxHeightIn);
+        OreGenFeatureConfig oreGenFeatureConfig = new OreGenFeatureConfig(veinNameIn, rarityIn, minHeightIn, maxHeightIn, minRadiusIn, numberOfSmallOreLayers, veinBlocksAndChances);
         ConfiguredFeature<?, ?> oreVeinFeature = ore_vein.get().configured(oreGenFeatureConfig).decorated(Placement.RANGE.configured(new TopSolidRangeConfig(minHeightIn, 0, maxHeightIn)));
         Registry.register(registry, new ResourceLocation(Ref.mod_id, oreGenFeatureConfig.veinName), oreVeinFeature);
 
-        if(rarityFlagIn == EnumVeinRarityFlags.common){
-            commonVeinList.add(oreVeinFeature);
-            commonVeinBiomesList.add(Arrays.asList(worldsIn));
-        }
-        if(rarityFlagIn == EnumVeinRarityFlags.uncommon){
-            uncommonVeinList.add(oreVeinFeature);
-            uncommonVeinBiomesList.add(Arrays.asList(worldsIn));
-        }
-        if(rarityFlagIn == EnumVeinRarityFlags.rare){
-            rareVeinList.add(oreVeinFeature);
-            rareVeinBiomesList.add(Arrays.asList(worldsIn));
-        }
+        OreVeinRegistry.register(oreGenFeatureConfig);
+        oreGenList.put(oreVeinFeature, Arrays.asList(worldsIn));
     }
 
     public static void addSmallOreGeneration(String SmallOreNameIn, int minHeightIn, int maxHeightIn, int rarityIn, List<Object> materialOreIn, Biome.Category[] worldsIn){
@@ -127,49 +90,39 @@ public class OreGenerationHandler {
         ConfiguredFeature<?, ?> oreVeinFeature = small_ore.get().configured(smallOreGenFeatureConfig).decorated(Placement.RANGE.configured(new TopSolidRangeConfig(minHeightIn, 0, maxHeightIn)));
         Registry.register(registry, new ResourceLocation(Ref.mod_id, smallOreGenFeatureConfig.smallOreName), oreVeinFeature);
 
-        smallOreGenList.add(oreVeinFeature);
-        smallOreBiomesList.add(Arrays.asList(worldsIn));
+        smallOreGenList.put(oreVeinFeature, Arrays.asList(worldsIn));
     }
 
     @SubscribeEvent(priority= EventPriority.HIGH)
     public static boolean checkAndInitBiome(BiomeLoadingEvent event) {
         Random rand = new Random();
-        boolean canSpawnCrop = false;
-        int randomNumber = rand.nextInt(100);
+        boolean hasSpawnedVein = false;
 
-        /*
-        if(randomNumber > 0 && randomNumber <= 50) {
-            int i = rand.nextInt(commonVeinList.size());
-            if (biomeCheck(commonVeinBiomesList.get(i), event)) {
-                canSpawnCrop = true;
-                event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, commonVeinList.get(i));
-            }
+        while(!hasSpawnedVein){
+            int i = rand.nextInt(oreGenList.size());
+            List<ConfiguredFeature<?, ?>> configuredFeatures = new ArrayList<>(oreGenList.keySet());
+            List<List<Biome.Category>> biomes = new ArrayList<>(oreGenList.values());
 
-        }
-        if(randomNumber > 50 && randomNumber <= 80) {
-            int i = rand.nextInt(uncommonVeinList.size());
-            if (biomeCheck(uncommonVeinBiomesList.get(i), event)) {
-                canSpawnCrop = true;
-                event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, uncommonVeinList.get(i));
-            }
-
-        }
-        if(randomNumber > 90) {
-            int i = rand.nextInt(rareVeinList.size());
-            if (biomeCheck(rareVeinBiomesList.get(i), event)) {
-                canSpawnCrop = true;
-                event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, rareVeinList.get(i));
+            if (biomeCheck(biomes.get(i), event)) {
+                event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, configuredFeatures.get(i));
+                hasSpawnedVein = true;
             }
         }
 
-        for (int i = 0; i < smallOreGenList.size(); i++) {
-            if (biomeCheck(smallOreBiomesList.get(i), event)) {
-                canSpawnCrop = true;
-                event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, smallOreGenList.get(i));
+        hasSpawnedVein = false;
+
+        while(!hasSpawnedVein){
+            int i = rand.nextInt(smallOreGenList.size());
+            List<ConfiguredFeature<?, ?>> configuredFeatures = new ArrayList<>(smallOreGenList.keySet());
+            List<List<Biome.Category>> biomes = new ArrayList<>(smallOreGenList.values());
+
+            if (biomeCheck(biomes.get(i), event)) {
+                event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, configuredFeatures.get(i));
+                hasSpawnedVein = true;
             }
         }
-        */
-        return canSpawnCrop;
+
+        return true;
     }
 
     public static boolean biomeCheck(List<Biome.Category> biomeListVeinIn, BiomeLoadingEvent event){
@@ -179,6 +132,11 @@ public class OreGenerationHandler {
             }
         }
         return false;
+    }
+
+    public static boolean biomeCheck(Collection<List<Biome.Category>> biomeListVeinIn, BiomeLoadingEvent event){
+
+        return biomeListVeinIn.contains(event.getCategory());
     }
 
     private static <C extends IFeatureConfig, F extends Feature<C>> F register(String key, F value) {

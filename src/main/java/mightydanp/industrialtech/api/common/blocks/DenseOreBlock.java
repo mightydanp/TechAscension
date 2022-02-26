@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.fml.RegistryObject;
@@ -21,17 +22,15 @@ import net.minecraft.block.AbstractBlock.Properties;
  */
 public class DenseOreBlock extends Block {
     public String name;
-    public BlockState replaceableBlock;
-    public List<Item> blockDrop;
+    public ResourceLocation replaceBlock;
     public int density;
 
     public static IntegerProperty densityProperty = IntegerProperty.create("density", 0, 64);
 
-    public DenseOreBlock(String nameIn, Properties properties, int densityIn, BlockState replaceableBlockIn, List<Item> blockDropIn) {
+    public DenseOreBlock(String nameIn, Properties properties, int densityIn, ResourceLocation replaceBlockIn) {
         super(properties);
         name = nameIn;
-        replaceableBlock = replaceableBlockIn;
-        blockDrop = blockDropIn;
+        replaceBlock = replaceBlockIn;
         density = densityIn;
         this.registerDefaultState(this.stateDefinition.any().setValue(densityProperty, density));
     }

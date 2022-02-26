@@ -5,6 +5,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateContainer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.ToolType;
@@ -18,12 +19,12 @@ import net.minecraft.block.AbstractBlock.Properties;
  */
 public class OreBlock extends Block {
     public String name;
-    public BlockState replaceableBlock;
+    public ResourceLocation replaceBlock;
 
-    public OreBlock(String nameIn, Properties properties, BlockState replaceableBlockIn) {
+    public OreBlock(String nameIn, Properties properties, ResourceLocation replaceBlockIn) {
         super(properties);
         this.name = nameIn;
-        this.replaceableBlock = replaceableBlockIn;
+        this.replaceBlock = replaceBlockIn;
     }
 
     @Override

@@ -4,10 +4,13 @@ import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagServer;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateServer;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinServer;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconServer;
 import mightydanp.industrialtech.api.common.jsonconfig.ore.IOreType;
 import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeServer;
+import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.IStoneLayer;
+import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerServer;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartServer;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
@@ -15,12 +18,14 @@ import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeServer;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialServer;
+import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import javax.annotation.Nullable;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -28,13 +33,18 @@ import java.util.function.Supplier;
  * Created by MightyDanp on 12/27/2021.
  */
 public class SyncMessage {
-    private List<IMaterialFlag> materialFlags;
-    private List<IFluidState> fluidStates;
-    private List<ITextureIcon> textureIcons;
-    private List<IOreType> oreTypes;
-    private List<ITMaterial> materials;
-    private List<IToolPart> toolParts;
-    private List<IToolType> toolTypes;
+    private List<IMaterialFlag> materialFlags = new ArrayList<>();
+    private List<IFluidState> fluidStates  = new ArrayList<>();
+    private List<ITextureIcon> textureIcons  = new ArrayList<>();
+    private List<IOreType> oreTypes  = new ArrayList<>();
+    private List<IToolPart> toolParts  = new ArrayList<>();
+    private List<IToolType> toolTypes  = new ArrayList<>();
+    private List<IStoneLayer> stoneLayers = new ArrayList<>();
+
+    private List<ITMaterial> materials  = new ArrayList<>();
+
+    private List<OreGenFeatureConfig> oreVeins = new ArrayList<>();
+
     private final boolean isSinglePlayer;
     private final String singlePlayerWorldName;
 
@@ -68,8 +78,16 @@ public class SyncMessage {
         return toolTypes;
     }
 
+    public List<IStoneLayer> getStoneLayers() {
+        return stoneLayers;
+    }
+
     public List<ITMaterial> getMaterials() {
         return this.materials;
+    }
+
+    public List<OreGenFeatureConfig> getOreVeins() {
+        return oreVeins;
     }
 
     public boolean isSinglePlayer() {
@@ -110,8 +128,18 @@ public class SyncMessage {
         return this;
     }
 
+    public SyncMessage setStoneLayers(List<IStoneLayer> stoneLayers) {
+        this.stoneLayers = stoneLayers;
+        return this;
+    }
+
     public SyncMessage setMaterials(List<ITMaterial> materialsIn){
         this.materials = materialsIn;
+        return this;
+    }
+
+    public SyncMessage setOreVeins(List<OreGenFeatureConfig> oreVeins) {
+        this.oreVeins = oreVeins;
         return this;
     }
 
@@ -127,8 +155,11 @@ public class SyncMessage {
         message.setOreTypes(OreTypeServer.multipleFromBuffer(buffer));
         message.setToolParts(ToolPartServer.multipleFromBuffer(buffer));
         message.setToolTypes(ToolTypeServer.multipleFromBuffer(buffer));
+        message.setStoneLayers(StoneLayerServer.multipleFromBuffer(buffer));
 
         message.setMaterials(MaterialServer.multipleFromBuffer(buffer));
+
+        message.setOreVeins(OreVeinServer.multipleFromBuffer(buffer));
 
         return message;
     }
@@ -142,31 +173,58 @@ public class SyncMessage {
         OreTypeServer.multipleToBuffer(message, buffer);
         ToolPartServer.multipleToBuffer(message, buffer);
         ToolTypeServer.multipleToBuffer(message, buffer);
+        StoneLayerServer.multipleToBuffer(message, buffer);
 
         MaterialServer.multipleToBuffer(message, buffer);
+
+        OreVeinServer.multipleToBuffer(message, buffer);
     }
 
     public static void onMessage(SyncMessage message, Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> {
 
+            IndustrialTech.configSync.materialFlagServer.loadMaterialFlags(message);
+            IndustrialTech.configSync.fluidStateServer  .loadFluidStates(message);
+            IndustrialTech.configSync.oreTypeServer     .loadOreTypes(message);
+            IndustrialTech.configSync.toolPartServer    .loadToolParts(message);
+            IndustrialTech.configSync.toolTypeServer    .loadToolTypes(message);
+            IndustrialTech.configSync.textureIconServer .loadTextureIcons(message);
+            IndustrialTech.configSync.stoneLayerServer  .loadStoneLayers(message);
 
             IndustrialTech.configSync.materialServer.loadMaterials(message);
-            IndustrialTech.configSync.materialFlagServer.loadMaterialFlags(message);
-            IndustrialTech.configSync.fluidStateServer.loadFluidStates(message);
-            IndustrialTech.configSync.oreTypeServer.loadOreTypes(message);
-            IndustrialTech.configSync.toolPartServer.loadToolParts(message);
-            IndustrialTech.configSync.toolTypeServer.loadToolTypes(message);
-            IndustrialTech.configSync.textureIconServer.loadTextureIcons(message);
+
+            IndustrialTech.configSync.oreVeinServer.loadOreVeins(message);
 
 
             if(!message.isSinglePlayer()){
                 IndustrialTech.configSync.isSinglePlayer = false;
                 IndustrialTech.configSync.singlePlayerWorldName = "";
+                IndustrialTech.configSync.materialFlagServer.isClientAndServerConfigsSynced(message);
+                IndustrialTech.configSync.fluidStateServer.isClientAndServerConfigsSynced(message);
+                IndustrialTech.configSync.oreTypeServer.isClientAndServerConfigsSynced(message);
+                IndustrialTech.configSync.toolPartServer.isClientAndServerConfigsSynced(message);
+                IndustrialTech.configSync.toolTypeServer.isClientAndServerConfigsSynced(message);
+                IndustrialTech.configSync.textureIconServer.isClientAndServerConfigsSynced(message);
+                IndustrialTech.configSync.stoneLayerServer.isClientAndServerConfigsSynced(message);
+
                 IndustrialTech.configSync.materialServer.isClientAndServerConfigsSynced(message);
+
+                IndustrialTech.configSync.oreVeinServer.isClientAndServerConfigsSynced(message);
             }else{
                 IndustrialTech.configSync.isSinglePlayer = true;
                 IndustrialTech.configSync.singlePlayerWorldName = message.getSinglePlayerWorldName();
+
+                IndustrialTech.configSync.materialFlagServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                IndustrialTech.configSync.fluidStateServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                IndustrialTech.configSync.oreTypeServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                IndustrialTech.configSync.toolPartServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                IndustrialTech.configSync.toolTypeServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                IndustrialTech.configSync.textureIconServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                IndustrialTech.configSync.stoneLayerServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+
                 IndustrialTech.configSync.materialServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+
+                IndustrialTech.configSync.oreVeinServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
             }
             //
 

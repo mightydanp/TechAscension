@@ -37,6 +37,26 @@ public class MaterialServer {
     public ConfigSync configSync = IndustrialTech.configSync;
     public MaterialRegistry materialRegistry = IndustrialTech.materialRegistryInstance;
 
+    public static String fixesToName(Pair<String, String> fixes){
+        String prefix = fixes.getFirst().replace("_", "");
+        String suffix = fixes.getSecond().replace("_", "");
+        String name = "";
+
+        if(!prefix.equals("") && !suffix.equals("")){
+            name = prefix + "_" + suffix;
+        }
+
+        if(prefix.equals("") && !suffix.equals("")){
+            name = suffix;
+        }
+
+        if(!prefix.equals("") && suffix.equals("")){
+            name = prefix;
+        }
+
+        return name;
+    }
+
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
@@ -212,6 +232,24 @@ public class MaterialServer {
             buffer.writeUtf("");
         }
 
+        if(material.isStoneLayer != null){
+            buffer.writeBoolean(material.isStoneLayer);
+        } else {
+            buffer.writeBoolean(false);
+        }
+
+        if(material.stoneLayerTextureLocation != null){
+            buffer.writeUtf(material.stoneLayerTextureLocation);
+        } else {
+            buffer.writeUtf("");
+        }
+
+        if(material.miningLevel != null){
+            buffer.writeInt(material.miningLevel);
+        } else {
+            buffer.writeInt(-1);
+        }
+
         if(material.denseOreDensity != null){
             buffer.writeInt(material.denseOreDensity);
         } else {
@@ -321,6 +359,19 @@ public class MaterialServer {
             material.setTemperatureProperties(meltingPoint, boilingPoint);
         }
 
+        boolean isStoneLayer = buffer.readBoolean();
+        String stoneLayerTextureLocation = buffer.readUtf();
+
+        if(isStoneLayer && !stoneLayerTextureLocation.equals("")){
+            material.setStoneLayerProperties(isStoneLayer, stoneLayerTextureLocation);
+        }
+
+        int miningLevel = buffer.readInt();
+
+        if(miningLevel > -1){
+            material.setBlockProperties(miningLevel);
+        }
+
         String oreTypeString = buffer.readUtf();
 
         if(!oreTypeString.equals("")){
@@ -367,7 +418,7 @@ public class MaterialServer {
             for (int i = 0; i < toolPartsSize; i++) {
                 String prefix = buffer.readUtf();
                 String suffix = buffer.readUtf();
-                toolParts.add(ToolPartRegistry.getToolPartByFixes(new Pair<>(prefix, suffix)));
+                toolParts.add(ToolPartRegistry.getToolPartByName(fixesToName(new Pair<>(prefix, suffix))));
             }
         }
 

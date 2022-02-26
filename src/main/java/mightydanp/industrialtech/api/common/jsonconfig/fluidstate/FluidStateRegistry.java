@@ -18,7 +18,7 @@ import java.util.*;
  * Created by MightyDanp on 1/20/2022.
  */
 public class FluidStateRegistry extends JsonConfigMultiFile {
-    private final Map<String, IFluidState> fluidStateList = new HashMap<>();
+    private static final Map<String, IFluidState> fluidStateList = new HashMap<>();
 
     @Override
     public void initiate() {
@@ -36,19 +36,23 @@ public class FluidStateRegistry extends JsonConfigMultiFile {
         super.initiate();
     }
 
+    public static List<IFluidState> getAllFluidStates() {
+        return new ArrayList<>(fluidStateList.values());
+    }
+
     public static void register(IFluidState fluidStateIn) {
         String name = fluidStateIn.getName();
-        if (IndustrialTech.fluidStateRegistry.fluidStateList.containsKey(fluidStateIn.getName()))
+        if (fluidStateList.containsKey(fluidStateIn.getName()))
             throw new IllegalArgumentException("fluid state with name(" + name + "), already exists.");
-        IndustrialTech.fluidStateRegistry.fluidStateList.put(name, fluidStateIn);
+        fluidStateList.put(name, fluidStateIn);
     }
 
     public IFluidState getFluidStateByName(String fluid_state) {
-        return IndustrialTech.fluidStateRegistry.fluidStateList.get(fluid_state);
+        return fluidStateList.get(fluid_state);
     }
 
     public Set<IFluidState> getAllFluidState() {
-        return new HashSet<IFluidState>(IndustrialTech.fluidStateRegistry.fluidStateList.values());
+        return new HashSet<IFluidState>(fluidStateList.values());
     }
 
     public void buildFluidStateJson(){
@@ -88,7 +92,7 @@ public class FluidStateRegistry extends JsonConfigMultiFile {
                 }
             }
         } else {
-            Minecraft.crash(new CrashReport("fluid state json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            IndustrialTech.LOGGER.warn(new CrashReport("fluid state json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

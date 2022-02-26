@@ -3,6 +3,7 @@ package mightydanp.industrialtech.api.common.jsonconfig.ore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
@@ -35,6 +36,11 @@ public class OreTypeServer {
     public boolean serverHasOreTypes(){
         return serverOreTypesMap.size() > 0;
     }
+
+    public static List<IOreType> getAllOreTypes() {
+        return new ArrayList<>(serverOreTypesMap.values());
+    }
+
 
     public static Map<String, IOreType> getServerOreTypesMap(List<IOreType> oreTypesIn) {
         Map<String, IOreType> oreTypesList = new LinkedHashMap<>();
@@ -182,7 +188,7 @@ public class OreTypeServer {
         serverOreTypesMap.clear();
         serverOreTypesMap.putAll(oreTypes);
 
-        IndustrialTech.LOGGER.info("Loaded {} material flags from the server", oreTypes.size());
+        IndustrialTech.LOGGER.info("Loaded {} ore types from the server", oreTypes.size());
     }
 
     public static void singleToBuffer(PacketBuffer buffer, IOreType oreType) {//friendlybotbuff
@@ -215,9 +221,9 @@ public class OreTypeServer {
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            IOreType material = singleFromBuffer(buffer);
+            IOreType oreType = singleFromBuffer(buffer);
 
-            oreTypes.add(material);
+            oreTypes.add(oreType);
         }
 
         return oreTypes;

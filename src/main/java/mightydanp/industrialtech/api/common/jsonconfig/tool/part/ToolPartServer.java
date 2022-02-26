@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
@@ -31,6 +32,10 @@ public class ToolPartServer {
 
     public Map<String, IToolPart> getServerToolPartsMap(){
         return serverToolPartsMap;
+    }
+
+    public static List<IToolPart> getAllToolParts() {
+        return new ArrayList<>(serverToolPartsMap.values());
     }
 
     public boolean serverHasToolParts(){
@@ -203,7 +208,7 @@ public class ToolPartServer {
         serverToolPartsMap.clear();
         serverToolPartsMap.putAll(toolParts);
 
-        IndustrialTech.LOGGER.info("Loaded {} material flags from the server", toolParts.size());
+        IndustrialTech.LOGGER.info("Loaded {} tool parts from the server", toolParts.size());
     }
 
     public static void singleToBuffer(PacketBuffer buffer, IToolPart toolPart) {//friendlybotbuff
@@ -249,9 +254,9 @@ public class ToolPartServer {
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            IToolPart material = singleFromBuffer(buffer);
+            IToolPart toolPart = singleFromBuffer(buffer);
 
-            toolParts.add(material);
+            toolParts.add(toolPart);
         }
 
         return toolParts;

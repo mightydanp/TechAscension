@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ISeedReader;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,13 +64,15 @@ public class SmallOreGenFeature extends Feature<SmallOreGenFeatureConfig> {
                 int i = 0;
                 for (BlockState small_ore : small_ore_list) {
                     if (small_ore.getBlock() instanceof SmallOreBlock) {
-                        Block replacmentBlock = ((SmallOreBlock) small_ore.getBlock()).replaceableBlock.getBlock();
-                        if (blockToBeReplacedIn.getBlock() == replacmentBlock) {
-                            return small_ore;
-                        }else{
-                            i++;
-                            if(i == small_ore_list.size()){
-                                return blockToBeReplacedIn;
+                        Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(((SmallOreBlock) small_ore.getBlock()).replaceBlock);
+                        if(replaceableBlock != null){
+                            if (blockToBeReplacedIn.getBlock() == replaceableBlock) {
+                                return small_ore;
+                            } else {
+                                i++;
+                                if (i == small_ore_list.size()) {
+                                    return blockToBeReplacedIn;
+                                }
                             }
                         }
                     }

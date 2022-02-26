@@ -3,7 +3,6 @@ package mightydanp.industrialtech.api.common.jsonconfig.tool.type;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
@@ -18,7 +17,7 @@ import java.util.*;
  * Created by MightyDanp on 1/20/2022.
  */
 public class ToolTypeRegistry extends JsonConfigMultiFile {
-    private final Map<Pair<String, String>, IToolType> toolTypeList = new HashMap<>();
+    private static final Map<Pair<String, String>, IToolType> toolTypeList = new HashMap<>();
 
     @Override
     public void initiate() {
@@ -33,44 +32,29 @@ public class ToolTypeRegistry extends JsonConfigMultiFile {
 
         buildToolTypeJson();
         loadExistJson();
+
         super.initiate();
+    }
+
+    public static List<IToolType> getAllToolTypes() {
+        return new ArrayList<>(toolTypeList.values());
     }
 
     public void register(IToolType toolTypeIn) {
         Pair<String, String> fixes = new Pair<>(toolTypeIn.getPrefix(), toolTypeIn.getSuffix());
-        if (IndustrialTech.toolTypeRegistry.toolTypeList.containsValue(toolTypeIn)) {
+        if (toolTypeList.containsValue(toolTypeIn)) {
             throw new IllegalArgumentException("tool type with the prefix:(" + toolTypeIn.getPrefix() + "), and the suffix:(" + toolTypeIn.getSuffix() + "), already exists.");
         }
 
-        IndustrialTech.toolTypeRegistry.toolTypeList.put(fixes, toolTypeIn);
-    }
-
-    public String fixesToName(Pair<String, String> fixes){
-        String prefix = fixes.getFirst().replace("_", "");
-        String suffix = fixes.getSecond().replace("_", "");
-        String name = "";
-
-        if(!prefix.equals("") && !suffix.equals("")){
-            name = prefix + "_" + suffix;
-        }
-
-        if(prefix.equals("") && !suffix.equals("")){
-            name = suffix;
-        }
-
-        if(!prefix.equals("") && suffix.equals("")){
-            name = prefix;
-        }
-
-        return name;
+        toolTypeList.put(fixes, toolTypeIn);
     }
 
     public IToolType getToolTypeByFixes(Pair<String, String> fixesIn) {
-        return IndustrialTech.toolTypeRegistry.toolTypeList.get(fixesIn);
+        return toolTypeList.get(fixesIn);
     }
 
     public Set<IToolType> getAllToolType() {
-        return new HashSet<IToolType>(IndustrialTech.toolTypeRegistry.toolTypeList.values());
+        return new HashSet<>(toolTypeList.values());
     }
 
     public void buildToolTypeJson(){
@@ -159,6 +143,11 @@ public class ToolTypeRegistry extends JsonConfigMultiFile {
             @Override
             public Pair<String, String> getFixes() {
                 return new Pair<>(prefix, suffix);
+            }
+
+            @Override
+            public ToolType getToolType() {
+                return ToolType.get(fixesToName(new Pair<>(prefix, suffix)));
             }
         };
     }

@@ -3,7 +3,6 @@ package mightydanp.industrialtech.api.common.jsonconfig.tool.part;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
@@ -17,7 +16,7 @@ import java.util.*;
  * Created by MightyDanp on 1/20/2022.
  */
 public class ToolPartRegistry extends JsonConfigMultiFile {
-    private final Map<String, IToolPart> toolPartList = new HashMap<>();
+    private static final Map<String, IToolPart> toolPartList = new HashMap<>();
 
     @Override
     public void initiate() {
@@ -35,40 +34,24 @@ public class ToolPartRegistry extends JsonConfigMultiFile {
         super.initiate();
     }
 
+    public static List<IToolPart> getAllToolParts() {
+        return new ArrayList<>(toolPartList.values());
+    }
+
     public void register(IToolPart toolPartIn) {
-        if (IndustrialTech.toolPartRegistry.toolPartList.containsValue(toolPartIn)) {
+        if (toolPartList.containsValue(toolPartIn)) {
             throw new IllegalArgumentException("Tool Part with the prefix:(" + toolPartIn.getPrefix() + "), and the suffix:(" + toolPartIn.getSuffix() + "), already exists.");
         }
 
-        IndustrialTech.toolPartRegistry.toolPartList.put(fixesToName(new Pair<>(toolPartIn.getPrefix(), toolPartIn.getSuffix())), toolPartIn);
+        toolPartList.put(fixesToName(new Pair<>(toolPartIn.getPrefix(), toolPartIn.getSuffix())), toolPartIn);
     }
 
-    public String fixesToName(Pair<String, String> fixes){
-        String prefix = fixes.getFirst().replace("_", "");
-        String suffix = fixes.getSecond().replace("_", "");
-        String name = "";
-
-        if(!prefix.equals("") && !suffix.equals("")){
-            name = prefix + "_" + suffix;
-        }
-
-        if(prefix.equals("") && !suffix.equals("")){
-            name = suffix;
-        }
-
-        if(!prefix.equals("") && suffix.equals("")){
-            name = prefix;
-        }
-
-        return name;
-    }
-
-    public static IToolPart getToolPartByFixes(String fixesIn) {
-        return IndustrialTech.toolPartRegistry.toolPartList.get(fixesIn);
+    public static IToolPart getToolPartByName(String fixesIn) {
+        return toolPartList.get(fixesIn);
     }
 
     public Set<IToolPart> getAllToolPart() {
-        return new HashSet<IToolPart>(IndustrialTech.toolPartRegistry.toolPartList.values());
+        return new HashSet<IToolPart>(toolPartList.values());
     }
 
     public void buildToolPartJson(){
@@ -118,7 +101,7 @@ public class ToolPartRegistry extends JsonConfigMultiFile {
                 }
             }
         } else {
-            Minecraft.crash(new CrashReport("tool part json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            IndustrialTech.LOGGER.warn(new CrashReport("tool part json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

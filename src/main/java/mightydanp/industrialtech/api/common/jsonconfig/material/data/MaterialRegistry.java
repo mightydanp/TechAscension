@@ -35,6 +35,7 @@ public class MaterialRegistry extends JsonConfigMultiFile{
         return materialList;
     }
 
+    //todo StoneLayers in ITMaterial need to be registered before any other materials.
     public static void registerMaterial(ITMaterial materialIn){
         if(!materials().containsKey(materialIn.name)){
             materialList.put(materialIn.name, materialIn);
@@ -50,11 +51,14 @@ public class MaterialRegistry extends JsonConfigMultiFile{
 
         buildMaterialJson();
         loadExistJson();
-
+        materialList.forEach((modID, material) -> {
+            material.save();
+        });
     }
 
     public void initiateClient() {
         materialList.forEach((modID, material) -> {
+            material.clientRenderLayerInit();
             material.registerColorForItem();
             material.registerColorForBlock();
         });
@@ -94,7 +98,7 @@ public class MaterialRegistry extends JsonConfigMultiFile{
                 }
             }
         } else {
-            Minecraft.crash(new CrashReport("material json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            IndustrialTech.LOGGER.warn(new CrashReport("material json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
@@ -103,7 +107,7 @@ public class MaterialRegistry extends JsonConfigMultiFile{
     }
 
     public static List<ITMaterial> getMaterials() {
-        return RegistryHandler.MATERIAL.getValues().stream().collect(Collectors.toList());
+        return new ArrayList<>(RegistryHandler.MATERIAL.getValues());
     }
 
     public static Map<String, ITMaterial> getMaterialsMap() {
@@ -111,26 +115,6 @@ public class MaterialRegistry extends JsonConfigMultiFile{
         getMaterials().forEach(itMaterial -> materialList.put(itMaterial.name, itMaterial));
 
         return materialList;
-    }
-
-    public static String fixesToName(Pair<String, String> fixes){
-        String prefix = fixes.getFirst().replace("_", "");
-        String suffix = fixes.getSecond().replace("_", "");
-        String name = "";
-
-        if(!prefix.equals("") && !suffix.equals("")){
-            name = prefix + "_" + suffix;
-        }
-
-        if(prefix.equals("") && !suffix.equals("")){
-            name = suffix;
-        }
-
-        if(!prefix.equals("") && suffix.equals("")){
-            name = prefix;
-        }
-
-        return name;
     }
 
     public static JsonObject getJsonObject(ITMaterial materialIn) {
@@ -162,6 +146,33 @@ public class MaterialRegistry extends JsonConfigMultiFile{
 
             if (temperatureProperties.size() > 0) {
                 jsonObject.add("temperature_properties", temperatureProperties);
+            }
+        }
+
+        JsonObject stoneLayerProperties = new JsonObject();
+        {
+            if (materialIn.isStoneLayer != null) {
+                stoneLayerProperties.addProperty("is_stone_layer", materialIn.isStoneLayer);
+            }
+
+            if (materialIn.stoneLayerTextureLocation != null) {
+                stoneLayerProperties.addProperty("stone_layer_texture_location", materialIn.stoneLayerTextureLocation);
+            }
+
+            if (stoneLayerProperties.size() > 0) {
+                jsonObject.add("stone_layer_properties", stoneLayerProperties);
+            }
+
+        }
+
+        JsonObject blockProperties = new JsonObject();
+        {
+            if (materialIn.miningLevel != null) {
+                blockProperties.addProperty("mining_level", materialIn.miningLevel);
+            }
+
+            if (blockProperties.size() > 0) {
+                jsonObject.add("block_properties", blockProperties);
             }
         }
 
@@ -300,6 +311,25 @@ public class MaterialRegistry extends JsonConfigMultiFile{
             }
         }
 
+        if(jsonObject.has("stone_layer_properties")) {
+            JsonObject stoneLayerProperties = jsonObject.get("stone_layer_properties").getAsJsonObject();{
+                if (stoneLayerProperties.has("is_stone_layer") && stoneLayerProperties.has("mining_level")) {
+                    Boolean isStoneLayerJson = stoneLayerProperties.get("is_stone_layer").getAsBoolean();
+                    String stoneLayerTextureLocationJson = stoneLayerProperties.get("stone_layer_texture_location").getAsString();
+                    material.setStoneLayerProperties(isStoneLayerJson, stoneLayerTextureLocationJson);
+                }
+            }
+        }
+
+        if(jsonObject.has("block_properties")) {
+            JsonObject blockProperties = jsonObject.get("block_properties").getAsJsonObject();{
+                if (blockProperties.has("mining_level")) {
+                    int miningLevelJson = blockProperties.get("mining_level").getAsInt();
+                    material.setBlockProperties(miningLevelJson);
+                }
+            }
+        }
+
         if(jsonObject.has("ore_properties")) {
             JsonObject oreProperties = jsonObject.get("ore_properties").getAsJsonObject();{
                 if (oreProperties.has("ore_type") && oreProperties.has("dense_ore_density")) {
@@ -358,7 +388,7 @@ public class MaterialRegistry extends JsonConfigMultiFile{
                                 String toolPartPrefix = toolPartProperties.get("tool_part_prefix").getAsString();
                                 String toolPartSuffix = toolPartProperties.get("tool_part_suffix").getAsString();
 
-                                IToolPart toolPartJson = ToolPartRegistry.getToolPartByFixes(fixesToName(new Pair<>(toolPartPrefix, toolPartSuffix)));
+                                IToolPart toolPartJson = ToolPartRegistry.getToolPartByName(fixesToName(new Pair<>(toolPartPrefix, toolPartSuffix)));
 
                                 toolPartJsonList.add(toolPartJson);
                             }

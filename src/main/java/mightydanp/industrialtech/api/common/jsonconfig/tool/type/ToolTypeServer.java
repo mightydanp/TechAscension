@@ -6,9 +6,11 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.common.ToolType;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -31,6 +33,10 @@ public class ToolTypeServer {
 
     public Map<String, IToolType> getServerToolTypesMap(){
         return serverToolTypesMap;
+    }
+
+    public static List<IToolType> getAllToolTypes() {
+        return new ArrayList<>(serverToolTypesMap.values());
     }
 
     public boolean serverHasToolTypes(){
@@ -203,7 +209,7 @@ public class ToolTypeServer {
         serverToolTypesMap.clear();
         serverToolTypesMap.putAll(toolTypes);
 
-        IndustrialTech.LOGGER.info("Loaded {} material flags from the server", toolTypes.size());
+        IndustrialTech.LOGGER.info("Loaded {} tool types from the server", toolTypes.size());
     }
 
     public static void singleToBuffer(PacketBuffer buffer, IToolType toolType) {//friendlybotbuff
@@ -240,6 +246,11 @@ public class ToolTypeServer {
             public Pair<String, String> getFixes() {
                 return new Pair<>(prefix, suffix);
             }
+
+            @Override
+            public ToolType getToolType() {
+                return ToolType.get(fixesToName(prefix, suffix));
+            }
         };
     }
 
@@ -249,9 +260,9 @@ public class ToolTypeServer {
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            IToolType material = singleFromBuffer(buffer);
+            IToolType toolType = singleFromBuffer(buffer);
 
-            toolTypes.add(material);
+            toolTypes.add(toolType);
         }
 
         return toolTypes;

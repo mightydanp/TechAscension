@@ -249,9 +249,9 @@ public class MaterialFlagServer {
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            IMaterialFlag material = singleFromBuffer(buffer);
+            IMaterialFlag materialFlag = singleFromBuffer(buffer);
 
-            materialFlags.add(material);
+            materialFlags.add(materialFlag);
         }
 
         return materialFlags;

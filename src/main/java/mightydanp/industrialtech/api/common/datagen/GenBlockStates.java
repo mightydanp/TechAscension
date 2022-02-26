@@ -6,7 +6,6 @@ import mightydanp.industrialtech.api.common.handler.TreeHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.libs.EnumTreeFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.common.libs.StoneLayerFlagsEnum;
 import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
@@ -31,10 +30,6 @@ public class GenBlockStates extends BlockStateProvider {
         for(ITMaterial material : RegistryHandler.MATERIAL.getValues()) {
             materialHandlerHelper(material);
         }
-
-        for(StoneLayerHandler stoneLayer: ModStoneLayers.stoneLayerList){
-            stoneLayerHandlerHelper(stoneLayer);
-        }
     }
 
     private void materialHandlerHelper(ITMaterial material) {
@@ -48,6 +43,7 @@ public class GenBlockStates extends BlockStateProvider {
                     String stoneVariant = oreBlock.getRegistryName().toString().split(":")[1].split("_")[0];
                     ModelFile ore = models().withExistingParent("block/ore/" + stoneVariant + "_ore", modId + ":block/ore/state/ore").texture("particle", "minecraft:block/" + stoneVariant).texture("sourceblock", "minecraft:block/" + stoneVariant);
                     simpleBlock(oreBlock , ore);
+
                 }
             }
 
@@ -91,6 +87,7 @@ public class GenBlockStates extends BlockStateProvider {
         }
     }
 
+    /*
     private void stoneLayerHandlerHelper(StoneLayerHandler stoneLayer){
         for(StoneLayerFlagsEnum flag : stoneLayer.flags) {
             if (flag == StoneLayerFlagsEnum.thinSlab) {
@@ -105,6 +102,8 @@ public class GenBlockStates extends BlockStateProvider {
             }
         }
     }
+
+     */
 
     private void treeHandler(TreeHandler treeHandler) {
         for(EnumTreeFlags flag : treeHandler.treeFlags) {

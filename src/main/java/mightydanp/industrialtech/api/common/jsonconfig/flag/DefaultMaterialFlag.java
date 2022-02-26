@@ -17,7 +17,8 @@ public enum DefaultMaterialFlag implements IMaterialFlag {
     FLUID("", "_fluid"),
     GAS("", "_gas"),
     BLOCK_METAL("", "_block"),
-    BLOCK_GEM("", "_block");
+    BLOCK_GEM("", "_block"),
+    STONE_LAYER("stone_","_layer");
 
     private final String prefix;
     private final String suffix;

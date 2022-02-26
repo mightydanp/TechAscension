@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "mightydanp.industrialtech.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "modid.mixin-refmap.json",
+  "mixins": [
+    "BlockMixin"
+  ]
+}

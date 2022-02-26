@@ -5,7 +5,6 @@ import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
-import mightydanp.industrialtech.api.common.handler.StoneLayerHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.DefaultToolPart;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
@@ -89,6 +88,7 @@ public class GenItemModel extends ItemModelProvider {
             }
         }
 
+        /*
         for(StoneLayerHandler layer : ModStoneLayers.stoneLayerList ){
             for(StoneLayerFlagsEnum flag : layer.flags){
                 if(flag == StoneLayerFlagsEnum.leg) {
@@ -99,6 +99,8 @@ public class GenItemModel extends ItemModelProvider {
                 }
             }
         }
+
+         */
 
         for(ToolHandler tool : ModTools.tools){
             coloredTool(tool.toolItem.get(), ((ITToolItem)tool.toolItem.get()).partsToWork);

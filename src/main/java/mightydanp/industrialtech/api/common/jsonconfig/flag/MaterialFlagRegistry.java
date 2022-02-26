@@ -35,26 +35,6 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
         super.initiate();
     }
 
-    public String fixesToName(Pair<String, String> fixes){
-        String prefix = fixes.getFirst().replace("_", "");
-        String suffix = fixes.getSecond().replace("_", "");
-        String name = "";
-
-        if(!prefix.equals("") && !suffix.equals("")){
-            name = prefix + "_" + suffix;
-        }
-
-        if(prefix.equals("") && !suffix.equals("")){
-            name = suffix;
-        }
-
-        if(!prefix.equals("") && suffix.equals("")){
-            name = prefix;
-        }
-
-        return name;
-    }
-
     public void register(IMaterialFlag materialFlagIn) {
         if (materialFlagList.containsValue(materialFlagIn)) {
             throw new IllegalArgumentException("material flag with the prefix:(" + materialFlagIn.getPrefix() + "), and the suffix:(" + materialFlagIn.getSuffix() + "), already exists.");
@@ -129,7 +109,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
                 }
             }
         } else {
-            Minecraft.crash(new CrashReport("material flag json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            IndustrialTech.LOGGER.warn(new CrashReport("material flag json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

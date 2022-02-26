@@ -9,11 +9,14 @@ import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.items.ITItems;
+import mightydanp.industrialtech.api.common.jsonconfig.datapack.DataPackRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.main.data.MainJsonConfigSingleFile;
 import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeRegistry;
@@ -26,7 +29,6 @@ import mightydanp.industrialtech.client.ModClientEvent;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
 import mightydanp.industrialtech.common.items.ModItems;
-import mightydanp.industrialtech.common.materials.ModMaterials;
 import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import mightydanp.industrialtech.common.tileentities.ModTileEntities;
 import mightydanp.industrialtech.common.tools.ModTools;
@@ -51,16 +53,22 @@ public class IndustrialTech {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final ISidedReference SIDED_SYSTEM = DistExecutor.safeRunForDist(() -> ModClientEvent::new, () -> DedicatedServerReference::new);
 
+
     public static MaterialFlagRegistry materialFlagRegistry = new MaterialFlagRegistry();
     public static FluidStateRegistry fluidStateRegistry = new FluidStateRegistry();
     public static TextureIconRegistry textureIconRegistry = new TextureIconRegistry();
     public static OreTypeRegistry oreTypeRegistry = new OreTypeRegistry();
     public static ToolPartRegistry toolPartRegistry = new ToolPartRegistry();
     public static ToolTypeRegistry toolTypeRegistry = new ToolTypeRegistry();
+    public static StoneLayerRegistry stoneLayerRegistry = new StoneLayerRegistry();
     public static MaterialRegistry materialRegistryInstance = new MaterialRegistry();
 
     public static MainJsonConfigSingleFile mainJsonConfig = new MainJsonConfigSingleFile();
     public static ConfigSync configSync = new ConfigSync();
+
+    public static OreVeinRegistry oreVeinRegistry = new OreVeinRegistry();
+
+    public static DataPackRegistry dataPackRegistry = new DataPackRegistry();
 
     public IndustrialTech(){
         INSTANCE = this;

@@ -52,11 +52,15 @@ public class SyncScreen extends Screen {
                         IndustrialTech.configSync.oreTypeServer.syncClientOreTypesWithServers("");
                         IndustrialTech.configSync.toolTypeServer.syncClientToolTypesWithServers("");
                         IndustrialTech.configSync.toolPartServer.syncClientToolPartsWithServers("");
+                        IndustrialTech.configSync.stoneLayerServer.syncClientStoneLayersWithServers("");
 
                         IndustrialTech.configSync.materialServer.syncClientMaterialConfigsWithServers("");
 
                         IndustrialTech.mainJsonConfig.setFolderLocation("config/" + Ref.mod_id + "/server");
                         IndustrialTech.mainJsonConfig.reloadMainConfigJson();
+
+                        IndustrialTech.configSync.oreVeinServer.syncClientOreVeinsWithServers("");
+
                     }else{
                         IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + IndustrialTech.configSync.singlePlayerWorldName + "/serverconfig" + Ref.mod_id);
                         IndustrialTech.mainJsonConfig.reloadMainConfigJson();

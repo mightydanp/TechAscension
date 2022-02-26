@@ -2,7 +2,6 @@ package mightydanp.industrialtech.api.common.jsonconfig.icons;
 
 import com.google.gson.JsonObject;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
@@ -16,7 +15,7 @@ import java.util.*;
  * Created by MightyDanp on 1/20/2022.
  */
 public class TextureIconRegistry extends JsonConfigMultiFile {
-    private final Map<String, ITextureIcon> textureIconList = new HashMap<>();
+    private static final Map<String, ITextureIcon> textureIconList = new HashMap<>();
 
     @Override
     public void initiate() {
@@ -34,19 +33,23 @@ public class TextureIconRegistry extends JsonConfigMultiFile {
         super.initiate();
     }
 
+    public static List<ITextureIcon> getAllTextureIcons() {
+        return new ArrayList<>(textureIconList.values());
+    }
+
     public static void register(ITextureIcon textureIconIn) {
         String name = textureIconIn.getName();
-        if (IndustrialTech.textureIconRegistry.textureIconList.containsKey(textureIconIn.getName()))
+        if (textureIconList.containsKey(textureIconIn.getName()))
             throw new IllegalArgumentException("texture icon with name(" + name + "), already exists.");
-        IndustrialTech.textureIconRegistry.textureIconList.put(name, textureIconIn);
+        textureIconList.put(name, textureIconIn);
     }
 
     public ITextureIcon getTextureIconByName(String texture_icon) {
-        return IndustrialTech.textureIconRegistry.textureIconList.get(texture_icon);
+        return textureIconList.get(texture_icon);
     }
 
     public Set<ITextureIcon> getAllTextureIcon() {
-        return new HashSet<ITextureIcon>(IndustrialTech.textureIconRegistry.textureIconList.values());
+        return new HashSet<>(textureIconList.values());
     }
 
     public void buildTextureIconJson(){
@@ -86,7 +89,7 @@ public class TextureIconRegistry extends JsonConfigMultiFile {
                 }
             }
         } else {
-            Minecraft.crash(new CrashReport("texture icon json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            IndustrialTech.LOGGER.warn(new CrashReport("texture icon json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
@@ -95,22 +98,17 @@ public class TextureIconRegistry extends JsonConfigMultiFile {
 
         String name = textureIconJson.get("name").getAsString();
 
-        return new ITextureIcon() {
-            @Override
-            public String getName() {
-                return name;
-            }
-        };
+        return () -> name;
     }
 
-    public JsonObject toJsonObject(ITextureIcon fluidState) {
+    public JsonObject toJsonObject(ITextureIcon textureIcon) {
         JsonObject jsonObject = new JsonObject();
 
         JsonObject json = new JsonObject();
-        json.addProperty("name", fluidState.getName());
+        json.addProperty("name", textureIcon.getName());
 
         if (json.size() > 0) {
-            jsonObject.add("fluid_state", json);
+            jsonObject.add("texture_icon", json);
         }
 
         return jsonObject;

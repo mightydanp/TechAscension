@@ -3,6 +3,7 @@ package mightydanp.industrialtech.api.common.jsonconfig.icons;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import mightydanp.industrialtech.api.common.jsonconfig.ore.IOreType;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
@@ -30,6 +31,10 @@ public class TextureIconServer {
 
     public Map<String, ITextureIcon> getServerTextureIconsMap(){
         return serverTextureIconsMap;
+    }
+
+    public static List<ITextureIcon> getAllTextureIcons() {
+        return new ArrayList<>(serverTextureIconsMap.values());
     }
 
     public boolean serverHasTextureIcons(){
@@ -182,7 +187,7 @@ public class TextureIconServer {
         serverTextureIconsMap.clear();
         serverTextureIconsMap.putAll(textureIcons);
 
-        IndustrialTech.LOGGER.info("Loaded {} material flags from the server", textureIcons.size());
+        IndustrialTech.LOGGER.info("Loaded {} texture icons from the server", textureIcons.size());
     }
 
     public static void singleToBuffer(PacketBuffer buffer, ITextureIcon textureIcon) {//friendlybotbuff
@@ -215,9 +220,9 @@ public class TextureIconServer {
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            ITextureIcon material = singleFromBuffer(buffer);
+            ITextureIcon textureIcon = singleFromBuffer(buffer);
 
-            textureIcons.add(material);
+            textureIcons.add(textureIcon);
         }
 
         return textureIcons;

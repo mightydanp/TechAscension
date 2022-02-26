@@ -42,6 +42,15 @@ public class ModMaterials extends ITMaterials {
 
 
     public static void commonInit() {
+        //--//stone layers
+        MaterialRegistry.registerMaterial(new ITMaterial("andesite", 0x747878, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, "minecraft:block/andesite"));
+        //MaterialRegistry.registerMaterial(new ITMaterial("basalt", 0x4C4A4A, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, "minecraft:block/basalt"));
+        MaterialRegistry.registerMaterial(new ITMaterial("diorite", 0x9dbfb1, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, "minecraft:block/diorite"));
+        MaterialRegistry.registerMaterial(new ITMaterial("end_stone", 0xb8b09b, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, "minecraft:block/end_stone"));
+        MaterialRegistry.registerMaterial(new ITMaterial("granite", 0xA26B56, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, "minecraft:block/granite"));
+        MaterialRegistry.registerMaterial(new ITMaterial("netherrack", 0x6F4644, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, "minecraft:block/netherrack"));
+        MaterialRegistry.registerMaterial(new ITMaterial("stone", 0x808080, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, "minecraft:block/stone"));
+        //--//
         MaterialRegistry.registerMaterial(new ITMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL)).setOreType(DefaultOreType.ORE).setDenseOreDensity(8));
         MaterialRegistry.registerMaterial(new ITMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH)).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));
 

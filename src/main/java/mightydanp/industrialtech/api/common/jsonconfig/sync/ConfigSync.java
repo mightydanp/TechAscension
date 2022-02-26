@@ -1,24 +1,50 @@
 package mightydanp.industrialtech.api.common.jsonconfig.sync;
 
+import mightydanp.industrialtech.api.common.blocks.DenseOreBlock;
+import mightydanp.industrialtech.api.common.blocks.OreBlock;
+import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
+import mightydanp.industrialtech.api.common.blocks.ThinSlabBlock;
 import mightydanp.industrialtech.api.common.handler.NetworkHandler;
+import mightydanp.industrialtech.api.common.handler.RegistryHandler;
+import mightydanp.industrialtech.api.common.items.*;
+import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagServer;
+import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateServer;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinServer;
+import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconServer;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialServer;
+import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeServer;
+import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.IStoneLayer;
+import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.gui.screen.SyncScreen;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartServer;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeServer;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.api.common.material.ITMaterial;
+import mightydanp.industrialtech.api.common.material.fluid.ITFluid;
+import mightydanp.industrialtech.api.common.material.fluid.ITFluidBlock;
 import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.materials.ModMaterials;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.*;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.FlowingFluid;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.ResourceLocation;
@@ -28,21 +54,26 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import net.minecraftforge.registries.IForgeRegistry;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag.*;
+import static mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag.INGOT;
 
 /**
  * Created by MightyDanp on 1/4/2022.
@@ -54,16 +85,16 @@ public class ConfigSync {
     public MaterialFlagServer materialFlagServer = new MaterialFlagServer();
     public FluidStateServer fluidStateServer = new FluidStateServer();
     public OreTypeServer oreTypeServer = new OreTypeServer();
+    public TextureIconServer textureIconServer = new TextureIconServer();
     public ToolPartServer toolPartServer = new ToolPartServer();
     public ToolTypeServer toolTypeServer = new ToolTypeServer();
-    public TextureIconServer textureIconServer = new TextureIconServer();
+    public StoneLayerServer stoneLayerServer = new StoneLayerServer();
     public MaterialServer materialServer = new MaterialServer();
+    public OreVeinServer oreVeinServer = new OreVeinServer();
 
-    public String clientUUID;
     public boolean isSinglePlayer;
     public String singlePlayerWorldName;
     public static String serverIP;
-    public static boolean hasLoadedAtLeastOnce = false;
 
     public void init(){
         IndustrialTech.materialFlagRegistry.initiate();
@@ -71,107 +102,102 @@ public class ConfigSync {
         IndustrialTech.textureIconRegistry.initiate();
         IndustrialTech.oreTypeRegistry.initiate();
         IndustrialTech.toolPartRegistry.initiate();
-        //IndustrialTech.toolTypeRegistry.initiate();
+        IndustrialTech.stoneLayerRegistry.initiate();
         ModMaterials.commonInit();
         IndustrialTech.materialRegistryInstance.initiate();
+        IndustrialTech.oreVeinRegistry.initiate();
     }
 
     public void initClient(){
         IndustrialTech.materialRegistryInstance.initiateClient();
     }
 
+    /*
     @SubscribeEvent
-    public void onModelBakeEvent(ModelBakeEvent event) {
-        MaterialFlagRegistry materialFlagRegistry = IndustrialTech.materialFlagRegistry;
-        /*
-        for(ITMaterial material : MaterialRegistry.getMaterials()) {
-            for (IMaterialFlag flag : material.materialFlags) {
-                if (flag == DefaultMaterialFlag.ORE || flag == DefaultMaterialFlag.GEM) {
-                    for (StoneLayerHandler stoneLayerHandler : ModStoneLayers.stoneLayerList) {
-                        Block ore = RegistryHandler.registerBlock(Ref.mod_id, stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + name + "_ore", new OreBlock(name + "_ore", AbstractBlock.Properties.of(net.minecraft.block.material.Material.STONE), stoneLayerHandler.layerBlock.defaultBlockState()));
-                        oreList.add(ore);
-                        Item oreItemR = RegistryHandler.registerItem(Ref.mod_id, stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + name + "_ore",
-                                new BlockOreItem(ore, new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, symbol));
-                        oreItemList.add(oreItemR);
-                        Block smallOreBlockR = RegistryHandler.registerBlock(Ref.mod_id, "small_" + stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + name + "_ore",
-                                new SmallOreBlock("small_" + name + "_ore", AbstractBlock.Properties.of(net.minecraft.block.material.Material.STONE), stoneLayerHandler.layerBlock.defaultBlockState()));
-                        smallOreList.add(smallOreBlockR);
-                        Item smallOreItemR = RegistryHandler.registerItem(Ref.mod_id, "small_" + stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + name + "_ore",
-                                new BlockItem(smallOreBlockR, new Item.Properties().tab(ModItemGroups.ore_tab)));
-                        smallOreItemList.add(smallOreItemR);
-                        Block denseOreBlockR = RegistryHandler.registerBlock(Ref.mod_id, "dense_" + stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + name + "_ore",
-                                new DenseOreBlock("dense_" + name + "_ore", AbstractBlock.Properties.of(net.minecraft.block.material.Material.STONE), denseOreDensity, stoneLayerHandler.layerBlock.defaultBlockState(), oreItemList));
-                        denseOreList.add(denseOreBlockR);
-                        Item denseOreItemR = RegistryHandler.registerItem(Ref.mod_id, "dense_" + stoneLayerHandler.layerBlock.getRegistryName().toString().split(":")[1] + "_" + name + "_ore",
-                                new BlockOreItem(denseOreBlockR, new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, symbol));
-                        denseOreItemList.add(denseOreItemR);
+    @OnlyIn(Dist.CLIENT)
+    public void onModelBakeEvent(ModelRegistryEvent event) {
+        List<ITMaterial> materials = MaterialRegistry.getMaterials();
+
+
+
+        for(ITMaterial material : materials) {
+            for (IMaterialFlag materialFlag : material.materialFlags){
+                if(materialFlag == ORE || materialFlag == GEM || materialFlag == STONE_LAYER){
+                    for(IStoneLayer stoneLayer : StoneLayerRegistry.getAllStoneLayers()){
+
+
+                        if(materialFlag == STONE_LAYER){
+                            Block thin_slab_block = RegistryHandler.registerBlock(Ref.mod_id,"thin_" + name + "_slab", new ThinSlabBlock(AbstractBlock.Properties.of(Material.STONE), new ResourceLocation(stoneLayer.getModID(), stoneLayer.getBlockName())));
+                            thinSlabList.add(thin_slab_block);
+                            Item thin_slab_item_block = RegistryHandler.registerItem(Ref.mod_id,"thin_" + name + "_slab", new ThinSlabItemBlock(thin_slab_block, new Item.Properties().stacksTo(1)));
+                            thinSlabItemList.add(thin_slab_item_block);
+                        /*
+                        Block leg_block = RegistryHandler.registerBlock(Ref.mod_id,name + "_leg", new LegBlock(AbstractBlock.Properties.of(Material.STONE), new ResourceLocation(stoneLayer.getModID(), stoneLayer.getBlockName())));
+                        Item leg_item_block = RegistryHandler.registerItem(Ref.mod_id, name + "_leg", new LegItemBlock(leg_block, new Item.Properties().stacksTo(1)));
+                        }
                     }
-                    crushedOre = RegistryHandler.registerItem(Ref.mod_id, "crushed_" + name + "_ore", new OreProductsItem(new Item.Properties()
+
+                    if(materialFlag == ORE || materialFlag == GEM){
+                        crushedOre = RegistryHandler.registerItem(Ref.mod_id,  "crushed_" + name + "_ore", new OreProductsItem(new Item.Properties()
+                                .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                        purifiedOre = RegistryHandler.registerItem(Ref.mod_id,  "purified_" + name + "_ore", new OreProductsItem(new Item.Properties()
+                                .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                        centrifugedOre = RegistryHandler.registerItem(Ref.mod_id,  "centrifuged_" + name + "_ore", new OreProductsItem(new Item.Properties()
+                                .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                    }
+
+                    if(materialFlag == GEM){
+                        gem = RegistryHandler.registerItem(Ref.mod_id,  name + "_gem", new GemItem(new Item.Properties()
+                                .tab(ModItemGroups.gem_tab), symbol));
+                        chippedGem = RegistryHandler.registerItem(Ref.mod_id,  "chipped_" + name + "_gem", new GemItem(new Item.Properties()
+                                .tab(ModItemGroups.gem_tab), symbol));
+                        flawedGem = RegistryHandler.registerItem(Ref.mod_id,  "flawed_" + name + "_gem", new GemItem(new Item.Properties()
+                                .tab(ModItemGroups.gem_tab), symbol));
+                        flawlessGem = RegistryHandler.registerItem(Ref.mod_id,  "flawless_" + name + "_gem", new GemItem(new Item.Properties()
+                                .tab(ModItemGroups.gem_tab), symbol));
+                        legendaryGem = RegistryHandler.registerItem(Ref.mod_id,  "legendary_" + name + "_gem", new GemItem(new Item.Properties()
+                                .tab(ModItemGroups.gem_tab), symbol));
+                    }
+
+                    dust = RegistryHandler.registerItem(Ref.mod_id,  "" + name + "_dust",  new OreProductsItem(new Item.Properties()
                             .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                    purifiedOre = RegistryHandler.registerItem(Ref.mod_id, "purified_" + name + "_ore", new OreProductsItem(new Item.Properties()
+                    smallDust = RegistryHandler.registerItem(Ref.mod_id,  "small_" + name + "_dust", new OreProductsItem(new Item.Properties()
                             .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                    centrifugedOre = RegistryHandler.registerItem(Ref.mod_id, "centrifuged_" + name + "_ore", new OreProductsItem(new Item.Properties()
+                    tinyDust = RegistryHandler.registerItem(Ref.mod_id,  "tiny_" + name + "_dust", new OreProductsItem(new Item.Properties()
                             .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
                 }
 
-                if (flag == ORE) {
-                }
-
-                if (flag == GEM) {
-                    gem = RegistryHandler.registerItem(Ref.mod_id, name + "_gem", new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
-                    chippedGem = RegistryHandler.registerItem(Ref.mod_id, "chipped_" + name + "_gem", new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
-                    flawedGem = RegistryHandler.registerItem(Ref.mod_id, "flawed_" + name + "_gem", new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
-                    flawlessGem = RegistryHandler.registerItem(Ref.mod_id, "flawless_" + name + "_gem", new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
-                    legendaryGem = RegistryHandler.registerItem(Ref.mod_id, "legendary_" + name + "_gem", new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
-                }
-
-                if (flag == DUST) {
-                    dust = RegistryHandler.registerItem(Ref.mod_id, "" + name + "_dust", new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                    smallDust = RegistryHandler.registerItem(Ref.mod_id, "small_" + name + "_dust", new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                    tinyDust = RegistryHandler.registerItem(Ref.mod_id, "tiny_" + name + "_dust", new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                }
-
-                if (flag == FLUID || flag == GAS) {
+                if(materialFlag == FLUID || materialFlag == GAS) {
                     FluidAttributes.Builder attributes;
 
-                    if (flag == FLUID) {
+                    if (materialFlag == FLUID) {
                         attributes = FluidAttributes.builder(new ResourceLocation(Ref.mod_id, "fluid/" + name), new ResourceLocation(Ref.mod_id, "fluid/" + name + "_flowing")).temperature(meltingPoint).color(color);
-                        if (fluidDensity != null) attributes.density(fluidDensity);
-                        if (fluidLuminosity != null) attributes.luminosity(fluidLuminosity);
-                        if (fluidViscosity != null) attributes.viscosity(fluidViscosity);
+                        if(fluidDensity != null) attributes.density(fluidDensity);
+                        if(fluidLuminosity != null)attributes.luminosity(fluidLuminosity);
+                        if(fluidViscosity != null) attributes.viscosity(fluidViscosity);
                         ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(() -> fluid, () -> fluid_flowing, attributes);
                         fluid = (FlowingFluid) RegistryHandler.registerFluid(Ref.mod_id, name + "_still", new ITFluid(properties, true, color));
                         fluid_flowing = (FlowingFluid) RegistryHandler.registerFluid(Ref.mod_id, name + "_flowing", new ITFluid(properties, false, color));
 
-                        fluidBlock = RegistryHandler.registerBlock(Ref.mod_id, name, new ITFluidBlock(() -> fluid, fluidAcceleration, color));
+                        fluidBlock = RegistryHandler.registerBlock(Ref.mod_id, name, new ITFluidBlock(()-> fluid, fluidAcceleration, color));
                     }
 
-                    if (flag == GAS) {
+                    if (materialFlag == GAS) {
                         attributes = FluidAttributes.builder(new ResourceLocation(Ref.mod_id, "fluid/" + name), new ResourceLocation(Ref.mod_id, "fluid/" + name)).temperature(boilingPoint).color(color).gaseous();
-                        if (fluidDensity != null) attributes.density(fluidDensity);
-                        if (fluidLuminosity != null) attributes.luminosity(fluidLuminosity);
-                        if (fluidViscosity != null) attributes.viscosity(fluidViscosity);
+                        if(fluidDensity != null) attributes.density(fluidDensity);
+                        if(fluidLuminosity != null)attributes.luminosity(fluidLuminosity);
+                        if(fluidViscosity != null) attributes.viscosity(fluidViscosity);
                         ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(() -> fluid, () -> fluid_flowing, attributes);
                         fluid = (FlowingFluid) RegistryHandler.registerFluid(Ref.mod_id, name + "_still", new ITFluid(properties, true, color));
                         fluid_flowing = (FlowingFluid) RegistryHandler.registerFluid(Ref.mod_id, name + "_flowing", new ITFluid(properties, false, color));
 
-                        fluidBlock = RegistryHandler.registerBlock(Ref.mod_id, name, new ITFluidBlock(() -> fluid, fluidAcceleration, color));
+                        fluidBlock = RegistryHandler.registerBlock(Ref.mod_id, name, new ITFluidBlock(()-> fluid, fluidAcceleration, color));
                     }
                 }
 
-                if (flag == INGOT) {
-                    ingot = RegistryHandler.registerItem(Ref.mod_id, name + "_" + INGOT.name(), new IngotItem(new Item.Properties().tab(ModItemGroups.item_tab), boilingPoint, meltingPoint, symbol));
+                if(materialFlag == INGOT){
+                    ingot = RegistryHandler.registerItem(Ref.mod_id, name + "_" + INGOT.name(),  new IngotItem(new Item.Properties().tab(ModItemGroups.item_tab), boilingPoint, meltingPoint, symbol));
                 }
-
-            }
 
             for (IToolPart flag : toolParts) {
                 if (flag == TOOL_HEAD) {
@@ -201,8 +227,22 @@ public class ConfigSync {
 
         }
 
-         */
+    }
+    }
+    */
 
+
+    @SubscribeEvent
+    public static void serverSyncBlocks(RegistryEvent.MissingMappings<Block> event) {
+        Map<ResourceLocation, Block> missing = new HashMap<>();
+        event.getMappings(Ref.mod_id).forEach(o -> missing.put(o.key, o.getTarget()));
+
+    }
+
+    @SubscribeEvent
+    public static void serverSyncItems(RegistryEvent.MissingMappings<Item> event) {
+        Map<ResourceLocation, Item> missing = new HashMap<>();
+        event.getMappings(Ref.mod_id).forEach(o -> missing.put(o.key, o.getTarget()));
     }
 
     @SubscribeEvent
@@ -214,7 +254,16 @@ public class ConfigSync {
             syncMessage = new SyncMessage(isSinglePlayer, singlePlayerWorldName);
 
             syncMessage.setMaterialFlags(MaterialFlagRegistry.getAllMaterialFlags());
+            syncMessage.setFluidStates(FluidStateRegistry.getAllFluidStates());
+            syncMessage.setOreTypes(OreTypeRegistry.getAllOreTypes());
+            syncMessage.setTextureIcons(TextureIconRegistry.getAllTextureIcons());
+            syncMessage.setToolParts(ToolPartRegistry.getAllToolParts());
+            syncMessage.setToolTypes(ToolTypeRegistry.getAllToolTypes());
+            syncMessage.setStoneLayers(StoneLayerRegistry.getAllStoneLayers());
+            //
             syncMessage.setMaterials(MaterialRegistry.getMaterials());
+
+            syncMessage.setOreVeins(OreVeinRegistry.getAllOreVeins());
 
             ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
 
@@ -232,13 +281,14 @@ public class ConfigSync {
         }
     }
 
+
+
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onPlayerJoinServer(ClientPlayerNetworkEvent.LoggedInEvent event) {
         if (event.getPlayer() != null) {
             if (IndustrialTech.configSync.syncedJson.containsValue(false)) {
                 if (Minecraft.getInstance().level != null && Minecraft.getInstance().getCurrentServer() != null && Minecraft.getInstance().screen != null) {
-                    //MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
                     serverIP = Minecraft.getInstance().getCurrentServer().ip;
                     Minecraft.getInstance().level.disconnect();
                 }
@@ -285,11 +335,16 @@ public class ConfigSync {
                                 IndustrialTech.configSync.oreTypeServer.syncClientOreTypesConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
                                 IndustrialTech.configSync.toolPartServer.syncClientToolPartsConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
                                 IndustrialTech.configSync.toolTypeServer.syncClientToolTypesConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.stoneLayerServer.syncClientStoneLayersConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+
 
                                 IndustrialTech.configSync.materialServer.syncClientMaterialConfigsWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
 
                                 IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
                                 IndustrialTech.mainJsonConfig.reloadMainConfigJson();
+
+                                IndustrialTech.configSync.oreVeinServer.syncClientOreVeinsConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+
                             } catch (IOException e) {
                                 IndustrialTech.LOGGER.fatal("couldn't sync single player world with new world that was created.");
                             }

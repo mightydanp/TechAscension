@@ -3,6 +3,7 @@ package mightydanp.industrialtech.api.common.jsonconfig.fluidstate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
@@ -182,7 +183,7 @@ public class FluidStateServer {
         serverFluidStatesMap.clear();
         serverFluidStatesMap.putAll(fluidStates);
 
-        IndustrialTech.LOGGER.info("Loaded {} material flags from the server", fluidStates.size());
+        IndustrialTech.LOGGER.info("Loaded {} fluid states from the server", fluidStates.size());
     }
 
     public static void singleToBuffer(PacketBuffer buffer, IFluidState fluidState) {//friendlybotbuff
@@ -200,13 +201,7 @@ public class FluidStateServer {
     public static IFluidState singleFromBuffer(PacketBuffer buffer) {
         String name = buffer.readUtf();
 
-        return new IFluidState() {
-
-            @Override
-            public String getName() {
-                return name;
-            }
-        };
+        return () -> name;
     }
 
     public static List<IFluidState> multipleFromBuffer(PacketBuffer buffer) {
@@ -215,9 +210,9 @@ public class FluidStateServer {
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            IFluidState material = singleFromBuffer(buffer);
+            IFluidState fluidState = singleFromBuffer(buffer);
 
-            fluidStates.add(material);
+            fluidStates.add(fluidState);
         }
 
         return fluidStates;

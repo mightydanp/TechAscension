@@ -16,7 +16,7 @@ import java.util.*;
  * Created by MightyDanp on 1/20/2022.
  */
 public class OreTypeRegistry extends JsonConfigMultiFile {
-    private final Map<String, IOreType> oreTypeList = new HashMap<>();
+    private static final Map<String, IOreType> oreTypeList = new HashMap<>();
 
     @Override
     public void initiate() {
@@ -34,19 +34,23 @@ public class OreTypeRegistry extends JsonConfigMultiFile {
         super.initiate();
     }
 
+    public static List<IOreType> getAllOreTypes() {
+        return new ArrayList<>(oreTypeList.values());
+    }
+
     public static void register(IOreType oreTypeIn) {
         String name = oreTypeIn.getName();
-        if (IndustrialTech.oreTypeRegistry.oreTypeList.containsKey(oreTypeIn.getName()))
+        if (oreTypeList.containsKey(oreTypeIn.getName()))
             throw new IllegalArgumentException("ore type with name(" + name + "), already exists.");
-        IndustrialTech.oreTypeRegistry.oreTypeList.put(name, oreTypeIn);
+        oreTypeList.put(name, oreTypeIn);
     }
 
     public static IOreType getOreTypeByName(String ore_type) {
-        return IndustrialTech.oreTypeRegistry.oreTypeList.get(ore_type);
+        return oreTypeList.get(ore_type);
     }
 
     public Set<IOreType> getAllOreType() {
-        return new HashSet<IOreType>(IndustrialTech.oreTypeRegistry.oreTypeList.values());
+        return new HashSet<>(oreTypeList.values());
     }
 
     public void buildOreTypeJson(){
@@ -86,7 +90,7 @@ public class OreTypeRegistry extends JsonConfigMultiFile {
                 }
             }
         } else {
-            Minecraft.crash(new CrashReport("ore type json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            IndustrialTech.LOGGER.warn(new CrashReport("ore type json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
@@ -95,22 +99,17 @@ public class OreTypeRegistry extends JsonConfigMultiFile {
 
         String name = oreTypeJson.get("name").getAsString();
 
-        return new IOreType() {
-            @Override
-            public String getName() {
-                return name;
-            }
-        };
+        return () -> name;
     }
 
-    public JsonObject toJsonObject(IOreType fluidState) {
+    public JsonObject toJsonObject(IOreType oreType) {
         JsonObject jsonObject = new JsonObject();
 
         JsonObject json = new JsonObject();
-        json.addProperty("name", fluidState.getName());
+        json.addProperty("name", oreType.getName());
 
         if (json.size() > 0) {
-            jsonObject.add("fluid_state", json);
+            jsonObject.add("ore_type", json);
         }
 
         return jsonObject;
