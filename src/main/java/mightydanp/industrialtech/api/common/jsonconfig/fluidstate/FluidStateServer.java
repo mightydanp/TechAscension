@@ -3,7 +3,6 @@ package mightydanp.industrialtech.api.common.jsonconfig.fluidstate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
@@ -100,7 +99,7 @@ public class FluidStateServer {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = fluidStateRegistry.getJsonObject(file.getAbsolutePath());
+                JsonObject jsonObject = fluidStateRegistry.getJsonObject(file.getName());
                 IFluidState fluidState = fluidStateRegistry.getFluidState(jsonObject);
                 clientFluidStates.put(fluidState.getName(), fluidState);
             }
@@ -124,7 +123,7 @@ public class FluidStateServer {
         return sync.get();
     }
 
-    public void syncClientFluidStatesWithServers(String folderName) throws IOException {
+    public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/fluid_state");
 
@@ -149,7 +148,7 @@ public class FluidStateServer {
         }
     }
 
-    public void syncClientFluidStatesConfigsWithSinglePlayerWorlds(String folderName) throws IOException {
+    public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/fluid_state");
         Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/fluid_state");

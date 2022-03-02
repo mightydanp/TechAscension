@@ -13,12 +13,12 @@ import net.minecraft.util.ResourceLocation;
  */
 public class SmallOreBlock extends Block {
     public String name;
-    public ResourceLocation replaceBlock;
+    public String stoneLayerBlock;
 
-    public SmallOreBlock(String nameIn, Properties properties, ResourceLocation replaceBlockIn) {
+    public SmallOreBlock(String nameIn, Properties properties, String stoneLayerBlockIn) {
         super(properties);
         this.name = nameIn;
-        this.replaceBlock = replaceBlockIn;
+        this.stoneLayerBlock = stoneLayerBlockIn;
     }
 
     @Override

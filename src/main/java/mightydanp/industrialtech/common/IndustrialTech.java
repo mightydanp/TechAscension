@@ -12,7 +12,10 @@ import mightydanp.industrialtech.api.common.items.ITItems;
 import mightydanp.industrialtech.api.common.jsonconfig.datapack.DataPackRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.blocksinwater.BlocksInWaterRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface.RandomSurfaceRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.smallore.SmallOreVeinRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.main.data.MainJsonConfigSingleFile;
 import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeRegistry;
@@ -31,7 +34,7 @@ import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
 import mightydanp.industrialtech.common.items.ModItems;
 import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import mightydanp.industrialtech.common.tileentities.ModTileEntities;
-import mightydanp.industrialtech.common.tools.ModTools;
+import mightydanp.industrialtech.common.tool.ModTools;
 import mightydanp.industrialtech.common.trees.ModTrees;
 import mightydanp.industrialtech.data.config.DataConfig;
 import net.minecraftforge.common.MinecraftForge;
@@ -67,6 +70,9 @@ public class IndustrialTech {
     public static ConfigSync configSync = new ConfigSync();
 
     public static OreVeinRegistry oreVeinRegistry = new OreVeinRegistry();
+    public static SmallOreVeinRegistry smallOreVeinRegistry = new SmallOreVeinRegistry();
+    public static BlocksInWaterRegistry blocksInWaterRegistry = new BlocksInWaterRegistry();
+    public static RandomSurfaceRegistry randomSurfaceRegistry = new RandomSurfaceRegistry();
 
     public static DataPackRegistry dataPackRegistry = new DataPackRegistry();
 

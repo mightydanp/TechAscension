@@ -1,6 +1,7 @@
 package mightydanp.industrialtech.api.common.items;
 
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.capabilities.ITToolItemCapabilityProvider;
@@ -21,10 +22,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -34,6 +32,7 @@ import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -44,18 +43,18 @@ import java.util.*;
  * Created by MightyDanp on 3/29/2021.
  */
 public class ITToolItem extends Item {
-
-
-    private final Set<Block> effectiveBlocks;
+    public String name;
+    private final List<String> effectiveBlocks;
     private final Item.Properties properties;
     public final int partsToWork;
     public boolean preformAction;
-    public List<Pair<Item, Integer>> craftingToolsNeeded;
-    public List<Pair<Item, Integer>> toolParts;
-    public List<Item> toolsNeededForDisassemble;
+    public Map<String, Integer> craftingToolsNeeded;
+    public Map<String, Integer> toolParts;
+    public List<String> toolsNeededForDisassemble;
 
-    public ITToolItem(Set<Block> effectiveBlocksIn, Properties propertiesIn, List<Pair<Item, Integer>> craftingToolsNeededIn, List<Pair<Item, Integer>> partsNeededToBuildIn, List<Item> toolsNeededForDisassembleIn) {
+    public ITToolItem(String nameIn, List<String> effectiveBlocksIn, Properties propertiesIn, Map<String, Integer> craftingToolsNeededIn, Map<String, Integer> partsNeededToBuildIn, List<String> toolsNeededForDisassembleIn) {
         super(propertiesIn.stacksTo(1));
+        name = nameIn;
         craftingToolsNeeded = craftingToolsNeededIn;
         toolParts = partsNeededToBuildIn;
         effectiveBlocks = effectiveBlocksIn;
@@ -137,7 +136,7 @@ public class ITToolItem extends Item {
         boolean canWork = canWork(itemStackIn);
 
         if (canWork) {
-            if (getToolTypes(itemStackIn).stream().anyMatch(e -> state.isToolEffective(e))) {
+            if (getToolTypes(itemStackIn).stream().anyMatch(state::isToolEffective)) {
                 return getEfficiency(itemStackIn);
             } else {
                 return 1.0F;
@@ -489,7 +488,7 @@ public class ITToolItem extends Item {
         return true;
     }
 
-    public void disassembleTool(ItemStack itemStackIn, PlayerEntity playerIn, World worldIn, int toolInDamage, List<Item> toolNeededIn) {
+    public void disassembleTool(ItemStack itemStackIn, PlayerEntity playerIn, World worldIn, int toolInDamage, List<String> toolNeededIn) {
         ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(itemStackIn);
         ItemStack toolHeadItemStack = itemStackHandler.getToolHead();
         ItemStack toolBindingItemStack = itemStackHandler.getToolBinding();
@@ -533,12 +532,14 @@ public class ITToolItem extends Item {
         }
     }
 
-    public void damageToolsNeededInPlayerInventory(PlayerEntity playerIn, World worldIn, int Damage, List<Item> toolNeededIn){
-        if(inventoryToolCheck(playerIn, toolNeededIn) && toolNeededIn.size() != 0){
-            for(Item toolThatIsNeeded : toolNeededIn){
+    public void damageToolsNeededInPlayerInventory(PlayerEntity playerIn, World worldIn, int Damage, List<String> toolNeededIn){
+
+
+        if(inventoryToolCheck(playerIn, getItemsFromForge(toolNeededIn)) && toolNeededIn.size() != 0){
+            for(Item toolThatIsNeeded : getItemsFromForge(toolNeededIn)){
                 for(int i = 9; i <= 45; i++){
                     if (toolThatIsNeeded == playerIn.inventory.getItem(i).getItem()){
-                        toolNeededIn.remove(playerIn.inventory.getItem(i).getItem());
+                        toolNeededIn.remove(String.valueOf(playerIn.inventory.getItem(i).getItem().getRegistryName()));
                         ItemStack toolItem = playerIn.inventory.getItem(i);
                         if(toolThatIsNeeded instanceof ITToolItem) {
                             damageToolParts(toolItem, playerIn, worldIn, 1);
@@ -613,5 +614,21 @@ public class ITToolItem extends Item {
 
     public int getPartsToWork() {
         return partsToWork;
+    }
+
+    public List<Item> getItemsFromForge(List<String> listIn){
+        List<Item> items = new ArrayList<>();
+
+        for(String string : listIn){
+            String modID = string.split(":")[0];
+            String blockLocalization = string.split(":")[1];
+            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(modID, blockLocalization));
+
+            if(item != null){
+                items.add(item);
+            }
+        }
+
+        return items;
     }
 }

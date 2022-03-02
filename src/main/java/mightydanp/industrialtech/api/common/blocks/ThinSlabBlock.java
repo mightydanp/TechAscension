@@ -27,9 +27,9 @@ public class ThinSlabBlock extends Block implements ILiquidContainer {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     private static final VoxelShape SHAPES = Block.box(0.0D, 0.0D, 0.0D, 15.99D, 1.0D, 15.99D);
 
-    public ResourceLocation stoneLayerBlock;
+    public String stoneLayerBlock;
 
-    public ThinSlabBlock(AbstractBlock.Properties properties, ResourceLocation stoneLayerBlockIn) {
+    public ThinSlabBlock(AbstractBlock.Properties properties, String stoneLayerBlockIn) {
         super(properties);
         stoneLayerBlock = stoneLayerBlockIn;
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.valueOf(false)));

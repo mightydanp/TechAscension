@@ -3,7 +3,6 @@ package mightydanp.industrialtech.api.common.jsonconfig.ore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
@@ -105,7 +104,7 @@ public class OreTypeServer {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = oreTypeRegistry.getJsonObject(file.getAbsolutePath());
+                JsonObject jsonObject = oreTypeRegistry.getJsonObject(file.getName());
                 IOreType oreType = oreTypeRegistry.getOreType(jsonObject);
                 clientOreTypes.put(oreType.getName(), oreType);
             }
@@ -129,7 +128,7 @@ public class OreTypeServer {
         return sync.get();
     }
 
-    public void syncClientOreTypesWithServers(String folderName) throws IOException {
+    public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/ore_type");
 
@@ -154,7 +153,7 @@ public class OreTypeServer {
         }
     }
 
-    public void syncClientOreTypesConfigsWithSinglePlayerWorlds(String folderName) throws IOException {
+    public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/ore_type");
         Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/ore_type");

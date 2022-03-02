@@ -2,7 +2,7 @@ package mightydanp.industrialtech.api.common.datagen.recipes;
 
 import mightydanp.industrialtech.api.common.datagen.recipes.builder.HoleRecipeBuilder;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.common.tools.ModTools;
+import mightydanp.industrialtech.common.tool.ModTools;
 import net.minecraft.advancements.criterion.InventoryChangeTrigger;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;

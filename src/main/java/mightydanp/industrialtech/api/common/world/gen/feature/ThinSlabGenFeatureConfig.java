@@ -16,6 +16,11 @@ import java.util.List;
  * Created by MightyDanp on 9/8/2021.
  */
 public class ThinSlabGenFeatureConfig implements IFeatureConfig {
+    public String generationName;
+    public List<BlockState> blocks;
+    public Integer chance;
+    public Integer rarity;
+
     public static final Codec<ThinSlabGenFeatureConfig> CODEC = RecordCodecBuilder.create((p_236568_0_) -> {
         return p_236568_0_.group(Codec.STRING.fieldOf("generation_name").forGetter(z -> {
             return z.generationName;
@@ -27,10 +32,6 @@ public class ThinSlabGenFeatureConfig implements IFeatureConfig {
             return a.rarity;
         })).apply(p_236568_0_, ThinSlabGenFeatureConfig::new);
     });
-    public String generationName;
-    public List<BlockState> blocks;
-    public Integer chance;
-    public Integer rarity;
 
     public ThinSlabGenFeatureConfig(String generationNameIn, List<BlockState> blockStatesIn, Integer chanceIn, int rarityIn) {
         this.generationName = generationNameIn;

@@ -7,7 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeatureConfig;
+import mightydanp.industrialtech.api.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.PacketBuffer;
 
@@ -23,11 +23,11 @@ import java.util.stream.Collectors;
 
 public class OreVeinServer {
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
-    private static final Map<String, OreGenFeatureConfig> serverOreVeinsMap = new HashMap<>();
+    private static final Map<String, OreVeinGenFeatureConfig> serverOreVeinsMap = new HashMap<>();
 
     OreVeinRegistry OreVeinRegistry = IndustrialTech.oreVeinRegistry;
 
-    public Map<String, OreGenFeatureConfig> getServerOreVeinsMap(){
+    public Map<String, OreVeinGenFeatureConfig> getServerOreVeinsMap(){
         return serverOreVeinsMap;
     }
 
@@ -35,9 +35,9 @@ public class OreVeinServer {
         return serverOreVeinsMap.size() > 0;
     }
 
-    public static Map<String, OreGenFeatureConfig> getServerOreVeinsMap(List<OreGenFeatureConfig> oreVeinsIn) {
-        Map<String, OreGenFeatureConfig> OreVeinsList = new LinkedHashMap<>();
-        oreVeinsIn.forEach(oreVein -> OreVeinsList.put(oreVein.veinName, oreVein));
+    public static Map<String, OreVeinGenFeatureConfig> getServerOreVeinsMap(List<OreVeinGenFeatureConfig> oreVeinsIn) {
+        Map<String, OreVeinGenFeatureConfig> OreVeinsList = new LinkedHashMap<>();
+        oreVeinsIn.forEach(oreVein -> OreVeinsList.put(oreVein.name, oreVein));
 
         return OreVeinsList;
     }
@@ -52,13 +52,13 @@ public class OreVeinServer {
         }
 
         getServerOreVeinsMap().forEach((name, OreVein) -> {
-            sync.set(message.getOreVeins().stream().anyMatch(o -> o.veinName.equals(name)));
+            sync.set(message.getOreVeins().stream().anyMatch(o -> o.name.equals(name)));
 
             if(sync.get()) {
-                Optional<OreGenFeatureConfig> optional = message.getOreVeins().stream().filter(o -> o.veinName.equals(name)).findFirst();
+                Optional<OreVeinGenFeatureConfig> optional = message.getOreVeins().stream().filter(o -> o.name.equals(name)).findFirst();
 
                 if(optional.isPresent()) {
-                    OreGenFeatureConfig serverOreVein = optional.get();
+                    OreVeinGenFeatureConfig serverOreVein = optional.get();
                     JsonObject jsonMaterial = IndustrialTech.oreVeinRegistry.toJsonObject(OreVein);
                     JsonObject materialJson = IndustrialTech.oreVeinRegistry.toJsonObject(serverOreVein);
 
@@ -76,7 +76,7 @@ public class OreVeinServer {
 
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, OreGenFeatureConfig> clientOreVeins = new HashMap<>();
+        Map<String, OreVeinGenFeatureConfig> clientOreVeins = new HashMap<>();
 
         ConfigSync configSync = IndustrialTech.configSync;
 
@@ -98,16 +98,16 @@ public class OreVeinServer {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = OreVeinRegistry.getJsonObject(file.getAbsolutePath());
-                OreGenFeatureConfig oreVein = OreVeinRegistry.getOreVein(jsonObject);
-                clientOreVeins.put(oreVein.veinName, oreVein);
+                JsonObject jsonObject = OreVeinRegistry.getJsonObject(file.getName());
+                OreVeinGenFeatureConfig oreVein = OreVeinRegistry.getOreVein(jsonObject);
+                clientOreVeins.put(oreVein.name, oreVein);
             }
 
             getServerOreVeinsMap().values().forEach(serverOreVein -> {
-                sync.set(clientOreVeins.containsKey(serverOreVein.veinName));
+                sync.set(clientOreVeins.containsKey(serverOreVein.name));
 
                 if(sync.get()) {
-                    OreGenFeatureConfig clientOreVein = getServerOreVeinsMap().get(serverOreVein.veinName);
+                    OreVeinGenFeatureConfig clientOreVein = getServerOreVeinsMap().get(serverOreVein.name);
                     JsonObject jsonMaterial = OreVeinRegistry.toJsonObject(serverOreVein);
                     JsonObject materialJson = OreVeinRegistry.toJsonObject(clientOreVein);
 
@@ -122,7 +122,7 @@ public class OreVeinServer {
         return sync.get();
     }
 
-    public void syncClientOreVeinsWithServers(String folderName) throws IOException {
+    public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/generation"+ "/ore_vein");
 
@@ -132,8 +132,8 @@ public class OreVeinServer {
             }
         }
 
-        for (OreGenFeatureConfig oreVein : getServerOreVeinsMap().values()) {
-            String name = oreVein.veinName;
+        for (OreVeinGenFeatureConfig oreVein : getServerOreVeinsMap().values()) {
+            String name = oreVein.name;
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
             JsonObject jsonObject = OreVeinRegistry.toJsonObject(oreVein);
             String s = GSON.toJson(jsonObject);
@@ -147,7 +147,7 @@ public class OreVeinServer {
         }
     }
 
-    public void syncClientOreVeinsConfigsWithSinglePlayerWorlds(String folderName) throws IOException {
+    public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/ore_vein");
         Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation() + "/generation"  + "/ore_vein");
@@ -156,9 +156,9 @@ public class OreVeinServer {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = OreVeinRegistry.getJsonObject(file.getName());
-                    OreGenFeatureConfig oreVein = OreVeinRegistry.getOreVein(jsonObject);
+                    OreVeinGenFeatureConfig oreVein = OreVeinRegistry.getOreVein(jsonObject);
 
-                    String name = oreVein.veinName;
+                    String name = oreVein.name;
 
                     Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
                     if (!Files.exists(materialFile)) {
@@ -175,8 +175,8 @@ public class OreVeinServer {
     }
 
     public void loadOreVeins(SyncMessage message) {
-        Map<String, OreGenFeatureConfig> OreVeins = message.getOreVeins().stream()
-                .collect(Collectors.toMap(s -> s.veinName, s -> s));
+        Map<String, OreVeinGenFeatureConfig> OreVeins = message.getOreVeins().stream()
+                .collect(Collectors.toMap(s -> s.name, s -> s));
 
         serverOreVeinsMap.clear();
         serverOreVeinsMap.putAll(OreVeins);
@@ -184,16 +184,21 @@ public class OreVeinServer {
         IndustrialTech.LOGGER.info("Loaded {} ore veins from the server", OreVeins.size());
     }
 
-    public static void singleToBuffer(PacketBuffer buffer, OreGenFeatureConfig oreVein) {//friendlybotbuff
-        buffer.writeUtf(oreVein.veinName);
+    public static void singleToBuffer(PacketBuffer buffer, OreVeinGenFeatureConfig oreVein) {//friendlybotbuff
+        buffer.writeUtf(oreVein.name);
         buffer.writeInt(oreVein.rarity);
         buffer.writeInt(oreVein.minHeight);
         buffer.writeInt(oreVein.maxHeight);
         buffer.writeInt(oreVein.minRadius);
         buffer.writeInt(oreVein.minNumberOfSmallOreLayers);
-        buffer.writeInt(oreVein.veinBlocksAndChances.size());
+        buffer.writeInt(oreVein.biomes.size());
+        for(String biome : oreVein.biomes){
+            buffer.writeUtf(biome);
+        }
 
-        for(Pair<String, Integer> veinBlockAndChance : oreVein.veinBlocksAndChances){
+        buffer.writeInt(oreVein.blocksAndChances.size());
+
+        for(Pair<String, Integer> veinBlockAndChance : oreVein.blocksAndChances){
             buffer.writeUtf(veinBlockAndChance.getFirst());
             buffer.writeInt(veinBlockAndChance.getSecond());
         }
@@ -207,31 +212,38 @@ public class OreVeinServer {
         });
     }
 
-    public static OreGenFeatureConfig singleFromBuffer(PacketBuffer buffer) {
+    public static OreVeinGenFeatureConfig singleFromBuffer(PacketBuffer buffer) {
         String veinName = buffer.readUtf();
         int rarity = buffer.readInt();
         int minHeight = buffer.readInt();
         int maxHeight = buffer.readInt();
         int minRadius = buffer.readInt();
         int minNumberOfSmallOreLayers = buffer.readInt();
-        int veinBlocksAndChancesSize = buffer.readInt();
+        int biomesSize = buffer.readInt();
+        List<String> biomes = new ArrayList<>();
+        for(int i = 0; i < biomesSize; i++){
+            String biome = buffer.readUtf();
+            biomes.add(biome);
+        }
+
         List<Pair<String, Integer>> veinBlocksAndChances = new ArrayList<>();
 
+        int veinBlocksAndChancesSize = buffer.readInt();
         for(int i = 0; i < veinBlocksAndChancesSize; i++){
             String block = buffer.readUtf();
             int chance = buffer.readInt();
             veinBlocksAndChances.add(new Pair<>(block, chance));
         }
-        return new OreGenFeatureConfig(veinName, rarity, minHeight, maxHeight, minRadius, minNumberOfSmallOreLayers, veinBlocksAndChances);
+        return new OreVeinGenFeatureConfig(veinName, rarity, minHeight, maxHeight, minRadius, minNumberOfSmallOreLayers, biomes, veinBlocksAndChances);
     }
 
-    public static List<OreGenFeatureConfig> multipleFromBuffer(PacketBuffer buffer) {
-        List<OreGenFeatureConfig> oreVeins = new ArrayList<>();
+    public static List<OreVeinGenFeatureConfig> multipleFromBuffer(PacketBuffer buffer) {
+        List<OreVeinGenFeatureConfig> oreVeins = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            OreGenFeatureConfig oreVein = singleFromBuffer(buffer);
+            OreVeinGenFeatureConfig oreVein = singleFromBuffer(buffer);
 
             oreVeins.add(oreVein);
         }

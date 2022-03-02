@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
-import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.PacketBuffer;
@@ -126,7 +125,7 @@ public class ToolTypeServer {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = toolTypeRegistry.getJsonObject(file.getAbsolutePath());
+                JsonObject jsonObject = toolTypeRegistry.getJsonObject(file.getName());
                 IToolType toolType = toolTypeRegistry.getIToolType(jsonObject);
                 clientToolTypes.put(fixesToName(toolType.getPrefix(), toolType.getSuffix()), toolType);
             }
@@ -150,7 +149,7 @@ public class ToolTypeServer {
         return sync.get();
     }
 
-    public void syncClientToolTypesWithServers(String folderName) throws IOException {
+    public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/tool_type");
 
@@ -175,7 +174,7 @@ public class ToolTypeServer {
         }
     }
 
-    public void syncClientToolTypesConfigsWithSinglePlayerWorlds(String folderName) throws IOException {
+    public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/tool_type");
         Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/tool_type");

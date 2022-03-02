@@ -104,7 +104,7 @@ public class TextureIconServer {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = textureIconRegistry.getJsonObject(file.getAbsolutePath());
+                JsonObject jsonObject = textureIconRegistry.getJsonObject(file.getName());
                 ITextureIcon textureIcon = textureIconRegistry.getTextureIcon(jsonObject);
                 clientTextureIcons.put(textureIcon.getName(), textureIcon);
             }

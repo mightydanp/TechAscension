@@ -120,7 +120,7 @@ public class MaterialFlagServer {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = materialFlagRegistry.getJsonObject(file.getAbsolutePath());
+                JsonObject jsonObject = materialFlagRegistry.getJsonObject(file.getName());
                 IMaterialFlag materialFlag = materialFlagRegistry.getMaterialFlag(jsonObject);
                 clientMaterialFlags.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag);
             }
@@ -144,7 +144,7 @@ public class MaterialFlagServer {
         return sync.get();
     }
 
-    public void syncClientMaterialFlagsWithServers(String folderName) throws IOException {
+    public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/material_flag");
 
@@ -169,7 +169,7 @@ public class MaterialFlagServer {
         }
     }
 
-    public void syncClientMaterialFlagsConfigsWithSinglePlayerWorlds(String folderName) throws IOException {
+    public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/material_flag");
         Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/material_flag");

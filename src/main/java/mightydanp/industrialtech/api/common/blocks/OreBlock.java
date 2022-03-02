@@ -19,12 +19,12 @@ import net.minecraft.block.AbstractBlock.Properties;
  */
 public class OreBlock extends Block {
     public String name;
-    public ResourceLocation replaceBlock;
+    public String stoneLayerBlock;
 
-    public OreBlock(String nameIn, Properties properties, ResourceLocation replaceBlockIn) {
+    public OreBlock(String nameIn, Properties properties, String stoneLayerBlockIn) {
         super(properties);
         this.name = nameIn;
-        this.replaceBlock = replaceBlockIn;
+        this.stoneLayerBlock = stoneLayerBlockIn;
     }
 
     @Override

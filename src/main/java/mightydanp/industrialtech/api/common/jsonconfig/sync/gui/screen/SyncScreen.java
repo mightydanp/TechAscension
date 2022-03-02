@@ -47,19 +47,20 @@ public class SyncScreen extends Screen {
             this.addButton(new Button(this.width / 5, this.height - 82, 300, 20, new TranslationTextComponent(ITButtonRef.syncClientConfigsWithServers), (button) -> {
                 try {
                     if(!IndustrialTech.configSync.isSinglePlayer){
-                        IndustrialTech.configSync.materialFlagServer.syncClientMaterialFlagsWithServers("");
-                        IndustrialTech.configSync.fluidStateServer.syncClientFluidStatesWithServers("");
-                        IndustrialTech.configSync.oreTypeServer.syncClientOreTypesWithServers("");
-                        IndustrialTech.configSync.toolTypeServer.syncClientToolTypesWithServers("");
-                        IndustrialTech.configSync.toolPartServer.syncClientToolPartsWithServers("");
-                        IndustrialTech.configSync.stoneLayerServer.syncClientStoneLayersWithServers("");
+                        IndustrialTech.configSync.materialFlagServer.syncClientWithServer("");
+                        IndustrialTech.configSync.fluidStateServer.syncClientWithServer("");
+                        IndustrialTech.configSync.oreTypeServer.syncClientWithServer("");
+                        IndustrialTech.configSync.toolTypeServer.syncClientWithServer("");
+                        IndustrialTech.configSync.toolPartServer.syncClientWithServer("");
+                        IndustrialTech.configSync.stoneLayerServer.syncClientWithServer("");
 
-                        IndustrialTech.configSync.materialServer.syncClientMaterialConfigsWithServers("");
+                        IndustrialTech.configSync.materialServer.syncClientWithServer("");
+
+                        IndustrialTech.configSync.oreVeinServer.syncClientWithServer("");
+                        IndustrialTech.configSync.smallOreVeinServer.syncClientWithServers("");
 
                         IndustrialTech.mainJsonConfig.setFolderLocation("config/" + Ref.mod_id + "/server");
                         IndustrialTech.mainJsonConfig.reloadMainConfigJson();
-
-                        IndustrialTech.configSync.oreVeinServer.syncClientOreVeinsWithServers("");
 
                     }else{
                         IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + IndustrialTech.configSync.singlePlayerWorldName + "/serverconfig" + Ref.mod_id);

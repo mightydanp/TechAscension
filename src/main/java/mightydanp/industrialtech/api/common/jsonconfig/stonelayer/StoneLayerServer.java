@@ -99,7 +99,7 @@ public class StoneLayerServer {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = stoneLayerRegistry.getJsonObject(file.getAbsolutePath());
+                JsonObject jsonObject = stoneLayerRegistry.getJsonObject(file.getName());
                 IStoneLayer stoneLayer = stoneLayerRegistry.getStoneLayer(jsonObject);
                 clientStoneLayers.put(stoneLayer.getBlock().split(":")[1], stoneLayer);
             }
@@ -123,13 +123,13 @@ public class StoneLayerServer {
         return sync.get();
     }
 
-    public void syncClientStoneLayersWithServers(String folderName) throws IOException {
+    public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/stone_layer");
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
-                Files.deleteIfExists(Paths.get(file.getAbsolutePath()));
+                Files.deleteIfExists(Paths.get(file.getName()));
             }
         }
 
@@ -148,7 +148,7 @@ public class StoneLayerServer {
         }
     }
 
-    public void syncClientStoneLayersConfigsWithSinglePlayerWorlds(String folderName) throws IOException {
+    public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/stone_layer");
         Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/stone_layer");

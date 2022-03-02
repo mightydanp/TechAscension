@@ -14,7 +14,6 @@ import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartRegistr
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ToolType;
@@ -23,7 +22,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by MightyDanp on 12/4/2021.
@@ -153,6 +151,10 @@ public class MaterialRegistry extends JsonConfigMultiFile{
         {
             if (materialIn.isStoneLayer != null) {
                 stoneLayerProperties.addProperty("is_stone_layer", materialIn.isStoneLayer);
+            }
+
+            if (materialIn.stoneLayerBlock != null) {
+                stoneLayerProperties.addProperty("stone_layer_block", materialIn.stoneLayerBlock);
             }
 
             if (materialIn.stoneLayerTextureLocation != null) {
@@ -313,10 +315,11 @@ public class MaterialRegistry extends JsonConfigMultiFile{
 
         if(jsonObject.has("stone_layer_properties")) {
             JsonObject stoneLayerProperties = jsonObject.get("stone_layer_properties").getAsJsonObject();{
-                if (stoneLayerProperties.has("is_stone_layer") && stoneLayerProperties.has("mining_level")) {
+                if (stoneLayerProperties.has("is_stone_layer") && stoneLayerProperties.has("stone_layer_block") && stoneLayerProperties.has("mining_level")) {
                     Boolean isStoneLayerJson = stoneLayerProperties.get("is_stone_layer").getAsBoolean();
+                    String replacementBlockJson = stoneLayerProperties.get("stone_layer_block").getAsString();
                     String stoneLayerTextureLocationJson = stoneLayerProperties.get("stone_layer_texture_location").getAsString();
-                    material.setStoneLayerProperties(isStoneLayerJson, stoneLayerTextureLocationJson);
+                    material.setStoneLayerProperties(isStoneLayerJson, replacementBlockJson, stoneLayerTextureLocationJson);
                 }
             }
         }

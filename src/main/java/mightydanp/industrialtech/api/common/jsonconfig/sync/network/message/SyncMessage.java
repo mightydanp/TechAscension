@@ -4,7 +4,10 @@ import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagServer;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateServer;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.blocksinwater.BlocksInWaterServer;
 import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinServer;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface.RandomSurfaceServer;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.smallore.SmallOreVeinServer;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconServer;
 import mightydanp.industrialtech.api.common.jsonconfig.ore.IOreType;
@@ -18,7 +21,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeServer;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialServer;
-import mightydanp.industrialtech.api.common.world.gen.feature.OreGenFeatureConfig;
+import mightydanp.industrialtech.api.common.world.gen.feature.*;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -43,7 +46,10 @@ public class SyncMessage {
 
     private List<ITMaterial> materials  = new ArrayList<>();
 
-    private List<OreGenFeatureConfig> oreVeins = new ArrayList<>();
+    private List<OreVeinGenFeatureConfig> oreVeins = new ArrayList<>();
+    private List<SmallOreVeinGenFeatureConfig> smallOreVeins = new ArrayList<>();
+    private List<BlocksInWaterGenFeatureConfig> blocksInWater = new ArrayList<>();
+    private List<RandomSurfaceGenFeatureConfig> randomSurface = new ArrayList<>();
 
     private final boolean isSinglePlayer;
     private final String singlePlayerWorldName;
@@ -86,8 +92,20 @@ public class SyncMessage {
         return this.materials;
     }
 
-    public List<OreGenFeatureConfig> getOreVeins() {
+    public List<OreVeinGenFeatureConfig> getOreVeins() {
         return oreVeins;
+    }
+
+    public List<SmallOreVeinGenFeatureConfig> getSmallOreVeins() {
+        return smallOreVeins;
+    }
+
+    public List<BlocksInWaterGenFeatureConfig> getBlocksInWaters() {
+        return blocksInWater;
+    }
+
+    public List<RandomSurfaceGenFeatureConfig> getRandomSurfaces() {
+        return randomSurface;
     }
 
     public boolean isSinglePlayer() {
@@ -138,8 +156,23 @@ public class SyncMessage {
         return this;
     }
 
-    public SyncMessage setOreVeins(List<OreGenFeatureConfig> oreVeins) {
+    public SyncMessage setOreVeins(List<OreVeinGenFeatureConfig> oreVeins) {
         this.oreVeins = oreVeins;
+        return this;
+    }
+
+    public SyncMessage setSmallOreVeins(List<SmallOreVeinGenFeatureConfig> smallOreVeins) {
+        this.smallOreVeins = smallOreVeins;
+        return this;
+    }
+
+    public SyncMessage setBlocksInWater(List<BlocksInWaterGenFeatureConfig> blocksInWater) {
+        this.blocksInWater = blocksInWater;
+        return this;
+    }
+
+    public SyncMessage setRandomSurface(List<RandomSurfaceGenFeatureConfig> randomSurface) {
+        this.randomSurface = randomSurface;
         return this;
     }
 
@@ -160,6 +193,9 @@ public class SyncMessage {
         message.setMaterials(MaterialServer.multipleFromBuffer(buffer));
 
         message.setOreVeins(OreVeinServer.multipleFromBuffer(buffer));
+        message.setSmallOreVeins(SmallOreVeinServer.multipleFromBuffer(buffer));
+        message.setBlocksInWater(BlocksInWaterServer.multipleFromBuffer(buffer));
+        message.setRandomSurface(RandomSurfaceServer.multipleFromBuffer(buffer));
 
         return message;
     }
@@ -178,6 +214,9 @@ public class SyncMessage {
         MaterialServer.multipleToBuffer(message, buffer);
 
         OreVeinServer.multipleToBuffer(message, buffer);
+        SmallOreVeinServer.multipleToBuffer(message, buffer);
+        BlocksInWaterServer.multipleToBuffer(message, buffer);
+        RandomSurfaceServer.multipleToBuffer(message, buffer);
     }
 
     public static void onMessage(SyncMessage message, Supplier<NetworkEvent.Context> context) {
@@ -194,6 +233,9 @@ public class SyncMessage {
             IndustrialTech.configSync.materialServer.loadMaterials(message);
 
             IndustrialTech.configSync.oreVeinServer.loadOreVeins(message);
+            IndustrialTech.configSync.smallOreVeinServer.loadSmallOreVeins(message);
+            IndustrialTech.configSync.blocksInWaterServer.loadBlocksInWaters(message);
+            IndustrialTech.configSync.randomSurfaceServer.loadRandomSurfaces(message);
 
 
             if(!message.isSinglePlayer()){
@@ -210,6 +252,9 @@ public class SyncMessage {
                 IndustrialTech.configSync.materialServer.isClientAndServerConfigsSynced(message);
 
                 IndustrialTech.configSync.oreVeinServer.isClientAndServerConfigsSynced(message);
+                IndustrialTech.configSync.smallOreVeinServer.isClientAndServerConfigsSynced(message);
+                IndustrialTech.configSync.blocksInWaterServer.isClientAndServerConfigsSynced(message);
+                IndustrialTech.configSync.randomSurfaceServer.isClientAndServerConfigsSynced(message);
             }else{
                 IndustrialTech.configSync.isSinglePlayer = true;
                 IndustrialTech.configSync.singlePlayerWorldName = message.getSinglePlayerWorldName();
@@ -225,6 +270,9 @@ public class SyncMessage {
                 IndustrialTech.configSync.materialServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
 
                 IndustrialTech.configSync.oreVeinServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                IndustrialTech.configSync.smallOreVeinServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                IndustrialTech.configSync.blocksInWaterServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                IndustrialTech.configSync.randomSurfaceServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
             }
             //
 

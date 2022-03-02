@@ -2,16 +2,14 @@ package mightydanp.industrialtech.client;
 
 import mightydanp.industrialtech.api.common.ISidedReference;
 
-import mightydanp.industrialtech.api.common.handler.ToolHandler;
 import mightydanp.industrialtech.client.settings.KeyBindings.ModKeyBindings;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import mightydanp.industrialtech.common.tileentities.ModTileEntities;
-import mightydanp.industrialtech.common.tools.ModTools;
+import mightydanp.industrialtech.common.tool.ModTools;
 import mightydanp.industrialtech.common.trees.ModTrees;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 

@@ -114,29 +114,34 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
     }
 
     public IMaterialFlag getMaterialFlag(JsonObject jsonObjectIn){
+
         JsonObject materialFlagJson = jsonObjectIn.getAsJsonObject("material_flag");
 
-        String name = materialFlagJson.get("name").getAsString();
-        String prefix = materialFlagJson.get("prefix").getAsString();
-        String suffix = materialFlagJson.get("suffix").getAsString();
+        if(materialFlagJson != null) {
+            String name = materialFlagJson.get("name").getAsString();
+            String prefix = materialFlagJson.get("prefix").getAsString();
+            String suffix = materialFlagJson.get("suffix").getAsString();
 
-        return new IMaterialFlag() {
+            return new IMaterialFlag() {
 
-            @Override
-            public String getPrefix() {
-                return prefix;
-            }
+                @Override
+                public String getPrefix() {
+                    return prefix;
+                }
 
-            @Override
-            public String getSuffix() {
-                return suffix;
-            }
+                @Override
+                public String getSuffix() {
+                    return suffix;
+                }
 
-            @Override
-            public Pair<String, String> getFixes() {
-                return new Pair<>(prefix, suffix);
-            }
-        };
+                @Override
+                public Pair<String, String> getFixes() {
+                    return new Pair<>(prefix, suffix);
+                }
+            };
+        }else {
+            return null;
+        }
     }
 
     public JsonObject toJsonObject(IMaterialFlag material) {

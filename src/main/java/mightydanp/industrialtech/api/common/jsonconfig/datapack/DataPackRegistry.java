@@ -152,11 +152,11 @@ public class DataPackRegistry{
                     if(!getJsonObject(file.getAbsolutePath()).equals(b.translations)){
                         file.delete();
                     }
+                }
 
-                    try (BufferedWriter bufferedwriter = Files.newBufferedWriter(Paths.get(file.getAbsolutePath()))) {
-                        String s1 = GSON.toJson(b.translations);
-                        bufferedwriter.write(s1);
-                    }
+                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(Paths.get(file.getAbsolutePath()))) {
+                    String s1 = GSON.toJson(b.translations);
+                    bufferedwriter.write(s1);
                 }
 
             }catch (IOException ioexception) {

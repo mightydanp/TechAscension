@@ -134,7 +134,7 @@ public class MaterialServer {
         return sync.get();
     }
 
-    public void syncClientMaterialConfigsWithServers(String folderName) throws IOException {
+    public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/material");
 
@@ -158,7 +158,7 @@ public class MaterialServer {
         }
     }
 
-    public void syncClientMaterialConfigsWithSinglePlayerWorld(String folderName) throws IOException {
+    public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/material");
         Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/material");
@@ -226,16 +226,16 @@ public class MaterialServer {
             buffer.writeInt(-1);
         }
 
-        if(material.oreType != null){
-            buffer.writeUtf(material.oreType.getName());
-        }else {
-            buffer.writeUtf("");
-        }
-
         if(material.isStoneLayer != null){
             buffer.writeBoolean(material.isStoneLayer);
         } else {
             buffer.writeBoolean(false);
+        }
+
+        if(material.stoneLayerBlock != null){
+            buffer.writeUtf(material.stoneLayerBlock);
+        } else {
+            buffer.writeUtf("");
         }
 
         if(material.stoneLayerTextureLocation != null){
@@ -248,6 +248,12 @@ public class MaterialServer {
             buffer.writeInt(material.miningLevel);
         } else {
             buffer.writeInt(-1);
+        }
+
+        if(material.oreType != null){
+            buffer.writeUtf(material.oreType.getName());
+        }else {
+            buffer.writeUtf("");
         }
 
         if(material.denseOreDensity != null){
@@ -360,10 +366,11 @@ public class MaterialServer {
         }
 
         boolean isStoneLayer = buffer.readBoolean();
+        String stoneLayerBlock = buffer.readUtf();
         String stoneLayerTextureLocation = buffer.readUtf();
 
         if(isStoneLayer && !stoneLayerTextureLocation.equals("")){
-            material.setStoneLayerProperties(isStoneLayer, stoneLayerTextureLocation);
+            material.setStoneLayerProperties(isStoneLayer, stoneLayerBlock, stoneLayerTextureLocation);
         }
 
         int miningLevel = buffer.readInt();

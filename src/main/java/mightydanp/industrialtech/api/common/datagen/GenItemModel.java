@@ -2,16 +2,14 @@ package mightydanp.industrialtech.api.common.datagen;
 
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
-import mightydanp.industrialtech.api.common.handler.ToolHandler;
+import mightydanp.industrialtech.api.common.tool.ITTool;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.DefaultToolPart;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.common.items.ModItems;
-import mightydanp.industrialtech.common.libs.StoneLayerFlagsEnum;
-import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
-import mightydanp.industrialtech.common.tools.ModTools;
+import mightydanp.industrialtech.common.tool.ModTools;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
@@ -102,7 +100,7 @@ public class GenItemModel extends ItemModelProvider {
 
          */
 
-        for(ToolHandler tool : ModTools.tools){
+        for(ITTool tool : ModTools.tools){
             coloredTool(tool.toolItem.get(), ((ITToolItem)tool.toolItem.get()).partsToWork);
         }
 

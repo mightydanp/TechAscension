@@ -1,26 +1,24 @@
 package mightydanp.industrialtech.api.common.jsonconfig.sync;
 
-import mightydanp.industrialtech.api.common.blocks.DenseOreBlock;
-import mightydanp.industrialtech.api.common.blocks.OreBlock;
-import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
-import mightydanp.industrialtech.api.common.blocks.ThinSlabBlock;
 import mightydanp.industrialtech.api.common.handler.NetworkHandler;
-import mightydanp.industrialtech.api.common.handler.RegistryHandler;
-import mightydanp.industrialtech.api.common.items.*;
-import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagServer;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateServer;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.blocksinwater.BlocksInWaterRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.blocksinwater.BlocksInWaterServer;
 import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinServer;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface.RandomSurfaceRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface.RandomSurfaceServer;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.smallore.SmallOreVeinRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.smallore.SmallOreVeinServer;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconServer;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialServer;
 import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeServer;
-import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.IStoneLayer;
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.gui.screen.SyncScreen;
@@ -30,20 +28,12 @@ import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartServer;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeServer;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.api.common.material.ITMaterial;
-import mightydanp.industrialtech.api.common.material.fluid.ITFluid;
-import mightydanp.industrialtech.api.common.material.fluid.ITFluidBlock;
 import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.materials.ModMaterials;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.*;
-import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.FlowingFluid;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -53,15 +43,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -69,11 +54,7 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag.*;
-import static mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag.INGOT;
 
 /**
  * Created by MightyDanp on 1/4/2022.
@@ -91,6 +72,9 @@ public class ConfigSync {
     public StoneLayerServer stoneLayerServer = new StoneLayerServer();
     public MaterialServer materialServer = new MaterialServer();
     public OreVeinServer oreVeinServer = new OreVeinServer();
+    public SmallOreVeinServer smallOreVeinServer = new SmallOreVeinServer();
+    public BlocksInWaterServer blocksInWaterServer = new BlocksInWaterServer();
+    public RandomSurfaceServer randomSurfaceServer = new RandomSurfaceServer();
 
     public boolean isSinglePlayer;
     public String singlePlayerWorldName;
@@ -106,6 +90,9 @@ public class ConfigSync {
         ModMaterials.commonInit();
         IndustrialTech.materialRegistryInstance.initiate();
         IndustrialTech.oreVeinRegistry.initiate();
+        IndustrialTech.smallOreVeinRegistry.initiate();
+        IndustrialTech.blocksInWaterRegistry.initiate();
+        IndustrialTech.randomSurfaceRegistry.initiate();
     }
 
     public void initClient(){
@@ -264,6 +251,9 @@ public class ConfigSync {
             syncMessage.setMaterials(MaterialRegistry.getMaterials());
 
             syncMessage.setOreVeins(OreVeinRegistry.getAllOreVeins());
+            syncMessage.setSmallOreVeins(SmallOreVeinRegistry.getAllSmallOreVeins());
+            syncMessage.setBlocksInWater(BlocksInWaterRegistry.getAllBlocksInWaters());
+            syncMessage.setRandomSurface(RandomSurfaceRegistry.getAllRandomSurfaces());
 
             ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
 
@@ -281,7 +271,10 @@ public class ConfigSync {
         }
     }
 
+    @SubscribeEvent
+    public static void tagUpdate(TagsUpdatedEvent event) {
 
+    }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
@@ -330,20 +323,24 @@ public class ConfigSync {
                     if (event.getGui() instanceof WorkingScreen) {
                         if (!(new File("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id).exists()) && !IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id)) {
                             try {
-                                IndustrialTech.configSync.materialFlagServer.syncClientMaterialFlagsConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.fluidStateServer.syncClientFluidStatesConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.oreTypeServer.syncClientOreTypesConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.toolPartServer.syncClientToolPartsConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.toolTypeServer.syncClientToolTypesConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.stoneLayerServer.syncClientStoneLayersConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.materialFlagServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.fluidStateServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.oreTypeServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.toolPartServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.toolTypeServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.stoneLayerServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
 
+                                IndustrialTech.configSync.materialServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
 
-                                IndustrialTech.configSync.materialServer.syncClientMaterialConfigsWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.oreVeinServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.smallOreVeinServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.blocksInWaterServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                IndustrialTech.configSync.randomSurfaceServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
 
                                 IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
                                 IndustrialTech.mainJsonConfig.reloadMainConfigJson();
 
-                                IndustrialTech.configSync.oreVeinServer.syncClientOreVeinsConfigsWithSinglePlayerWorlds("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+
 
                             } catch (IOException e) {
                                 IndustrialTech.LOGGER.fatal("couldn't sync single player world with new world that was created.");
@@ -370,6 +367,8 @@ public class ConfigSync {
             }
         }
     }
+
+
 
 
 

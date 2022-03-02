@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ISeedReader;
@@ -68,7 +69,10 @@ public class ThinSlabGenFeature extends Feature<ThinSlabGenFeatureConfig> {
 
                             for(int i = 0; i< thinSlabGenFeatureConfig.blocks.size(); i++){
                                 ThinSlabBlock thinSlabBlock = (ThinSlabBlock)thinSlabGenFeatureConfig.blocks.get(i).getBlock();
-                                Block block = ForgeRegistries.BLOCKS.getValue(thinSlabBlock.stoneLayerBlock);
+                                String modID = thinSlabBlock.stoneLayerBlock.split(":")[0];
+                                String stoneLayerBlock = thinSlabBlock.stoneLayerBlock.split(":")[1];
+
+                                Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, stoneLayerBlock));
                                 if(block != null) {
                                     if(block.defaultBlockState() == blockStateDownNew){
                                         blockToSpawn.clear();

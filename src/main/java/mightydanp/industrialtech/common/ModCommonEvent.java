@@ -4,7 +4,7 @@ import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.generation.OreGeneration;
 import mightydanp.industrialtech.common.generation.PlantGeneration;
 import mightydanp.industrialtech.common.generation.ThinSlabGeneration;
-import mightydanp.industrialtech.common.tools.ModTools;
+import mightydanp.industrialtech.common.tool.ModTools;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

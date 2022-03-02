@@ -3,8 +3,10 @@ package mightydanp.industrialtech.common.generation;
 import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
 import mightydanp.industrialtech.api.common.handler.generation.PlantGenerationHandler;
 import mightydanp.industrialtech.api.common.handler.generation.ThinSlabGenerationHandler;
+import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.IStoneLayer;
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerRegistry;
+import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.blocks.CatTailPlantBottomBlock;
 import mightydanp.industrialtech.common.blocks.CatTailPlantTopBlock;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
@@ -18,6 +20,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.minecraft.world.biome.Biome.Category.*;
 import static net.minecraft.world.biome.Biome.Category.MUSHROOM;
@@ -37,10 +40,12 @@ public class ThinSlabGeneration {
     public static List<BlockState> thinSlabBlocks = new ArrayList<>();
 
     public static void init() {
-        if(thinSlabBlocks.size() != StoneLayerRegistry.getAllStoneLayers().size()){
-            for(int i = 0; i < StoneLayerRegistry.getAllStoneLayers().size(); i++){
-                IStoneLayer iStoneLayer = StoneLayerRegistry.getAllStoneLayers().get(i);
-                Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(iStoneLayer.getBlock()));
+        List<ITMaterial> stoneLayerList = MaterialRegistry.materials().values().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).collect(Collectors.toList());
+        if(thinSlabBlocks.size() != stoneLayerList.size()){
+            for(int i = 0; i < stoneLayerList.size(); i++){
+                ITMaterial iStoneLayer = stoneLayerList.get(i);
+                Block replaceableBlock = iStoneLayer.thinSlabBlock;
+
                 if(replaceableBlock != null) {
                     thinSlabBlocks.add(replaceableBlock.defaultBlockState());
                 }
@@ -48,4 +53,6 @@ public class ThinSlabGeneration {
         }
         ThinSlabGenerationHandler.addThinSlabGenerate("thin_slab", thinSlabBlocks, 5, OverWorldFlowBiomes);
     }
+
+
 }

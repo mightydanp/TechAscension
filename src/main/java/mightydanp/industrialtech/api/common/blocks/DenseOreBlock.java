@@ -22,15 +22,15 @@ import net.minecraft.block.AbstractBlock.Properties;
  */
 public class DenseOreBlock extends Block {
     public String name;
-    public ResourceLocation replaceBlock;
+    public String stoneLayerBlock;
     public int density;
 
     public static IntegerProperty densityProperty = IntegerProperty.create("density", 0, 64);
 
-    public DenseOreBlock(String nameIn, Properties properties, int densityIn, ResourceLocation replaceBlockIn) {
+    public DenseOreBlock(String nameIn, Properties properties, int densityIn, String stoneLayerBlockIn) {
         super(properties);
         name = nameIn;
-        replaceBlock = replaceBlockIn;
+        stoneLayerBlock = stoneLayerBlockIn;
         density = densityIn;
         this.registerDefaultState(this.stateDefinition.any().setValue(densityProperty, density));
     }
