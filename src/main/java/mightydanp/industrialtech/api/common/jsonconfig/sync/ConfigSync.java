@@ -86,6 +86,7 @@ public class ConfigSync {
         IndustrialTech.textureIconRegistry.initiate();
         IndustrialTech.oreTypeRegistry.initiate();
         IndustrialTech.toolPartRegistry.initiate();
+        IndustrialTech.toolTypeRegistry.initiate();
         IndustrialTech.stoneLayerRegistry.initiate();
         ModMaterials.commonInit();
         IndustrialTech.materialRegistryInstance.initiate();

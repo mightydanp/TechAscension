@@ -1,9 +1,13 @@
 package mightydanp.industrialtech.common.tool;
 
+import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeRegistry;
 import mightydanp.industrialtech.api.common.tool.ITTool;
 import mightydanp.industrialtech.api.common.items.*;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.DefaultToolType;
 import mightydanp.industrialtech.api.common.material.tool.ITTools;
+import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.tool.tools.ChiselToolItem;
 import mightydanp.industrialtech.common.tool.tools.HammerToolItem;
 import mightydanp.industrialtech.common.tool.tools.KnifeToolItem;
@@ -17,10 +21,12 @@ public class ModTools extends ITTools {
     public static ITTool hammer, chisel, pickaxe, knife;
 
     public static void init(){
-        tools.add(chisel = new ITTool("chisel", 1, DefaultToolType.NORMAL, new ChiselToolItem()));
-        tools.add(hammer = new ITTool("hammer", 1, DefaultToolType.NORMAL, new HammerToolItem()));
-        tools.add(pickaxe = new ITTool("pickaxe", 1, DefaultToolType.NORMAL, new PickaxeToolItem()));
-        tools.add(knife = new ITTool("knife", 1, DefaultToolType.NORMAL, new KnifeToolItem()));
+        IToolType normal = IndustrialTech.toolTypeRegistry.getToolTypeByFixes(new Pair<>("", "_tool"));
+
+        tools.add(chisel = new ITTool("chisel", 1, normal, new ChiselToolItem()));
+        tools.add(hammer = new ITTool("hammer", 1, normal, new HammerToolItem()));
+        tools.add(pickaxe = new ITTool("pickaxe", 1, normal, new PickaxeToolItem()));
+        tools.add(knife = new ITTool("knife", 1, normal, new KnifeToolItem()));
     }
 
     public static void handCraftingInit(PlayerInteractEvent.RightClickItem event){

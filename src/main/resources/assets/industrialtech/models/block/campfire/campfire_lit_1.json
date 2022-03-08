@@ -1,0 +1,7 @@
+{
+  "parent": "industrialtech:block/campfire/campfire_lit_log_1",
+  "textures": {
+    "fire": "minecraft:block/campfire_fire",
+    "lit_log": "minecraft:block/campfire_log_lit"
+  }
+}

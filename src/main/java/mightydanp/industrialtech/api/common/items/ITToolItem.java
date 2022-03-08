@@ -1,13 +1,11 @@
 package mightydanp.industrialtech.api.common.items;
 
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.capabilities.ITToolItemCapabilityProvider;
 import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
@@ -46,21 +44,17 @@ public class ITToolItem extends Item {
     public String name;
     private final List<String> effectiveBlocks;
     private final Item.Properties properties;
-    public final int partsToWork;
+    public int partsToWork;
     public boolean preformAction;
-    public Map<String, Integer> craftingToolsNeeded;
-    public Map<String, Integer> toolParts;
-    public List<String> toolsNeededForDisassemble;
+    public Map<String, Integer> craftingToolsNeeded = new HashMap<>();
+    public Map<String, Integer> parts = new HashMap<>();
+    public List<String> disassembleTools = new ArrayList<>();
 
-    public ITToolItem(String nameIn, List<String> effectiveBlocksIn, Properties propertiesIn, Map<String, Integer> craftingToolsNeededIn, Map<String, Integer> partsNeededToBuildIn, List<String> toolsNeededForDisassembleIn) {
+    public ITToolItem(String nameIn, List<String> effectiveBlocksIn, Properties propertiesIn) {
         super(propertiesIn.stacksTo(1));
         name = nameIn;
-        craftingToolsNeeded = craftingToolsNeededIn;
-        toolParts = partsNeededToBuildIn;
         effectiveBlocks = effectiveBlocksIn;
         properties = propertiesIn;
-        partsToWork = partsNeededToBuildIn.size();
-        toolsNeededForDisassemble = toolsNeededForDisassembleIn;
     }
 
     @Override
@@ -166,7 +160,7 @@ public class ITToolItem extends Item {
         }
 
         if (!canWork(mainHandItemStack)){
-            disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 1, toolsNeededForDisassemble);
+            disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 1, disassembleTools);
             playerEntityIn.setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
         }
 

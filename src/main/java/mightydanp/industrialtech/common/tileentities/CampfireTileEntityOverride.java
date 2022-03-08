@@ -38,10 +38,9 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     private BlockState cachedBlockState;
 
     public static int numberOfCookSlots = 4;
-    public static int numberOfFuelSlots = 1;
     public static int numberOfAshSlots = 1;
     public static int numberOfTinderSlots = 1;
-    public static int numberOfSlots = numberOfCookSlots + numberOfFuelSlots + numberOfAshSlots + numberOfTinderSlots;
+    public static int numberOfSlots = numberOfCookSlots + numberOfAshSlots + numberOfTinderSlots;
 
     private int fuelBurnProgress = 0;
     private int fuelBurnTime = 1;
@@ -56,12 +55,9 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     public final int cookSlot2Number = 1;
     public final int cookSlot3Number = 2;
     public final int cookSlot4Number = 3;
-    public final int fuelSlotNumber  = 4;
-    public final int ashSlotNumber   = 5;
-    public final int tinderSlotNumber= 6;
+    public final int ashSlotNumber   = 4;
+    public final int tinderSlotNumber= 5;
 
-    public boolean isLit = false;
-    public Direction direction = Direction.NORTH;
     public boolean signalFire = false;
     public boolean keepLogsFormed = false;
     public boolean canPlaceRecipeItems = false;
@@ -83,9 +79,6 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     public ItemStack getCookSlot4(){
         return inventory.get(cookSlot4Number);
     }
-    public ItemStack getFuelSlot(){
-        return inventory.get(fuelSlotNumber);
-    }
     public ItemStack getAshSlot(){
         return inventory.get(ashSlotNumber);
     }
@@ -95,17 +88,16 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
 
     public void tick() {
         if (level.isClientSide) {
-            if (isLit) {
-                this.makeParticles();
+            if (getBlockState().getValue(CampfireBlockOverride.LIT)) {
+                makeParticles();
             }
         } else {
-            if (isLit) {
+            if (getBlockState().getValue(CampfireBlockOverride.LIT)) {
                 cook();
                 burnLogs();
                 ash();
 
-                if(getFuelSlot().isEmpty()){
-                    isLit = false;
+                if(getBlockState().getValue(CampfireBlockOverride.LOG) == 0){
                     dowse();
                     canPlaceRecipeItems = false;
                 }
@@ -148,23 +140,25 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     }
 
     private void burnLogs() {
-            ItemStack itemstack = getFuelSlot();
-            if (!itemstack.isEmpty()) {
-                int j = this.fuelBurnProgress++;
-                fuelBurnTime = getItemBurnTime(this.getLevel(), itemstack);
-                if (this.fuelBurnProgress >= this.fuelBurnTime) {
-                    itemstack.shrink(1);
-                    inventory.set(fuelSlotNumber, itemstack);
-                    this.fuelBurnProgress = 0;
+            if(level != null) {
+                if (getBlockState().getValue(CampfireBlockOverride.LOG) > 0) {
+                    fuelBurnTime = 600;
+                    if (this.fuelBurnProgress >= this.fuelBurnTime) {
+                        CampfireBlockOverride.shrinkLogs(level, getBlockPos(), getBlockState(), 1);
+
+                        this.fuelBurnProgress = 0;
+                        this.markUpdated();
+                    }
+                } else {
+                    CampfireBlockOverride.setLit(level, getBlockPos(), getBlockState(), false);
+
                     this.markUpdated();
                 }
-            }else{
-                isLit = false;
-                this.markUpdated();
             }
     }
 
     private void ash() {
+        /*
         ItemStack itemstack = getFuelSlot();
         Random rand = new Random();
         if (rand.nextInt(2000) == 0) {
@@ -177,6 +171,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
                 this.markUpdated();
             }
         }
+         */
     }
 
     private void makeParticles() {
@@ -190,10 +185,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
                 }
             }
 
-            Direction directionA = direction;
-
-
-            int l = directionA.get2DDataValue();
+            int l = getBlockState().getValue(CampfireBlockOverride.FACING).get2DDataValue();
 
             for(int j = 0; j < numberOfCookSlots; ++j) {
                 if (!inventory.get(j).isEmpty() && random.nextFloat() < 0.2F) {
@@ -226,8 +218,6 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
 
         fuelBurnTime = nbt.getInt("fuel_burn_time");
         fuelBurnProgress = nbt.getInt("fuel_burn_progress");
-        isLit = nbt.getBoolean("is_lit");
-        direction = directionNew;
         signalFire = nbt.getBoolean("signal_fire");
         keepLogsFormed = nbt.getBoolean("keep_logs_formed");
         canPlaceRecipeItems = nbt.getBoolean("can_place_recipe_items");
@@ -265,8 +255,6 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
         nbt.putIntArray("cooking_times", cookingProgresses);
         nbt.putIntArray("cooking_total_times", cookingTimes);
         nbt.putIntArray("cooked_checker", cookedSlotChecker);
-        nbt.putBoolean("is_lit", isLit);
-        nbt.putString("direction", direction.getName());
         nbt.putBoolean("signal_fire", signalFire);
         nbt.putBoolean("keep_logs_formed", keepLogsFormed);
         nbt.putBoolean("can_place_recipe_items", canPlaceRecipeItems);
@@ -339,6 +327,9 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
 
     public void dowse() {
         if (this.level != null) {
+            BlockState blockState1 = getBlockState().setValue(CampfireBlockOverride.LIT, false);
+            level.setBlock(this.getBlockPos(), blockState1, 3);
+
             if (!this.level.isClientSide) {
                 NonNullList<ItemStack> inventoryCopy = NonNullList.withSize(numberOfCookSlots, ItemStack.EMPTY);
                 for(int i = 0; i == numberOfCookSlots; i++){
@@ -403,17 +394,6 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     {
         int burnTime = net.minecraftforge.common.ForgeHooks.getBurnTime(stack);
         return burnTime;
-    }
-
-    //Start of main code\\
-    public boolean keepLogsFormed(){
-        if(!keepLogsFormed){
-            if(getFuelSlot().getCount() >= 4){
-                keepLogsFormed = true;
-                return true;
-            }
-        }
-        return false;
     }
 
 

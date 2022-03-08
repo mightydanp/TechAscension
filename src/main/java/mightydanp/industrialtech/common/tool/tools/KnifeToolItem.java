@@ -1,7 +1,6 @@
 package mightydanp.industrialtech.common.tool.tools;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.blocks.HoleBlock;
 import mightydanp.industrialtech.api.common.blocks.ITBlocks;
 import mightydanp.industrialtech.api.common.crafting.recipe.HoleRecipe;
@@ -9,25 +8,17 @@ import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
-import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -38,25 +29,15 @@ import java.util.*;
  * Created by MightyDanp on 10/9/2021.
  */
 public class KnifeToolItem extends ITToolItem {
-    private static final Set<Block> EFFECTIVE_ON = ImmutableSet.of(Blocks.SHULKER_BOX, Blocks.BLACK_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX, Blocks.BROWN_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.GRAY_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX, Blocks.LIGHT_GRAY_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.WHITE_SHULKER_BOX, Blocks.YELLOW_SHULKER_BOX, Blocks.PISTON, Blocks.STICKY_PISTON, Blocks.PISTON_HEAD);
-
-    private static final List<String> effectiveOn = new ArrayList<String>(){{
-        EFFECTIVE_ON.forEach(o -> effectiveOn.add(String.valueOf(o.getRegistryName())));
-    }};
-
-    public static Map<String, Integer> craftingToolsNeeded = new HashMap<>();
-
-    public static Map<String, Integer> parts = new HashMap<>();
-
-    public static List<String> disassembleTools = new ArrayList<>();
+    private static final Set<String> EFFECTIVE_ON = ImmutableSet.of(String.valueOf(Blocks.SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.BLACK_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.BLUE_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.BROWN_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.CYAN_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.GRAY_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.GREEN_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.LIGHT_BLUE_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.LIGHT_GRAY_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.LIME_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.MAGENTA_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.ORANGE_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.PINK_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.PURPLE_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.RED_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.WHITE_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.YELLOW_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.PISTON.getRegistryName()), String.valueOf(Blocks.STICKY_PISTON.getRegistryName()), String.valueOf(Blocks.PISTON_HEAD));
 
     public KnifeToolItem() {
-        super("knife", effectiveOn,  new Item.Properties().tab(ModItemGroups.tool_tab), craftingToolsNeeded, parts, disassembleTools);
+        super("knife", new ArrayList<>(EFFECTIVE_ON),  new Item.Properties().tab(ModItemGroups.tool_tab));
         craftingToolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
 
-        //parts.put(ITMaterial.knifeHead, 1);
-        //parts.put(ITMaterial.wedgeHandle, 2);
-        //parts.put(ITMaterial.wedge, 3);
+        parts.put("headKnife", 1);
+        parts.put("handleWedge", 2);
+        parts.put("wedge", 3);
 
         disassembleTools.add(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")));
         disassembleTools.add(String.valueOf(new ResourceLocation(Ref.mod_id, "chisel")));

@@ -13,17 +13,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.PathType;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
+import net.minecraft.state.*;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.CampfireTileEntity;
@@ -52,6 +52,9 @@ import java.util.Random;
 public class CampfireBlockOverride extends ContainerBlock implements IWaterLoggable {
     public static final EnumProperty<CampfireEnum> camp_fire = EnumProperty.create("camp_fire", CampfireEnum.class);//, CampfireEnum.---
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    public static final IntegerProperty LOG = IntegerProperty.create("log", 0, 4);
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape VIRTUAL_FENCE_POST = Block.box(6.0D, 0.0D, 6.0D, 10.0D, 16.0D, 10.0D);
 
     protected static final VoxelShape tinder = Block.box(5, 0, 5, 11, 1, 11);
@@ -69,7 +72,33 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
 
     public CampfireBlockOverride() {
         super(AbstractBlock.Properties.of(Material.WOOD));
-        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false).setValue(LIT, false).setValue(LOG, 0).setValue(FACING, Direction.NORTH));
+    }
+
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> p_206840_1_) {
+        p_206840_1_.add(WATERLOGGED, LIT, LOG, FACING);
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return new CampfireTileEntityOverride();
+    }
+
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public TileEntity newBlockEntity(IBlockReader p_196283_1_) {
+        return new CampfireTileEntityOverride();
+    }
+
+    @Override
+    public BlockRenderType getRenderShape(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 
     public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext iSelectionContext) {
@@ -80,11 +109,11 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) iBlockReader.getBlockEntity(blockPos);
 
         if (tileEntity != null) {
-            if(tileEntity.direction == Direction.NORTH || tileEntity.direction == Direction.SOUTH){
+            if(blockState.getValue(FACING) == Direction.NORTH || blockState.getValue(FACING) == Direction.SOUTH){
                 return horizontal;
             }
 
-            if(tileEntity.direction == Direction.EAST || tileEntity.direction == Direction.WEST){
+            if(blockState.getValue(FACING) == Direction.EAST || blockState.getValue(FACING) == Direction.WEST){
                 return vertical;
             }
         }
@@ -113,7 +142,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride)iBlockReader.getBlockEntity(blockPos);
         if(tileEntity!= null){
             if(tileEntity.getLevel() != null) {
-                return isLitCampfire(tileEntity.getLevel(), blockPos) ? 15 : 0;
+                return state.getValue(CampfireBlockOverride.LIT) ? 15 : 0;
             }else{
                 return 0;
             }
@@ -138,9 +167,9 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
             ResourceLocation log = ItemTags.LOGS.getName();
 
             Optional<CampfireOverrideRecipe> optional = tileEntity.getCookableRecipe(itemstack);
-            ItemStack fuelSlot = tileEntity.getFuelSlot();
+            int logs = blockState.getValue(LOG);
 
-            switch(tileEntity.direction){
+            switch(blockState.getValue(FACING)){
                 case NORTH: cookingSlot1 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
                     break;
                 case SOUTH: cookingSlot1 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
@@ -150,10 +179,10 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                 case WEST:  cookingSlot1 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
                 default:
-                    throw new IllegalStateException("Unexpected value: " + tileEntity.direction);
+                    throw new IllegalStateException("Unexpected value: " + blockState.getValue(FACING));
             }
 
-            switch(tileEntity.direction){
+            switch(blockState.getValue(FACING)){
                 case NORTH: cookingSlot2 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
                     break;
                 case SOUTH: cookingSlot2 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
@@ -164,7 +193,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                     break;
             }
 
-            switch(tileEntity.direction){
+            switch(blockState.getValue(FACING)){
                 case NORTH: cookingSlot4 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
                 case SOUTH: cookingSlot4 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
@@ -175,7 +204,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                     break;
             }
 
-            switch(tileEntity.direction){
+            switch(blockState.getValue(FACING)){
                 case NORTH: cookingSlot3 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
                 case SOUTH: cookingSlot3 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
@@ -186,7 +215,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                     break;
             }
 
-            switch(tileEntity.direction){
+            switch(blockState.getValue(FACING)){
                 case NORTH:
                 case SOUTH:
                     ashSlot = new AxisAlignedBB(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0625, blockPos.getX() + 1.0 + 0.0001, blockPos.getY() + 0.0625 + 0.0001, blockPos.getZ() + 0.75 + 0.0001);
@@ -197,7 +226,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                     break;
             }
 
-            switch(tileEntity.direction){
+            switch(blockState.getValue(FACING)){
                 case NORTH:
                 case SOUTH:
                     tinderSlot = new AxisAlignedBB(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0625, blockPos.getX() + 1.0 + 0.0001, blockPos.getY() + 0.0625 + 0.0001, blockPos.getZ() + 0.75 + 0.0001);
@@ -208,35 +237,33 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                     break;
             }
 
-            if(fuelSlot.getCount() <= 16 && ItemTags.getAllTags().getTagOrEmpty(log).contains(itemstack.getItem())){
+            if(logs < 4 && ItemTags.getAllTags().getTagOrEmpty(log).contains(itemstack.getItem())){
                 itemstack.shrink(1);
                 playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
-                if(!fuelSlot.isEmpty()){
-                    fuelSlot.setCount(fuelSlot.getCount() + 1);
-                    tileEntity.getInventory().set(tileEntity.fuelSlotNumber, fuelSlot);
-                }else{
-                    ItemStack copy = itemstack.copy();
-                    copy.setCount(1);
-                    tileEntity.getInventory().set(tileEntity.fuelSlotNumber, copy);
-                }
+
+                BlockState blockState1 = blockState.setValue(CampfireBlockOverride.LOG, blockState.getValue(CampfireBlockOverride.LOG) + 1);
+                world.setBlock(blockPos, blockState1, 3);
             }
 
-            if(!fuelSlot.isEmpty() && itemstack.getItem() == Items.FLINT_AND_STEEL){
-                tileEntity.isLit = true;
+            if(logs > 0 && itemstack.getItem() == Items.FLINT_AND_STEEL){
+                BlockState blockState1 = blockState.setValue(LIT, true);
+                world.setBlock(blockPos, blockState1, 3);
                 tileEntity.keepLogsFormed = true;
                 itemstack.setDamageValue(itemstack.getDamageValue() + 1);
             }
 
-            if(!fuelSlot.isEmpty()) {
+            if(logs > 0) {
                 if (cookingSlot1.contains(click(playerEntity, world))) {
                     if (tileEntity.getCookSlot1().isEmpty() && optional.isPresent()) {
                         tileEntity.placeFood(playerEntity.abilities.instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot1Number, optional.get().getCookingTime());
                         itemstack.shrink(1);
                         playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
                     } else {
-                        if (playerEntity.isCrouching() && !tileEntity.isLit) {
+                        if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
                             playerEntity.inventory.placeItemBackInInventory(world, tileEntity.getCookSlot1());
                             tileEntity.getInventory().set(tileEntity.cookSlot1Number, ItemStack.EMPTY);
+                        }else{
+                            return ActionResultType.FAIL;
                         }
                     }
                 }
@@ -247,9 +274,11 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                         itemstack.shrink(1);
                         playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
                     } else {
-                        if (playerEntity.isCrouching()) {
-                            playerEntity.inventory.placeItemBackInInventory(world, itemstack);
+                        if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
+                            playerEntity.inventory.placeItemBackInInventory(world, tileEntity.getCookSlot2());
                             tileEntity.getInventory().set(tileEntity.cookSlot2Number, ItemStack.EMPTY);
+                        }else{
+                            return ActionResultType.FAIL;
                         }
                     }
                 }
@@ -260,9 +289,11 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                         itemstack.shrink(1);
                         playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
                     } else {
-                        if (playerEntity.isCrouching()) {
-                            playerEntity.inventory.placeItemBackInInventory(world, itemstack);
+                        if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
+                            playerEntity.inventory.placeItemBackInInventory(world, tileEntity.getCookSlot3());
                             tileEntity.getInventory().set(tileEntity.cookSlot3Number, ItemStack.EMPTY);
+                        }else{
+                            return ActionResultType.FAIL;
                         }
                     }
                 }
@@ -273,21 +304,23 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                         itemstack.shrink(1);
                         playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
                     } else {
-                        if (playerEntity.isCrouching()) {
-                            playerEntity.inventory.placeItemBackInInventory(world, itemstack);
+                        if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
+                            playerEntity.inventory.placeItemBackInInventory(world, tileEntity.getCookSlot4());
                             tileEntity.getInventory().set(tileEntity.cookSlot4Number, ItemStack.EMPTY);
+                        }else{
+                            return ActionResultType.FAIL;
                         }
                     }
                 }
             }
 
             if(ashSlot.contains(click(playerEntity, world))){
-                tileEntity.placeItemStack(playerEntity.abilities.instabuild ? itemstack.copy() : itemstack, tileEntity.fuelSlotNumber);
+                tileEntity.placeItemStack(playerEntity.abilities.instabuild ? itemstack.copy() : itemstack, tileEntity.ashSlotNumber);
                 itemstack.shrink(1);
                 playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
             }else{
-                if(playerEntity.isCrouching()){
-                    playerEntity.inventory.placeItemBackInInventory(world, itemstack);
+                if(playerEntity.isCrouching() && !isLit(blockState)){
+                    playerEntity.inventory.placeItemBackInInventory(world, tileEntity.getAshSlot());
                     tileEntity.getInventory().set(tileEntity.ashSlotNumber, ItemStack.EMPTY);
                 }
             }
@@ -315,14 +348,6 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         return ActionResultType.SUCCESS;
     }
 
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(final BlockItemUseContext context) {
-        final FluidState fluidState = context.getLevel().getFluidState(context.getClickedPos());
-
-        return fluidState.is(FluidTags.WATER) && fluidState.getAmount() == 8 ? super.getStateForPlacement(context).setValue(WATERLOGGED, Boolean.valueOf(true)) : this.defaultBlockState();
-    }
-
     public Vector3d click(PlayerEntity player, World world){
         Double rayLength = new Double(100);
         Vector3d playerRotation = player.getViewVector(0);
@@ -347,30 +372,42 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         return rayHit.getLocation();
     }
 
-    @Override
-    public void setPlacedBy(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity placer, ItemStack itemStack) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
-        if (tileEntity != null) {
-            if (placer != null) {
-                tileEntity.direction = placer.getDirection();
-            }
-        }
+    private boolean isSmokeSource(BlockState p_220099_1_) {
+        return p_220099_1_.is(Blocks.HAY_BLOCK);
     }
 
     public void entityInside(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
-        if (!entity.fireImmune() && isLitCampfire(world, blockPos) && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
+        if (!entity.fireImmune() && blockState.getValue(LIT) && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
             entity.hurt(DamageSource.IN_FIRE, (float)1);
         }
 
         super.entityInside(blockState, world, blockPos, entity);
     }
 
-    private boolean isSmokeSource(BlockState p_220099_1_) {
-        return p_220099_1_.is(Blocks.HAY_BLOCK);
+    //to-do change to leave ash behind
+    public void onRemove(BlockState p_196243_1_, World world, BlockPos blockPos, BlockState blockState, boolean p_196243_5_) {
+        if (!p_196243_1_.is(blockState.getBlock())) {
+            TileEntity tileentity = world.getBlockEntity(blockPos);
+            if (tileentity instanceof CampfireTileEntityOverride) {
+                InventoryHelper.dropContents(world, blockPos, ((CampfireTileEntityOverride)tileentity).getInventory());
+            }
+
+            super.onRemove(p_196243_1_, world, blockPos, blockState, p_196243_5_);
+        }
     }
 
-    public BlockState updateShape(BlockState blockState, Direction direction, BlockState p_196271_3_, IWorld world, BlockPos blockPos, BlockPos p_196271_6_) {
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext useContext) {
+        IWorld iworld = useContext.getLevel();
+        BlockPos blockpos = useContext.getClickedPos();
+        final FluidState fluidState = useContext.getLevel().getFluidState(useContext.getClickedPos());
+        boolean flag = iworld.getFluidState(blockpos).getType() == Fluids.WATER && fluidState.getAmount() == 8;
+
+        return this.defaultBlockState().setValue(WATERLOGGED, flag).setValue(LIT, false).setValue(LOG, 0).setValue(FACING, useContext.getHorizontalDirection());
+    }
+
+    public BlockState updateShape(BlockState blockState, Direction direction, BlockState underBlock, IWorld world, BlockPos blockPos, BlockPos p_196271_6_) {
         CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
         if (blockState.getValue(WATERLOGGED)) {
             world.getLiquidTicks().scheduleTick(blockPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
@@ -378,27 +415,20 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
 
         if(direction == Direction.DOWN){
             if(tileEntity != null){
-                tileEntity.signalFire = isSmokeSource(p_196271_3_);
+                tileEntity.signalFire = isSmokeSource(underBlock);
             }
         }
 
-        return super.updateShape(blockState, direction, p_196271_3_, world, blockPos, p_196271_6_);
+        return super.updateShape(blockState, direction, underBlock, world, blockPos, p_196271_6_);
     }
 
     public boolean isPathfindable(BlockState p_196266_1_, IBlockReader p_196266_2_, BlockPos p_196266_3_, PathType p_196266_4_) {
         return false;
     }
 
-    public static boolean canLight(World world, BlockPos blockPos) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
-        BlockState blockState = world.getBlockState(blockPos);
-        return !isLitCampfire(world, blockPos) && !blockState.getValue(BlockStateProperties.WATERLOGGED);
-    }
-
     @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
-        if (isLitCampfire(world, blockPos)) {
+        if (blockState.getValue(CampfireBlockOverride.LIT)) {
             if (random.nextInt(10) == 0) {
                 world.playLocalSound((double)blockPos.getX() + 0.5D, (double)blockPos.getY() + 0.5D, (double)blockPos.getZ() + 0.5D, SoundEvents.CAMPFIRE_CRACKLE, SoundCategory.BLOCKS, 0.5F + random.nextFloat(), random.nextFloat() * 0.7F + 0.6F, false);
             }
@@ -413,10 +443,10 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
     }
 
     public static void dowse(IWorld iWorld, BlockPos blockPos) {
-        CampfireTileEntity tileEntity = (CampfireTileEntity)iWorld.getBlockEntity(blockPos);
+        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride)iWorld.getBlockEntity(blockPos);
         if (iWorld.isClientSide()) {
             for(int i = 0; i < 20; ++i) {
-                makeParticles((World)iWorld, blockPos);
+                makeParticles((World)iWorld, blockPos, tileEntity.signalFire, true);
             }
         }
         if (tileEntity != null) {
@@ -425,35 +455,16 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
 
     }
 
-    public void onProjectileHit(World world, BlockState blockState, BlockRayTraceResult blockRayTraceResult, ProjectileEntity projectileEntity) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride)world.getBlockEntity(blockRayTraceResult.getBlockPos());
-
-        if (!world.isClientSide && projectileEntity.isOnFire()) {
-            Entity entity = projectileEntity.getOwner();
-            boolean flag = entity == null || entity instanceof PlayerEntity || net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, entity);
-            if (flag && !isLitCampfire(world, blockRayTraceResult.getBlockPos()) && !blockState.getValue(WATERLOGGED)) {
-                BlockPos blockpos = blockRayTraceResult.getBlockPos();
-                if(tileEntity != null) {
-                    tileEntity.isLit = true;
-                }
-
-            }
-        }
-
-    }
-
     public boolean placeLiquid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) iWorld.getBlockEntity(blockPos);
         if (!blockState.getValue(BlockStateProperties.WATERLOGGED) && fluidState.getType() == Fluids.WATER) {
-            if (isLitCampfire((World)iWorld, blockPos)) {
+            if (blockState.getValue(LIT)) {
                 if (!iWorld.isClientSide()) {
                     iWorld.playSound(null, blockPos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 }
-
                 dowse(iWorld, blockPos);
             }
 
-            iWorld.setBlock(blockPos, blockState.setValue(WATERLOGGED, true), 3);
+            iWorld.setBlock(blockPos, blockState.setValue(WATERLOGGED, true).setValue(LIT, false), 3);
             iWorld.getLiquidTicks().scheduleTick(blockPos, fluidState.getType(), fluidState.getType().getTickDelay(iWorld));
             return true;
         } else {
@@ -461,35 +472,26 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         }
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
+    public void onProjectileHit(World world, BlockState blockState, BlockRayTraceResult traceResult, ProjectileEntity projectile) {
+        if (!world.isClientSide && projectile.isOnFire()) {
+            Entity entity = projectile.getOwner();
+            boolean flag = entity == null || entity instanceof PlayerEntity || net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, entity);
+            if (flag && !blockState.getValue(LIT) && !blockState.getValue(WATERLOGGED)) {
+                BlockPos blockpos = traceResult.getBlockPos();
+                world.setBlock(blockpos, blockState.setValue(BlockStateProperties.LIT, true), 11);
+            }
+        }
+
     }
 
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-         return new CampfireTileEntityOverride();
-    }
+    public static void makeParticles(World world, BlockPos blockPos, boolean signalFire, boolean isLit) {
+        Random random = world.getRandom();
+        BasicParticleType basicparticletype = signalFire ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
+        world.addAlwaysVisibleParticle(basicparticletype, true, (double)blockPos.getX() + 0.5D + random.nextDouble() / 3.0D * (double)(random.nextBoolean() ? 1 : -1), (double)blockPos.getY() + random.nextDouble() + random.nextDouble(), (double)blockPos.getZ() + 0.5D + random.nextDouble() / 3.0D * (double)(random.nextBoolean() ? 1 : -1), 0.0D, 0.07D, 0.0D);
+        if (isLit) {
+            world.addParticle(ParticleTypes.SMOKE, (double)blockPos.getX() + 0.25D + random.nextDouble() / 2.0D * (double)(random.nextBoolean() ? 1 : -1), (double)blockPos.getY() + 0.4D, (double)blockPos.getZ() + 0.25D + random.nextDouble() / 2.0D * (double)(random.nextBoolean() ? 1 : -1), 0.0D, 0.005D, 0.0D);
+        }
 
-    @Override
-    public BlockRenderType getRenderShape(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity newBlockEntity(IBlockReader p_196283_1_) {
-        return new CampfireTileEntityOverride();
-    }
-
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> p_206840_1_) {
-        p_206840_1_.add(WATERLOGGED);
-    }
-
-    @Override
-    public FluidState getFluidState(BlockState p_204507_1_) {
-        return p_204507_1_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_204507_1_);
     }
 
     public static void makeParticles(World world, BlockPos blockPos) {
@@ -499,7 +501,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         if(tileEntity != null) {
             BasicParticleType basicparticletype = tileEntity.signalFire ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
             world.addAlwaysVisibleParticle(basicparticletype, true, (double) blockPos.getX() + 0.5D + random.nextDouble() / 3.0D * (double) (random.nextBoolean() ? 1 : -1), (double) blockPos.getY() + random.nextDouble() + random.nextDouble(), (double) blockPos.getZ() + 0.5D + random.nextDouble() / 3.0D * (double) (random.nextBoolean() ? 1 : -1), 0.0D, 0.07D, 0.0D);
-            if (isLitCampfire(world, blockPos)) {
+            if (world.getBlockState(blockPos).getValue(CampfireBlockOverride.LIT)) {
                 world.addParticle(ParticleTypes.SMOKE, (double) blockPos.getX() + 0.25D + random.nextDouble() / 2.0D * (double) (random.nextBoolean() ? 1 : -1), (double) blockPos.getY() + 0.4D, (double) blockPos.getZ() + 0.25D + random.nextDouble() / 2.0D * (double) (random.nextBoolean() ? 1 : -1), 0.0D, 0.005D, 0.0D);
             }
         }
@@ -509,46 +511,61 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         for(int i = 1; i <= 5; ++i) {
             BlockPos blockpos = blockPos.below(i);
             BlockState blockstate = world.getBlockState(blockpos);
-            if (isLitCampfire(world, blockPos)) {
+            if (isLit(blockstate)) {
                 return true;
             }
 
             boolean flag = VoxelShapes.joinIsNotEmpty(VIRTUAL_FENCE_POST, blockstate.getCollisionShape(world, blockpos, ISelectionContext.empty()), IBooleanFunction.AND);//Forge fix: MC-201374
             if (flag) {
-                return isLitCampfire(world, blockPos);
+                return blockstate.getValue(CampfireBlockOverride.LIT);
             }
         }
 
         return false;
     }
 
-    public static boolean isLitCampfire(World world, BlockPos blockPos) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
-        if(tileEntity != null) {
-            if(tileEntity.isLit) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
+    public BlockState rotate(BlockState p_185499_1_, Rotation p_185499_2_) {
+        return p_185499_1_.setValue(FACING, p_185499_2_.rotate(p_185499_1_.getValue(FACING)));
     }
 
-    public void setDirection(World world, BlockPos blockPos, Direction direction) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
-        if(tileEntity != null) {
-            tileEntity.direction = direction;
-        }
+    public BlockState mirror(BlockState p_185471_1_, Mirror p_185471_2_) {
+        return p_185471_1_.rotate(p_185471_2_.getRotation(p_185471_1_.getValue(FACING)));
     }
+
+    public static boolean isLit(BlockState blockState) {
+        return blockState.hasProperty(LIT) && blockState.getValue(LIT);
+    }
+
+
 
     @Override
     public int getLightBlock(BlockState blockState, IBlockReader world, BlockPos blockPos) {
         CampfireTileEntityOverride tile = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
 
-        if(tile != null && tile.isLit){
+        if(tile != null && blockState.getValue(CampfireBlockOverride.LIT)){
             return 16;
         }else{
             return 0;
         }
+    }
+
+    @Override
+    public FluidState getFluidState(BlockState p_204507_1_) {
+        return p_204507_1_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_204507_1_);
+    }
+
+    public static void shrinkLogs(World world, BlockPos blockPos, BlockState blockState, int amount){
+        BlockState blockState1 = blockState.setValue(CampfireBlockOverride.LOG, blockState.getValue(CampfireBlockOverride.LOG) - amount);
+        world.setBlock(blockPos, blockState1, 3);
+    }
+
+    public static void increaseLogs(World world, BlockPos blockPos, BlockState blockState, int amount){
+        BlockState blockState1 = blockState.setValue(CampfireBlockOverride.LOG, blockState.getValue(CampfireBlockOverride.LOG) + amount);
+        world.setBlock(blockPos, blockState1, 3);
+    }
+
+    public static void setLit(World world, BlockPos blockPos, BlockState blockState, boolean lit){
+        BlockState blockState1 = blockState.setValue(CampfireBlockOverride.LIT, lit);
+        world.setBlock(blockPos, blockState1, 3);
     }
 }

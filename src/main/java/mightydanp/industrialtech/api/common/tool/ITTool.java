@@ -1,11 +1,8 @@
 package mightydanp.industrialtech.api.common.tool;
 
-import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
 import mightydanp.industrialtech.api.common.items.*;
-import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
-import mightydanp.industrialtech.api.common.jsonconfig.tool.type.DefaultToolType;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.client.Minecraft;
@@ -24,7 +21,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by MightyDanp on 3/8/2021.
@@ -52,8 +48,8 @@ public class ITTool {
         toolType = toolTypeIn;
         tool = toolIn;
         toolCraftingTools = toolIn.craftingToolsNeeded;
-        toolParts = toolIn.toolParts;
-        toolDisassembleTools = toolIn.toolsNeededForDisassemble;
+        toolParts = toolIn.parts;
+        toolDisassembleTools = toolIn.disassembleTools;
 
     }
 
@@ -106,8 +102,8 @@ public class ITTool {
 
 
         if (toolItemIn.getPartsToWork() == 3 || toolItemIn.getPartsToWork() == 2) {
-            Item toolParts0 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.toolParts.keySet()).get(0)));
-            Item toolParts1 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.toolParts.keySet()).get(1)));
+            Item toolParts0 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.parts.keySet()).get(0)));
+            Item toolParts1 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.parts.keySet()).get(1)));
 
             ItemStack mainHandCheck = playerEntity.getMainHandItem().getItem() == toolParts0 ? playerEntity.getMainHandItem() : (playerEntity.getMainHandItem().getItem() == toolParts1 ? playerEntity.getMainHandItem() : null);
             ItemStack offHandCheck = playerEntity.getOffhandItem().getItem() == toolParts0 ? playerEntity.getOffhandItem() : (playerEntity.getOffhandItem().getItem() == toolParts1 ? playerEntity.getOffhandItem() : null);
@@ -153,7 +149,7 @@ public class ITTool {
             ItemStack mainHandNew = playerEntity.getMainHandItem();
             ItemStack offHandNew = playerEntity.getOffhandItem();
 
-            Item toolParts2 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.toolParts.keySet()).get(2)));
+            Item toolParts2 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.parts.keySet()).get(2)));
 
             ItemStack mainHandCheck = mainHandNew.getItem() == toolParts2 ? mainHandNew : (mainHandNew.getItem() instanceof ITToolItem ? playerEntity.getMainHandItem() : null);
             ItemStack offHandCheck = offHandNew.getItem() == toolParts2 ? offHandNew : (offHandNew.getItem() instanceof ITToolItem ? playerEntity.getOffhandItem() : null);

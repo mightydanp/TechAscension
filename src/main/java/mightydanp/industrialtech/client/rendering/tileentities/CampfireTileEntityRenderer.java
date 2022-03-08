@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.client.rendering.models.CampfireModel;
+import mightydanp.industrialtech.common.blocks.CampfireBlockOverride;
 import mightydanp.industrialtech.common.tileentities.CampfireTileEntityOverride;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -37,7 +38,9 @@ public class CampfireTileEntityRenderer extends TileEntityRenderer<CampfireTileE
         matrixStack.pushPose();
         Model model = new CampfireModel(campfireTileEntityOverride);
 
-        Direction direction = campfireTileEntityOverride.direction;
+        matrixStack.translate(0.5, (double) 0.0F, 0.5);
+
+        Direction direction = campfireTileEntityOverride.getBlockState().getValue(CampfireBlockOverride.FACING);
 
         switch (direction.getName().toLowerCase()){
             case "east":
@@ -51,9 +54,11 @@ public class CampfireTileEntityRenderer extends TileEntityRenderer<CampfireTileE
                 break;
         }
 
-        if(campfireTileEntityOverride.isLit) {
+        if(campfireTileEntityOverride.getBlockState().getValue(CampfireBlockOverride.LIT)) {
+            matrixStack.pushPose();
             IVertexBuilder renderBuffer = iRenderTypeBuffer.getBuffer(model.renderType(getCampfireOnTextureLocation()));
             model.renderToBuffer(matrixStack, renderBuffer, combinedLight, combinedOverlay, 1.0F, 1.0F, 1.0F, 1.0F); // white, fully opaque
+            matrixStack.popPose();
         }else{
             if(campfireTileEntityOverride.keepLogsFormed) {
                 IVertexBuilder renderBuffer = iRenderTypeBuffer.getBuffer(model.renderType(getCampfireOff2TextureLocation()));
@@ -66,9 +71,7 @@ public class CampfireTileEntityRenderer extends TileEntityRenderer<CampfireTileE
 
         matrixStack.popPose();
 
-        if(campfireTileEntityOverride.isLit) {
-
-
+        if(campfireTileEntityOverride.getBlockState().getValue(CampfireBlockOverride.LIT)) {
             matrixStack.pushPose();
             matrixStack.scale(0.65F, 0.7F, 0.65F);
             matrixStack.translate(0.26225, (double) 0.05F, 0.2625);

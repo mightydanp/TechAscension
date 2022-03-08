@@ -1,5 +1,167 @@
 {
-    "variants": {
-        "": { "model": "industrialtech:block/campfire/campfire" }
-    }
+	"variants": {
+		"lit=false,log=0,facing=east": {
+			"model": "industrialtech:block/campfire/campfire_0",
+			"y": 270
+		},
+		"lit=true,log=0,facing=east": {
+			"model": "industrialtech:block/campfire/campfire_0",
+			"y": 270
+		},
+		"lit=false,log=0,facing=north": {
+			"model": "industrialtech:block/campfire/campfire_0",
+			"y": 180
+		},
+		"lit=true,log=0,facing=north": {
+			"model": "industrialtech:block/campfire/campfire_0",
+			"y": 180
+		},
+		"lit=false,log=0,facing=south": {
+			"model": "industrialtech:block/campfire/campfire_0"
+		},
+		"lit=true,log=0,facing=south": {
+			"model": "industrialtech:block/campfire/campfire_0"
+		},
+		"lit=false,log=0,facing=west": {
+			"model": "industrialtech:block/campfire/campfire_0",
+			"y": 90
+		},
+		"lit=true,log=0,facing=west": {
+			"model": "industrialtech:block/campfire/campfire_0",
+			"y": 90
+		},
+
+
+
+		"lit=false,log=1,facing=east": {
+			"model": "industrialtech:block/campfire/campfire_log_1",
+			"y": 270
+		},
+		"lit=true,log=1,facing=east": {
+			"model": "industrialtech:block/campfire/campfire_lit_1",
+			"y": 270
+		},
+		"lit=false,log=1,facing=north": {
+			"model": "industrialtech:block/campfire/campfire_log_1",
+			"y": 180
+		},
+		"lit=true,log=1,facing=north": {
+			"model": "industrialtech:block/campfire/campfire_lit_1",
+			"y": 180
+		},
+		"lit=false,log=1,facing=south": {
+			"model": "industrialtech:block/campfire/campfire_log_1"
+		},
+		"lit=true,log=1,facing=south": {
+			"model": "industrialtech:block/campfire/campfire_lit_1"
+		},
+		"lit=false,log=1,facing=west": {
+			"model": "industrialtech:block/campfire/campfire_log_1",
+			"y": 90
+		},
+		"lit=true,log=1,facing=west": {
+			"model": "industrialtech:block/campfire/campfire_lit_1",
+			"y": 90
+		},
+
+
+
+		"lit=false,log=2,facing=east": {
+			"model": "industrialtech:block/campfire/campfire_log_2",
+			"y": 270
+		},
+		"lit=true,log=2,facing=east": {
+			"model": "industrialtech:block/campfire/campfire_lit_2",
+			"y": 270
+		},
+		"lit=false,log=2,facing=north": {
+			"model": "industrialtech:block/campfire/campfire_log_2",
+			"y": 180
+		},
+		"lit=true,log=2,facing=north": {
+			"model": "industrialtech:block/campfire/campfire_lit_2",
+			"y": 180
+		},
+		"lit=false,log=2,facing=south": {
+			"model": "industrialtech:block/campfire/campfire_log_2"
+		},
+		"lit=true,log=2,facing=south": {
+			"model": "industrialtech:block/campfire/campfire_lit_2"
+		},
+		"lit=false,log=2,facing=west": {
+			"model": "industrialtech:block/campfire/campfire_log_2",
+			"y": 90
+		},
+		"lit=true,log=2,facing=west": {
+			"model": "industrialtech:block/campfire/campfire_lit_2",
+			"y": 90
+		},
+
+
+
+
+		"lit=false,log=3,facing=east": {
+			"model": "industrialtech:block/campfire/campfire_log_3",
+			"y": 270
+		},
+		"lit=true,log=3,facing=east": {
+			"model": "industrialtech:block/campfire/campfire_lit_3",
+			"y": 270
+		},
+		"lit=false,log=3,facing=north": {
+			"model": "industrialtech:block/campfire/campfire_log_3",
+			"y": 180
+		},
+		"lit=true,log=3,facing=north": {
+			"model": "industrialtech:block/campfire/campfire_lit_3",
+			"y": 180
+		},
+		"lit=false,log=3,facing=south": {
+			"model": "industrialtech:block/campfire/campfire_log_3"
+		},
+		"lit=true,log=3,facing=south": {
+			"model": "industrialtech:block/campfire/campfire_lit_3"
+		},
+		"lit=false,log=3,facing=west": {
+			"model": "industrialtech:block/campfire/campfire_log_3",
+			"y": 90
+		},
+		"lit=true,log=3,facing=west": {
+			"model": "industrialtech:block/campfire/campfire_lit_3",
+			"y": 90
+		},
+		
+		
+		
+		"lit=false,log=4,facing=east": {
+			"model": "industrialtech:block/campfire/campfire_log_4",
+			"y": 270
+		},
+		"lit=true,log=4,facing=east": {
+			"model": "industrialtech:block/campfire/campfire_lit_4",
+			"y": 270
+		},
+		"lit=false,log=4,facing=north": {
+			"model": "industrialtech:block/campfire/campfire_log_4",
+			"y": 180
+		},
+		"lit=true,log=4,facing=north": {
+			"model": "industrialtech:block/campfire/campfire_lit_4",
+			"y": 180
+		},
+		"lit=false,log=4,facing=south": {
+			"model": "industrialtech:block/campfire/campfire_log_4"
+		},
+		"lit=true,log=4,facing=south": {
+			"model": "industrialtech:block/campfire/campfire_lit_4"
+		},
+		"lit=false,log=4,facing=west": {
+			"model": "industrialtech:block/campfire/campfire_log_4",
+			"y": 90
+		},
+		"lit=true,log=4,facing=west": {
+			"model": "industrialtech:block/campfire/campfire_lit_4",
+			"y": 90
+		}
+	}
 }
