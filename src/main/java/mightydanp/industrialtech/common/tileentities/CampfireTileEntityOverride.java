@@ -88,11 +88,11 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
 
     public void tick() {
         if (level.isClientSide) {
-            if (getBlockState().getValue(CampfireBlockOverride.LIT)) {
+            if (CampfireBlockOverride.isLit(getBlockState())) {
                 makeParticles();
             }
         } else {
-            if (getBlockState().getValue(CampfireBlockOverride.LIT)) {
+            if (CampfireBlockOverride.isLit(getBlockState())) {
                 cook();
                 burnLogs();
                 ash();

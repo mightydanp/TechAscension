@@ -240,14 +240,12 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
             if(logs < 4 && ItemTags.getAllTags().getTagOrEmpty(log).contains(itemstack.getItem())){
                 itemstack.shrink(1);
                 playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
-
-                BlockState blockState1 = blockState.setValue(CampfireBlockOverride.LOG, blockState.getValue(CampfireBlockOverride.LOG) + 1);
-                world.setBlock(blockPos, blockState1, 3);
+                increaseLogs(world, blockPos, blockState, 1);
+                blockState.getBlockState();
             }
 
             if(logs > 0 && itemstack.getItem() == Items.FLINT_AND_STEEL){
-                BlockState blockState1 = blockState.setValue(LIT, true);
-                world.setBlock(blockPos, blockState1, 3);
+                CampfireBlockOverride.setLit(world, blockPos, blockState, true);
                 tileEntity.keepLogsFormed = true;
                 itemstack.setDamageValue(itemstack.getDamageValue() + 1);
             }
