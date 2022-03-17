@@ -3,7 +3,6 @@ package mightydanp.industrialtech.api.common.jsonconfig.icons;
 import com.google.gson.JsonObject;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 
 import java.io.File;
@@ -14,8 +13,7 @@ import java.util.*;
 /**
  * Created by MightyDanp on 1/20/2022.
  */
-public class TextureIconRegistry extends JsonConfigMultiFile {
-    private static final Map<String, ITextureIcon> textureIconList = new HashMap<>();
+public class TextureIconRegistry extends JsonConfigMultiFile<ITextureIcon> {
 
     @Override
     public void initiate() {
@@ -28,32 +26,29 @@ public class TextureIconRegistry extends JsonConfigMultiFile {
         }
         //
 
-        buildTextureIconJson();
+        buildJson();
         loadExistJson();
         super.initiate();
     }
 
-    public static List<ITextureIcon> getAllTextureIcons() {
-        return new ArrayList<>(textureIconList.values());
-    }
-
-    public static void register(ITextureIcon textureIconIn) {
+    @Override
+    public void register(ITextureIcon textureIconIn) {
         String name = textureIconIn.getName();
-        if (textureIconList.containsKey(textureIconIn.getName()))
+        if (registryMap.containsKey(textureIconIn.getName()))
             throw new IllegalArgumentException("texture icon with name(" + name + "), already exists.");
-        textureIconList.put(name, textureIconIn);
+        registryMap.put(name, textureIconIn);
     }
 
     public ITextureIcon getTextureIconByName(String texture_icon) {
-        return textureIconList.get(texture_icon);
+        return registryMap.get(texture_icon);
     }
 
     public Set<ITextureIcon> getAllTextureIcon() {
-        return new HashSet<>(textureIconList.values());
+        return new HashSet<>(registryMap.values());
     }
 
-    public void buildTextureIconJson(){
-        for(ITextureIcon textureIcon : textureIconList.values()) {
+    public void buildJson(){
+        for(ITextureIcon textureIcon : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(textureIcon.getName());
 
             if (jsonObject.size() == 0) {
@@ -78,10 +73,10 @@ public class TextureIconRegistry extends JsonConfigMultiFile {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!textureIconList.containsValue(getTextureIcon(jsonObject))) {
-                        ITextureIcon textureIcon = getTextureIcon(jsonObject);
+                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
+                        ITextureIcon textureIcon = getFromJsonObject(jsonObject);
 
-                        textureIconList.put(textureIcon.getName(), textureIcon);
+                        registryMap.put(textureIcon.getName(), textureIcon);
 
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to texture icon list because a texture icon already exist!!", file.getAbsolutePath());
@@ -93,7 +88,8 @@ public class TextureIconRegistry extends JsonConfigMultiFile {
         }
     }
 
-    public ITextureIcon getTextureIcon(JsonObject jsonObjectIn){
+    @Override
+    public ITextureIcon getFromJsonObject(JsonObject jsonObjectIn){
         JsonObject textureIconJson = jsonObjectIn.getAsJsonObject("texture_icon");
 
         String name = textureIconJson.get("name").getAsString();

@@ -4,20 +4,17 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by MightyDanp on 1/16/2022.
  */
-public class MaterialFlagRegistry extends JsonConfigMultiFile {
-    private static final Map<String, IMaterialFlag> materialFlagList = new HashMap<>();
+public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
 
     @Override
     public void initiate() {
@@ -30,21 +27,22 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
         }
         //
 
-        buildMaterialFlagJson();
+        buildJson();
         loadExistJson();
         super.initiate();
     }
 
+    @Override
     public void register(IMaterialFlag materialFlagIn) {
-        if (materialFlagList.containsValue(materialFlagIn)) {
+        if (registryMap.containsValue(materialFlagIn)) {
             throw new IllegalArgumentException("material flag with the prefix:(" + materialFlagIn.getPrefix() + "), and the suffix:(" + materialFlagIn.getSuffix() + "), already exists.");
         }
 
-        materialFlagList.put(fixesToName(materialFlagIn.getFixes()), materialFlagIn);
+        registryMap.put(fixesToName(materialFlagIn.getFixes()), materialFlagIn);
     }
 
     public IMaterialFlag getMaterialFlagByFixes(Pair<String, String> fixesIn) {
-        Optional<IMaterialFlag> materialFlag = materialFlagList.values().stream().filter(o -> fixesToName(new Pair<>(o.getPrefix(), o.getSuffix())).equals(fixesToName(fixesIn))).findFirst();
+        Optional<IMaterialFlag> materialFlag = registryMap.values().stream().filter(o -> fixesToName(new Pair<>(o.getPrefix(), o.getSuffix())).equals(fixesToName(fixesIn))).findFirst();
 
         if(!materialFlag.isPresent()) {
             IndustrialTech.LOGGER.warn("(" + fixesToName(fixesIn) + "), does not exist as a material flag.");
@@ -53,12 +51,8 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
         return materialFlag.orElse(null);
     }
 
-    public static List<IMaterialFlag> getAllMaterialFlags() {
-        return materialFlagList.values().stream().collect(Collectors.toList());
-    }
-
     public IMaterialFlag getMaterialFlagByName(String name){
-        Optional<IMaterialFlag> materialFlag = materialFlagList.values().stream().filter(o -> fixesToName(new Pair<>(o.getPrefix(), o.getSuffix())).equals(name)).findFirst();
+        Optional<IMaterialFlag> materialFlag = registryMap.values().stream().filter(o -> fixesToName(new Pair<>(o.getPrefix(), o.getSuffix())).equals(name)).findFirst();
 
         if(!materialFlag.isPresent()) {
             IndustrialTech.LOGGER.warn("(" + name + "), does not exist as a material flag.");
@@ -67,8 +61,8 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
         return materialFlag.orElse(null);
     }
 
-    public void buildMaterialFlagJson(){
-        for(IMaterialFlag materialFlag : materialFlagList.values()) {
+    public void buildJson(){
+        for(IMaterialFlag materialFlag : registryMap.values()) {
             String name = fixesToName(materialFlag.getFixes());
             JsonObject jsonObject = getJsonObject(name);
 
@@ -96,12 +90,12 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!materialFlagList.containsValue(getMaterialFlag(jsonObject))) {
+                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
                         JsonObject materialFlagJson = jsonObject.getAsJsonObject("material_flag");
                         String materialFlagName = materialFlagJson.get("name").getAsString();
-                        IMaterialFlag materialFlag = getMaterialFlag(jsonObject);
+                        IMaterialFlag materialFlag = getFromJsonObject(jsonObject);
 
-                        materialFlagList.put(materialFlagName, materialFlag);
+                        registryMap.put(materialFlagName, materialFlag);
 
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to material flag list because a material flag already exist!!", file.getAbsolutePath());
@@ -113,7 +107,8 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile {
         }
     }
 
-    public IMaterialFlag getMaterialFlag(JsonObject jsonObjectIn){
+    @Override
+    public IMaterialFlag getFromJsonObject(JsonObject jsonObjectIn){
 
         JsonObject materialFlagJson = jsonObjectIn.getAsJsonObject("material_flag");
 

@@ -14,32 +14,28 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class OreVeinRegistry extends JsonConfigMultiFile {
-    private static final Map<String, OreVeinGenFeatureConfig> OreVeinList = new HashMap<>();
+public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig> {
 
     @Override
     public void initiate() {
         setJsonFolderName("ore_vein");
         setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation() + "/generation/");
-        buildOreVeinJson();
+        buildJson();
         loadExistJson();
         super.initiate();
     }
 
-    public static List<OreVeinGenFeatureConfig> getAllOreVeins() {
-        return new ArrayList<>(OreVeinList.values());
-    }
-
-    public static void register(OreVeinGenFeatureConfig feature) {
-        if (OreVeinList.containsKey(feature.name)) {
+    @Override
+    public void register(OreVeinGenFeatureConfig feature) {
+        if (registryMap.containsKey(feature.name)) {
             throw new IllegalArgumentException("ore vein with name(" + feature.name + "), already exists.");
         } else {
-            OreVeinList.put(feature.name, feature);
+            registryMap.put(feature.name, feature);
         }
     }
 
-    public void buildOreVeinJson() {
-        for (OreVeinGenFeatureConfig oreVein : OreVeinList.values()) {
+    public void buildJson() {
+        for (OreVeinGenFeatureConfig oreVein : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(oreVein.name);
             if (jsonObject.size() == 0) {
                 this.saveJsonObject(oreVein.name, toJsonObject(oreVein));
@@ -55,10 +51,10 @@ public class OreVeinRegistry extends JsonConfigMultiFile {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!OreVeinList.containsValue(getOreVein(jsonObject))) {
-                        OreVeinGenFeatureConfig OreVein = getOreVein(jsonObject);
+                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
+                        OreVeinGenFeatureConfig OreVein = getFromJsonObject(jsonObject);
 
-                        OreVeinList.put(OreVein.name, OreVein);
+                        registryMap.put(OreVein.name, OreVein);
                         OreGenerationHandler.addRegistryOreGeneration(OreVein);
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to ore vein list because a ore vein already exist!!", file.getAbsolutePath());
@@ -70,7 +66,8 @@ public class OreVeinRegistry extends JsonConfigMultiFile {
         }
     }
 
-    public OreVeinGenFeatureConfig getOreVein(JsonObject jsonObjectIn) {
+    @Override
+    public OreVeinGenFeatureConfig getFromJsonObject(JsonObject jsonObjectIn) {
         String name = jsonObjectIn.get("name").getAsString();
         int rarity = jsonObjectIn.get("rarity").getAsInt();
         int minHeight = jsonObjectIn.get("min_height").getAsInt();

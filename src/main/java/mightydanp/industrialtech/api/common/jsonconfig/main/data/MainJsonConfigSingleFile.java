@@ -2,6 +2,7 @@ package mightydanp.industrialtech.api.common.jsonconfig.main.data;
 
 import com.google.gson.JsonObject;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigSingleFile;
+import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
 
 import java.nio.file.Path;
@@ -40,7 +41,7 @@ public class MainJsonConfigSingleFile extends JsonConfigSingleFile {
                 if (!getFolderLocation().equals("")) {
                     jsonConfig.addProperty("folder_location", getFolderLocation());
                 } else {
-                    Path path = Paths.get(getJsonFolderLocation() + "/default");
+                    Path path = Paths.get(getJsonFolderLocation() + "/" + Ref.mod_id + "/default");
                     setFolderLocation(path.toFile().toString());
                     jsonConfig.addProperty("folder_location", getFolderLocation());
                 }

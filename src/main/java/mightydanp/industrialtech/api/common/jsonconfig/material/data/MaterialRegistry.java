@@ -5,10 +5,12 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
-import mightydanp.industrialtech.api.common.jsonconfig.ore.IOreType;
-import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.material.ore.IOreType;
+import mightydanp.industrialtech.api.common.jsonconfig.material.ore.OreTypeRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartRegistry;
 import mightydanp.industrialtech.api.common.libs.Ref;
@@ -26,17 +28,12 @@ import java.util.*;
 /**
  * Created by MightyDanp on 12/4/2021.
  */
-public class MaterialRegistry extends JsonConfigMultiFile{
-    private static final Map<String, ITMaterial> materialList = new LinkedHashMap<>();
-
-    public static Map<String, ITMaterial> materials() {
-        return materialList;
-    }
-
+public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
     //todo StoneLayers in ITMaterial need to be registered before any other materials.
-    public static void registerMaterial(ITMaterial materialIn){
-        if(!materials().containsKey(materialIn.name)){
-            materialList.put(materialIn.name, materialIn);
+    @Override
+    public void register(ITMaterial materialIn){
+        if(!registryMap.containsKey(materialIn.name)){
+            registryMap.put(materialIn.name, materialIn);
         }else{
             IndustrialTech.LOGGER.warn("material (" + materialIn.name + ") was not added because it has already been added!");
         }
@@ -47,23 +44,30 @@ public class MaterialRegistry extends JsonConfigMultiFile{
         setJsonFolderName("material");
         setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation());
 
-        buildMaterialJson();
+        buildJson();
         loadExistJson();
-        materialList.forEach((modID, material) -> {
+        registryMap.forEach((modID, material) -> {
             material.save();
         });
     }
 
     public void initiateClient() {
-        materialList.forEach((modID, material) -> {
+        registryMap.forEach((modID, material) -> {
             material.clientRenderLayerInit();
             material.registerColorForItem();
             material.registerColorForBlock();
         });
     }
 
-    public void buildMaterialJson(){
-        for(ITMaterial material : materialList.values()) {
+    public Map<String, ITMaterial> getRegistryMapFromList(List<ITMaterial> materials) {
+        Map<String, ITMaterial> materialList = new LinkedHashMap<>();
+        materials.forEach(itMaterial -> materialList.put(itMaterial.name, itMaterial));
+
+        return materialList;
+    }
+
+    public void buildJson(){
+        for(ITMaterial material : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(material.name);
 
             if (jsonObject.size() == 0) {
@@ -85,10 +89,10 @@ public class MaterialRegistry extends JsonConfigMultiFile{
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!materialList.containsKey(getMaterial(jsonObject).name)) {
-                        ITMaterial material = getMaterial(jsonObject);
+                    if (!registryMap.containsKey(getFromJsonObject(jsonObject).name)) {
+                        ITMaterial material = getFromJsonObject(jsonObject);
 
-                        materialList.put(material.name, material);
+                        registryMap.put(material.name, material);
                         RegistryHandler.MATERIAL.register(material.setRegistryName(new ResourceLocation(Ref.mod_id, material.name)));
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to material list because a material already exist!!", file.getAbsolutePath());
@@ -100,22 +104,11 @@ public class MaterialRegistry extends JsonConfigMultiFile{
         }
     }
 
-    public static ITMaterial grabMaterialFromRegistry(String materialNameIn){
+    public ITMaterial grabMaterialFromRegistry(String materialNameIn){
         return RegistryHandler.MATERIAL.getValue(new ResourceLocation(Ref.mod_id, materialNameIn));
     }
 
-    public static List<ITMaterial> getMaterials() {
-        return new ArrayList<>(RegistryHandler.MATERIAL.getValues());
-    }
-
-    public static Map<String, ITMaterial> getMaterialsMap() {
-        Map<String, ITMaterial> materialList = new LinkedHashMap<>();
-        getMaterials().forEach(itMaterial -> materialList.put(itMaterial.name, itMaterial));
-
-        return materialList;
-    }
-
-    public static JsonObject getJsonObject(ITMaterial materialIn) {
+    public JsonObject getJsonObject(ITMaterial materialIn) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", materialIn.name);
         jsonObject.addProperty("color", materialIn.color);
@@ -287,11 +280,12 @@ public class MaterialRegistry extends JsonConfigMultiFile{
         return jsonObject;
     }
 
-    public static ITMaterial getMaterial(JsonObject jsonObject) {
+    @Override
+    public ITMaterial getFromJsonObject(JsonObject jsonObject) {
         String nameJson = jsonObject.get("name").getAsString();
         int colorJson = jsonObject.get("color").getAsInt();
         String textureIconJson = jsonObject.get("texture_icon").getAsString();
-        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconJson.split(":")[0], IndustrialTech.textureIconRegistry.getTextureIconByName(textureIconJson.split(":")[1]));
+        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconJson.split(":")[0], ((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).getTextureIconByName(textureIconJson.split(":")[1]));
         ITMaterial material = new ITMaterial(nameJson, colorJson, textureIcon);
 
         if(jsonObject.has("element_localization")) {
@@ -336,7 +330,7 @@ public class MaterialRegistry extends JsonConfigMultiFile{
         if(jsonObject.has("ore_properties")) {
             JsonObject oreProperties = jsonObject.get("ore_properties").getAsJsonObject();{
                 if (oreProperties.has("ore_type") && oreProperties.has("dense_ore_density")) {
-                    IOreType oreTypeJson = OreTypeRegistry.getOreTypeByName(oreProperties.get("ore_type").getAsString());
+                    IOreType oreTypeJson = ((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).getByName(oreProperties.get("ore_type").getAsString());
                     int denseOreDensityJson = oreProperties.get("dense_ore_density").getAsInt();
                     material.setOreType(oreTypeJson);
                     material.setDenseOreDensity(denseOreDensityJson);
@@ -347,7 +341,7 @@ public class MaterialRegistry extends JsonConfigMultiFile{
         if(jsonObject.has("fluid_properties")) {
             JsonObject fluidProperties = jsonObject.get("fluid_properties").getAsJsonObject();{
                 if (fluidProperties.has("fluid_state") && fluidProperties.has("fluid_acceleration") && fluidProperties.has("fluid_density") && fluidProperties.has("fluid_luminosity") && fluidProperties.has("fluid_viscosity")) {
-                    IFluidState fluidStateJson = IndustrialTech.fluidStateRegistry.getFluidStateByName(fluidProperties.get("fluid_state").getAsString());
+                    IFluidState fluidStateJson = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).getFluidStateByName(fluidProperties.get("fluid_state").getAsString());
                     float fluidAccelerationJson = fluidProperties.get("fluid_acceleration").getAsFloat();
                     int fluidDensityJson = fluidProperties.get("fluid_density").getAsInt();
                     int fluidLuminosityJson = fluidProperties.get("fluid_luminosity").getAsInt();
@@ -391,7 +385,7 @@ public class MaterialRegistry extends JsonConfigMultiFile{
                                 String toolPartPrefix = toolPartProperties.get("tool_part_prefix").getAsString();
                                 String toolPartSuffix = toolPartProperties.get("tool_part_suffix").getAsString();
 
-                                IToolPart toolPartJson = ToolPartRegistry.getToolPartByName(fixesToName(new Pair<>(toolPartPrefix, toolPartSuffix)));
+                                IToolPart toolPartJson =  ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).getByName(fixesToName(new Pair<>(toolPartPrefix, toolPartSuffix)));
 
                                 toolPartJsonList.add(toolPartJson);
                             }
@@ -404,13 +398,6 @@ public class MaterialRegistry extends JsonConfigMultiFile{
         }
 
         return material;
-    }
-
-    public static Map<String, ITMaterial> getMaterialsMap(List<ITMaterial> materials) {
-        Map<String, ITMaterial> materialList = new LinkedHashMap<>();
-        materials.forEach(itMaterial -> materialList.put(itMaterial.name, itMaterial));
-
-        return materialList;
     }
 
 

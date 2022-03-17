@@ -142,7 +142,9 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     private void burnLogs() {
             if(level != null) {
                 if (getBlockState().getValue(CampfireBlockOverride.LOG) > 0) {
-                    fuelBurnTime = 600;
+                    //fuelBurnTime = 600;
+                    fuelBurnTime = 160;
+                    fuelBurnProgress++;
                     if (this.fuelBurnProgress >= this.fuelBurnTime) {
                         CampfireBlockOverride.shrinkLogs(level, getBlockPos(), getBlockState(), 1);
 
@@ -348,11 +350,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     }
 
     public BlockState getBlockState() {
-        if (this.cachedBlockState == null) {
-            this.cachedBlockState = this.level.getBlockState(this.worldPosition);
-        }
-
-        return this.cachedBlockState;
+        return this.level.getBlockState(getBlockPos());
     }
 
     public void updateContainingBlockInfo() {

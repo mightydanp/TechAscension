@@ -1,6 +1,7 @@
 package mightydanp.industrialtech.common.tool;
 
 import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeRegistry;
 import mightydanp.industrialtech.api.common.tool.ITTool;
@@ -21,7 +22,7 @@ public class ModTools extends ITTools {
     public static ITTool hammer, chisel, pickaxe, knife;
 
     public static void init(){
-        IToolType normal = IndustrialTech.toolTypeRegistry.getToolTypeByFixes(new Pair<>("", "_tool"));
+        IToolType normal = ((ToolTypeRegistry) IndustrialTech.configSync.toolType.getFirst()).getToolTypeByFixes(new Pair<>("", "_tool"));
 
         tools.add(chisel = new ITTool("chisel", 1, normal, new ChiselToolItem()));
         tools.add(hammer = new ITTool("hammer", 1, normal, new HammerToolItem()));

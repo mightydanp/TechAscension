@@ -1,10 +1,10 @@
 package mightydanp.industrialtech.api.common.jsonconfig.generation.smallore;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface.RandomSurfaceRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
@@ -21,37 +21,27 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class SmallOreVeinServer {
-    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
-    private static final Map<String, SmallOreVeinGenFeatureConfig> serverSmallOreVeinsMap = new HashMap<>();
+public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureConfig> {
 
-    SmallOreVeinRegistry smallOreVeinRegistry = IndustrialTech.smallOreVeinRegistry;
-
-    public Map<String, SmallOreVeinGenFeatureConfig> getServerSmallOreVeinsMap(){
-        return serverSmallOreVeinsMap;
-    }
-
-    public boolean serverHasSmallOreVeins(){
-        return serverSmallOreVeinsMap.size() > 0;
-    }
-
-    public static Map<String, SmallOreVeinGenFeatureConfig> getServerSmallOreVeinsMap(List<SmallOreVeinGenFeatureConfig> oreVeinsIn) {
+    @Override
+    public Map<String, SmallOreVeinGenFeatureConfig> getServerMapFromList(List<SmallOreVeinGenFeatureConfig> oreVeinsIn) {
         Map<String, SmallOreVeinGenFeatureConfig> SmallOreVeinsList = new LinkedHashMap<>();
         oreVeinsIn.forEach(oreVein -> SmallOreVeinsList.put(oreVein.name, oreVein));
 
         return SmallOreVeinsList;
     }
 
+    @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getSmallOreVeins().size() != getServerSmallOreVeinsMap().size()){
+        if(message.getSmallOreVeins().size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("ore_vein", sync.get());
             return false;
         }
 
-        getServerSmallOreVeinsMap().forEach((name, smallOreVein) -> {
+        getServerMap().forEach((name, smallOreVein) -> {
             sync.set(message.getSmallOreVeins().stream().anyMatch(o -> o.name.equals(name)));
 
             if(sync.get()) {
@@ -59,8 +49,8 @@ public class SmallOreVeinServer {
 
                 if(optional.isPresent()) {
                     SmallOreVeinGenFeatureConfig serverSmallOreVein = optional.get();
-                    JsonObject jsonMaterial = IndustrialTech.smallOreVeinRegistry.toJsonObject(smallOreVein);
-                    JsonObject materialJson = IndustrialTech.smallOreVeinRegistry.toJsonObject(serverSmallOreVein);
+                    JsonObject jsonMaterial = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).toJsonObject(smallOreVein);
+                    JsonObject materialJson = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -74,6 +64,7 @@ public class SmallOreVeinServer {
         return sync.get();
     }
 
+    @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, SmallOreVeinGenFeatureConfig> clientSmallOreVeins = new HashMap<>();
@@ -84,7 +75,7 @@ public class SmallOreVeinServer {
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
-            if(getServerSmallOreVeinsMap().size() != files.length){
+            if(getServerMap().size() != files.length){
                 sync.set(false);
                 configSync.syncedJson.put("ore_vein", sync.get());
                 return false;
@@ -98,18 +89,18 @@ public class SmallOreVeinServer {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = smallOreVeinRegistry.getJsonObject(file.getName());
-                SmallOreVeinGenFeatureConfig oreVein = smallOreVeinRegistry.getSmallOreVein(jsonObject);
+                JsonObject jsonObject = IndustrialTech.configSync.smallOre.getFirst().getJsonObject(file.getName());
+                SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).getFromJsonObject(jsonObject);
                 clientSmallOreVeins.put(oreVein.name, oreVein);
             }
 
-            getServerSmallOreVeinsMap().values().forEach(serverSmallOreVein -> {
+            getServerMap().values().forEach(serverSmallOreVein -> {
                 sync.set(clientSmallOreVeins.containsKey(serverSmallOreVein.name));
 
                 if(sync.get()) {
-                    SmallOreVeinGenFeatureConfig clientSmallOreVein = getServerSmallOreVeinsMap().get(serverSmallOreVein.name);
-                    JsonObject jsonMaterial = smallOreVeinRegistry.toJsonObject(serverSmallOreVein);
-                    JsonObject materialJson = smallOreVeinRegistry.toJsonObject(clientSmallOreVein);
+                    SmallOreVeinGenFeatureConfig clientSmallOreVein = getServerMap().get(serverSmallOreVein.name);
+                    JsonObject jsonMaterial = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
+                    JsonObject materialJson = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).toJsonObject(clientSmallOreVein);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -122,7 +113,8 @@ public class SmallOreVeinServer {
         return sync.get();
     }
 
-    public void syncClientWithServers(String folderName) throws IOException {
+    @Override
+    public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/generation"+ "/ore_vein");
 
@@ -132,10 +124,10 @@ public class SmallOreVeinServer {
             }
         }
 
-        for (SmallOreVeinGenFeatureConfig oreVein : getServerSmallOreVeinsMap().values()) {
+        for (SmallOreVeinGenFeatureConfig oreVein : getServerMap().values()) {
             String name = oreVein.name;
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = smallOreVeinRegistry.toJsonObject(oreVein);
+            JsonObject jsonObject = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).toJsonObject(oreVein);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -147,6 +139,7 @@ public class SmallOreVeinServer {
         }
     }
 
+    @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/ore_vein");
@@ -155,8 +148,8 @@ public class SmallOreVeinServer {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = smallOreVeinRegistry.getJsonObject(file.getName());
-                    SmallOreVeinGenFeatureConfig oreVein = smallOreVeinRegistry.getSmallOreVein(jsonObject);
+                    JsonObject jsonObject = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).getJsonObject(file.getName());
+                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = oreVein.name;
 
@@ -174,17 +167,19 @@ public class SmallOreVeinServer {
         }
     }
 
-    public void loadSmallOreVeins(SyncMessage message) {
+    @Override
+    public void loadFromServer(SyncMessage message) {
         Map<String, SmallOreVeinGenFeatureConfig> SmallOreVeins = message.getSmallOreVeins().stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
 
-        serverSmallOreVeinsMap.clear();
-        serverSmallOreVeinsMap.putAll(SmallOreVeins);
+        serverMap.clear();
+        serverMap.putAll(SmallOreVeins);
 
         IndustrialTech.LOGGER.info("Loaded {} ore veins from the server", SmallOreVeins.size());
     }
 
-    public static void singleToBuffer(PacketBuffer buffer, SmallOreVeinGenFeatureConfig oreVein) {//friendlybotbuff
+    @Override
+    public void singleToBuffer(PacketBuffer buffer, SmallOreVeinGenFeatureConfig oreVein) {//friendlybotbuff
         buffer.writeUtf(oreVein.name);
         buffer.writeInt(oreVein.rarity);
         buffer.writeInt(oreVein.minHeight);
@@ -202,7 +197,8 @@ public class SmallOreVeinServer {
         }
     }
 
-    public static void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    @Override
+    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
         buffer.writeVarInt(message.getSmallOreVeins().size());
 
         message.getSmallOreVeins().forEach((smallOreVein) -> {
@@ -210,7 +206,8 @@ public class SmallOreVeinServer {
         });
     }
 
-    public static SmallOreVeinGenFeatureConfig singleFromBuffer(PacketBuffer buffer) {
+    @Override
+    public SmallOreVeinGenFeatureConfig singleFromBuffer(PacketBuffer buffer) {
         String name = buffer.readUtf();
         int rarity = buffer.readInt();
         int minHeight = buffer.readInt();
@@ -233,7 +230,8 @@ public class SmallOreVeinServer {
         return new SmallOreVeinGenFeatureConfig(name, rarity, minHeight, maxHeight, biomes, veinBlocksAndChances);
     }
 
-    public static List<SmallOreVeinGenFeatureConfig> multipleFromBuffer(PacketBuffer buffer) {
+    @Override
+    public List<SmallOreVeinGenFeatureConfig> multipleFromBuffer(PacketBuffer buffer) {
         List<SmallOreVeinGenFeatureConfig> oreVeins = new ArrayList<>();
 
         int size = buffer.readVarInt();

@@ -2,12 +2,14 @@ package mightydanp.industrialtech.api.common.handler.generation;
 
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.generation.blocksinwater.BlocksInWaterRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface.RandomSurfaceRegistry;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.RandomSurfaceGenFeature;
 import mightydanp.industrialtech.api.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
 import mightydanp.industrialtech.api.common.world.gen.feature.BlocksInWaterGenFeature;
 import mightydanp.industrialtech.api.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
+import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
@@ -75,7 +77,7 @@ public class PlantGenerationHandler {
         BlocksInWaterGenFeatureConfig waterGenConfig = new BlocksInWaterGenFeatureConfig(nameIn, rarityIn, heightIn, shallowWaterIn, goesAboveWaterIn, biomes, validBlocks, topState, bellowState);
         ConfiguredFeature<?, ?> topWaterCropFeature = topWaterCrop.get().configured(waterGenConfig);
         Registry.register(registry, new ResourceLocation(Ref.mod_id, waterGenConfig.name), topWaterCropFeature);
-        BlocksInWaterRegistry.register(waterGenConfig);
+        ((BlocksInWaterRegistry) IndustrialTech.configSync.blocksInWater.getFirst()).register(waterGenConfig);
         //blockInWaterGenerationList.put(topWaterCropFeature, biomesIn);
     }
 
@@ -114,7 +116,7 @@ public class PlantGenerationHandler {
         RandomSurfaceGenFeatureConfig topBlockSurfaceConfig = new RandomSurfaceGenFeatureConfig(nameIn, rarityIn, biomes, blocks, validBlocks);
         ConfiguredFeature<?, ?> randomSurfaceFeature = randomSurface.get().configured(topBlockSurfaceConfig);
         Registry.register(registry, new ResourceLocation(Ref.mod_id, topBlockSurfaceConfig.name), randomSurfaceFeature);
-        RandomSurfaceRegistry.register(topBlockSurfaceConfig);
+        ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).register(topBlockSurfaceConfig);
         //randomSurfaceGenList.put(randomSurfaceFeature, biomesIn);
     }
 

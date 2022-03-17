@@ -1,5 +1,7 @@
 package mightydanp.industrialtech.api.common.jsonconfig.sync.network.message;
 
+import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagServer;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateServer;
@@ -10,10 +12,12 @@ import mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface.
 import mightydanp.industrialtech.api.common.jsonconfig.generation.smallore.SmallOreVeinServer;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconServer;
-import mightydanp.industrialtech.api.common.jsonconfig.ore.IOreType;
-import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeServer;
+import mightydanp.industrialtech.api.common.jsonconfig.material.ore.IOreType;
+import mightydanp.industrialtech.api.common.jsonconfig.material.ore.OreTypeServer;
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.IStoneLayer;
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerServer;
+import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartServer;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
@@ -24,18 +28,24 @@ import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialSer
 import mightydanp.industrialtech.api.common.world.gen.feature.*;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.storage.FolderName;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
  * Created by MightyDanp on 12/27/2021.
  */
 public class SyncMessage {
+    private Map<Integer, List<?>> configs = new HashMap<>();
+
     private List<IMaterialFlag> materialFlags = new ArrayList<>();
     private List<IFluidState> fluidStates  = new ArrayList<>();
     private List<ITextureIcon> textureIcons  = new ArrayList<>();
@@ -182,20 +192,22 @@ public class SyncMessage {
 
         SyncMessage message = new SyncMessage(isSinglePlayer, singlePlayerWorldName);
 
-        message.setMaterialFlags(MaterialFlagServer.multipleFromBuffer(buffer));
-        message.setFluidStates(FluidStateServer.multipleFromBuffer(buffer));
-        message.setTextureIcons(TextureIconServer.multipleFromBuffer(buffer));
-        message.setOreTypes(OreTypeServer.multipleFromBuffer(buffer));
-        message.setToolParts(ToolPartServer.multipleFromBuffer(buffer));
-        message.setToolTypes(ToolTypeServer.multipleFromBuffer(buffer));
-        message.setStoneLayers(StoneLayerServer.multipleFromBuffer(buffer));
+        ConfigSync configSync = IndustrialTech.configSync;
 
-        message.setMaterials(MaterialServer.multipleFromBuffer(buffer));
+        message.setMaterialFlags(((MaterialFlagServer)configSync.materialFlag.getSecond()).multipleFromBuffer(buffer));
+        message.setFluidStates(((FluidStateServer)configSync.fluidState.getSecond()).multipleFromBuffer(buffer));
+        message.setTextureIcons(((TextureIconServer)configSync.textureIcon.getSecond()).multipleFromBuffer(buffer));
+        message.setOreTypes(((OreTypeServer)configSync.oreType.getSecond()).multipleFromBuffer(buffer));
+        message.setToolParts(((ToolPartServer)configSync.toolPart.getSecond()).multipleFromBuffer(buffer));
+        message.setToolTypes(((ToolTypeServer)configSync.toolType.getSecond()).multipleFromBuffer(buffer));
+        message.setStoneLayers(((StoneLayerServer)configSync.stoneLayer.getSecond()).multipleFromBuffer(buffer));
 
-        message.setOreVeins(OreVeinServer.multipleFromBuffer(buffer));
-        message.setSmallOreVeins(SmallOreVeinServer.multipleFromBuffer(buffer));
-        message.setBlocksInWater(BlocksInWaterServer.multipleFromBuffer(buffer));
-        message.setRandomSurface(RandomSurfaceServer.multipleFromBuffer(buffer));
+        message.setMaterials(((MaterialServer)configSync.material.getSecond()).multipleFromBuffer(buffer));
+
+        message.setOreVeins(((OreVeinServer)configSync.oreVein.getSecond()).multipleFromBuffer(buffer));
+        message.setSmallOreVeins(((SmallOreVeinServer)configSync.smallOre.getSecond()).multipleFromBuffer(buffer));
+        message.setBlocksInWater(((BlocksInWaterServer)configSync.blocksInWater.getSecond()).multipleFromBuffer(buffer));
+        message.setRandomSurface(((RandomSurfaceServer)configSync.randomSurface.getSecond()).multipleFromBuffer(buffer));
 
         return message;
     }
@@ -203,76 +215,41 @@ public class SyncMessage {
     public static void write(SyncMessage message, PacketBuffer buffer) {
         buffer.writeBoolean(message.isSinglePlayer());
         buffer.writeUtf(message.singlePlayerWorldName);
-        MaterialFlagServer.multipleToBuffer(message, buffer);
-        FluidStateServer.multipleToBuffer(message, buffer);
-        TextureIconServer.multipleToBuffer(message, buffer);
-        OreTypeServer.multipleToBuffer(message, buffer);
-        ToolPartServer.multipleToBuffer(message, buffer);
-        ToolTypeServer.multipleToBuffer(message, buffer);
-        StoneLayerServer.multipleToBuffer(message, buffer);
 
-        MaterialServer.multipleToBuffer(message, buffer);
+        for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
+            Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = IndustrialTech.configSync.configs.get(i);
+            config.getSecond().multipleToBuffer(message, buffer);
+        }
 
-        OreVeinServer.multipleToBuffer(message, buffer);
-        SmallOreVeinServer.multipleToBuffer(message, buffer);
-        BlocksInWaterServer.multipleToBuffer(message, buffer);
-        RandomSurfaceServer.multipleToBuffer(message, buffer);
     }
 
     public static void onMessage(SyncMessage message, Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> {
 
-            IndustrialTech.configSync.materialFlagServer.loadMaterialFlags(message);
-            IndustrialTech.configSync.fluidStateServer  .loadFluidStates(message);
-            IndustrialTech.configSync.oreTypeServer     .loadOreTypes(message);
-            IndustrialTech.configSync.toolPartServer    .loadToolParts(message);
-            IndustrialTech.configSync.toolTypeServer    .loadToolTypes(message);
-            IndustrialTech.configSync.textureIconServer .loadTextureIcons(message);
-            IndustrialTech.configSync.stoneLayerServer  .loadStoneLayers(message);
+            ConfigSync configSync = IndustrialTech.configSync;
 
-            IndustrialTech.configSync.materialServer.loadMaterials(message);
-
-            IndustrialTech.configSync.oreVeinServer.loadOreVeins(message);
-            IndustrialTech.configSync.smallOreVeinServer.loadSmallOreVeins(message);
-            IndustrialTech.configSync.blocksInWaterServer.loadBlocksInWaters(message);
-            IndustrialTech.configSync.randomSurfaceServer.loadRandomSurfaces(message);
-
+            for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
+                Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = IndustrialTech.configSync.configs.get(i);
+                config.getSecond().loadFromServer(message);
+            }
 
             if(!message.isSinglePlayer()){
-                IndustrialTech.configSync.isSinglePlayer = false;
-                IndustrialTech.configSync.singlePlayerWorldName = "";
-                IndustrialTech.configSync.materialFlagServer.isClientAndServerConfigsSynced(message);
-                IndustrialTech.configSync.fluidStateServer.isClientAndServerConfigsSynced(message);
-                IndustrialTech.configSync.oreTypeServer.isClientAndServerConfigsSynced(message);
-                IndustrialTech.configSync.toolPartServer.isClientAndServerConfigsSynced(message);
-                IndustrialTech.configSync.toolTypeServer.isClientAndServerConfigsSynced(message);
-                IndustrialTech.configSync.textureIconServer.isClientAndServerConfigsSynced(message);
-                IndustrialTech.configSync.stoneLayerServer.isClientAndServerConfigsSynced(message);
+                configSync.isSinglePlayer = false;
+                configSync.singlePlayerWorldName = "";
 
-                IndustrialTech.configSync.materialServer.isClientAndServerConfigsSynced(message);
+                for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
+                    Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = IndustrialTech.configSync.configs.get(i);
+                    config.getSecond().isClientAndServerConfigsSynced(message);
+                }
 
-                IndustrialTech.configSync.oreVeinServer.isClientAndServerConfigsSynced(message);
-                IndustrialTech.configSync.smallOreVeinServer.isClientAndServerConfigsSynced(message);
-                IndustrialTech.configSync.blocksInWaterServer.isClientAndServerConfigsSynced(message);
-                IndustrialTech.configSync.randomSurfaceServer.isClientAndServerConfigsSynced(message);
             }else{
-                IndustrialTech.configSync.isSinglePlayer = true;
-                IndustrialTech.configSync.singlePlayerWorldName = message.getSinglePlayerWorldName();
+                configSync.isSinglePlayer = true;
+                configSync.singlePlayerWorldName = message.getSinglePlayerWorldName();
 
-                IndustrialTech.configSync.materialFlagServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-                IndustrialTech.configSync.fluidStateServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-                IndustrialTech.configSync.oreTypeServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-                IndustrialTech.configSync.toolPartServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-                IndustrialTech.configSync.toolTypeServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-                IndustrialTech.configSync.textureIconServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-                IndustrialTech.configSync.stoneLayerServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-
-                IndustrialTech.configSync.materialServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-
-                IndustrialTech.configSync.oreVeinServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-                IndustrialTech.configSync.smallOreVeinServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-                IndustrialTech.configSync.blocksInWaterServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-                IndustrialTech.configSync.randomSurfaceServer.isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
+                    Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = IndustrialTech.configSync.configs.get(i);
+                    config.getSecond().isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
+                }
             }
             //
 

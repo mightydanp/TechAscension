@@ -16,8 +16,7 @@ import java.util.*;
 /**
  * Created by MightyDanp on 1/20/2022.
  */
-public class ToolTypeRegistry extends JsonConfigMultiFile {
-    private static final Map<Pair<String, String>, IToolType> toolTypeList = new HashMap<>();
+public class ToolTypeRegistry extends JsonConfigMultiFile<IToolType> {
 
     @Override
     public void initiate() {
@@ -30,63 +29,48 @@ public class ToolTypeRegistry extends JsonConfigMultiFile {
         }
         //
 
-        buildToolTypeJson();
+        buildJson();
         loadExistJson();
 
         super.initiate();
     }
 
-    public static List<IToolType> getAllToolTypes() {
-        return new ArrayList<>(toolTypeList.values());
-    }
-
+    @Override
     public void register(IToolType toolTypeIn) {
         Pair<String, String> fixes = new Pair<>(toolTypeIn.getPrefix(), toolTypeIn.getSuffix());
-        if (toolTypeList.containsValue(toolTypeIn)) {
+        if (registryMap.containsValue(toolTypeIn)) {
             throw new IllegalArgumentException("tool type with the prefix:(" + toolTypeIn.getPrefix() + "), and the suffix:(" + toolTypeIn.getSuffix() + "), already exists.");
         }
 
-        toolTypeList.put(fixes, toolTypeIn);
+        registryMap.put(fixesToName(fixes), toolTypeIn);
     }
 
     public IToolType getToolTypeByFixes(Pair<String, String> fixesIn) {
-        return toolTypeList.get(fixesIn);
+        return registryMap.get(fixesIn);
     }
 
     public Set<IToolType> getAllToolType() {
-        return new HashSet<>(toolTypeList.values());
+        return new HashSet<>(registryMap.values());
     }
 
-    public void buildToolTypeJson(){
-        for(Pair<String, String> toolType : toolTypeList.keySet()) {
-            String prefix = toolType.getFirst().replace("_", "");
-            String suffix = toolType.getSecond().replace("_", "");
-            String name = "";
-
-            if(!prefix.equals("") && !suffix.equals("")){
-                name = prefix + "_" + suffix;
-            }
-
-            if(prefix.equals("") && !suffix.equals("")){
-                name = suffix;
-            }
-
-            if(!prefix.equals("") && suffix.equals("")){
-                name = prefix;
-            }
+    public void buildJson(){
+        for(IToolType toolType : registryMap.values()) {
+            String prefix = toolType.getPrefix().replace("_", "");
+            String suffix = toolType.getSuffix().replace("_", "");
+            String name = fixesToName(new Pair<>(toolType.getPrefix(), toolType.getSuffix()));
 
             if(!name.equals("")) {
                 JsonObject jsonObject = getJsonObject(name);
 
                 if (jsonObject.size() == 0) {
-                    JsonObject toolTypeJson = new JsonObject();
+                    JsonObject toolPartJson = new JsonObject();
                     {
-                        toolTypeJson.addProperty("name", name);
-                        toolTypeJson.addProperty("prefix", toolType.getFirst());
-                        toolTypeJson.addProperty("suffix", toolType.getSecond());
+                        toolPartJson.addProperty("name", name);
+                        toolPartJson.addProperty("prefix", toolType.getPrefix());
+                        toolPartJson.addProperty("suffix", toolType.getSuffix());
 
-                        if (toolTypeJson.size() > 0) {
-                            jsonObject.add("tool_type", toolTypeJson);
+                        if (toolPartJson.size() > 0) {
+                            jsonObject.add("tool_type", toolPartJson);
                         }
                     }
                     this.saveJsonObject(name, jsonObject);
@@ -103,12 +87,12 @@ public class ToolTypeRegistry extends JsonConfigMultiFile {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!toolTypeList.containsValue(getIToolType(jsonObject))) {
+                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
                         JsonObject toolTypeJson = jsonObject.getAsJsonObject("tool_type");
                         String toolTypeName = toolTypeJson.get("name").getAsString();
-                        IToolType toolType = getIToolType(jsonObject);
+                        IToolType toolType = getFromJsonObject(jsonObject);
 
-                        toolTypeList.put(toolType.getFixes(), toolType);
+                        registryMap.put(fixesToName(toolType.getFixes()), toolType);
                         ToolType.get(toolTypeName);
 
                     } else {
@@ -121,7 +105,8 @@ public class ToolTypeRegistry extends JsonConfigMultiFile {
         }
     }
 
-    public IToolType getIToolType(JsonObject jsonObjectIn){
+    @Override
+    public IToolType getFromJsonObject(JsonObject jsonObjectIn){
         JsonObject toolTypeJson = jsonObjectIn.getAsJsonObject("tool_type");
 
         String name = toolTypeJson.get("name").getAsString();

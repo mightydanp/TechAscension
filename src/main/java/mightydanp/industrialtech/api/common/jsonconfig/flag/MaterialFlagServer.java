@@ -1,10 +1,9 @@
 package mightydanp.industrialtech.api.common.jsonconfig.flag;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
@@ -23,57 +22,26 @@ import java.util.stream.Collectors;
 /**
  * Created by MightyDanp on 1/23/2022.
  */
-public class MaterialFlagServer {
-    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
-    private static final Map<String, IMaterialFlag> serverMaterialFlagsMap = new HashMap<>();
-
-    MaterialFlagRegistry materialFlagRegistry = IndustrialTech.materialFlagRegistry;
-
-    public Map<String, IMaterialFlag> getServerMaterialFlagsMap(){
-        return serverMaterialFlagsMap;
-    }
-
-    public boolean serverHasMaterialFlags(){
-        return serverMaterialFlagsMap.size() > 0;
-    }
-
-    public static String fixesToName(String prefixIn, String suffixIn){
-        String prefix = prefixIn.replace("_", "");
-        String suffix = suffixIn.replace("_", "");
-        String name = "";
-
-        if(!prefix.equals("") && !suffix.equals("")){
-            name = prefix + "_" + suffix;
-        }
-
-        if(prefix.equals("") && !suffix.equals("")){
-            name = suffix;
-        }
-
-        if(!prefix.equals("") && suffix.equals("")){
-            name = prefix;
-        }
-
-        return name;
-    }
-
-    public static Map<String, IMaterialFlag> getServerMaterialFlagsMap(List<IMaterialFlag> materialFlagsIn) {
+public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
+    @Override
+    public Map<String, IMaterialFlag> getServerMapFromList(List<IMaterialFlag> materialFlagsIn) {
         Map<String, IMaterialFlag> materialFlagsList = new LinkedHashMap<>();
         materialFlagsIn.forEach(materialFlag -> materialFlagsList.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag));
 
         return materialFlagsList;
     }
 
+    @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getMaterialFlags().size() != getServerMaterialFlagsMap().size()){
+        if(message.getMaterialFlags().size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("material_flag", sync.get());
             return false;
         }
 
-        getServerMaterialFlagsMap().forEach((name, materialFlag) -> {
+        getServerMap().forEach((name, materialFlag) -> {
             sync.set(message.getMaterialFlags().stream().anyMatch(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)));
 
             if(sync.get()) {
@@ -81,8 +49,8 @@ public class MaterialFlagServer {
 
                 if(optional.isPresent()) {
                     IMaterialFlag serverMaterialFlag = optional.get();
-                    JsonObject jsonMaterial = IndustrialTech.materialFlagRegistry.toJsonObject(materialFlag);
-                    JsonObject materialJson = IndustrialTech.materialFlagRegistry.toJsonObject(serverMaterialFlag);
+                    JsonObject jsonMaterial = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).toJsonObject(materialFlag);
+                    JsonObject materialJson = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -96,6 +64,7 @@ public class MaterialFlagServer {
         return sync.get();
     }
 
+    @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, IMaterialFlag> clientMaterialFlags = new HashMap<>();
@@ -106,7 +75,7 @@ public class MaterialFlagServer {
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
-            if(getServerMaterialFlagsMap().size() != files.length){
+            if(getServerMap().size() != files.length){
                 sync.set(false);
                 configSync.syncedJson.put("material_flag", sync.get());
                 return false;
@@ -120,18 +89,18 @@ public class MaterialFlagServer {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = materialFlagRegistry.getJsonObject(file.getName());
-                IMaterialFlag materialFlag = materialFlagRegistry.getMaterialFlag(jsonObject);
+                JsonObject jsonObject = IndustrialTech.configSync.materialFlag.getFirst().getJsonObject(file.getName());
+                IMaterialFlag materialFlag = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).getFromJsonObject(jsonObject);
                 clientMaterialFlags.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag);
             }
 
-            getServerMaterialFlagsMap().values().forEach(serverMaterialFlag -> {
+            getServerMap().values().forEach(serverMaterialFlag -> {
                 sync.set(clientMaterialFlags.containsKey(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix())));
 
                 if(sync.get()) {
-                    IMaterialFlag clientMaterialFlag = getServerMaterialFlagsMap().get(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix()));
-                    JsonObject jsonMaterial = materialFlagRegistry.toJsonObject(serverMaterialFlag);
-                    JsonObject materialJson = materialFlagRegistry.toJsonObject(clientMaterialFlag);
+                    IMaterialFlag clientMaterialFlag = getServerMap().get(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix()));
+                    JsonObject jsonMaterial = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
+                    JsonObject materialJson = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).toJsonObject(clientMaterialFlag);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -144,6 +113,8 @@ public class MaterialFlagServer {
         return sync.get();
     }
 
+
+    @Override
     public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/material_flag");
@@ -154,10 +125,10 @@ public class MaterialFlagServer {
             }
         }
 
-        for (IMaterialFlag materialFlag : getServerMaterialFlagsMap().values()) {
+        for (IMaterialFlag materialFlag : getServerMap().values()) {
             String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = materialFlagRegistry.toJsonObject(materialFlag);
+            JsonObject jsonObject = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).toJsonObject(materialFlag);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -169,6 +140,7 @@ public class MaterialFlagServer {
         }
     }
 
+    @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/material_flag");
@@ -177,8 +149,8 @@ public class MaterialFlagServer {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = materialFlagRegistry.getJsonObject(file.getName());
-                    IMaterialFlag materialFlag = materialFlagRegistry.getMaterialFlag(jsonObject);
+                    JsonObject jsonObject = IndustrialTech.configSync.materialFlag.getFirst().getJsonObject(file.getName());
+                    IMaterialFlag materialFlag = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
 
@@ -196,23 +168,26 @@ public class MaterialFlagServer {
         }
     }
 
-    public void loadMaterialFlags(SyncMessage message) {
+    @Override
+    public void loadFromServer(SyncMessage message) {
         Map<String, IMaterialFlag> materialFlags = message.getMaterialFlags().stream()
                 .collect(Collectors.toMap(s -> fixesToName(s.getPrefix(), s.getSuffix()), s -> s));
 
-        serverMaterialFlagsMap.clear();
-        serverMaterialFlagsMap.putAll(materialFlags);
+        getServerMap().clear();
+        getServerMap().putAll(materialFlags);
 
         IndustrialTech.LOGGER.info("Loaded {} material flags from the server", materialFlags.size());
     }
 
-    public static void singleToBuffer(PacketBuffer buffer, IMaterialFlag materialFlag) {//friendlybotbuff
+    @Override
+    public void singleToBuffer(PacketBuffer buffer, IMaterialFlag materialFlag) {//friendlybotbuff
         buffer.writeUtf(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()));
         buffer.writeUtf(materialFlag.getPrefix());
         buffer.writeUtf(materialFlag.getSuffix());
     }
 
-    public static void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    @Override
+    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
         buffer.writeVarInt(message.getMaterialFlags().size());
 
         message.getMaterialFlags().forEach((materialFlag) -> {
@@ -220,7 +195,8 @@ public class MaterialFlagServer {
         });
     }
 
-    public static IMaterialFlag singleFromBuffer(PacketBuffer buffer) {
+    @Override
+    public IMaterialFlag singleFromBuffer(PacketBuffer buffer) {
         String name = buffer.readUtf();
         String prefix = buffer.readUtf();
         String suffix = buffer.readUtf();
@@ -243,7 +219,8 @@ public class MaterialFlagServer {
         };
     }
 
-    public static List<IMaterialFlag> multipleFromBuffer(PacketBuffer buffer) {
+    @Override
+    public List<IMaterialFlag> multipleFromBuffer(PacketBuffer buffer) {
         List<IMaterialFlag> materialFlags = new ArrayList<>();
 
         int size = buffer.readVarInt();

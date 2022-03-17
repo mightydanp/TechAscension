@@ -2,8 +2,6 @@ package mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.handler.generation.OreGenerationHandler;
 import mightydanp.industrialtech.api.common.handler.generation.PlantGenerationHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.api.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
@@ -15,33 +13,29 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class RandomSurfaceRegistry extends JsonConfigMultiFile {
-    private static final Map<String, RandomSurfaceGenFeatureConfig> RandomSurfaceList = new HashMap<>();
+public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenFeatureConfig> {
 
     @Override
     public void initiate() {
 
         setJsonFolderName("random_surface");
         setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation() + "/generation/");
-        buildRandomSurfaceJson();
+        buildJson();
         loadExistJson();
         super.initiate();
     }
 
-    public static List<RandomSurfaceGenFeatureConfig> getAllRandomSurfaces() {
-        return new ArrayList<>(RandomSurfaceList.values());
-    }
-
-    public static void register(RandomSurfaceGenFeatureConfig feature) {
-        if (RandomSurfaceList.containsKey(feature.name)) {
+    @Override
+    public void register(RandomSurfaceGenFeatureConfig feature) {
+        if (registryMap.containsKey(feature.name)) {
             throw new IllegalArgumentException("random surface with name(" + feature.name + "), already exists.");
         } else {
-            RandomSurfaceList.put(feature.name, feature);
+            registryMap.put(feature.name, feature);
         }
     }
 
-    public void buildRandomSurfaceJson() {
-        for (RandomSurfaceGenFeatureConfig randomSurface : RandomSurfaceList.values()) {
+    public void buildJson() {
+        for (RandomSurfaceGenFeatureConfig randomSurface : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(randomSurface.name);
             if (jsonObject.size() == 0) {
                 this.saveJsonObject(randomSurface.name, toJsonObject(randomSurface));
@@ -57,10 +51,10 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!RandomSurfaceList.containsValue(getRandomSurface(jsonObject))) {
-                        RandomSurfaceGenFeatureConfig randomSurface = getRandomSurface(jsonObject);
+                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
+                        RandomSurfaceGenFeatureConfig randomSurface = getFromJsonObject(jsonObject);
 
-                        RandomSurfaceList.put(randomSurface.name, randomSurface);
+                        registryMap.put(randomSurface.name, randomSurface);
                         PlantGenerationHandler.addRegistryRandomSurfaceGenerate(randomSurface);
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to random surface list because a random surface already exist!!", file.getAbsolutePath());
@@ -72,7 +66,8 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile {
         }
     }
 
-    public RandomSurfaceGenFeatureConfig getRandomSurface(JsonObject jsonObjectIn) {
+    @Override
+    public RandomSurfaceGenFeatureConfig getFromJsonObject(JsonObject jsonObjectIn) {
         String name = jsonObjectIn.get("name").getAsString();
         int rarity = jsonObjectIn.get("rarity").getAsInt();
         int minNumberOfSmallOreLayers = jsonObjectIn.get("min_number_of_small_ore_layers").getAsInt();

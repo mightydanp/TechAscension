@@ -2,13 +2,14 @@ package mightydanp.industrialtech.common.materials;
 
 import com.mojang.datafixers.util.Pair;;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialServer;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.material.ITMaterials;
-import mightydanp.industrialtech.api.common.jsonconfig.ore.DefaultOreType;
+import mightydanp.industrialtech.api.common.jsonconfig.material.ore.DefaultOreType;
+import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ToolType;
 
 import static mightydanp.industrialtech.api.common.jsonconfig.icons.DefaultTextureIcon.*;
@@ -43,17 +44,21 @@ public class ModMaterials extends ITMaterials {
 
 
     public static void commonInit() {
+        Pair<?, ?> materialPair = IndustrialTech.configSync.material;
+        MaterialRegistry materialRegistry = ((MaterialRegistry)materialPair.getFirst());
+        MaterialServer materialServer = ((MaterialServer)materialPair.getSecond());
+
         //--//stone layers
-        MaterialRegistry.registerMaterial(new ITMaterial("andesite", 0x747878, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.ANDESITE.getRegistryName()), "minecraft:block/andesite"));
+        materialRegistry.register(new ITMaterial("andesite", 0x747878, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.ANDESITE.getRegistryName()), "minecraft:block/andesite"));
         //MaterialRegistry.registerMaterial(new ITMaterial("basalt", 0x4C4A4A, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, "minecraft:block/basalt"));
-        MaterialRegistry.registerMaterial(new ITMaterial("diorite", 0x9dbfb1, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.DIORITE.getRegistryName()), "minecraft:block/diorite"));
-        MaterialRegistry.registerMaterial(new ITMaterial("end_stone", 0xb8b09b, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.END_STONE.getRegistryName()), "minecraft:block/end_stone"));
-        MaterialRegistry.registerMaterial(new ITMaterial("granite", 0xA26B56, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.GRANITE.getRegistryName()), "minecraft:block/granite"));
-        MaterialRegistry.registerMaterial(new ITMaterial("netherrack", 0x6F4644, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.NETHERRACK.getRegistryName()), "minecraft:block/netherrack"));
-        MaterialRegistry.registerMaterial(new ITMaterial("stone", 0x808080, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.STONE.getRegistryName()), "minecraft:block/stone"));
+        materialRegistry.register(new ITMaterial("diorite", 0x9dbfb1, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.DIORITE.getRegistryName()), "minecraft:block/diorite"));
+        materialRegistry.register(new ITMaterial("end_stone", 0xb8b09b, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.END_STONE.getRegistryName()), "minecraft:block/end_stone"));
+        materialRegistry.register(new ITMaterial("granite", 0xA26B56, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.GRANITE.getRegistryName()), "minecraft:block/granite"));
+        materialRegistry.register(new ITMaterial("netherrack", 0x6F4644, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.NETHERRACK.getRegistryName()), "minecraft:block/netherrack"));
+        materialRegistry.register(new ITMaterial("stone", 0x808080, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.STONE.getRegistryName()), "minecraft:block/stone"));
         //--//
-        MaterialRegistry.registerMaterial(new ITMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL)).setOreType(DefaultOreType.ORE).setDenseOreDensity(8));
-        MaterialRegistry.registerMaterial(new ITMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH)).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));
+        materialRegistry.register(new ITMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL)).setOreType(DefaultOreType.ORE).setDenseOreDensity(8));
+        materialRegistry.register(new ITMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH)).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));
 
         flintToolTypes = new ArrayList<Pair<ToolType, Integer>>() {{
             add(new Pair<>(ToolType.PICKAXE, 0));
@@ -65,7 +70,9 @@ public class ModMaterials extends ITMaterials {
             add(TOOL_WEDGE_HANDLE);
         }};
 
-        MaterialRegistry.registerMaterial(new ITMaterial("flint", 0x002040, new Pair<>(Ref.mod_id, CUBE)).setToolProperties( 20, 10, 20F, 1F, flintToolTypes, flintToolParts));
+        materialRegistry.register(new ITMaterial("flint", 0x002040, new Pair<>(Ref.mod_id, CUBE)).setToolProperties( 20, 10, 20F, 1F, flintToolTypes, flintToolParts));
+
+        IndustrialTech.configSync.configs.put(7, new Pair<>(materialRegistry, materialServer));
         //materials.add(iron = new MaterialHandler("iron", 0, 51, 153, "").addOreProperties(8, false).save());
     //Materials that have ORES
         /*

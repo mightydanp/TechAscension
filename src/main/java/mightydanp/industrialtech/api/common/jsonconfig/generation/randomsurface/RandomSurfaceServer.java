@@ -1,10 +1,9 @@
 package mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
@@ -21,37 +20,27 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class RandomSurfaceServer {
-    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
-    private static final Map<String, RandomSurfaceGenFeatureConfig> serverRandomSurfacesMap = new HashMap<>();
+public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatureConfig> {
 
-    RandomSurfaceRegistry RandomSurfaceRegistry = IndustrialTech.randomSurfaceRegistry;
-
-    public Map<String, RandomSurfaceGenFeatureConfig> getServerRandomSurfacesMap(){
-        return serverRandomSurfacesMap;
-    }
-
-    public boolean serverHasRandomSurfaces(){
-        return serverRandomSurfacesMap.size() > 0;
-    }
-
-    public static Map<String, RandomSurfaceGenFeatureConfig> getServerRandomSurfacesMap(List<RandomSurfaceGenFeatureConfig> randomSurfacesIn) {
+    @Override
+    public Map<String, RandomSurfaceGenFeatureConfig> getServerMapFromList(List<RandomSurfaceGenFeatureConfig> randomSurfacesIn) {
         Map<String, RandomSurfaceGenFeatureConfig> RandomSurfacesList = new LinkedHashMap<>();
         randomSurfacesIn.forEach(randomSurface -> RandomSurfacesList.put(randomSurface.name, randomSurface));
 
         return RandomSurfacesList;
     }
 
+    @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getRandomSurfaces().size() != getServerRandomSurfacesMap().size()){
+        if(message.getRandomSurfaces().size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("random_surface", sync.get());
             return false;
         }
 
-        getServerRandomSurfacesMap().forEach((name, RandomSurface) -> {
+        getServerMap().forEach((name, RandomSurface) -> {
             sync.set(message.getRandomSurfaces().stream().anyMatch(o -> o.name.equals(name)));
 
             if(sync.get()) {
@@ -59,8 +48,8 @@ public class RandomSurfaceServer {
 
                 if(optional.isPresent()) {
                     RandomSurfaceGenFeatureConfig serverRandomSurface = optional.get();
-                    JsonObject jsonMaterial = IndustrialTech.randomSurfaceRegistry.toJsonObject(RandomSurface);
-                    JsonObject materialJson = IndustrialTech.randomSurfaceRegistry.toJsonObject(serverRandomSurface);
+                    JsonObject jsonMaterial = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).toJsonObject(RandomSurface);
+                    JsonObject materialJson = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -74,6 +63,7 @@ public class RandomSurfaceServer {
         return sync.get();
     }
 
+    @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, RandomSurfaceGenFeatureConfig> clientRandomSurfaces = new HashMap<>();
@@ -84,7 +74,7 @@ public class RandomSurfaceServer {
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
-            if(getServerRandomSurfacesMap().size() != files.length){
+            if(getServerMap().size() != files.length){
                 sync.set(false);
                 configSync.syncedJson.put("random_surface", sync.get());
                 return false;
@@ -98,18 +88,18 @@ public class RandomSurfaceServer {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = RandomSurfaceRegistry.getJsonObject(file.getName());
-                RandomSurfaceGenFeatureConfig randomSurface = RandomSurfaceRegistry.getRandomSurface(jsonObject);
+                JsonObject jsonObject = IndustrialTech.configSync.randomSurface.getFirst().getJsonObject(file.getName());
+                RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).getFromJsonObject(jsonObject);
                 clientRandomSurfaces.put(randomSurface.name, randomSurface);
             }
 
-            getServerRandomSurfacesMap().values().forEach(serverRandomSurface -> {
+            getServerMap().values().forEach(serverRandomSurface -> {
                 sync.set(clientRandomSurfaces.containsKey(serverRandomSurface.name));
 
                 if(sync.get()) {
-                    RandomSurfaceGenFeatureConfig clientRandomSurface = getServerRandomSurfacesMap().get(serverRandomSurface.name);
-                    JsonObject jsonMaterial = RandomSurfaceRegistry.toJsonObject(serverRandomSurface);
-                    JsonObject materialJson = RandomSurfaceRegistry.toJsonObject(clientRandomSurface);
+                    RandomSurfaceGenFeatureConfig clientRandomSurface = getServerMap().get(serverRandomSurface.name);
+                    JsonObject jsonMaterial = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
+                    JsonObject materialJson = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).toJsonObject(clientRandomSurface);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -122,6 +112,7 @@ public class RandomSurfaceServer {
         return sync.get();
     }
 
+    @Override
     public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/generation"+ "/random_surface");
@@ -132,10 +123,10 @@ public class RandomSurfaceServer {
             }
         }
 
-        for (RandomSurfaceGenFeatureConfig randomSurface : getServerRandomSurfacesMap().values()) {
+        for (RandomSurfaceGenFeatureConfig randomSurface : getServerMap().values()) {
             String name = randomSurface.name;
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = RandomSurfaceRegistry.toJsonObject(randomSurface);
+            JsonObject jsonObject = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).toJsonObject(randomSurface);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -147,6 +138,7 @@ public class RandomSurfaceServer {
         }
     }
 
+    @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/random_surface");
@@ -155,8 +147,8 @@ public class RandomSurfaceServer {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = RandomSurfaceRegistry.getJsonObject(file.getName());
-                    RandomSurfaceGenFeatureConfig randomSurface = RandomSurfaceRegistry.getRandomSurface(jsonObject);
+                    JsonObject jsonObject = IndustrialTech.configSync.randomSurface.getFirst().getJsonObject(file.getName());
+                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = randomSurface.name;
 
@@ -174,17 +166,19 @@ public class RandomSurfaceServer {
         }
     }
 
-    public void loadRandomSurfaces(SyncMessage message) {
+    @Override
+    public void loadFromServer(SyncMessage message) {
         Map<String, RandomSurfaceGenFeatureConfig> RandomSurfaces = message.getRandomSurfaces().stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
 
-        serverRandomSurfacesMap.clear();
-        serverRandomSurfacesMap.putAll(RandomSurfaces);
+        serverMap.clear();
+        serverMap.putAll(RandomSurfaces);
 
         IndustrialTech.LOGGER.info("Loaded {} random surfaces from the server", RandomSurfaces.size());
     }
 
-    public static void singleToBuffer(PacketBuffer buffer, RandomSurfaceGenFeatureConfig randomSurface) {//friendlybotbuff
+    @Override
+    public void singleToBuffer(PacketBuffer buffer, RandomSurfaceGenFeatureConfig randomSurface) {//friendlybotbuff
         buffer.writeUtf(randomSurface.name);
         buffer.writeInt(randomSurface.rarity);
         buffer.writeInt(randomSurface.biomes.size());
@@ -204,7 +198,8 @@ public class RandomSurfaceServer {
 
     }
 
-    public static void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    @Override
+    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
         buffer.writeVarInt(message.getRandomSurfaces().size());
 
         message.getRandomSurfaces().forEach((randomSurface) -> {
@@ -212,7 +207,8 @@ public class RandomSurfaceServer {
         });
     }
 
-    public static RandomSurfaceGenFeatureConfig singleFromBuffer(PacketBuffer buffer) {
+    @Override
+    public RandomSurfaceGenFeatureConfig singleFromBuffer(PacketBuffer buffer) {
         String name = buffer.readUtf();
         int rarity = buffer.readInt();
         int biomesSize = buffer.readInt();
@@ -241,7 +237,8 @@ public class RandomSurfaceServer {
         return new RandomSurfaceGenFeatureConfig(name, rarity, biomes, validBlocks, blocks);
     }
 
-    public static List<RandomSurfaceGenFeatureConfig> multipleFromBuffer(PacketBuffer buffer) {
+    @Override
+    public List<RandomSurfaceGenFeatureConfig> multipleFromBuffer(PacketBuffer buffer) {
         List<RandomSurfaceGenFeatureConfig> randomSurfaces = new ArrayList<>();
 
         int size = buffer.readVarInt();

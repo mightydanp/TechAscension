@@ -1,12 +1,8 @@
 package mightydanp.industrialtech.api.common.jsonconfig.fluidstate;
 
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
-import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 
 import java.io.File;
@@ -17,9 +13,7 @@ import java.util.*;
 /**
  * Created by MightyDanp on 1/20/2022.
  */
-public class FluidStateRegistry extends JsonConfigMultiFile {
-    private static final Map<String, IFluidState> fluidStateList = new HashMap<>();
-
+public class FluidStateRegistry extends JsonConfigMultiFile<IFluidState> {
     @Override
     public void initiate() {
         setJsonFolderName("fluid_state");
@@ -31,32 +25,28 @@ public class FluidStateRegistry extends JsonConfigMultiFile {
         }
         //
 
-        buildFluidStateJson();
+        buildJson();
         loadExistJson();
         super.initiate();
     }
-
-    public static List<IFluidState> getAllFluidStates() {
-        return new ArrayList<>(fluidStateList.values());
-    }
-
-    public static void register(IFluidState fluidStateIn) {
-        String name = fluidStateIn.getName();
-        if (fluidStateList.containsKey(fluidStateIn.getName()))
-            throw new IllegalArgumentException("fluid state with name(" + name + "), already exists.");
-        fluidStateList.put(name, fluidStateIn);
+    @Override
+    public List<IFluidState> getAllValues() {
+        return new ArrayList<>(registryMap.values());
     }
 
     public IFluidState getFluidStateByName(String fluid_state) {
-        return fluidStateList.get(fluid_state);
+        return registryMap.get(fluid_state);
     }
 
-    public Set<IFluidState> getAllFluidState() {
-        return new HashSet<IFluidState>(fluidStateList.values());
+    @Override
+    public void register(IFluidState fluidStateIn) {
+        String name = fluidStateIn.getName();
+        if (registryMap.containsKey(fluidStateIn.getName()))
+            throw new IllegalArgumentException("fluid state with name(" + name + "), already exists.");
+        registryMap.put(name, fluidStateIn);
     }
-
-    public void buildFluidStateJson(){
-        for(IFluidState fluidState : fluidStateList.values()) {
+    public void buildJson(){
+        for(IFluidState fluidState : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(fluidState.getName());
 
             if (jsonObject.size() == 0) {
@@ -81,10 +71,10 @@ public class FluidStateRegistry extends JsonConfigMultiFile {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!fluidStateList.containsValue(getFluidState(jsonObject))) {
-                        IFluidState fluidState = getFluidState(jsonObject);
+                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
+                        IFluidState fluidState = getFromJsonObject(jsonObject);
 
-                        fluidStateList.put(fluidState.getName(), fluidState);
+                        registryMap.put(fluidState.getName(), fluidState);
 
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to fluid state list because a fluid state already exist!!", file.getAbsolutePath());
@@ -96,17 +86,13 @@ public class FluidStateRegistry extends JsonConfigMultiFile {
         }
     }
 
-    public IFluidState getFluidState(JsonObject jsonObjectIn){
+    @Override
+    public IFluidState getFromJsonObject(JsonObject jsonObjectIn){
         JsonObject fluidStateJson = jsonObjectIn.getAsJsonObject("fluid_state");
 
         String name = fluidStateJson.get("name").getAsString();
 
-        return new IFluidState() {
-            @Override
-            public String getName() {
-                return name;
-            }
-        };
+        return () -> name;
     }
 
     public JsonObject toJsonObject(IFluidState fluidState) {

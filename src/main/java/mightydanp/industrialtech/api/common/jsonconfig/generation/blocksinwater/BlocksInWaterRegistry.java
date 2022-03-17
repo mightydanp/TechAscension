@@ -2,8 +2,6 @@ package mightydanp.industrialtech.api.common.jsonconfig.generation.blocksinwater
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.handler.generation.OreGenerationHandler;
 import mightydanp.industrialtech.api.common.handler.generation.PlantGenerationHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.api.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
@@ -15,32 +13,33 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class BlocksInWaterRegistry extends JsonConfigMultiFile {
-    private static final Map<String, BlocksInWaterGenFeatureConfig> BlocksInWaterList = new HashMap<>();
+public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenFeatureConfig> {
 
     @Override
     public void initiate() {
         setJsonFolderName("blocks_in_water");
         setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation() + "/generation/");
-        buildBlocksInWaterJson();
+        buildJson();
         loadExistJson();
         super.initiate();
     }
 
-    public static List<BlocksInWaterGenFeatureConfig> getAllBlocksInWaters() {
-        return new ArrayList<>(BlocksInWaterList.values());
+    @Override
+    public List<BlocksInWaterGenFeatureConfig> getAllValues() {
+        return new ArrayList<>(registryMap.values());
     }
 
-    public static void register(BlocksInWaterGenFeatureConfig feature) {
-        if (BlocksInWaterList.containsKey(feature.name)) {
+    @Override
+    public void register(BlocksInWaterGenFeatureConfig feature) {
+        if (registryMap.containsKey(feature.name)) {
             throw new IllegalArgumentException("blocks in water with name(" + feature.name + "), already exists.");
         } else {
-            BlocksInWaterList.put(feature.name, feature);
+            registryMap.put(feature.name, feature);
         }
     }
 
-    public void buildBlocksInWaterJson() {
-        for (BlocksInWaterGenFeatureConfig blocksInWater : BlocksInWaterList.values()) {
+    public void buildJson() {
+        for (BlocksInWaterGenFeatureConfig blocksInWater : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(blocksInWater.name);
             if (jsonObject.size() == 0) {
                 this.saveJsonObject(blocksInWater.name, toJsonObject(blocksInWater));
@@ -56,10 +55,10 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!BlocksInWaterList.containsValue(getBlocksInWater(jsonObject))) {
-                        BlocksInWaterGenFeatureConfig blocksInWater = getBlocksInWater(jsonObject);
+                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
+                        BlocksInWaterGenFeatureConfig blocksInWater = getFromJsonObject(jsonObject);
 
-                        BlocksInWaterList.put(blocksInWater.name, blocksInWater);
+                        registryMap.put(blocksInWater.name, blocksInWater);
                         PlantGenerationHandler.addRegistryBlockInWaterGenerate(blocksInWater);
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to blocks in water list because a blocks in water already exist!!", file.getAbsolutePath());
@@ -71,7 +70,8 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile {
         }
     }
 
-    public BlocksInWaterGenFeatureConfig getBlocksInWater(JsonObject jsonObjectIn) {
+    @Override
+    public BlocksInWaterGenFeatureConfig getFromJsonObject(JsonObject jsonObjectIn) {
         String name = jsonObjectIn.get("name").getAsString();
         int rarity = jsonObjectIn.get("rarity").getAsInt();
         int minHeight = jsonObjectIn.get("height").getAsInt();

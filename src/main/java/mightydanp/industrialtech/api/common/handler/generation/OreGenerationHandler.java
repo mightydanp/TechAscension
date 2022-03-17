@@ -9,6 +9,7 @@ import mightydanp.industrialtech.api.common.world.gen.feature.OreVeinGenFeature;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.industrialtech.api.common.world.gen.feature.SmallOreVeinGenFeature;
 import mightydanp.industrialtech.api.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
+import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.ResourceLocation;
@@ -50,7 +51,7 @@ public class OreGenerationHandler {
         ConfiguredFeature<?, ?> oreVeinFeature = ore_vein.get().configured(oreVeinGenFeatureConfigIn).decorated(Placement.RANGE.configured(new TopSolidRangeConfig(oreVeinGenFeatureConfigIn.maxHeight, 0, oreVeinGenFeatureConfigIn.maxHeight)));
         Registry.register(registry, new ResourceLocation(Ref.mod_id, oreVeinGenFeatureConfigIn.name), oreVeinFeature);
 
-        OreVeinRegistry.register(oreVeinGenFeatureConfigIn);
+        ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).register(oreVeinGenFeatureConfigIn);
         oreGenList.put(oreVeinFeature, biomes);
     }
 
@@ -72,7 +73,7 @@ public class OreGenerationHandler {
         ConfiguredFeature<?, ?> oreVeinFeature = ore_vein.get().configured(oreVeinGenFeatureConfig).decorated(Placement.RANGE.configured(new TopSolidRangeConfig(minHeightIn, 0, maxHeightIn)));
         Registry.register(registry, new ResourceLocation(Ref.mod_id, oreVeinGenFeatureConfig.name), oreVeinFeature);
 
-        OreVeinRegistry.register(oreVeinGenFeatureConfig);
+        ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).register(oreVeinGenFeatureConfig);
         oreGenList.put(oreVeinFeature, biomesIn);
     }
 

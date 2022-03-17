@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
+import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
 
@@ -14,20 +16,41 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by MightyDanp on 1/18/2022.
  */
-public class JsonConfigMultiFile {
+public class JsonConfigMultiFile<T> {
     private final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
     private String jsonFolderLocation;
     private String jsonFolderName;
     public final Map<String, ?> jsonFiles = new HashMap<>();
+    public final Map<String, T> registryMap = new HashMap<>();
+
 
     public void initiate(){
 
+    }
+
+    public void initiateClient(){
+
+    }
+
+
+    public List<T> getAllValues() {
+        return new ArrayList<>(registryMap.values());
+    }
+
+    public void register(T fluidStateIn){
+
+    }
+
+    public T getFromJsonObject(JsonObject jsonObjectIn){
+        return null;
     }
 
     public void setJsonFolderLocation(String jsonFolderLocationIn) {
@@ -104,7 +127,7 @@ public class JsonConfigMultiFile {
         return jsonObject;
     }
 
-    public static String fixesToName(Pair<String, String> fixes){
+    public String fixesToName(Pair<String, String> fixes){
         String prefix = fixes.getFirst().replace("_", "");
         String suffix = fixes.getSecond().replace("_", "");
         String name = "";

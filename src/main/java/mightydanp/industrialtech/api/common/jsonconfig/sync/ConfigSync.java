@@ -1,6 +1,8 @@
 package mightydanp.industrialtech.api.common.jsonconfig.sync;
 
+import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.handler.NetworkHandler;
+import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagServer;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.FluidStateRegistry;
@@ -17,8 +19,8 @@ import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconRegistry
 import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconServer;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialServer;
-import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeRegistry;
-import mightydanp.industrialtech.api.common.jsonconfig.ore.OreTypeServer;
+import mightydanp.industrialtech.api.common.jsonconfig.material.ore.OreTypeRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.material.ore.OreTypeServer;
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.gui.screen.SyncScreen;
@@ -61,163 +63,55 @@ import java.util.Map;
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class ConfigSync {
-    private static SyncMessage syncMessage;
     public Map<String, Boolean> syncedJson = new HashMap<>();
-    public MaterialFlagServer materialFlagServer = new MaterialFlagServer();
-    public FluidStateServer fluidStateServer = new FluidStateServer();
-    public OreTypeServer oreTypeServer = new OreTypeServer();
-    public TextureIconServer textureIconServer = new TextureIconServer();
-    public ToolPartServer toolPartServer = new ToolPartServer();
-    public ToolTypeServer toolTypeServer = new ToolTypeServer();
-    public StoneLayerServer stoneLayerServer = new StoneLayerServer();
-    public MaterialServer materialServer = new MaterialServer();
-    public OreVeinServer oreVeinServer = new OreVeinServer();
-    public SmallOreVeinServer smallOreVeinServer = new SmallOreVeinServer();
-    public BlocksInWaterServer blocksInWaterServer = new BlocksInWaterServer();
-    public RandomSurfaceServer randomSurfaceServer = new RandomSurfaceServer();
+    public Map<Integer, Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>> configs = new HashMap<>();
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> materialFlag = configs.getOrDefault(0, new Pair<>(new MaterialFlagRegistry(),  new MaterialFlagServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> fluidState = configs.getOrDefault(1, new Pair<>(new FluidStateRegistry(),  new FluidStateServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreType = configs.getOrDefault(2, new Pair<>(new OreTypeRegistry(),  new OreTypeServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  textureIcon = configs.getOrDefault(3, new Pair<>(new TextureIconRegistry(),  new TextureIconServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolPart = configs.getOrDefault(4, new Pair<>(new ToolPartRegistry(),  new ToolPartServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolType = configs.getOrDefault(5, new Pair<>(new ToolTypeRegistry(),  new ToolTypeServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  stoneLayer = configs.getOrDefault(6, new Pair<>(new StoneLayerRegistry(),  new StoneLayerServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  material = configs.getOrDefault(7, new Pair<>(new MaterialRegistry(),  new MaterialServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreVein = configs.getOrDefault(8, new Pair<>(new OreVeinRegistry(),  new OreVeinServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  smallOre = configs.getOrDefault(9, new Pair<>(new SmallOreVeinRegistry(),  new SmallOreVeinServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  blocksInWater = configs.getOrDefault(10, new Pair<>(new BlocksInWaterRegistry(),  new BlocksInWaterServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  randomSurface = configs.getOrDefault(11, new Pair<>(new RandomSurfaceRegistry(),  new RandomSurfaceServer()));
 
     public boolean isSinglePlayer;
     public String singlePlayerWorldName;
     public static String serverIP;
 
     public void init(){
-        IndustrialTech.materialFlagRegistry.initiate();
-        IndustrialTech.fluidStateRegistry.initiate();
-        IndustrialTech.textureIconRegistry.initiate();
-        IndustrialTech.oreTypeRegistry.initiate();
-        IndustrialTech.toolPartRegistry.initiate();
-        IndustrialTech.toolTypeRegistry.initiate();
-        IndustrialTech.stoneLayerRegistry.initiate();
+        configs.put(0, materialFlag);
+        configs.put(1, fluidState);
+        configs.put(2, oreType);
+        configs.put(3, textureIcon);
+        configs.put(4, toolPart);
+        configs.put(5, toolType);
+        configs.put(6, stoneLayer);
+        configs.put(7, material);
         ModMaterials.commonInit();
-        IndustrialTech.materialRegistryInstance.initiate();
-        IndustrialTech.oreVeinRegistry.initiate();
-        IndustrialTech.smallOreVeinRegistry.initiate();
-        IndustrialTech.blocksInWaterRegistry.initiate();
-        IndustrialTech.randomSurfaceRegistry.initiate();
+        configs.put(8, oreVein);
+        configs.put(9, smallOre);
+        configs.put(10, blocksInWater);
+        configs.put(11, randomSurface);
+
+
+        for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
+            Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = IndustrialTech.configSync.configs.get(i);
+
+            config.getFirst().initiate();
+            configs.put(i, config);
+        }
     }
 
     public void initClient(){
-        IndustrialTech.materialRegistryInstance.initiateClient();
+        configs.forEach((s, pair) -> {
+            pair.getFirst().initiateClient();
+            configs.put(s, pair);
+        });
     }
-
-    /*
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void onModelBakeEvent(ModelRegistryEvent event) {
-        List<ITMaterial> materials = MaterialRegistry.getMaterials();
-
-
-
-        for(ITMaterial material : materials) {
-            for (IMaterialFlag materialFlag : material.materialFlags){
-                if(materialFlag == ORE || materialFlag == GEM || materialFlag == STONE_LAYER){
-                    for(IStoneLayer stoneLayer : StoneLayerRegistry.getAllStoneLayers()){
-
-
-                        if(materialFlag == STONE_LAYER){
-                            Block thin_slab_block = RegistryHandler.registerBlock(Ref.mod_id,"thin_" + name + "_slab", new ThinSlabBlock(AbstractBlock.Properties.of(Material.STONE), new ResourceLocation(stoneLayer.getModID(), stoneLayer.getBlockName())));
-                            thinSlabList.add(thin_slab_block);
-                            Item thin_slab_item_block = RegistryHandler.registerItem(Ref.mod_id,"thin_" + name + "_slab", new ThinSlabItemBlock(thin_slab_block, new Item.Properties().stacksTo(1)));
-                            thinSlabItemList.add(thin_slab_item_block);
-                        /*
-                        Block leg_block = RegistryHandler.registerBlock(Ref.mod_id,name + "_leg", new LegBlock(AbstractBlock.Properties.of(Material.STONE), new ResourceLocation(stoneLayer.getModID(), stoneLayer.getBlockName())));
-                        Item leg_item_block = RegistryHandler.registerItem(Ref.mod_id, name + "_leg", new LegItemBlock(leg_block, new Item.Properties().stacksTo(1)));
-                        }
-                    }
-
-                    if(materialFlag == ORE || materialFlag == GEM){
-                        crushedOre = RegistryHandler.registerItem(Ref.mod_id,  "crushed_" + name + "_ore", new OreProductsItem(new Item.Properties()
-                                .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                        purifiedOre = RegistryHandler.registerItem(Ref.mod_id,  "purified_" + name + "_ore", new OreProductsItem(new Item.Properties()
-                                .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                        centrifugedOre = RegistryHandler.registerItem(Ref.mod_id,  "centrifuged_" + name + "_ore", new OreProductsItem(new Item.Properties()
-                                .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                    }
-
-                    if(materialFlag == GEM){
-                        gem = RegistryHandler.registerItem(Ref.mod_id,  name + "_gem", new GemItem(new Item.Properties()
-                                .tab(ModItemGroups.gem_tab), symbol));
-                        chippedGem = RegistryHandler.registerItem(Ref.mod_id,  "chipped_" + name + "_gem", new GemItem(new Item.Properties()
-                                .tab(ModItemGroups.gem_tab), symbol));
-                        flawedGem = RegistryHandler.registerItem(Ref.mod_id,  "flawed_" + name + "_gem", new GemItem(new Item.Properties()
-                                .tab(ModItemGroups.gem_tab), symbol));
-                        flawlessGem = RegistryHandler.registerItem(Ref.mod_id,  "flawless_" + name + "_gem", new GemItem(new Item.Properties()
-                                .tab(ModItemGroups.gem_tab), symbol));
-                        legendaryGem = RegistryHandler.registerItem(Ref.mod_id,  "legendary_" + name + "_gem", new GemItem(new Item.Properties()
-                                .tab(ModItemGroups.gem_tab), symbol));
-                    }
-
-                    dust = RegistryHandler.registerItem(Ref.mod_id,  "" + name + "_dust",  new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                    smallDust = RegistryHandler.registerItem(Ref.mod_id,  "small_" + name + "_dust", new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                    tinyDust = RegistryHandler.registerItem(Ref.mod_id,  "tiny_" + name + "_dust", new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                }
-
-                if(materialFlag == FLUID || materialFlag == GAS) {
-                    FluidAttributes.Builder attributes;
-
-                    if (materialFlag == FLUID) {
-                        attributes = FluidAttributes.builder(new ResourceLocation(Ref.mod_id, "fluid/" + name), new ResourceLocation(Ref.mod_id, "fluid/" + name + "_flowing")).temperature(meltingPoint).color(color);
-                        if(fluidDensity != null) attributes.density(fluidDensity);
-                        if(fluidLuminosity != null)attributes.luminosity(fluidLuminosity);
-                        if(fluidViscosity != null) attributes.viscosity(fluidViscosity);
-                        ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(() -> fluid, () -> fluid_flowing, attributes);
-                        fluid = (FlowingFluid) RegistryHandler.registerFluid(Ref.mod_id, name + "_still", new ITFluid(properties, true, color));
-                        fluid_flowing = (FlowingFluid) RegistryHandler.registerFluid(Ref.mod_id, name + "_flowing", new ITFluid(properties, false, color));
-
-                        fluidBlock = RegistryHandler.registerBlock(Ref.mod_id, name, new ITFluidBlock(()-> fluid, fluidAcceleration, color));
-                    }
-
-                    if (materialFlag == GAS) {
-                        attributes = FluidAttributes.builder(new ResourceLocation(Ref.mod_id, "fluid/" + name), new ResourceLocation(Ref.mod_id, "fluid/" + name)).temperature(boilingPoint).color(color).gaseous();
-                        if(fluidDensity != null) attributes.density(fluidDensity);
-                        if(fluidLuminosity != null)attributes.luminosity(fluidLuminosity);
-                        if(fluidViscosity != null) attributes.viscosity(fluidViscosity);
-                        ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(() -> fluid, () -> fluid_flowing, attributes);
-                        fluid = (FlowingFluid) RegistryHandler.registerFluid(Ref.mod_id, name + "_still", new ITFluid(properties, true, color));
-                        fluid_flowing = (FlowingFluid) RegistryHandler.registerFluid(Ref.mod_id, name + "_flowing", new ITFluid(properties, false, color));
-
-                        fluidBlock = RegistryHandler.registerBlock(Ref.mod_id, name, new ITFluidBlock(()-> fluid, fluidAcceleration, color));
-                    }
-                }
-
-                if(materialFlag == INGOT){
-                    ingot = RegistryHandler.registerItem(Ref.mod_id, name + "_" + INGOT.name(),  new IngotItem(new Item.Properties().tab(ModItemGroups.item_tab), boilingPoint, meltingPoint, symbol));
-                }
-
-            for (IToolPart flag : toolParts) {
-                if (flag == TOOL_HEAD) {
-                    dullPickaxe = RegistryHandler.registerItem(Ref.mod_id, "dull_" + name + "_pickaxe_head",
-                            dullPickaxe = new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
-                    pickaxeHead = RegistryHandler.registerItem(Ref.mod_id, name + "_pickaxe_head",
-                            pickaxeHead = new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
-                    hammerHead = RegistryHandler.registerItem(Ref.mod_id, name + "_hammer_head",
-                            hammerHead = new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
-                    dullChiselHead = RegistryHandler.registerItem(Ref.mod_id, "dull_" + name + "_chisel_head",
-                            dullChiselHead = new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
-                    chiselHead = RegistryHandler.registerItem(Ref.mod_id, name + "_chisel_head",
-                            chiselHead = new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
-
-                }
-
-                if (flag == TOOL_WEDGE) {
-                    wedge = RegistryHandler.registerItem(Ref.mod_id, name + "_wedge",
-                            wedge = new ToolBindingItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, durability, weight));
-                }
-
-                if (flag == TOOL_WEDGE_HANDLE) {
-                    wedgeHandle = RegistryHandler.registerItem(Ref.mod_id, name + "_wedge_handle",
-                            wedgeHandle = new ToolHandleItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, durability, weight));
-                }
-            }
-
-        }
-
-    }
-    }
-    */
 
 
     @SubscribeEvent
@@ -239,22 +133,22 @@ public class ConfigSync {
             boolean isSinglePlayer = event.getPlayer().getServer().isSingleplayer();
             String singlePlayerWorldName = isSinglePlayer ? event.getPlayer().getServer().getWorldPath(FolderName.ROOT).getParent().getFileName().toString(): "";/////////
 
-            syncMessage = new SyncMessage(isSinglePlayer, singlePlayerWorldName);
+            SyncMessage syncMessage = new SyncMessage(isSinglePlayer, singlePlayerWorldName);
 
-            syncMessage.setMaterialFlags(MaterialFlagRegistry.getAllMaterialFlags());
-            syncMessage.setFluidStates(FluidStateRegistry.getAllFluidStates());
-            syncMessage.setOreTypes(OreTypeRegistry.getAllOreTypes());
-            syncMessage.setTextureIcons(TextureIconRegistry.getAllTextureIcons());
-            syncMessage.setToolParts(ToolPartRegistry.getAllToolParts());
-            syncMessage.setToolTypes(ToolTypeRegistry.getAllToolTypes());
-            syncMessage.setStoneLayers(StoneLayerRegistry.getAllStoneLayers());
+            syncMessage.setMaterialFlags(((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).getAllValues());
+            syncMessage.setFluidStates(((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).getAllValues());
+            syncMessage.setOreTypes(((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).getAllValues());
+            syncMessage.setTextureIcons(((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).getAllValues());
+            syncMessage.setToolParts(((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).getAllValues());
+            syncMessage.setToolTypes(((ToolTypeRegistry)IndustrialTech.configSync.toolType.getFirst()).getAllValues());
+            syncMessage.setStoneLayers(((StoneLayerRegistry)IndustrialTech.configSync.stoneLayer.getFirst()).getAllValues());
             //
-            syncMessage.setMaterials(MaterialRegistry.getMaterials());
+            syncMessage.setMaterials(((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getAllValues());
 
-            syncMessage.setOreVeins(OreVeinRegistry.getAllOreVeins());
-            syncMessage.setSmallOreVeins(SmallOreVeinRegistry.getAllSmallOreVeins());
-            syncMessage.setBlocksInWater(BlocksInWaterRegistry.getAllBlocksInWaters());
-            syncMessage.setRandomSurface(RandomSurfaceRegistry.getAllRandomSurfaces());
+            syncMessage.setOreVeins(((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).getAllValues());
+            syncMessage.setSmallOreVeins(((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).getAllValues());
+            syncMessage.setBlocksInWater(((BlocksInWaterRegistry)IndustrialTech.configSync.blocksInWater.getFirst()).getAllValues());
+            syncMessage.setRandomSurface(((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).getAllValues());
 
             ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
 
@@ -323,29 +217,18 @@ public class ConfigSync {
 
                     if (event.getGui() instanceof WorkingScreen) {
                         if (!(new File("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id).exists()) && !IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id)) {
-                            try {
-                                IndustrialTech.configSync.materialFlagServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.fluidStateServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.oreTypeServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.toolPartServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.toolTypeServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.stoneLayerServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-
-                                IndustrialTech.configSync.materialServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-
-                                IndustrialTech.configSync.oreVeinServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.smallOreVeinServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.blocksInWaterServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-                                IndustrialTech.configSync.randomSurfaceServer.syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
-
-                                IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
-                                IndustrialTech.mainJsonConfig.reloadMainConfigJson();
-
-
-
-                            } catch (IOException e) {
-                                IndustrialTech.LOGGER.fatal("couldn't sync single player world with new world that was created.");
+                            for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
+                                Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = IndustrialTech.configSync.configs.get(i);
+                                try {
+                                    config.getSecond().syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
+
+
+                            IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
+                            IndustrialTech.mainJsonConfig.reloadMainConfigJson();
                         }
                     }
 

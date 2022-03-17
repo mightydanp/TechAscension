@@ -2,6 +2,9 @@ package mightydanp.industrialtech.api.common.jsonconfig.sync.gui.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.libs.ITButtonRef;
 import mightydanp.industrialtech.api.common.libs.ITScreenRef;
 import mightydanp.industrialtech.api.common.libs.ITScreenTextRef;
@@ -17,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 /**
  * Created by MightyDanp on 1/4/2022.
@@ -45,29 +49,22 @@ public class SyncScreen extends Screen {
         boolean debug = false;
         if((minecraft != null) || debug) {
             this.addButton(new Button(this.width / 5, this.height - 82, 300, 20, new TranslationTextComponent(ITButtonRef.syncClientConfigsWithServers), (button) -> {
-                try {
-                    if(!IndustrialTech.configSync.isSinglePlayer){
-                        IndustrialTech.configSync.materialFlagServer.syncClientWithServer("");
-                        IndustrialTech.configSync.fluidStateServer.syncClientWithServer("");
-                        IndustrialTech.configSync.oreTypeServer.syncClientWithServer("");
-                        IndustrialTech.configSync.toolTypeServer.syncClientWithServer("");
-                        IndustrialTech.configSync.toolPartServer.syncClientWithServer("");
-                        IndustrialTech.configSync.stoneLayerServer.syncClientWithServer("");
-
-                        IndustrialTech.configSync.materialServer.syncClientWithServer("");
-
-                        IndustrialTech.configSync.oreVeinServer.syncClientWithServer("");
-                        IndustrialTech.configSync.smallOreVeinServer.syncClientWithServers("");
-
-                        IndustrialTech.mainJsonConfig.setFolderLocation("config/" + Ref.mod_id + "/server");
-                        IndustrialTech.mainJsonConfig.reloadMainConfigJson();
-
-                    }else{
-                        IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + IndustrialTech.configSync.singlePlayerWorldName + "/serverconfig" + Ref.mod_id);
-                        IndustrialTech.mainJsonConfig.reloadMainConfigJson();
+                if(!IndustrialTech.configSync.isSinglePlayer){
+                    for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
+                        Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = IndustrialTech.configSync.configs.get(i);
+                        try {
+                            config.getSecond().syncClientWithServer("");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                } catch (IOException e) {
-                    LOGGER.fatal("You must be on a client world you shouldn't be seeing this message. Please message a developer of this mod please and tell them about this message :)");
+
+                    IndustrialTech.mainJsonConfig.setFolderLocation("config/" + Ref.mod_id + "/server");
+                    IndustrialTech.mainJsonConfig.reloadMainConfigJson();
+
+                }else{
+                    IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + IndustrialTech.configSync.singlePlayerWorldName + "/serverconfig" + Ref.mod_id);
+                    IndustrialTech.mainJsonConfig.reloadMainConfigJson();
                 }
                 this.minecraft.stop();
             }));

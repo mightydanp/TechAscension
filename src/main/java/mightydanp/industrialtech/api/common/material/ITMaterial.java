@@ -20,28 +20,23 @@ import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.material.fluid.ITFluid;
 import mightydanp.industrialtech.api.common.material.fluid.ITFluidBlock;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
-import mightydanp.industrialtech.api.common.jsonconfig.ore.DefaultOreType;
-import mightydanp.industrialtech.api.common.jsonconfig.ore.IOreType;
+import mightydanp.industrialtech.api.common.jsonconfig.material.ore.DefaultOreType;
+import mightydanp.industrialtech.api.common.jsonconfig.material.ore.IOreType;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
+import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -203,7 +198,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
     public ITMaterial save() {
         LangData enLang = DataPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
-        List<ITMaterial> stoneLayerList = MaterialRegistry.materials().values().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).collect(Collectors.toList());
+        List<ITMaterial> stoneLayerList =  ((MaterialRegistry) IndustrialTech.configSync.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).collect(Collectors.toList());
 
 
         for(IMaterialFlag flag : materialFlags){
@@ -214,12 +209,15 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
                     String stoneLayerBlock = stoneLayerTextureLocation.split(":")[1];
                     //String resourceID = useMinecraftResource ? "" : Ref.mod_id;
-                    DataPackRegistry.blockModelDataMap.put(name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore"))
+                    DataPackRegistry.blockModelDataMap.put(name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/ore"))
                             .setParentFolder("/ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
-                    DataPackRegistry.blockModelDataMap.put("small_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/small_ore"))
+                    DataPackRegistry.blockModelDataMap.put("small_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/small_ore"))
                             .setParentFolder("/small_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
-                    DataPackRegistry.blockModelDataMap.put("dense_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/dense_ore"))
-                            .setParentFolder("/small_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                    DataPackRegistry.blockModelDataMap.put("dense_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/dense_ore"))
+                            .setParentFolder("/dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                    DataPackRegistry.blockModelDataMap.put("dense_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/dense_ore"))
+                            .setParentFolder("/dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+
                     //--//
                     thinSlabBlock = RegistryHandler.registerBlock(Ref.mod_id,"thin_" + name + "_slab", new ThinSlabBlock(AbstractBlock.Properties.of(Material.STONE), stoneLayerBlockName));
                     thinSlabList.add(thinSlabBlock);
@@ -257,9 +255,6 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         oreList.add(ore);
                         //
                         DataPackRegistry.blockStateDataMap.put(stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore")));
-
-                        DataPackRegistry.blockModelDataMap.put(stoneLayer.name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/ore"))
-                                .setParentFolder("/ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                         enLang.addTranslation("block." + Ref.mod_id + "." + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase(stoneLayer.name + "_" + name + "_ore"));
                         //--
                         Item oreItemR = RegistryHandler.registerItem(Ref.mod_id, stoneLayer.name + "_" + name + "_ore",
@@ -274,8 +269,6 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         smallOreList.add(smallOreBlockR);
                         //
                         DataPackRegistry.blockStateDataMap.put("small_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
-                        DataPackRegistry.blockModelDataMap.put("small_" + stoneLayer.name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/small_ore"))
-                                .setParentFolder("/small_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                         enLang.addTranslation("block." + Ref.mod_id + "." + "small_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("small_" + stoneLayer.name + "_" + name + "_ore"));
                         //--
                         Item smallOreItemR = RegistryHandler.registerItem(Ref.mod_id, "small_" + stoneLayer.name + "_" + name + "_ore",
@@ -290,8 +283,6 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         denseOreList.add(denseOreBlockR);
                         //
                         DataPackRegistry.blockStateDataMap.put("dense_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/dense_ore/" + "dense_" + stoneLayer.name + "_ore")));
-                        DataPackRegistry.blockModelDataMap.put("dense_" + stoneLayer.name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/dense_ore"))
-                                .setParentFolder("/dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                         enLang.addTranslation("block." + Ref.mod_id + "." + "dense_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("dense_" + stoneLayer.name + "_" + name + "_ore"));
                         //--
                         Item denseOreItemR = RegistryHandler.registerItem(Ref.mod_id, "dense_" + stoneLayer.name + "_" + name + "_ore",

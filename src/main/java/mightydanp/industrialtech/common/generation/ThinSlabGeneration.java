@@ -3,10 +3,12 @@ package mightydanp.industrialtech.common.generation;
 import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
 import mightydanp.industrialtech.api.common.handler.generation.PlantGenerationHandler;
 import mightydanp.industrialtech.api.common.handler.generation.ThinSlabGenerationHandler;
+import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.IStoneLayer;
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerRegistry;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
+import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.blocks.CatTailPlantBottomBlock;
 import mightydanp.industrialtech.common.blocks.CatTailPlantTopBlock;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
@@ -40,7 +42,7 @@ public class ThinSlabGeneration {
     public static List<BlockState> thinSlabBlocks = new ArrayList<>();
 
     public static void init() {
-        List<ITMaterial> stoneLayerList = MaterialRegistry.materials().values().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).collect(Collectors.toList());
+        List<ITMaterial> stoneLayerList =  ((MaterialRegistry) IndustrialTech.configSync.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).collect(Collectors.toList());
         if(thinSlabBlocks.size() != stoneLayerList.size()){
             for(int i = 0; i < stoneLayerList.size(); i++){
                 ITMaterial iStoneLayer = stoneLayerList.get(i);

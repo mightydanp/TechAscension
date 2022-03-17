@@ -248,6 +248,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                 CampfireBlockOverride.setLit(world, blockPos, blockState, true);
                 tileEntity.keepLogsFormed = true;
                 itemstack.setDamageValue(itemstack.getDamageValue() + 1);
+                blockState.getBlockState();
             }
 
             if(logs > 0) {
@@ -343,7 +344,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
             }
         }
 
-        return ActionResultType.SUCCESS;
+        return ActionResultType.SUCCESS ;
     }
 
     public Vector3d click(PlayerEntity player, World world){
@@ -365,7 +366,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
             return null;
         }
 
-        player.sendMessage(ITextComponent.nullToEmpty(rayHit.getLocation().x + " ," + rayHit.getLocation().y + " ," + rayHit.getLocation().z), player.getUUID());
+        //player.sendMessage(ITextComponent.nullToEmpty(rayHit.getLocation().x + " ," + rayHit.getLocation().y + " ," + rayHit.getLocation().z), player.getUUID());
 
         return rayHit.getLocation();
     }
@@ -531,7 +532,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
     }
 
     public static boolean isLit(BlockState blockState) {
-        return blockState.hasProperty(LIT) && blockState.getValue(LIT);
+        return blockState.getValue(LIT);
     }
 
 

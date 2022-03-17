@@ -14,32 +14,27 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class SmallOreVeinRegistry extends JsonConfigMultiFile {
-    private static final Map<String, SmallOreVeinGenFeatureConfig> smallOreVeinList = new HashMap<>();
+public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFeatureConfig> {
 
     @Override
     public void initiate() {
         setJsonFolderName("small_ore");
         setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation() + "/generation/");
-        buildSmallOreVeinJson();
+        buildJson();
         loadExistJson();
         super.initiate();
     }
 
-    public static List<SmallOreVeinGenFeatureConfig> getAllSmallOreVeins() {
-        return new ArrayList<>(smallOreVeinList.values());
-    }
-
-    public static void register(SmallOreVeinGenFeatureConfig feature) {
-        if (smallOreVeinList.containsKey(feature.name)) {
+    public void register(SmallOreVeinGenFeatureConfig feature) {
+        if (registryMap.containsKey(feature.name)) {
             throw new IllegalArgumentException("small ore vein with name(" + feature.name + "), already exists.");
         } else {
-            smallOreVeinList.put(feature.name, feature);
+            registryMap.put(feature.name, feature);
         }
     }
 
-    public void buildSmallOreVeinJson() {
-        for (SmallOreVeinGenFeatureConfig smallOreVein : smallOreVeinList.values()) {
+    public void buildJson() {
+        for (SmallOreVeinGenFeatureConfig smallOreVein : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(smallOreVein.name);
             if (jsonObject.size() == 0) {
                 this.saveJsonObject(smallOreVein.name, toJsonObject(smallOreVein));
@@ -55,10 +50,10 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!smallOreVeinList.containsValue(getSmallOreVein(jsonObject))) {
-                        SmallOreVeinGenFeatureConfig smallOreVein = getSmallOreVein(jsonObject);
+                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
+                        SmallOreVeinGenFeatureConfig smallOreVein = getFromJsonObject(jsonObject);
 
-                        smallOreVeinList.put(smallOreVein.name, smallOreVein);
+                        registryMap.put(smallOreVein.name, smallOreVein);
                         OreGenerationHandler.addRegistrySmallOreVeinGeneration(smallOreVein);
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to small ore vein list because a small ore vein already exist!!", file.getAbsolutePath());
@@ -70,7 +65,8 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile {
         }
     }
 
-    public SmallOreVeinGenFeatureConfig getSmallOreVein(JsonObject jsonObjectIn) {
+    @Override
+    public SmallOreVeinGenFeatureConfig getFromJsonObject(JsonObject jsonObjectIn) {
         String name = jsonObjectIn.get("name").getAsString();
         int rarity = jsonObjectIn.get("rarity").getAsInt();
         int minHeight = jsonObjectIn.get("min_height").getAsInt();

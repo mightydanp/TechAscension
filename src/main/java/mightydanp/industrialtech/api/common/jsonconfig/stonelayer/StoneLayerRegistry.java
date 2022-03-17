@@ -3,7 +3,6 @@ package mightydanp.industrialtech.api.common.jsonconfig.stonelayer;
 import com.google.gson.JsonObject;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ResourceLocation;
 
@@ -16,8 +15,7 @@ import java.util.stream.Collectors;
 /**
  * Created by MightyDanp on 1/26/2022.
  */
-public class StoneLayerRegistry extends JsonConfigMultiFile {
-    private static final Map<ResourceLocation, IStoneLayer> stoneLayerList = new HashMap<>();
+public class StoneLayerRegistry extends JsonConfigMultiFile<IStoneLayer> {
 
     @Override
     public void initiate() {
@@ -35,31 +33,24 @@ public class StoneLayerRegistry extends JsonConfigMultiFile {
         super.initiate();
     }
 
-    public static List<IStoneLayer> getAllStoneLayers() {
-        return new ArrayList<>(stoneLayerList.values());
+    public List<IStoneLayer> getAllStoneLayersByModID(String modIDIn) {
+        return registryMap.values().stream().filter(o -> o.getBlock().equals(modIDIn)).collect(Collectors.toList());
     }
 
-    public static List<IStoneLayer> getAllStoneLayersByModID(String modIDIn) {
-        return stoneLayerList.values().stream().filter(o -> o.getBlock().equals(modIDIn)).collect(Collectors.toList());
-    }
-
-    public static void register(IStoneLayer stoneLayerIn) {
+    @Override
+    public void register(IStoneLayer stoneLayerIn) {
         ResourceLocation resourceLocation = convertToResourceLocation(stoneLayerIn);
-        if (stoneLayerList.containsKey(resourceLocation))
+        if (registryMap.containsKey(resourceLocation))
             throw new IllegalArgumentException("stone layer with block(" + resourceLocation + "), already exists.");
-        stoneLayerList.put(resourceLocation, stoneLayerIn);
+        registryMap.put(String.valueOf(resourceLocation), stoneLayerIn);
     }
     
     public static ResourceLocation convertToResourceLocation(IStoneLayer stoneLayerIn){
         return new ResourceLocation(stoneLayerIn.getBlock().split(":")[0], stoneLayerIn.getBlock().split(":")[1]);
     }
 
-    public Set<IStoneLayer> getAllStoneLayer() {
-        return new HashSet<>(stoneLayerList.values());
-    }
-
     public void buildStoneLayerJson(){
-        for(IStoneLayer stoneLayer : stoneLayerList.values()) {
+        for(IStoneLayer stoneLayer : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(stoneLayer.getBlock().split(":")[1]);
 
             if (jsonObject.size() == 0) {
@@ -84,10 +75,10 @@ public class StoneLayerRegistry extends JsonConfigMultiFile {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!stoneLayerList.containsValue(getStoneLayer(jsonObject))) {
-                        IStoneLayer stoneLayer = getStoneLayer(jsonObject);
+                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
+                        IStoneLayer stoneLayer = getFromJsonObject(jsonObject);
 
-                        stoneLayerList.put(convertToResourceLocation(stoneLayer), stoneLayer);
+                        registryMap.put(String.valueOf(convertToResourceLocation(stoneLayer)), stoneLayer);
 
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to stone Layer list because a stone layer already exist!!", file.getAbsolutePath());
@@ -99,7 +90,8 @@ public class StoneLayerRegistry extends JsonConfigMultiFile {
         }
     }
 
-    public IStoneLayer getStoneLayer(JsonObject jsonObjectIn){
+    @Override
+    public IStoneLayer getFromJsonObject(JsonObject jsonObjectIn){
         JsonObject stoneLayerJson = jsonObjectIn.getAsJsonObject("stone_layer");
 
         String block = stoneLayerJson.get("block").getAsString();
