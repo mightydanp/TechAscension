@@ -5,6 +5,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.PacketBuffer;
 
@@ -17,6 +18,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by MightyDanp on 1/26/2022.
@@ -35,17 +38,22 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getStoneLayers().size() != getServerMap().size()){
+        List<IStoneLayer> list = message.getConfig(IndustrialTech.configSync.stoneLayerID).stream()
+                .filter(IStoneLayer.class::isInstance)
+                .map(IStoneLayer.class::cast)
+                .collect(toList());
+        
+        if(list.size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("stone_layer", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, stoneLayer) -> {
-            sync.set(message.getStoneLayers().stream().anyMatch(o -> o.getBlock().split(":")[1].equals(name)));
+            sync.set(list.stream().anyMatch(o -> o.getBlock().split(":")[1].equals(name)));
 
             if(sync.get()) {
-                Optional<IStoneLayer> optional = message.getStoneLayers().stream().filter(o -> o.getBlock().split(":")[1].equals(name)).findFirst();
+                Optional<IStoneLayer> optional = list.stream().filter(o -> o.getBlock().split(":")[1].equals(name)).findFirst();
 
                 if(optional.isPresent()) {
                     IStoneLayer serverStoneLayer = optional.get();
@@ -169,7 +177,12 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        Map<String, IStoneLayer> stoneLayers = message.getStoneLayers().stream()
+        List<IStoneLayer> list = message.getConfig(IndustrialTech.configSync.stoneLayerID).stream()
+                .filter(IStoneLayer.class::isInstance)
+                .map(IStoneLayer.class::cast)
+                .collect(toList());
+
+        Map<String, IStoneLayer> stoneLayers = list.stream()
                 .collect(Collectors.toMap(s -> s.getBlock().split(":")[1], s -> s));
 
         serverMap.clear();
@@ -185,11 +198,14 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.getStoneLayers().size());
+        List<IStoneLayer> list = message.getConfig(IndustrialTech.configSync.stoneLayerID).stream()
+                .filter(IStoneLayer.class::isInstance)
+                .map(IStoneLayer.class::cast)
+                .collect(toList());
 
-        message.getStoneLayers().forEach((stoneLayer) -> {
-            singleToBuffer(buffer, stoneLayer);
-        });
+        buffer.writeVarInt(list.size());
+
+        list.forEach((stoneLayer) -> singleToBuffer(buffer, stoneLayer));
     }
 
     @Override

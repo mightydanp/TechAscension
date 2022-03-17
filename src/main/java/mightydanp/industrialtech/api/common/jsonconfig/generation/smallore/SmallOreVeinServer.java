@@ -7,6 +7,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.api.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
 import mightydanp.industrialtech.api.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.PacketBuffer;
@@ -20,6 +21,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureConfig> {
 
@@ -35,17 +38,22 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getSmallOreVeins().size() != getServerMap().size()){
+        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.smallOreID).stream()
+                .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
+                .map(SmallOreVeinGenFeatureConfig.class::cast)
+                .collect(toList());
+
+        if(list.size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("ore_vein", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, smallOreVein) -> {
-            sync.set(message.getSmallOreVeins().stream().anyMatch(o -> o.name.equals(name)));
+            sync.set(list.stream().anyMatch(o -> o.name.equals(name)));
 
             if(sync.get()) {
-                Optional<SmallOreVeinGenFeatureConfig> optional = message.getSmallOreVeins().stream().filter(o -> o.name.equals(name)).findFirst();
+                Optional<SmallOreVeinGenFeatureConfig> optional = list.stream().filter(o -> o.name.equals(name)).findFirst();
 
                 if(optional.isPresent()) {
                     SmallOreVeinGenFeatureConfig serverSmallOreVein = optional.get();
@@ -169,7 +177,12 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        Map<String, SmallOreVeinGenFeatureConfig> SmallOreVeins = message.getSmallOreVeins().stream()
+        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.smallOreID).stream()
+                .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
+                .map(SmallOreVeinGenFeatureConfig.class::cast)
+                .collect(toList());
+
+        Map<String, SmallOreVeinGenFeatureConfig> SmallOreVeins = list.stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
 
         serverMap.clear();
@@ -199,9 +212,14 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
     @Override
     public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.getSmallOreVeins().size());
+        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.smallOreID).stream()
+                .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
+                .map(SmallOreVeinGenFeatureConfig.class::cast)
+                .collect(toList());
 
-        message.getSmallOreVeins().forEach((smallOreVein) -> {
+        buffer.writeVarInt(list.size());
+
+        list.forEach((smallOreVein) -> {
             singleToBuffer(buffer, smallOreVein);
         });
     }

@@ -2,6 +2,7 @@ package mightydanp.industrialtech.api.common.jsonconfig.flag;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialtech.api.common.jsonconfig.material.ore.IOreType;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
@@ -19,6 +20,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * Created by MightyDanp on 1/23/2022.
  */
@@ -35,17 +38,22 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getMaterialFlags().size() != getServerMap().size()){
+        List<IMaterialFlag> list = message.getConfig(IndustrialTech.configSync.materialFlagID).stream()
+                .filter(IMaterialFlag.class::isInstance)
+                .map(IMaterialFlag.class::cast)
+                .collect(toList());
+
+        if(list.size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("material_flag", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, materialFlag) -> {
-            sync.set(message.getMaterialFlags().stream().anyMatch(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)));
+            sync.set(list.stream().anyMatch(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)));
 
             if(sync.get()) {
-                Optional<IMaterialFlag> optional = message.getMaterialFlags().stream().filter(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)).findFirst();
+                Optional<IMaterialFlag> optional = list.stream().filter(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)).findFirst();
 
                 if(optional.isPresent()) {
                     IMaterialFlag serverMaterialFlag = optional.get();
@@ -170,7 +178,12 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        Map<String, IMaterialFlag> materialFlags = message.getMaterialFlags().stream()
+        List<IMaterialFlag> list = message.getConfig(IndustrialTech.configSync.materialFlagID).stream()
+                .filter(IMaterialFlag.class::isInstance)
+                .map(IMaterialFlag.class::cast)
+                .collect(toList());
+
+        Map<String, IMaterialFlag> materialFlags = list.stream()
                 .collect(Collectors.toMap(s -> fixesToName(s.getPrefix(), s.getSuffix()), s -> s));
 
         getServerMap().clear();
@@ -188,9 +201,14 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.getMaterialFlags().size());
+        List<IMaterialFlag> list = message.getConfig(IndustrialTech.configSync.materialFlagID).stream()
+                .filter(IMaterialFlag.class::isInstance)
+                .map(IMaterialFlag.class::cast)
+                .collect(toList());
 
-        message.getMaterialFlags().forEach((materialFlag) -> {
+        buffer.writeVarInt(list.size());
+
+        list.forEach((materialFlag) -> {
             singleToBuffer(buffer, materialFlag);
         });
     }

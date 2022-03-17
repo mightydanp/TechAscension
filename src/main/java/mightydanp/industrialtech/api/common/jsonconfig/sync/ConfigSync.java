@@ -65,37 +65,51 @@ import java.util.Map;
 public class ConfigSync {
     public Map<String, Boolean> syncedJson = new HashMap<>();
     public Map<Integer, Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>> configs = new HashMap<>();
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> materialFlag = configs.getOrDefault(0, new Pair<>(new MaterialFlagRegistry(),  new MaterialFlagServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> fluidState = configs.getOrDefault(1, new Pair<>(new FluidStateRegistry(),  new FluidStateServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreType = configs.getOrDefault(2, new Pair<>(new OreTypeRegistry(),  new OreTypeServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  textureIcon = configs.getOrDefault(3, new Pair<>(new TextureIconRegistry(),  new TextureIconServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolPart = configs.getOrDefault(4, new Pair<>(new ToolPartRegistry(),  new ToolPartServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolType = configs.getOrDefault(5, new Pair<>(new ToolTypeRegistry(),  new ToolTypeServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  stoneLayer = configs.getOrDefault(6, new Pair<>(new StoneLayerRegistry(),  new StoneLayerServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  material = configs.getOrDefault(7, new Pair<>(new MaterialRegistry(),  new MaterialServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreVein = configs.getOrDefault(8, new Pair<>(new OreVeinRegistry(),  new OreVeinServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  smallOre = configs.getOrDefault(9, new Pair<>(new SmallOreVeinRegistry(),  new SmallOreVeinServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  blocksInWater = configs.getOrDefault(10, new Pair<>(new BlocksInWaterRegistry(),  new BlocksInWaterServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  randomSurface = configs.getOrDefault(11, new Pair<>(new RandomSurfaceRegistry(),  new RandomSurfaceServer()));
+    public int materialFlagID = 0;
+    public int fluidStateID = 1;
+    public int oreTypeID = 2;
+    public int textureIconID = 3;
+    public int toolPartID = 4;
+    public int toolTypeID = 5;
+    public int stoneLayerID = 6;
+    public int materialID = 7;
+    public int oreVeinID = 8;
+    public int smallOreID = 9;
+    public int blocksInWaterID = 10;
+    public int randomSurfaceID = 11;
+
+
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> materialFlag = configs.getOrDefault(materialFlagID, new Pair<>(new MaterialFlagRegistry(),  new MaterialFlagServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> fluidState = configs.getOrDefault(fluidStateID, new Pair<>(new FluidStateRegistry(),  new FluidStateServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreType = configs.getOrDefault(oreTypeID, new Pair<>(new OreTypeRegistry(),  new OreTypeServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  textureIcon = configs.getOrDefault(textureIconID, new Pair<>(new TextureIconRegistry(),  new TextureIconServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolPart = configs.getOrDefault(toolPartID, new Pair<>(new ToolPartRegistry(),  new ToolPartServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolType = configs.getOrDefault(toolTypeID, new Pair<>(new ToolTypeRegistry(),  new ToolTypeServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  stoneLayer = configs.getOrDefault(stoneLayerID, new Pair<>(new StoneLayerRegistry(),  new StoneLayerServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  material = configs.getOrDefault(materialID, new Pair<>(new MaterialRegistry(),  new MaterialServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreVein = configs.getOrDefault(oreVeinID, new Pair<>(new OreVeinRegistry(),  new OreVeinServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  smallOre = configs.getOrDefault(smallOreID, new Pair<>(new SmallOreVeinRegistry(),  new SmallOreVeinServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  blocksInWater = configs.getOrDefault(blocksInWaterID, new Pair<>(new BlocksInWaterRegistry(),  new BlocksInWaterServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  randomSurface = configs.getOrDefault(randomSurfaceID, new Pair<>(new RandomSurfaceRegistry(),  new RandomSurfaceServer()));
 
     public boolean isSinglePlayer;
     public String singlePlayerWorldName;
     public static String serverIP;
 
     public void init(){
-        configs.put(0, materialFlag);
-        configs.put(1, fluidState);
-        configs.put(2, oreType);
-        configs.put(3, textureIcon);
-        configs.put(4, toolPart);
-        configs.put(5, toolType);
-        configs.put(6, stoneLayer);
-        configs.put(7, material);
+        configs.put(materialFlagID, materialFlag);
+        configs.put(fluidStateID, fluidState);
+        configs.put(oreTypeID, oreType);
+        configs.put(textureIconID, textureIcon);
+        configs.put(toolPartID, toolPart);
+        configs.put(toolTypeID, toolType);
+        configs.put(stoneLayerID, stoneLayer);
+        configs.put(materialID, material);
         ModMaterials.commonInit();
-        configs.put(8, oreVein);
-        configs.put(9, smallOre);
-        configs.put(10, blocksInWater);
-        configs.put(11, randomSurface);
+        configs.put(oreVeinID, oreVein);
+        configs.put(smallOreID, smallOre);
+        configs.put(blocksInWaterID, blocksInWater);
+        configs.put(randomSurfaceID, randomSurface);
 
 
         for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
@@ -135,20 +149,10 @@ public class ConfigSync {
 
             SyncMessage syncMessage = new SyncMessage(isSinglePlayer, singlePlayerWorldName);
 
-            syncMessage.setMaterialFlags(((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).getAllValues());
-            syncMessage.setFluidStates(((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).getAllValues());
-            syncMessage.setOreTypes(((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).getAllValues());
-            syncMessage.setTextureIcons(((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).getAllValues());
-            syncMessage.setToolParts(((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).getAllValues());
-            syncMessage.setToolTypes(((ToolTypeRegistry)IndustrialTech.configSync.toolType.getFirst()).getAllValues());
-            syncMessage.setStoneLayers(((StoneLayerRegistry)IndustrialTech.configSync.stoneLayer.getFirst()).getAllValues());
-            //
-            syncMessage.setMaterials(((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getAllValues());
-
-            syncMessage.setOreVeins(((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).getAllValues());
-            syncMessage.setSmallOreVeins(((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).getAllValues());
-            syncMessage.setBlocksInWater(((BlocksInWaterRegistry)IndustrialTech.configSync.blocksInWater.getFirst()).getAllValues());
-            syncMessage.setRandomSurface(((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).getAllValues());
+            for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
+                Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = IndustrialTech.configSync.configs.get(i);
+                syncMessage.setConfig(i, config.getFirst().getAllValues());
+            }
 
             ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
 

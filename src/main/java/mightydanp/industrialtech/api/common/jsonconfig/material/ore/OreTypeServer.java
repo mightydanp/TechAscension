@@ -18,6 +18,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * Created by MightyDanp on 1/25/2022.
  */
@@ -35,17 +37,22 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getOreTypes().size() != getServerMap().size()){
+        if(message.getConfig(IndustrialTech.configSync.oreTypeID).size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("ore_type", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, oreType) -> {
-            sync.set(message.getOreTypes().stream().anyMatch(o -> o.getName().equals(name)));
+            List<IOreType> list = message.getConfig(IndustrialTech.configSync.oreTypeID).stream()
+                    .filter(IOreType.class::isInstance)
+                    .map(IOreType.class::cast)
+                    .collect(toList());
+
+            sync.set(list.stream().anyMatch(o -> o.getName().equals(name)));
 
             if(sync.get()) {
-                Optional<IOreType> optional = message.getOreTypes().stream().filter(o -> o.getName().equals(name)).findFirst();
+                Optional<IOreType> optional = list.stream().filter(o -> o.getName().equals(name)).findFirst();
 
                 if(optional.isPresent()) {
                     IOreType serverOreType = optional.get();
@@ -169,7 +176,12 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        Map<String, IOreType> oreTypes = message.getOreTypes().stream()
+        List<IOreType> list = message.getConfig(IndustrialTech.configSync.oreTypeID).stream()
+                .filter(IOreType.class::isInstance)
+                .map(IOreType.class::cast)
+                .collect(toList());
+
+        Map<String, IOreType> oreTypes = list.stream()
                 .collect(Collectors.toMap(IOreType::getName, s -> s));
 
         serverMap.clear();
@@ -185,9 +197,14 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.getOreTypes().size());
+        List<IOreType> list = message.getConfig(IndustrialTech.configSync.oreTypeID).stream()
+                .filter(IOreType.class::isInstance)
+                .map(IOreType.class::cast)
+                .collect(toList());
 
-        message.getOreTypes().forEach((oreType) -> {
+        buffer.writeVarInt(list.size());
+
+        list.forEach((oreType) -> {
             singleToBuffer(buffer, oreType);
         });
     }

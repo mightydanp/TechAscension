@@ -6,6 +6,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.api.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.industrialtech.api.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.PacketBuffer;
@@ -19,6 +20,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatureConfig> {
 
@@ -34,17 +37,22 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getRandomSurfaces().size() != getServerMap().size()){
+        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.randomSurfaceID).stream()
+                .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
+                .map(RandomSurfaceGenFeatureConfig.class::cast)
+                .collect(toList());
+        
+        if(list.size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("random_surface", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, RandomSurface) -> {
-            sync.set(message.getRandomSurfaces().stream().anyMatch(o -> o.name.equals(name)));
+            sync.set(list.stream().anyMatch(o -> o.name.equals(name)));
 
             if(sync.get()) {
-                Optional<RandomSurfaceGenFeatureConfig> optional = message.getRandomSurfaces().stream().filter(o -> o.name.equals(name)).findFirst();
+                Optional<RandomSurfaceGenFeatureConfig> optional = list.stream().filter(o -> o.name.equals(name)).findFirst();
 
                 if(optional.isPresent()) {
                     RandomSurfaceGenFeatureConfig serverRandomSurface = optional.get();
@@ -168,7 +176,12 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        Map<String, RandomSurfaceGenFeatureConfig> RandomSurfaces = message.getRandomSurfaces().stream()
+        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.randomSurfaceID).stream()
+                .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
+                .map(RandomSurfaceGenFeatureConfig.class::cast)
+                .collect(toList());
+
+        Map<String, RandomSurfaceGenFeatureConfig> RandomSurfaces = list.stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
 
         serverMap.clear();
@@ -200,11 +213,14 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
     @Override
     public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.getRandomSurfaces().size());
+        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.randomSurfaceID).stream()
+                .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
+                .map(RandomSurfaceGenFeatureConfig.class::cast)
+                .collect(toList());
 
-        message.getRandomSurfaces().forEach((randomSurface) -> {
-            singleToBuffer(buffer, randomSurface);
-        });
+        buffer.writeVarInt(list.size());
+
+        list.forEach((randomSurface) -> singleToBuffer(buffer, randomSurface));
     }
 
     @Override

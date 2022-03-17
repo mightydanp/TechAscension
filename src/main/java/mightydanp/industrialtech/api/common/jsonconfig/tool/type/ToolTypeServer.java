@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartRegistry;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
@@ -20,6 +21,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by MightyDanp on 1/25/2022.
@@ -38,17 +41,22 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getToolTypes().size() != getServerMap().size()){
+        List<IToolType> list = message.getConfig(IndustrialTech.configSync.toolTypeID).stream()
+                .filter(IToolType.class::isInstance)
+                .map(IToolType.class::cast)
+                .collect(toList());
+        
+        if(list.size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("tool_type", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, toolType) -> {
-            sync.set(message.getToolTypes().stream().anyMatch(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)));
+            sync.set(list.stream().anyMatch(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)));
 
             if(sync.get()) {
-                Optional<IToolType> optional = message.getToolTypes().stream().filter(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)).findFirst();
+                Optional<IToolType> optional = list.stream().filter(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)).findFirst();
 
                 if(optional.isPresent()) {
                     IToolType serverToolType = optional.get();
@@ -172,7 +180,12 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        Map<String, IToolType> toolTypes = message.getToolTypes().stream()
+        List<IToolType> list = message.getConfig(IndustrialTech.configSync.toolTypeID).stream()
+                .filter(IToolType.class::isInstance)
+                .map(IToolType.class::cast)
+                .collect(toList());
+
+        Map<String, IToolType> toolTypes = list.stream()
                 .collect(Collectors.toMap(s -> fixesToName(s.getPrefix(), s.getSuffix()), s -> s));
 
         serverMap.clear();
@@ -190,11 +203,14 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.getToolTypes().size());
+        List<IToolType> list = message.getConfig(IndustrialTech.configSync.toolTypeID).stream()
+                .filter(IToolType.class::isInstance)
+                .map(IToolType.class::cast)
+                .collect(toList());
 
-        message.getToolTypes().forEach((toolType) -> {
-            singleToBuffer(buffer, toolType);
-        });
+        buffer.writeVarInt(list.size());
+
+        list.forEach((toolType) -> singleToBuffer(buffer, toolType));
     }
 
     @Override

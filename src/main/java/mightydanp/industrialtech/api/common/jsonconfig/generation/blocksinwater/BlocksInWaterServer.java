@@ -3,6 +3,7 @@ package mightydanp.industrialtech.api.common.jsonconfig.generation.blocksinwater
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
@@ -21,6 +22,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatureConfig> {
 
     @Override
@@ -35,17 +38,22 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getBlocksInWaters().size() != getServerMap().size()){
+        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.blocksInWaterID).stream()
+                .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
+                .map(BlocksInWaterGenFeatureConfig.class::cast)
+                .collect(toList());
+
+        if(list.size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("blocks_in_water", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, BlocksInWater) -> {
-            sync.set(message.getBlocksInWaters().stream().anyMatch(o -> o.name.equals(name)));
+            sync.set(list.stream().anyMatch(o -> o.name.equals(name)));
 
             if(sync.get()) {
-                Optional<BlocksInWaterGenFeatureConfig> optional = message.getBlocksInWaters().stream().filter(o -> o.name.equals(name)).findFirst();
+                Optional<BlocksInWaterGenFeatureConfig> optional = list.stream().filter(o -> o.name.equals(name)).findFirst();
 
                 if(optional.isPresent()) {
                     BlocksInWaterGenFeatureConfig serverBlocksInWater = optional.get();
@@ -169,7 +177,12 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        Map<String, BlocksInWaterGenFeatureConfig> BlocksInWaters = message.getBlocksInWaters().stream()
+        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.blocksInWaterID).stream()
+                .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
+                .map(BlocksInWaterGenFeatureConfig.class::cast)
+                .collect(toList());
+
+        Map<String, BlocksInWaterGenFeatureConfig> BlocksInWaters = list.stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
 
         serverMap.clear();
@@ -202,11 +215,14 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
     @Override
     public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.getBlocksInWaters().size());
+        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.blocksInWaterID).stream()
+                .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
+                .map(BlocksInWaterGenFeatureConfig.class::cast)
+                .collect(toList());
 
-        message.getBlocksInWaters().forEach((blocksInWater) -> {
-            singleToBuffer(buffer, blocksInWater);
-        });
+        buffer.writeVarInt(list.size());
+
+        list.forEach((blocksInWater) -> singleToBuffer(buffer, blocksInWater));
     }
 
     @Override

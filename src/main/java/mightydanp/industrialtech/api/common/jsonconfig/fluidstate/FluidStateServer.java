@@ -1,6 +1,7 @@
 package mightydanp.industrialtech.api.common.jsonconfig.fluidstate;
 
 import com.google.gson.JsonObject;
+import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
@@ -18,6 +19,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * Created by MightyDanp on 1/25/2022.
  */
@@ -33,19 +36,25 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
 
     @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
+        List<IFluidState> list = message.getConfig(IndustrialTech.configSync.fluidStateID).stream()
+                .filter(IFluidState.class::isInstance)
+                .map(IFluidState.class::cast)
+                .collect(toList());
+
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getFluidStates().size() != getServerMap().size()){
+
+        if(list.size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("fluid_state", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, fluidState) -> {
-            sync.set(message.getFluidStates().stream().anyMatch(o -> o.getName().equals(name)));
+            sync.set(list.stream().anyMatch(o -> o.getName().equals(name)));
 
             if(sync.get()) {
-                Optional<IFluidState> optional = message.getFluidStates().stream().filter(o -> o.getName().equals(name)).findFirst();
+                Optional<IFluidState> optional = list.stream().filter(o -> o.getName().equals(name)).findFirst();
 
                 if(optional.isPresent()) {
                     IFluidState serverFluidState = optional.get();
@@ -169,8 +178,13 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        Map<String, IFluidState> fluidStates = message.getFluidStates().stream()
-                .collect(Collectors.toMap(s -> s.getName(), s -> s));
+        List<IFluidState> list = message.getConfig(IndustrialTech.configSync.fluidStateID).stream()
+                .filter(IFluidState.class::isInstance)
+                .map(IFluidState.class::cast)
+                .collect(toList());
+
+        Map<String, IFluidState> fluidStates = list.stream()
+                .collect(Collectors.toMap(IFluidState::getName, s -> s));
 
         serverMap.clear();
         serverMap.putAll(fluidStates);
@@ -185,9 +199,14 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.getFluidStates().size());
+        List<IFluidState> list = message.getConfig(IndustrialTech.configSync.fluidStateID).stream()
+                .filter(IFluidState.class::isInstance)
+                .map(IFluidState.class::cast)
+                .collect(toList());
 
-        message.getFluidStates().forEach((fluidState) -> {
+        buffer.writeVarInt(list.size());
+
+        list.forEach((fluidState) -> {
             singleToBuffer(buffer, fluidState);
         });
     }

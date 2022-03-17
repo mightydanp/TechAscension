@@ -28,6 +28,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * Created by MightyDanp on 1/3/2022.
  */
@@ -37,17 +39,22 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getMaterials().size() != ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getAllValues().size()){
+        List<ITMaterial> list = message.getConfig(IndustrialTech.configSync.materialID).stream()
+                .filter(ITMaterial.class::isInstance)
+                .map(ITMaterial.class::cast)
+                .collect(toList());
+        
+        if(list.size() != ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getAllValues().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("material", sync.get());
             return false;
         }
 
         ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getAllValues().forEach(itMaterial -> {
-            sync.set(message.getMaterials().stream().anyMatch(o -> o.name.equals(itMaterial.name)));
+            sync.set(list.stream().anyMatch(o -> o.name.equals(itMaterial.name)));
 
             if(sync.get()) {
-                Optional<ITMaterial> optional = message.getMaterials().stream().filter(o -> o.name.equals(itMaterial.name)).findFirst();
+                Optional<ITMaterial> optional = list.stream().filter(o -> o.name.equals(itMaterial.name)).findFirst();
 
                 if(optional.isPresent()) {
                     ITMaterial material = optional.get();
@@ -164,7 +171,12 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        Map<String, ITMaterial> materials = message.getMaterials().stream()
+        List<ITMaterial> list = message.getConfig(IndustrialTech.configSync.materialID).stream()
+                .filter(ITMaterial.class::isInstance)
+                .map(ITMaterial.class::cast)
+                .collect(toList());
+
+        Map<String, ITMaterial> materials = list.stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
 
         serverMap.clear();
@@ -311,12 +323,14 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.getMaterials().size());
+        List<ITMaterial> list = message.getConfig(IndustrialTech.configSync.materialID).stream()
+                .filter(ITMaterial.class::isInstance)
+                .map(ITMaterial.class::cast)
+                .collect(toList());
 
-        message.getMaterials().forEach((material) -> {
+        buffer.writeVarInt(list.size());
 
-            singleToBuffer(buffer, material);
-        });
+        list.forEach((material) -> singleToBuffer(buffer, material));
     }
 
     @Override

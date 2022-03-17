@@ -6,6 +6,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.api.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.PacketBuffer;
 
@@ -18,6 +19,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by MightyDanp on 1/25/2022.
@@ -34,17 +37,22 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getTextureIcons().size() != getServerMap().size()){
+        List<ITextureIcon> list = message.getConfig(IndustrialTech.configSync.textureIconID).stream()
+                .filter(ITextureIcon.class::isInstance)
+                .map(ITextureIcon.class::cast)
+                .collect(toList());
+        
+        if(list.size() != getServerMap().size()){
             sync.set(false);
             IndustrialTech.configSync.syncedJson.put("texture_icon", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, textureIcon) -> {
-            sync.set(message.getTextureIcons().stream().anyMatch(o -> o.getName().equals(name)));
+            sync.set(list.stream().anyMatch(o -> o.getName().equals(name)));
 
             if(sync.get()) {
-                Optional<ITextureIcon> optional = message.getTextureIcons().stream().filter(o -> o.getName().equals(name)).findFirst();
+                Optional<ITextureIcon> optional = list.stream().filter(o -> o.getName().equals(name)).findFirst();
 
                 if(optional.isPresent()) {
                     ITextureIcon serverTextureIcon = optional.get();
@@ -165,7 +173,12 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        Map<String, ITextureIcon> textureIcons = message.getTextureIcons().stream()
+        List<ITextureIcon> list = message.getConfig(IndustrialTech.configSync.textureIconID).stream()
+                .filter(ITextureIcon.class::isInstance)
+                .map(ITextureIcon.class::cast)
+                .collect(toList());
+
+        Map<String, ITextureIcon> textureIcons = list.stream()
                 .collect(Collectors.toMap(ITextureIcon::getName, s -> s));
 
         serverMap.clear();
@@ -181,11 +194,14 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
-        buffer.writeVarInt(message.getTextureIcons().size());
+        List<ITextureIcon> list = message.getConfig(IndustrialTech.configSync.textureIconID).stream()
+                .filter(ITextureIcon.class::isInstance)
+                .map(ITextureIcon.class::cast)
+                .collect(toList());
 
-        message.getTextureIcons().forEach((textureIcon) -> {
-            singleToBuffer(buffer, textureIcon);
-        });
+        buffer.writeVarInt(list.size());
+
+        list.forEach((textureIcon) -> singleToBuffer(buffer, textureIcon));
     }
 
     @Override
