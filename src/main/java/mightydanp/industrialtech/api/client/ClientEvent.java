@@ -8,7 +8,9 @@ import mightydanp.industrialtech.api.common.handler.KeyBindingHandler;
 import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.tileentities.TileEntities;
+import mightydanp.industrialtech.client.rendering.models.CampFireBakedModel;
 import mightydanp.industrialtech.common.IndustrialTech;
+import mightydanp.industrialtech.common.blocks.ModBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.BlockModelShapes;
@@ -45,20 +47,15 @@ public class ClientEvent {
 
     @SubscribeEvent
     public static void onModelBakeEvent(ModelBakeEvent event) {
-        // Find the existing mappings for CamouflageBakedModel - they will have been added automatically because
-        //  of our blockstates file for the BlockCamouflage.
-        // Replace the mapping with our CamouflageBakedModel.
-        // we only have one BlockState variant but I've shown code that loops through all of them, in case you have more than one.
-
-        for (BlockState blockState : ITBlocks.hole_block.get().getStateDefinition().getPossibleStates()) {
+        for (BlockState blockState : ModBlocks.campfire_override.get().getStateDefinition().getPossibleStates()) {
             ModelResourceLocation variantMRL = BlockModelShapes.stateToModelLocation(blockState);
             IBakedModel existingModel = event.getModelRegistry().get(variantMRL);
             if (existingModel == null) {
-                LOGGER.warn("Did not find the expected vanilla baked model(s) for blockCamouflage in registry");
-            } else if (existingModel instanceof HoleBakedModel) {
-                LOGGER.warn("Tried to replace CamouflagedBakedModel twice");
+                IndustrialTech.LOGGER.warn("Did not find the expected vanilla baked model(s) for HoleModel in registry");
+            } else if (existingModel instanceof CampFireBakedModel) {
+                IndustrialTech.LOGGER.warn("Tried to replace HoleModel twice");
             } else {
-                HoleBakedModel customModel = new HoleBakedModel(existingModel);
+                CampFireBakedModel customModel = new CampFireBakedModel(existingModel);
                 event.getModelRegistry().put(variantMRL, customModel);
             }
         }

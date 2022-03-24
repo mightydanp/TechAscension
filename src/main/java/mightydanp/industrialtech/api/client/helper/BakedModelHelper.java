@@ -1,13 +1,13 @@
 package mightydanp.industrialtech.api.client.helper;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.BlockFaceUV;
+import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector4f;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
@@ -16,7 +16,10 @@ import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
  */
 public class BakedModelHelper {
     
-    private void putVertex(BakedQuadBuilder builder, double x, double y, double z, float u, float v, float r, float g, float b, float a, double normalX, double normalY, double normalZ) {
+    private static void putVertex(BakedQuadBuilder builder, double x, double y, double z, float u, float v, float r, float g, float b, float a, double normalX, double normalY, double normalZ) {
+        builder.setApplyDiffuseLighting(true);
+        builder.setContractUVs(true);
+
         Vector3d normal = new Vector3d(normalX, normalY ,normalZ);
         builder.setQuadOrientation(Direction.getNearest(normal.x, normal.y, normal.z));
 
@@ -44,7 +47,7 @@ public class BakedModelHelper {
                     }
                     break;
                 case NORMAL:
-                    builder.put(j, (float) normal.x, (float) normal.y, (float) normal.z);
+                    builder.put(j, (float) normal.x, (float) normal.y, (float) normal.z, 0);
                     break;
                 default:
                     builder.put(j);
@@ -53,20 +56,20 @@ public class BakedModelHelper {
         }
     }
 
-    private BakedQuad createQuad(int red, int green, int blue, int alpha, TextureAtlasSprite sprite, AxisAlignedBB cube, BlockFaceUV north, BlockFaceUV east, BlockFaceUV south, BlockFaceUV west, BlockFaceUV up, BlockFaceUV down) {
+    public static BakedQuad createQuad(int red, int green, int blue, int alpha, TextureAtlasSprite sprite, Direction.Axis axis, float rotation, AxisAlignedBB cube, BlockFaceUV north, BlockFaceUV east, BlockFaceUV south, BlockFaceUV west, BlockFaceUV up, BlockFaceUV down) {
         int texWidth = sprite.getWidth();
         int texHeight = sprite.getHeight();
 
         BakedQuadBuilder builder = new BakedQuadBuilder(sprite);
 
-        Vector4f vertex = new Vector4f((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.minZ / 16,1.0F);
-        Vector4f vertex1 = new Vector4f((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16,1.0F);
-        Vector4f vertex2 = new Vector4f((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16,1.0F);
-        Vector4f vertex3 = new Vector4f((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16,1.0F);
-        Vector4f vertex4 = new Vector4f((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16,1.0F);
-        Vector4f vertex5 = new Vector4f((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16,1.0F);
-        Vector4f vertex6 = new Vector4f((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16,1.0F);
-        Vector4f vertex7 = new Vector4f((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.minZ / 16,1.0F);
+        Vector4f vertex = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.minZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
+        Vector4f vertex1 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
+        Vector4f vertex2 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
+        Vector4f vertex3 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
+        Vector4f vertex4 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
+        Vector4f vertex5 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
+        Vector4f vertex6 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
+        Vector4f vertex7 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.minZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
 
         // Top side
         putVertex(builder,vertex1.x(), vertex1.y(), vertex1.z(), up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 3 : 0)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 0 : 3)] / texHeight, red, green, blue, alpha, 0.5, 1, 0.5);
@@ -105,12 +108,7 @@ public class BakedModelHelper {
         putVertex(builder, vertex2.x(), vertex2.y(), vertex2.z(), south.uvs[south.getReverseIndex(2)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, red, green, blue, alpha, 0, 0, -1);
         putVertex(builder, vertex1.x(), vertex1.y(), vertex1.z(), south.uvs[south.getReverseIndex(0)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, red, green, blue, alpha, 0, 0, -1);
 
-
         return builder.build();
-    }
-
-    private static Vector3d v(double x, double y, double z) {
-        return new Vector3d(x, y, z);
     }
 
 }

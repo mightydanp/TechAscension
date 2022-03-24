@@ -50,9 +50,11 @@ public class HoleBakedModel implements IDynamicBakedModel {
         modelData = extraData;
         blockState = state;
 
+
+
         BlockState desiredBlockState = extraData.getData(HoleTileEntity.desiredBlock);
 
-        List<BakedQuad> quads = new ArrayList<BakedQuad>(baseModel.getQuads(state, side, rand));
+        List<BakedQuad> quads = new ArrayList<>(baseModel.getQuads(state, side, rand));
 
         if (desiredBlockState != null && !(desiredBlockState.getBlock() instanceof HoleBlock)) {
             if (layer == null || RenderTypeLookup.canRenderInLayer(desiredBlockState, layer)) {

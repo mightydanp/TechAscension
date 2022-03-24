@@ -3,6 +3,7 @@ package mightydanp.industrialtech.api.common.tileentities;
 import mightydanp.industrialtech.api.common.blocks.HoleBlock;
 import mightydanp.industrialtech.api.common.crafting.recipe.HoleRecipe;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
+import mightydanp.industrialtech.common.tileentities.ModTileEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -70,7 +71,7 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
     public Random random = new Random();
 
     public HoleTileEntity() {
-        super(TileEntities.hole_tile_entity.get());
+        super(ModTileEntities.hole_tile_entity.get());
     }
 
     public ItemStack getDesiredBlockSlot() {

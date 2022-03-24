@@ -86,7 +86,7 @@ public class KnifeToolItem extends ITToolItem {
                                 item.broadcastBreakEvent(itemUseContext.getHand());
                             });
                         }else{
-                            itemUseContext.getItemInHand().shrink(1);
+                            //itemUseContext.getItemInHand().shrink(1);
                         }
                     }
 
