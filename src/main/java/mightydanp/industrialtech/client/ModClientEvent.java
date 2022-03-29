@@ -9,21 +9,26 @@ import mightydanp.industrialtech.client.settings.KeyBindings.ModKeyBindings;
 import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.materials.ModMaterials;
-import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import mightydanp.industrialtech.common.tileentities.ModTileEntities;
 import mightydanp.industrialtech.common.tool.ModTools;
 import mightydanp.industrialtech.common.trees.ModTrees;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+
+import static net.minecraft.client.renderer.texture.AtlasTexture.LOCATION_BLOCKS;
 
 /**
  * Created by MightyDanp on 9/26/2020.
@@ -35,7 +40,6 @@ public class ModClientEvent implements ISidedReference {
     public static void init(FMLClientSetupEvent event) {
         ModBlocks.setRenderType();
         ModMaterials.clientInit();
-        ModStoneLayers.clientInit();
         ModTools.clientInit();
         ModTrees.clientInit();
         ModTileEntities.clientInit();
@@ -61,6 +65,18 @@ public class ModClientEvent implements ISidedReference {
                 event.getModelRegistry().put(variantMRL, customModel);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
+        if (event.getMap().location() == LOCATION_BLOCKS) {
+            event.addSprite(new ResourceLocation("block/campfire_log"));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientSetupEvent(FMLClientSetupEvent event) {
+        RenderTypeLookup.setRenderLayer(ModBlocks.campfire_override.get(), RenderType.cutout());
     }
 
 }

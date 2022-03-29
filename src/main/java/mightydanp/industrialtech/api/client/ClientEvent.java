@@ -14,16 +14,21 @@ import mightydanp.industrialtech.common.blocks.ModBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.BlockModelShapes;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import static net.minecraft.client.renderer.texture.AtlasTexture.LOCATION_BLOCKS;
 
 /**
  * Created by MightyDanp on 4/7/2021.
@@ -59,5 +64,18 @@ public class ClientEvent {
                 event.getModelRegistry().put(variantMRL, customModel);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
+        if (event.getMap().location() == LOCATION_BLOCKS) {
+            //event.addSprite(new ResourceLocation("block/campfire_log"));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientSetupEvent(FMLClientSetupEvent event) {
+        // Tell the renderer to render the camouflage block and Altimeter as a solid texture
+        //RenderTypeLookup.setRenderLayer(StartupCommon.blockCamouflage, RenderType.getSolid());
     }
 }

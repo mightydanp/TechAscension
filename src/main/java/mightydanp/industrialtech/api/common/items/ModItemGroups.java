@@ -52,6 +52,13 @@ public class ModItemGroups {
         }
     };
 
+    public static final ItemGroup stone_layer_tab = new ItemGroup(Ref.stone_layer_tab) {
+        @Override
+        public ItemStack makeIcon() {
+            return new ItemStack(Items.STONE);
+        }
+    };
+
     public static final ItemGroup tool_parts_tab = new ItemGroup(Ref.tool_parts_tab) {
         @Override
         public ItemStack makeIcon() {

@@ -1,5 +1,5 @@
 {
-  "parent": "industrialtech:block/campfire/campfire_lit_log_4",
+  "parent": "industrialtech:block/campfire/campfire_log_lit_4",
   "textures": {
     "fire": "minecraft:block/campfire_fire",
     "lit_log": "minecraft:block/campfire_log_lit"

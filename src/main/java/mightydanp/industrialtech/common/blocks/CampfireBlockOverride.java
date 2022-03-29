@@ -53,7 +53,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
     public static final EnumProperty<CampfireEnum> camp_fire = EnumProperty.create("camp_fire", CampfireEnum.class);//, CampfireEnum.---
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    public static final IntegerProperty LOG = IntegerProperty.create("log", 0, 4);
+    public static final IntegerProperty LOG = IntegerProperty.create("log", 0, 5);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape VIRTUAL_FENCE_POST = Block.box(6.0D, 0.0D, 6.0D, 10.0D, 16.0D, 10.0D);
 
@@ -237,7 +237,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                     break;
             }
 
-            if(logs < 4 && ItemTags.getAllTags().getTagOrEmpty(log).contains(itemstack.getItem())){
+            if(logs < 5 && ItemTags.getAllTags().getTagOrEmpty(log).contains(itemstack.getItem())){
                 itemstack.shrink(1);
                 playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
                 increaseLogs(world, blockPos, blockState, 1);

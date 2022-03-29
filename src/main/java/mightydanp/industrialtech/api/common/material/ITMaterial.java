@@ -1,10 +1,7 @@
 package mightydanp.industrialtech.api.common.material;
 
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.blocks.DenseOreBlock;
-import mightydanp.industrialtech.api.common.blocks.OreBlock;
-import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
-import mightydanp.industrialtech.api.common.blocks.ThinSlabBlock;
+import mightydanp.industrialtech.api.common.blocks.*;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.items.*;
 import mightydanp.industrialtech.api.common.jsonconfig.datapack.Data.BlockModelData;
@@ -99,9 +96,9 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public FlowingFluid fluid, fluid_flowing;
     public Block fluidBlock;
 
-    public Block layerBlock, thinSlabBlock;
+    public Block layerBlock, rockBlock, thinSlabBlock;
 
-    public Item layerItemBlock, thinSlabItemBlock;
+    public Item layerItemBlock, rockItemBlock, thinSlabItemBlock;
 
     public Item bucket, dullAxeHead, dullBuzzSawHead, dullChiselHead, dullHoeHead, dullPickaxe, dullArrowHead, dullSawHead, dullSwordHead;
     public Item drillHead, axeHead, buzzSawHead, chiselHead, fileHead, hammerHead, hoeHead, pickaxeHead, arrowHead, sawHead, shovelHead, swordHead, screwdriverHead;
@@ -219,8 +216,26 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                             .setParentFolder("/dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
 
                     //--//
+                    rockBlock = RegistryHandler.registerBlock(Ref.mod_id,name + "_rock", new RockBlock());
+                    //
+                    DataPackRegistry.blockStateDataMap.put(name + "_rock", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/stone_layer/rock/" + name + "_rock")));
+                    DataPackRegistry.blockModelDataMap.put(name + "_rock", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/rock"))
+                            .setParentFolder("/stone_layer/rock").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
+                                    //.setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
+                            //.setTexturesLocation("texture", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
+                    );
+                    enLang.addTranslation("block." + Ref.mod_id +  name + "_rock", LangData.translateUpperCase(name + "_rock"));
+                    //--
+                    rockItemBlock = RegistryHandler.registerItem(Ref.mod_id,  name + "_rock", new BasicItem(new Item.Properties().stacksTo(64).tab(ModItemGroups.stone_layer_tab)));
+                    //
+                    DataPackRegistry.itemModelDataHashMap.put(name + "_rock", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/rock")));
+                    DataPackRegistry.itemModelDataHashMap.put(name + ":rock", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                            .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id,"item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock"))
+                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id,"item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock_overlay"))
+                    );
+                    enLang.addTranslation("item." + Ref.mod_id + "." + name + "_rock", LangData.translateUpperCase(name + "_rock"));
+                    //--//
                     thinSlabBlock = RegistryHandler.registerBlock(Ref.mod_id,"thin_" + name + "_slab", new ThinSlabBlock(AbstractBlock.Properties.of(Material.STONE), stoneLayerBlockName));
-                    thinSlabList.add(thinSlabBlock);
                     //
                     DataPackRegistry.blockStateDataMap.put("thin_" + name + "_slab", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/stone_layer/thin_slab/" + "thin_" + name + "_slab")));
                     DataPackRegistry.blockModelDataMap.put("thin_" + name + "_slab", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/thin_slab"))
@@ -228,8 +243,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                             .setTexturesLocation("texture", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                     enLang.addTranslation("block." + Ref.mod_id + ".thin_" + name + "_slab", LangData.translateUpperCase("thin_" + name + "_slab"));
                     //--
-                    thinSlabItemBlock = RegistryHandler.registerItem(Ref.mod_id,"thin_" + name + "_slab", new ThinSlabItemBlock(thinSlabBlock, new Item.Properties().stacksTo(1)));
-                    thinSlabItemList.add(thinSlabItemBlock);
+                    thinSlabItemBlock = RegistryHandler.registerItem(Ref.mod_id,"thin_" + name + "_slab", new ThinSlabItemBlock(thinSlabBlock, new Item.Properties().stacksTo(1).tab(ModItemGroups.stone_layer_tab)));
                     //
                     DataPackRegistry.itemModelDataHashMap.put("thin_" + name + "_slab", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/thin_slab/thin_" + name + "_slab")));
                     enLang.addTranslation("item." + Ref.mod_id + ".thin_" + name + "_slab", LangData.translateUpperCase("thin_" + name + "_slab"));
@@ -486,8 +500,12 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     }
 
     public void clientRenderLayerInit(){
-        for(Block block : thinSlabList) {
-            RenderTypeLookup.setRenderLayer(block, RenderType.cutout());
+        if(rockBlock != null) {
+            RenderTypeLookup.setRenderLayer(rockBlock, RenderType.cutout());
+        }
+
+        if(thinSlabBlock != null) {
+            RenderTypeLookup.setRenderLayer(thinSlabBlock, RenderType.cutout());
         }
     }
 
@@ -501,6 +519,10 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         for (Block block : denseOreList) {
             setupABlockColor(block);
         }
+
+        if(rockBlock != null) {
+            setupABlockColor(rockBlock);
+        }
     }
 
     public void setupABlockColor(Block block){
@@ -513,6 +535,11 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     }
 
     public void registerColorForItem(){
+        if(rockItemBlock != null) {
+            registerAItemColor(rockItemBlock, 0);
+            registerAItemColor(rockItemBlock, 1);
+        }
+
         for (Item item : oreItemList) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 if (tintIndex != 0)
@@ -536,26 +563,65 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
             }, item);
         }
 
-        registerAItemColor(dust, 0);
-        registerAItemColor(smallDust, 0);
-        registerAItemColor(tinyDust, 0);
-        registerAItemColor(ingot, 0);
-        registerAItemColor(gem, 0);
-        registerAItemColor(chippedGem, 0);
-        registerAItemColor(flawedGem, 0);
-        registerAItemColor(flawedGem, 0);
-        registerAItemColor(flawlessGem, 0);
-        registerAItemColor(legendaryGem, 0);
-        registerAItemColor(crushedOre, 0);
-        registerAItemColor(purifiedOre, 0);
-        registerAItemColor(centrifugedOre, 0);
-        registerAItemColor(dullPickaxe, 0);
-        registerAItemColor(pickaxeHead, 0);
-        registerAItemColor(hammerHead, 0);
-        registerAItemColor(wedge, 0);
-        registerAItemColor(wedgeHandle, 0);
-        registerAItemColor(dullChiselHead, 0);
-        registerAItemColor(chiselHead, 0);
+        if(dust != null) {
+            registerAItemColor(dust, 0);
+        }
+
+        if(smallDust != null) {
+            registerAItemColor(smallDust, 0);
+        }
+
+        if(tinyDust != null) {
+            registerAItemColor(tinyDust, 0);
+        }
+        if(ingot != null) {
+            registerAItemColor(ingot, 0);
+        }
+        if(gem != null) {
+            registerAItemColor(gem, 0);
+        }
+        if(chippedGem != null) {
+            registerAItemColor(chippedGem, 0);
+        }
+        if(flawedGem != null) {
+            registerAItemColor(flawedGem, 0);
+        }
+        if(flawlessGem != null) {
+            registerAItemColor(flawlessGem, 0);
+        }
+        if(legendaryGem != null) {
+            registerAItemColor(legendaryGem, 0);
+        }
+        if(crushedOre != null) {
+            registerAItemColor(crushedOre, 0);
+        }
+        if(purifiedOre != null) {
+            registerAItemColor(purifiedOre, 0);
+        }
+        if(centrifugedOre != null) {
+            registerAItemColor(centrifugedOre, 0);
+        }
+        if(dullPickaxe != null) {
+            registerAItemColor(dullPickaxe, 0);
+        }
+        if(pickaxeHead != null) {
+            registerAItemColor(pickaxeHead, 0);
+        }
+        if(hammerHead != null) {
+            registerAItemColor(hammerHead, 0);
+        }
+        if(wedge != null) {
+            registerAItemColor(wedge, 0);
+        }
+        if(wedgeHandle != null) {
+            registerAItemColor(wedgeHandle, 0);
+        }
+        if(dullChiselHead != null) {
+            registerAItemColor(dullChiselHead, 0);
+        }
+        if(chiselHead != null) {
+            registerAItemColor(chiselHead, 0);
+        }
     }
 
     public void registerAItemColor(Item item, int layerNumberIn){

@@ -1,24 +1,12 @@
 package mightydanp.industrialtech.common.generation;
 
-import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
-import mightydanp.industrialtech.api.common.handler.generation.PlantGenerationHandler;
 import mightydanp.industrialtech.api.common.handler.generation.ThinSlabGenerationHandler;
-import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
-import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.IStoneLayer;
-import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.StoneLayerRegistry;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
-import mightydanp.industrialtech.common.blocks.CatTailPlantBottomBlock;
-import mightydanp.industrialtech.common.blocks.CatTailPlantTopBlock;
-import mightydanp.industrialtech.common.blocks.ModBlocks;
-import mightydanp.industrialtech.common.stonelayers.ModStoneLayers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;

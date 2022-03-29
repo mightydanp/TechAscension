@@ -14,6 +14,9 @@
 		"lit=true,facing=west": {
 			"model": "industrialtech:block/campfire/campfire_lit",
 			"y": 90
+		},
+		"lit=false": {
+			"model": "industrialtech:block/campfire/campfire_off"
 		}
 	}
 }

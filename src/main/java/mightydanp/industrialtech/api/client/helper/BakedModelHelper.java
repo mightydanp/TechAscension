@@ -5,22 +5,23 @@ import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector4f;
+import net.minecraft.util.math.vector.*;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static net.minecraftforge.client.model.SimpleModelTransform.IDENTITY;
 
 /**
  * Created by MightyDanp on 11/1/2021.
  */
 public class BakedModelHelper {
-    
-    private static void putVertex(BakedQuadBuilder builder, double x, double y, double z, float u, float v, float r, float g, float b, float a, double normalX, double normalY, double normalZ) {
-        builder.setApplyDiffuseLighting(true);
-        builder.setContractUVs(true);
+    private static FaceBakery faceBakery = new FaceBakery();
 
-        Vector3d normal = new Vector3d(normalX, normalY ,normalZ);
+    private static void putVertex(BakedQuadBuilder builder,  Vector3d normal, double x, double y, double z, float u, float v, TextureAtlasSprite sprite, float r, float g, float b, float a) {
         builder.setQuadOrientation(Direction.getNearest(normal.x, normal.y, normal.z));
 
         ImmutableList<VertexFormatElement> elements = builder.getVertexFormat().getElements().asList();
@@ -36,7 +37,9 @@ public class BakedModelHelper {
                 case UV:
                     switch (e.getIndex()) {
                         case 0:
-                            builder.put(j, u, v);
+                            float iu = sprite.getU(u);
+                            float iv = sprite.getV(v);
+                            builder.put(j, iu, iv);
                             break;
                         case 2:
                             builder.put(j, (short) 0, (short) 0);
@@ -54,59 +57,152 @@ public class BakedModelHelper {
                     break;
             }
         }
+
+        builder.setApplyDiffuseLighting(true);
     }
 
-    public static BakedQuad createQuad(int red, int green, int blue, int alpha, TextureAtlasSprite sprite, Direction.Axis axis, float rotation, AxisAlignedBB cube, BlockFaceUV north, BlockFaceUV east, BlockFaceUV south, BlockFaceUV west, BlockFaceUV up, BlockFaceUV down) {
+    public static List<BakedQuad> createCube(float red, float green, float blue, float alpha, int tintIndex, TextureAtlasSprite sprite, Direction.Axis axis, float rotation, AxisAlignedBB cube, BlockFaceUV north, BlockFaceUV east, BlockFaceUV south, BlockFaceUV west, BlockFaceUV up, BlockFaceUV down) {
         int texWidth = sprite.getWidth();
         int texHeight = sprite.getHeight();
+        
+        List<BakedQuad> bakedQuadList = new ArrayList<>();
+        Vector3d vertex0 = new Vector3d((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.minZ / 16);
+        Vector3d vertex1 = new Vector3d((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16);
+        Vector3d vertex2 = new Vector3d((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16);
+        Vector3d vertex3 = new Vector3d((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16);
+        Vector3d vertex4 = new Vector3d((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16);
+        Vector3d vertex5 = new Vector3d((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16);
+        Vector3d vertex6 = new Vector3d((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16);
+        Vector3d vertex7 = new Vector3d((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.minZ / 16);
 
-        BakedQuadBuilder builder = new BakedQuadBuilder(sprite);
+        if(axis != null) {
+            switch (axis) {
+                case X:
+                if(rotation < 0.0) {
+                    Vector3d translate = new Vector3d(0,0.81,1.3644);
 
-        Vector4f vertex = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.minZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
-        Vector4f vertex1 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
-        Vector4f vertex2 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
-        Vector4f vertex3 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
-        Vector4f vertex4 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
-        Vector4f vertex5 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
-        Vector4f vertex6 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
-        Vector4f vertex7 = new Vector4f(new BlockPartRotation(new Vector3f((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.minZ / 16), axis == null ? Direction.Axis.X : axis, rotation, false).origin);
+                    vertex0 = vertex0.xRot(-rotation).add(translate);
+                    vertex1 = vertex1.xRot(-rotation).add(translate);
+                    vertex2 = vertex2.xRot(-rotation).add(translate);
+                    vertex3 = vertex3.xRot(-rotation).add(translate);
+                    vertex4 = vertex4.xRot(-rotation).add(translate);
+                    vertex5 = vertex5.xRot(-rotation).add(translate);
+                    vertex6 = vertex6.xRot(-rotation).add(translate);
+                    vertex7 = vertex7.xRot(-rotation).add(translate);
+                }else{
+                    Vector3d translate = new Vector3d(0,0.695,0.63);
+                    vertex0 = vertex0.xRot(-rotation).add(translate);
+                    vertex1 = vertex1.xRot(-rotation).add(translate);
+                    vertex2 = vertex2.xRot(-rotation).add(translate);
+                    vertex3 = vertex3.xRot(-rotation).add(translate);
+                    vertex4 = vertex4.xRot(-rotation).add(translate);
+                    vertex5 = vertex5.xRot(-rotation).add(translate);
+                    vertex6 = vertex6.xRot(-rotation).add(translate);
+                    vertex7 = vertex7.xRot(-rotation).add(translate);
+                }
+                break;
+                case Y:
+                    if(rotation < 0.0) {
+                        Vector3d translate = new Vector3d(0,0,0);
+                        vertex0 = vertex0.subtract(translate).yRot(-rotation);
+                        vertex1 = vertex1.subtract(translate).yRot(-rotation);
+                        vertex2 = vertex2.subtract(translate).yRot(-rotation);
+                        vertex3 = vertex3.subtract(translate).yRot(-rotation);
+                        vertex4 = vertex4.subtract(translate).yRot(-rotation);
+                        vertex5 = vertex5.subtract(translate).yRot(-rotation);
+                        vertex6 = vertex6.subtract(translate).yRot(-rotation);
+                        vertex7 = vertex7.subtract(translate).yRot(-rotation);
+                    }else{
+                        Vector3d translate = new Vector3d(0,0,0);
+                        vertex0 = vertex0.subtract(translate).yRot(-rotation);
+                        vertex1 = vertex1.subtract(translate).yRot(-rotation);
+                        vertex2 = vertex2.subtract(translate).yRot(-rotation);
+                        vertex3 = vertex3.subtract(translate).yRot(-rotation);
+                        vertex4 = vertex4.subtract(translate).yRot(-rotation);
+                        vertex5 = vertex5.subtract(translate).yRot(-rotation);
+                        vertex6 = vertex6.subtract(translate).yRot(-rotation);
+                        vertex7 = vertex7.subtract(translate).yRot(-rotation);
+                    }
+                    break;
+                case Z:
+                    if(rotation < 0.0) {
+                        Vector3d translate = new Vector3d(0.63,0.695,0);
+                        vertex0 = vertex0.zRot(-rotation).add(translate);
+                        vertex1 = vertex1.zRot(-rotation).add(translate);
+                        vertex2 = vertex2.zRot(-rotation).add(translate);
+                        vertex3 = vertex3.zRot(-rotation).add(translate);
+                        vertex4 = vertex4.zRot(-rotation).add(translate);
+                        vertex5 = vertex5.zRot(-rotation).add(translate);
+                        vertex6 = vertex6.zRot(-rotation).add(translate);
+                        vertex7 = vertex7.zRot(-rotation).add(translate);
+                    }else{
+                        Vector3d translate = new Vector3d(1.3644,0.81,0);
+                        vertex0 = vertex0.zRot(-rotation).add(translate);
+                        vertex1 = vertex1.zRot(-rotation).add(translate);
+                        vertex2 = vertex2.zRot(-rotation).add(translate);
+                        vertex3 = vertex3.zRot(-rotation).add(translate);
+                        vertex4 = vertex4.zRot(-rotation).add(translate);
+                        vertex5 = vertex5.zRot(-rotation).add(translate);
+                        vertex6 = vertex6.zRot(-rotation).add(translate);
+                        vertex7 = vertex7.zRot(-rotation).add(translate);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
 
-        // Top side
-        putVertex(builder,vertex1.x(), vertex1.y(), vertex1.z(), up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 3 : 0)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 0 : 3)] / texHeight, red, green, blue, alpha, 0.5, 1, 0.5);
-        putVertex(builder,vertex2.x(), vertex2.y(), vertex2.z(), up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 3 : 2)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 2 : 3)] / texHeight, red, green, blue, alpha, 0.5, 1, 0.5);
-        putVertex(builder,vertex6.x(), vertex6.y(), vertex6.z(), up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 1 : 2)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 2 : 1)] / texHeight, red, green, blue, alpha, 0.5, 1, 0.5);
-        putVertex(builder,vertex5.x(), vertex5.y(), vertex5.z(), up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 1 : 0)] / texWidth, up.uvs[up.getReverseIndex(up.rotation == 90 || up.rotation == 270 ? 0 : 1)] / texHeight, red, green, blue, alpha, 0.5, 1, 0.5);
+        /*
+        final Direction NO_FACE_CULLING = null;
+        final int TINT_INDEX_NONE = -1;  // used for tintable blocks such as grass, which make a call to BlockColors to change their rendering colour.  -1 for not tintable.
+        final String DUMMY_TEXTURE_NAME = "";  // texture name is only needed for loading from json files; not needed here
+        BlockPartFace blockPartFace = new BlockPartFace(NO_FACE_CULLING, TINT_INDEX_NONE, DUMMY_TEXTURE_NAME,  blockFaceUV);
 
-        // Bottom side
-        putVertex(builder, vertex4.x(), vertex4.y(), vertex4.z(), down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 3 : 0)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 0 : 3)] / texHeight, red, green, blue, alpha, 0.5, -1, 0.5);
-        putVertex(builder, vertex3.x(), vertex3.y(), vertex3.z(), down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 3 : 2)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 2 : 3)] / texHeight, red, green, blue, alpha, 0.5, -1, 0.5);
-        putVertex(builder, vertex7.x(), vertex7.y(), vertex7.z(), down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 1 : 2)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 2 : 1)] / texHeight, red, green, blue, alpha, 0.5, -1, 0.5);
-        putVertex(builder, vertex.x(), vertex.y(), vertex.z(),    down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 1 : 0)] / texWidth, down.uvs[down.getReverseIndex(down.rotation == 90 || down.rotation == 270 ? 0 : 1)] / texHeight, red, green, blue, alpha, 0.5, -1, 0.5);
+        IModelTransform NO_TRANSFORMATION = IDENTITY;
+        ResourceLocation DUMMY_RL = new ResourceLocation("dummy_name");
+
+        BakedQuad bakedQuad = faceBakery.bakeQuad(from, to, blockPartFace, sprite, axis, NO_TRANSFORMATION, rotation, true, DUMMY_RL);
+        
+         */
+
+        // Up
+        Vector3d normalUp = new Vector3d(0.5, 1, 0.5);
+        bakedQuadList.add(createQuad(vertex1, vertex2, vertex6, vertex5, normalUp, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[south.getReverseIndex(1)] / texHeight, north.uvs[north.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
+
+        // Down
+        Vector3d normalDown = new Vector3d(0.5, -1, 0.5);
+        bakedQuadList.add(createQuad(vertex4, vertex3, vertex7, vertex0, normalDown, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[south.getReverseIndex(1)] / texHeight, north.uvs[north.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
 
         // West side
-        putVertex(builder, vertex7.x(), vertex7.y(), vertex7.z(), west.uvs[west.getReverseIndex(0)] / texWidth, west.uvs[west.getReverseIndex(3)] / texHeight, red, green, blue, alpha, -0.5, 0, 0.5);
-        putVertex(builder, vertex3.x(), vertex3.y(), vertex3.z(), west.uvs[west.getReverseIndex(2)] / texWidth, west.uvs[west.getReverseIndex(3)] / texHeight, red, green, blue, alpha, -0.5, 0, 0.5);
-        putVertex(builder, vertex6.x(), vertex6.y(), vertex6.z(), west.uvs[west.getReverseIndex(2)] / texWidth, west.uvs[west.getReverseIndex(1)] / texHeight, red, green, blue, alpha, -0.5, 0, 0.5);
-        putVertex(builder, vertex2.x(), vertex2.y(), vertex2.z(), west.uvs[west.getReverseIndex(0)] / texWidth, west.uvs[west.getReverseIndex(1)] / texHeight, red, green, blue, alpha, -0.5, 0, 0.5);
+        Vector3d normalWest = new Vector3d(-0.5, 0, 0.5);
+        bakedQuadList.add(createQuad(vertex7, vertex3, vertex6, vertex2, normalWest, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[south.getReverseIndex(1)] / texHeight, north.uvs[north.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
 
         // East side
-        putVertex(builder, vertex4.x(), vertex4.y(), vertex4.z(), east.uvs[east.getReverseIndex(0)] / texWidth, east.uvs[east.getReverseIndex(3)] / texHeight, red, green, blue, alpha, 1.5, 0, 0.5);
-        putVertex(builder, vertex.x(), vertex.y(), vertex.z(),    east.uvs[east.getReverseIndex(2)] / texWidth, east.uvs[east.getReverseIndex(3)]/ texHeight, red, green, blue, alpha, 1.5, 0, 0.5);
-        putVertex(builder, vertex1.x(), vertex1.y(), vertex1.z(), east.uvs[east.getReverseIndex(2)] / texWidth, east.uvs[east.getReverseIndex(1)] / texHeight, red, green, blue, alpha, 1.5, 0, 0.5);
-        putVertex(builder, vertex5.x(), vertex5.y(), vertex5.z(), east.uvs[east.getReverseIndex(0)] / texWidth, east.uvs[east.getReverseIndex(1)] / texHeight, red, green, blue, alpha, 1.5, 0, 0.5);
+        Vector3d normalEast = new Vector3d(1.5, 0, 0.5);
+        bakedQuadList.add(createQuad(vertex4, vertex0, vertex1, vertex5, normalEast, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[south.getReverseIndex(1)] / texHeight, north.uvs[north.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
 
         // North side
-        putVertex(builder, vertex3.x(), vertex3.y(), vertex3.z(), north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(3)] / texHeight, red, green, blue, alpha, 0.5, 0, 1.5);
-        putVertex(builder, vertex4.x(), vertex4.y(), vertex4.z(), north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[north.getReverseIndex(3)] / texHeight, red, green, blue, alpha, 0.5, 0, 1.5);
-        putVertex(builder, vertex5.x(), vertex5.y(), vertex5.z(), north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[north.getReverseIndex(1)] / texHeight, red, green, blue, alpha, 0.5, 0, 1.5);
-        putVertex(builder, vertex6.x(), vertex6.y(), vertex6.z(), north.uvs[north.getReverseIndex(0)]/ texWidth, north.uvs[north.getReverseIndex(1)] / texHeight, red, green, blue, alpha, 0.5, 0, 1.5);
-
+        Vector3d normalNorth = new Vector3d(0.5, 0, 1.5);
+        bakedQuadList.add(createQuad(vertex3, vertex4, vertex5, vertex6, normalNorth, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[south.getReverseIndex(1)] / texHeight, north.uvs[north.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
 
         // South side
-        putVertex(builder, vertex.x(), vertex.y(), vertex.z(),    south.uvs[south.getReverseIndex(0)] / texWidth, south.uvs[south.getReverseIndex(3)] / texHeight, red, green, blue, alpha, 0, 0, -1);
-        putVertex(builder, vertex7.x(), vertex7.y(), vertex7.z(), south.uvs[south.getReverseIndex(2)] / texWidth, south.uvs[south.getReverseIndex(3)] / texHeight, red, green, blue, alpha, 0, 0, -1);
-        putVertex(builder, vertex2.x(), vertex2.y(), vertex2.z(), south.uvs[south.getReverseIndex(2)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, red, green, blue, alpha, 0, 0, -1);
-        putVertex(builder, vertex1.x(), vertex1.y(), vertex1.z(), south.uvs[south.getReverseIndex(0)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, red, green, blue, alpha, 0, 0, -1);
+        Vector3d normalSouth = new Vector3d(0, 0, -1);
+        bakedQuadList.add(createQuad(vertex0, vertex7, vertex2, vertex1, normalSouth, south.uvs[south.getReverseIndex(0)] / texWidth, south.uvs[south.getReverseIndex(2)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, south.uvs[south.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
+
+        return bakedQuadList;
+    }
+
+    private static BakedQuad createQuad(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, Vector3d normal, float ulow, float uhigh, float vlow, float vhigh, TextureAtlasSprite sprite, float red, float green, float blue, float alpha, int tintIndex) {
+        BakedQuadBuilder builder = new BakedQuadBuilder(sprite);
+        builder.setQuadOrientation(Direction.getNearest(normal.x(), normal.y(), normal.z()));
+        builder.setApplyDiffuseLighting(true);
+        if (tintIndex>-1) {
+            builder.setQuadTint(tintIndex);
+        }
+        putVertex(builder, normal, v1.x, v1.y, v1.z, ulow, vhigh, sprite, red, green, blue, alpha);
+        putVertex(builder, normal, v2.x, v2.y, v2.z, uhigh, vhigh, sprite, red, green, blue, alpha);
+        putVertex(builder, normal, v3.x, v3.y, v3.z, uhigh, vlow, sprite, red, green, blue, alpha);
+        putVertex(builder, normal, v4.x, v4.y, v4.z, ulow, vlow, sprite, red, green, blue, alpha);
 
         return builder.build();
     }
