@@ -18,26 +18,24 @@ import java.util.List;
 public class ThinSlabGenFeatureConfig implements IFeatureConfig {
     public String generationName;
     public List<BlockState> blocks;
-    public Integer chance;
     public Integer rarity;
+    public boolean inWater;
+    public boolean outOfWater;
 
-    public static final Codec<ThinSlabGenFeatureConfig> CODEC = RecordCodecBuilder.create((p_236568_0_) -> {
-        return p_236568_0_.group(Codec.STRING.fieldOf("generation_name").forGetter(z -> {
-            return z.generationName;
-        }),BlockState.CODEC.listOf().fieldOf("blocks").forGetter((a) -> {
-            return a.blocks;
-        }),Codec.intRange(0, 100).fieldOf("spawn_chance").forGetter(a -> {
-            return a.chance;
-        }),Codec.intRange(0, 100).fieldOf("spawn_rarity").forGetter((a) -> {
-            return a.rarity;
-        })).apply(p_236568_0_, ThinSlabGenFeatureConfig::new);
-    });
+    public static final Codec<ThinSlabGenFeatureConfig> CODEC = RecordCodecBuilder.create((p_236568_0_) -> p_236568_0_.group(
+            Codec.STRING.fieldOf("generation_name").forGetter(z -> z.generationName),
+            BlockState.CODEC.listOf().fieldOf("blocks").forGetter((a) -> a.blocks),
+            Codec.INT.fieldOf("spawn_rarity").forGetter((a) -> a.rarity),
+            Codec.BOOL.fieldOf("in_water").forGetter((a) -> a.inWater),
+            Codec.BOOL.fieldOf("out_of_water").forGetter((a) -> a.outOfWater)
+    ).apply(p_236568_0_, ThinSlabGenFeatureConfig::new));
 
-    public ThinSlabGenFeatureConfig(String generationNameIn, List<BlockState> blockStatesIn, Integer chanceIn, int rarityIn) {
+    public ThinSlabGenFeatureConfig(String generationNameIn, List<BlockState> blockStatesIn, int rarityIn, boolean inWaterIn, boolean outOfWaterIn) {
         this.generationName = generationNameIn;
         this.blocks = blockStatesIn;
-        this.chance = chanceIn;
         this.rarity = rarityIn;
+        inWater = inWaterIn;
+        outOfWater = outOfWaterIn;
 
     }
 

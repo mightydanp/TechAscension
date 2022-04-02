@@ -41,7 +41,7 @@ public class ThinSlabGenFeature extends Feature<ThinSlabGenFeatureConfig> {
                     BlockState blockState = iSeedReaderIn.getBlockState(blockpos$mutable);
                     BlockState blockStateDown = iSeedReaderIn.getBlockState(blockpos$mutable.below());
                     //BlockState blockThatCanBePlace = canReplaceStone(randomlyOnSurfaceGenFeatureConfigIn, blockStateDown);
-                    if (randomIn.nextInt(5000) < thinSlabGenFeatureConfig.rarity) {
+                    if (randomIn.nextInt(thinSlabGenFeatureConfig.rarity) == 0) {
                         if(blockStateDown != Blocks.AIR.defaultBlockState() && blockStateDown != Blocks.WATER.defaultBlockState() && blockStateDown != Blocks.LAVA.defaultBlockState() && blockState == Blocks.WATER.defaultBlockState()){
                             List<BlockState> unwantedBlock = new ArrayList<BlockState>(){{
                                 add(Blocks.SAND.defaultBlockState());

@@ -24,16 +24,16 @@ import java.util.List;
  * Created by MightyDanp on 9/8/2021.
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class ThinSlabGenerationHandler {
+public class StoneLayerGenerationHandler {
 
     public static final RegistryObject<Feature<ThinSlabGenFeatureConfig>> thin_slab = RegistryHandler.createFeature("thin_slab", () -> new ThinSlabGenFeature(ThinSlabGenFeatureConfig.CODEC));
 
     protected static List<ConfiguredFeature<?, ?>> thinSlabGenerateList = new ArrayList<>();
     protected static List<List<Biome.Category>> thinSlabBiomesGenerateList = new ArrayList<>();
 
-    public static void addThinSlabGenerate(String slabNameIn, List<BlockState> slabsIn, int rarityIn, Biome.Category... biomesIn){
+    public static void addThinSlabGenerate(String slabNameIn, List<BlockState> slabsIn, int rarityIn, boolean inWaterIn, boolean outOfWaterIn, Biome.Category... biomesIn){
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
-        ThinSlabGenFeatureConfig thinSlabConfig = new ThinSlabGenFeatureConfig(slabNameIn, slabsIn, 100, rarityIn);
+        ThinSlabGenFeatureConfig thinSlabConfig = new ThinSlabGenFeatureConfig(slabNameIn, slabsIn, rarityIn, inWaterIn, outOfWaterIn);
         ConfiguredFeature<?, ?> thinSlabFeature = thin_slab.get().configured(thinSlabConfig);
         Registry.register(registry, new ResourceLocation(Ref.mod_id, thinSlabConfig.generationName), thinSlabFeature);
 

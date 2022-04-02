@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.common.generation;
 
-import mightydanp.industrialtech.api.common.handler.generation.ThinSlabGenerationHandler;
+import mightydanp.industrialtech.api.common.handler.generation.StoneLayerGenerationHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
@@ -18,7 +18,7 @@ import static net.minecraft.world.biome.Biome.Category.MUSHROOM;
 /**
  * Created by MightyDanp on 9/8/2021.
  */
-public class ThinSlabGeneration {
+public class StoneLayerGeneration {
     public static Biome.Category[] OverWorldBiomes = {
             TAIGA, EXTREME_HILLS, JUNGLE, MESA, PLAINS, SAVANNA, ICY, BEACH, FOREST, OCEAN, DESERT, RIVER, SWAMP, MUSHROOM
     };
@@ -41,7 +41,7 @@ public class ThinSlabGeneration {
                 }
             }
         }
-        ThinSlabGenerationHandler.addThinSlabGenerate("thin_slab", thinSlabBlocks, 5, OverWorldFlowBiomes);
+        StoneLayerGenerationHandler.addThinSlabGenerate("thin_slab", thinSlabBlocks, 5000, true, false, OverWorldFlowBiomes);
     }
 
 

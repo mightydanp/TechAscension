@@ -3,7 +3,7 @@ package mightydanp.industrialtech.common;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.generation.OreGeneration;
 import mightydanp.industrialtech.common.generation.PlantGeneration;
-import mightydanp.industrialtech.common.generation.ThinSlabGeneration;
+import mightydanp.industrialtech.common.generation.StoneLayerGeneration;
 import mightydanp.industrialtech.common.tool.ModTools;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,7 +19,7 @@ public class ModCommonEvent {
     public static void init(FMLCommonSetupEvent event) {
         OreGeneration.init();
         PlantGeneration.init();
-        ThinSlabGeneration.init();
+        StoneLayerGeneration.init();
     }
 
     @SubscribeEvent
