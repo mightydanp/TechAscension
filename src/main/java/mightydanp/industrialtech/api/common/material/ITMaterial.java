@@ -76,7 +76,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public Integer attackSpeed = null;
     public Float attackDamage = null;
     public Float weight = null;
-    public Map<IToolType, Integer> toolTypes;
+    public Map<String, Integer> toolTypes;
     public List<IToolPart> toolParts = new ArrayList<>();
 
     public  List<IMaterialFlag> materialFlags = new ArrayList<>();
@@ -182,7 +182,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         return this;
     }
 
-    public ITMaterial setToolProperties(int attackSpeedIn, int durabilityIn, float attackDamageIn, float weightIn, Map<IToolType, Integer> toolTypesIn, List<IToolPart> toolPartIn){
+    public ITMaterial setToolProperties(int attackSpeedIn, int durabilityIn, float attackDamageIn, float weightIn, Map<String, Integer> toolTypesIn, List<IToolPart> toolPartIn){
         attackSpeed = attackSpeedIn;
         durability = durabilityIn;
         attackDamage = attackDamageIn;

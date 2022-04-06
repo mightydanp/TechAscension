@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.api.common.capabilities;
 
-import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
+import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemInventoryHelper;
 import net.minecraft.nbt.Tag;
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -15,29 +15,31 @@ import javax.annotation.Nullable;
 /**
  * Created by MightyDanp on 4/7/2021.
  */
-public class ITToolItemCapabilityProvider implements ICapabilitySerializable<Tag> {
-
+public class ITToolItemCapabilityProvider //implements ICapabilitySerializable<Tag>
+ {
+/*
     private final Direction numberOfSlots = null;
     private static final int maxSlots = 3;
-    private ITToolItemItemStackHandler itToolItemItemStackHandler;
+    private ITToolItemInventoryHelper itToolItemInventoryHelper;
 
-    private ITToolItemItemStackHandler getCachedInventory() {
-        if (itToolItemItemStackHandler == null) {
-            itToolItemItemStackHandler = new ITToolItemItemStackHandler(maxSlots);
+    private ITToolItemInventoryHelper getCachedInventory() {
+        if (itToolItemInventoryHelper == null) {
+            //itToolItemInventoryHelper = new ITToolItemInventoryHelper(maxSlots);
         }
 
-        return itToolItemItemStackHandler;
+        return itToolItemInventoryHelper;
     }
 
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capabilityIn, @Nullable Direction sideIn) {
-        if (CapabilityItemHandler.ITEM_HANDLER_CAPABILITY == capabilityIn) return (LazyOptional<T>)(lazyInitialisionSupplier);
-        return LazyOptional.empty();
+        //if (CapabilityItemHandler.ITEM_HANDLER_CAPABILITY == capabilityIn) return (LazyOptional<T>)(lazyInitialisationSupplier);
+        //return LazyOptional.empty();
     }
 
-    private final LazyOptional<IItemHandler> lazyInitialisionSupplier = LazyOptional.of(this::getCachedInventory);
+    //private final LazyOptional<IItemHandler> lazyInitialisationSupplier = LazyOptional.of(this::getCachedInventory);
+
 
     @Override
     public Tag serializeNBT() {
@@ -48,4 +50,6 @@ public class ITToolItemCapabilityProvider implements ICapabilitySerializable<Tag
     public void deserializeNBT(Tag nbt) {
         CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(getCachedInventory(), numberOfSlots, nbt);
     }
+
+     */
 }

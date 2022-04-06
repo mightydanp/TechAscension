@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * Created by MightyDanp on 10/10/2021.
  */
 public class TileEntities {
-    public static Map<String, Pair<Supplier<BlockEntity>, RegistryObject<? extends Block>>> tileEntities = new HashMap<>();
+    public static Map<String, Pair<BlockEntityType.BlockEntitySupplier<BlockEntity>, RegistryObject<? extends Block>>> tileEntities = new HashMap<>();
 
 
     public static void init(){
@@ -26,11 +26,8 @@ public class TileEntities {
         //ClientRegistry.bindTileEntityRenderer(hole_tile_entity.get(), HoleTileEntityRenderer::new);
     }
 
-    public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, Supplier<T> factory, RegistryObject<? extends Block> block) {
-        return RegistryHandler.Block_Entities.register(name, () -> {
-            //noinspection ConstantConditions - null in build
-            return BlockEntityType.Builder.of(factory, block.get()).build(null);
-        });
+    public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, BlockEntityType.BlockEntitySupplier<T> factory, RegistryObject<? extends Block> block) {
+        return RegistryHandler.Block_Entities.register(name, () -> BlockEntityType.Builder.of(factory, block.get()).build(null));
     }
 
 }

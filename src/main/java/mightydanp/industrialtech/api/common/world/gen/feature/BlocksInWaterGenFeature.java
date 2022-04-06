@@ -10,6 +10,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -26,34 +27,35 @@ public class BlocksInWaterGenFeature extends Feature<BlocksInWaterGenFeatureConf
         super(codecIn);
     }
 
-    public boolean place(WorldGenLevel iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, BlocksInWaterGenFeatureConfig waterGenConfigIn) {
+    @Override
+    public boolean place(FeaturePlaceContext<BlocksInWaterGenFeatureConfig> context)  {
         boolean canSpawn = false;
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
-        int x = blockPosIn.getX();
-        int z = blockPosIn.getZ();
+        int x = context.origin().getX();
+        int z = context.origin().getZ();
         for(int xx = 0; xx <= 16 ; xx++){
             int x2=  xx + x;
             for(int zz = 0; zz <= 16; zz++){
                 int z2 = zz + z;
-                int groundHeight = iSeedReaderIn.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, x2, z2);
+                int groundHeight = context.level().getHeight(Heightmap.Types.OCEAN_FLOOR_WG, x2, z2);
                 for(int yy = groundHeight; yy <= 256; yy++){
                     blockpos$mutable.set(x2, yy, z2);
-                    BlockState blockStateUp = iSeedReaderIn.getBlockState(blockpos$mutable.above());
-                    BlockState blockStateMiddle = iSeedReaderIn.getBlockState(blockpos$mutable);
-                    BlockState blockStateDown = iSeedReaderIn.getBlockState(blockpos$mutable.below());
+                    BlockState blockStateUp = context.level().getBlockState(blockpos$mutable.above());
+                    BlockState blockStateMiddle = context.level().getBlockState(blockpos$mutable);
+                    BlockState blockStateDown = context.level().getBlockState(blockpos$mutable.below());
 
-                    List<BlockState> validBlocks = getBlockStates(waterGenConfigIn.validBlocks);
+                    List<BlockState> validBlocks = getBlockStates(context.config().validBlocks);
 
                     if(blockStateMiddle == Blocks.WATER.defaultBlockState() && validBlocks.contains(blockStateDown)){
-                        if(waterGenConfigIn.shallowWater && blockStateUp.isAir() && waterGenConfigIn.goAboveWater && blockStateUp == Blocks.AIR.defaultBlockState()){
-                            if(0 == randomIn.nextInt(waterGenConfigIn.rarity)) {
-                                BlockState topState = getBlockState(waterGenConfigIn.topState);
-                                BlockState bellowState = getBlockState(waterGenConfigIn.bellowState);
+                        if(context.config().shallowWater && blockStateUp.isAir() && context.config().goAboveWater && blockStateUp == Blocks.AIR.defaultBlockState()){
+                            if(0 == context.random().nextInt(context.config().rarity)) {
+                                BlockState topState = getBlockState(context.config().topState);
+                                BlockState bellowState = getBlockState(context.config().bellowState);
 
                                 if(bellowState != null) {
-                                    for (int i = 0; i <= waterGenConfigIn.height; i++) {
+                                    for (int i = 0; i <= context.config().height; i++) {
                                         if (blockStateDown == Blocks.WATER.defaultBlockState() || validBlocks.contains(blockStateDown)) {
-                                            iSeedReaderIn.setBlock(blockpos$mutable.above(i), bellowState, 2);
+                                            context.level().setBlock(blockpos$mutable.above(i), bellowState, 2);
                                         }
                                     }
                                 }else{
@@ -61,7 +63,7 @@ public class BlocksInWaterGenFeature extends Feature<BlocksInWaterGenFeatureConf
                                 }
 
                                 if(topState != null) {
-                                    iSeedReaderIn.setBlock(blockpos$mutable.above(waterGenConfigIn.height), topState, 2);
+                                    context.level().setBlock(blockpos$mutable.above(context.config().height), topState, 2);
                                 }else{
                                     return false;
                                 }

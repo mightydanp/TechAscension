@@ -1,7 +1,7 @@
 package mightydanp.industrialtech.api.common.tool;
 
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
-import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
+import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemInventoryHelper;
 import mightydanp.industrialtech.api.common.items.*;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.api.common.libs.Ref;
@@ -94,7 +94,7 @@ public class ITTool {
         ItemStack mainHand = playerEntity.getMainHandItem();
         ItemStack offHand = playerEntity.getOffhandItem();
         ItemStack toolItem = new ItemStack(toolItemIn.asItem());
-        ITToolItemItemStackHandler itemStackHandler = toolItemIn.getItemStackHandler(toolItem);
+        ITToolItemInventoryHelper itemStackHandler = toolItemIn.inventory;
         List<String> firstItemsNeeded = compareAndAddToNewArray(1, toolNeededIn);
         List<String> firstItemsThatCanBeUsed = compareAndAddToNewArray(-1, toolNeededIn);
         List<String> secondItemsNeeded = compareAndAddToNewArray(2, toolNeededIn);
@@ -166,7 +166,15 @@ public class ITTool {
 
                     ItemStack newToolItemStack = (mainHandCheck.getItem() instanceof ITToolItem ? mainHandCheck : offHandCheck);
                     ITToolItem newToolItem = (ITToolItem)newToolItemStack.getItem();
-                    ITToolItemItemStackHandler itemStackHandlerNew = newToolItem.getItemStackHandler(mainHandCheck.getItem() instanceof ITToolItem ? mainHandCheck : offHandCheck);
+
+                    ITToolItemInventoryHelper itemStackHandlerNew;
+                    if(mainHandCheck.getItem() instanceof ITToolItem itToolItem){
+                        itemStackHandlerNew = itToolItem.inventory;
+                    }else{
+                        ITToolItem itToolItem = (ITToolItem) offHandCheck.getItem();
+                        itemStackHandlerNew = itToolItem.inventory;
+                    }
+
                     itemStackHandlerNew.setToolBinding(mainHandCheck.getItem() instanceof ToolBindingItem ? mainHandCheck : offHandCheck);
                     ItemStack handleItemStack = itemStackHandlerNew.getToolHandle();
                     ItemStack headItemStack = itemStackHandlerNew.getToolHead();
@@ -197,7 +205,7 @@ public class ITTool {
             if(toolNeededList.contains(toolNeeded.getItem())){
                 if(toolNeeded.getItem() instanceof ITToolItem){
                     ITToolItem toolNeededItem = (ITToolItem)playerIn.getInventory().getItem(i).getItem();
-                    ITToolItemItemStackHandler itemStackHandler = toolNeededItem.getItemStackHandler(toolNeeded);
+                    ITToolItemInventoryHelper itemStackHandler = toolNeededItem.inventory;
 
                     if((toolNeededItem.partsToWork == 1 || toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHead() != null){
                         if(itemStackHandler.getToolHead().getDamageValue() < itemStackHandler.getToolHead().getMaxDamage()) {

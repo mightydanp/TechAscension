@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
+import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
@@ -15,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -30,22 +32,22 @@ public class SmallOreVeinGenFeature extends Feature<SmallOreVeinGenFeatureConfig
     }
 
     @Override
-    public boolean place(WorldGenLevel iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, SmallOreVeinGenFeatureConfig SmallOreGenFeatureIn) {
+    public boolean place(FeaturePlaceContext<SmallOreVeinGenFeatureConfig> context)  {
         boolean canSpawn = false;
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
-        int groundHeight = chunkGeneratorIn.getSpawnHeight();
-        int x = blockPosIn.getX();
-        int z = blockPosIn.getZ();
+        int groundHeight = context.chunkGenerator().getSpawnHeight(context.level());
+        int x = context.origin().getX();
+        int z = context.origin().getZ();
         for(int xx = 0; xx <= 16 ; xx++){
             int x2=  xx + x;
             for(int zz = 0; zz <= 16; zz++){
                 int z2 = zz + z;
                 for(int yy = 0; yy <= groundHeight; yy++){
                     blockpos$mutable.set(x2, yy, z2);
-                    BlockState blockState = iSeedReaderIn.getBlockState(blockpos$mutable);
-                    BlockState blockThatCanBePlace = replacementStoneLayer(randomIn, SmallOreGenFeatureIn, blockState);
-                    if(randomIn.nextInt(2000) < SmallOreGenFeatureIn.rarity) {
-                        iSeedReaderIn.setBlock(blockpos$mutable, blockThatCanBePlace, 2);
+                    BlockState blockState = context.level().getBlockState(blockpos$mutable);
+                    BlockState blockThatCanBePlace = replacementStoneLayer(context.random(), context.config(), blockState);
+                    if(context.random().nextInt(2000) < context.config().rarity) {
+                        context.level().setBlock(blockpos$mutable, blockThatCanBePlace, 2);
                         canSpawn = true;
                         if(blockThatCanBePlace.getBlock() instanceof SmallOreBlock) {
                             //System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + ((SmallOreBlock) blockThatCanBePlace.getBlock()).name);

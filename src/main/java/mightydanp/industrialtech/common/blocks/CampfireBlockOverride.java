@@ -98,7 +98,7 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new CampfireBlockEntityOverride();
+        return new CampfireBlockEntityOverride(blockPos, blockState);
     }
 
     @Override
@@ -143,10 +143,9 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
     */
 
 
-
     @Override
-    public int getLightValue(BlockState state, BlockGetter iBlockReader, BlockPos blockPos) {
-        CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride)iBlockReader.getBlockEntity(blockPos);
+    public int getLightEmission(BlockState state, BlockGetter world, BlockPos pos) {
+        CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride)world.getBlockEntity(pos);
         if(tileEntity!= null){
             if(tileEntity.getLevel() != null) {
                 return state.getValue(CampfireBlockOverride.LIT) ? 15 : 0;
@@ -163,11 +162,11 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
     public InteractionResult use(BlockState blockState, Level world, BlockPos blockPos, Player playerEntity, InteractionHand hand, BlockHitResult blockRayTraceResult) {
         CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride) world.getBlockEntity(blockPos);
         AABB cookingSlot1;
-        AABB cookingSlot2 = AABB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
-        AABB cookingSlot3 = AABB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
-        AABB cookingSlot4 = AABB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
-        AABB ashSlot      = AABB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
-        AABB tinderSlot   = AABB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
+        AABB cookingSlot2 = AABB.ofSize(blockRayTraceResult.getLocation(), blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
+        AABB cookingSlot3 = AABB.ofSize(blockRayTraceResult.getLocation(), blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
+        AABB cookingSlot4 = AABB.ofSize(blockRayTraceResult.getLocation(), blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
+        AABB ashSlot      = AABB.ofSize(blockRayTraceResult.getLocation(), blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
+        AABB tinderSlot   = AABB.ofSize(blockRayTraceResult.getLocation(), blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
 
         if (tileEntity != null) {
             ItemStack itemstack = playerEntity.getItemInHand(hand);

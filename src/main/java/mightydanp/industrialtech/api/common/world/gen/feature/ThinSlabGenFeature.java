@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -25,12 +26,12 @@ public class ThinSlabGenFeature extends Feature<ThinSlabGenFeatureConfig> {
     }
 
     @Override
-    public boolean place(WorldGenLevel iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, ThinSlabGenFeatureConfig thinSlabGenFeatureConfig) {
+    public boolean place(FeaturePlaceContext<ThinSlabGenFeatureConfig> context)  {
         boolean canSpawn = false;
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
-        int groundHeight = chunkGeneratorIn.getSpawnHeight();
-        int x = blockPosIn.getX();
-        int z = blockPosIn.getZ();
+        int groundHeight = context.chunkGenerator().getSpawnHeight(context.level());
+        int x = context.origin().getX();
+        int z = context.origin().getZ();
         for (int xx = 0; xx <= 16; xx++) {
             int x2 = xx + x;
             for (int zz = 0; zz <= 16; zz++) {
@@ -38,10 +39,10 @@ public class ThinSlabGenFeature extends Feature<ThinSlabGenFeatureConfig> {
                 for (int yy = 0; yy <= 180; yy++) {
                     blockpos$mutable.set(x2, yy, z2);
                     BlockPos blockpos$Changed = new BlockPos(blockpos$mutable);
-                    BlockState blockState = iSeedReaderIn.getBlockState(blockpos$mutable);
-                    BlockState blockStateDown = iSeedReaderIn.getBlockState(blockpos$mutable.below());
+                    BlockState blockState = context.level().getBlockState(blockpos$mutable);
+                    BlockState blockStateDown = context.level().getBlockState(blockpos$mutable.below());
                     //BlockState blockThatCanBePlace = canReplaceStone(randomlyOnSurfaceGenFeatureConfigIn, blockStateDown);
-                    if (randomIn.nextInt(thinSlabGenFeatureConfig.rarity) == 0) {
+                    if (context.random().nextInt(context.config().rarity) == 0) {
                         if(blockStateDown != Blocks.AIR.defaultBlockState() && blockStateDown != Blocks.WATER.defaultBlockState() && blockStateDown != Blocks.LAVA.defaultBlockState() && blockState == Blocks.WATER.defaultBlockState()){
                             List<BlockState> unwantedBlock = new ArrayList<BlockState>(){{
                                 add(Blocks.SAND.defaultBlockState());
@@ -56,13 +57,13 @@ public class ThinSlabGenFeature extends Feature<ThinSlabGenFeatureConfig> {
 
                             while(unwantedBlock.contains(blockStateDownNew)){
                                 blockpos$Changed = blockpos$Changed.below();
-                                blockStateDownNew = iSeedReaderIn.getBlockState(blockpos$Changed);
+                                blockStateDownNew = context.level().getBlockState(blockpos$Changed);
                             }
 
                             List<BlockState> blockToSpawn = new ArrayList<>();
 
-                            for(int i = 0; i< thinSlabGenFeatureConfig.blocks.size(); i++){
-                                ThinSlabBlock thinSlabBlock = (ThinSlabBlock)thinSlabGenFeatureConfig.blocks.get(i).getBlock();
+                            for(int i = 0; i< context.config().blocks.size(); i++){
+                                ThinSlabBlock thinSlabBlock = (ThinSlabBlock)context.config().blocks.get(i).getBlock();
                                 String modID = thinSlabBlock.stoneLayerBlock.split(":")[0];
                                 String stoneLayerBlock = thinSlabBlock.stoneLayerBlock.split(":")[1];
 
@@ -76,7 +77,7 @@ public class ThinSlabGenFeature extends Feature<ThinSlabGenFeatureConfig> {
                             }
 
                             if(blockToSpawn.size() > 0) {
-                                iSeedReaderIn.setBlock(blockpos$mutable, blockToSpawn.get(0), 2);
+                                context.level().setBlock(blockpos$mutable, blockToSpawn.get(0), 2);
                                 System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + "thin_slab");
                                 canSpawn = true;
                             }

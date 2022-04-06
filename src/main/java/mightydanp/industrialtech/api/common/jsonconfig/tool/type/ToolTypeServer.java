@@ -207,8 +207,7 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<IToolType> list = message.getConfig(IndustrialTech.configSync.toolTypeID).stream()
                 .filter(IToolType.class::isInstance)
-                .map(IToolType.class::cast)
-                .collect(toList());
+                .map(IToolType.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -241,13 +240,6 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
             public Pair<String, String> getFixes() {
                 return new Pair<>(prefix, suffix);
             }
-
-            @Override
-            public Tag.Named<Block> getToolTypeTag() {
-                return BlockTags.bind("tool/" + name);
-            }
-
-
         };
     }
 

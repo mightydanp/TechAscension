@@ -97,7 +97,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).getJsonObject(file.getName());
+                JsonObject jsonObject = IndustrialTech.configSync.oreVein.getFirst().getJsonObject(file.getName());
                 OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).getFromJsonObject(jsonObject);
                 clientOreVeins.put(oreVein.name, oreVein);
             }

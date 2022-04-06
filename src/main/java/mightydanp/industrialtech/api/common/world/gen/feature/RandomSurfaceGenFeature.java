@@ -10,6 +10,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -25,28 +26,29 @@ public class RandomSurfaceGenFeature extends Feature<RandomSurfaceGenFeatureConf
     }
 
     @Override
-    public boolean place(WorldGenLevel iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, RandomSurfaceGenFeatureConfig randomSurfaceGenFeatureConfigIn) {
+    public boolean place(FeaturePlaceContext<RandomSurfaceGenFeatureConfig> context) {
+
         boolean canSpawn = false;
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
-        int x = blockPosIn.getX();
-        int z = blockPosIn.getZ();
+        int x = context.origin().getX();
+        int z = context.origin().getZ();
         for (int xx = 0; xx <= 16; xx++) {
             int x2 = xx + x;
             for (int zz = 0; zz <= 16; zz++) {
                 int z2 = zz + z;
 
-                int groundHeight = iSeedReaderIn.getHeight(Heightmap.Types.WORLD_SURFACE, x2, z2);
+                int groundHeight = context.level().getHeight(Heightmap.Types.WORLD_SURFACE, x2, z2);
                 blockpos$mutable.set(x2, groundHeight, z2);
-                BlockState blockState = iSeedReaderIn.getBlockState(blockpos$mutable);
-                BlockState blockStateDown = iSeedReaderIn.getBlockState(blockpos$mutable.below());
+                BlockState blockState = context.level().getBlockState(blockpos$mutable);
+                BlockState blockStateDown = context.level().getBlockState(blockpos$mutable.below());
                 //BlockState blockThatCanBePlace = canReplaceStone(randomlyOnSurfaceGenFeatureConfigIn, blockStateDown);
-                if (0 == randomIn.nextInt(randomSurfaceGenFeatureConfigIn.rarity)) {
-                    List<BlockState> validBlocks = getBlockStates(randomSurfaceGenFeatureConfigIn.validBlocks);
+                if (0 == context.random().nextInt(context.config().rarity)) {
+                    List<BlockState> validBlocks = getBlockStates(context.config().validBlocks);
 
                     if (validBlocks.contains(blockStateDown) && blockState == Blocks.AIR.defaultBlockState()) {
-                        List<BlockState> blocks = getBlockStates(randomSurfaceGenFeatureConfigIn.blocks);
+                        List<BlockState> blocks = getBlockStates(context.config().blocks);
                         for (int a = 0; a < blocks.size(); a++) {
-                            iSeedReaderIn.setBlock(blockpos$mutable, blocks.get(a), 2);
+                            context.level().setBlock(blockpos$mutable, blocks.get(a), 2);
                             canSpawn = true;
                             //System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + randomlyOnSurfaceGenFeatureConfigIn.blocks.getBlock().toString().split(":")[1]);
                         }

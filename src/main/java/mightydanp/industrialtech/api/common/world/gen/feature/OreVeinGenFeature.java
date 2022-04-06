@@ -19,6 +19,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -54,28 +55,29 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
     }
 
     @ParametersAreNonnullByDefault
-    public boolean place(WorldGenLevel iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, OreVeinGenFeatureConfig oreVeinGenFeatureConfig) {
-        ChunkPos chunkPos = new ChunkPos(blockPosIn);
-        List<BlockPos> getValidVeins = getNearbyVeins(iSeedReaderIn.getSeed(), chunkPos.x, chunkPos.z, randomIn, 9, oreVeinGenFeatureConfig);
-        randomIn.setSeed(iSeedReaderIn.getSeed() + chunkPos.x * 341873128712L + chunkPos.z * 132897987541L);
+    @Override
+    public boolean place(FeaturePlaceContext<OreVeinGenFeatureConfig> context){
+        ChunkPos chunkPos = new ChunkPos(context.origin());
+        List<BlockPos> getValidVeins = getNearbyVeins(context.level().getSeed(), chunkPos.x, chunkPos.z, context.random(), 9, context.config());
+        context.chunkGenerator().withSeed(context.level().getSeed() + chunkPos.x * 341873128712L + chunkPos.z * 132897987541L);
         boolean canSpawn = false;
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
-        int radius = oreVeinGenFeatureConfig.minRadius;//24;
+        int radius = context.config().minRadius;//24;
         int diameter = radius * 2;
-        int maxSmallOreBlocksExtend = oreVeinGenFeatureConfig.minNumberOfSmallOreLayers;//3;
-        int x = blockPosIn.getX() + 8;
-        int y = blockPosIn.getY();
-        int z = blockPosIn.getZ() + 8;
+        int maxSmallOreBlocksExtend = context.config().minNumberOfSmallOreLayers;//3;
+        int x = context.origin().getX() + 8;
+        int y = context.origin().getY();
+        int z = context.origin().getZ() + 8;
 
-        int groundHeight = iSeedReaderIn.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+        int groundHeight = context.level().getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
 
         int minHeight = 3 + (maxSmallOreBlocksExtend * 2);
         int maxHeight = 7 + (maxSmallOreBlocksExtend);
 
-        BlockState block = iSeedReaderIn.getBlockState(blockPosIn);
+        BlockState block = context.level().getBlockState(context.origin());
         if(y > groundHeight){
             BlockPos pos = new BlockPos(x, y, z);
-            y = oreVeinGenFeatureConfig.minHeight + maxHeight + maxHeight/2;
+            y = context.config().minHeight + maxHeight + maxHeight/2;
         }
 
         BlockPos upperLeft = new BlockPos(x, maxHeight, z);
@@ -84,12 +86,12 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
         BlockPos lowerRight = new BlockPos(x - 1, maxHeight, z - 1);
 
 
-        int minX = x - (radius - randomIn.nextInt(radius));
-        int maxX = x + (radius - randomIn.nextInt(radius));
+        int minX = x - (radius - context.random().nextInt(radius));
+        int maxX = x + (radius - context.random().nextInt(radius));
         int minY = y;
-        int maxY = y + minHeight + (randomIn.nextInt(maxHeight));
-        int minZ = z - (radius - randomIn.nextInt(radius));
-        int maxZ = z + (radius - randomIn.nextInt(radius));
+        int maxY = y + minHeight + (context.random().nextInt(maxHeight));
+        int minZ = z - (radius - context.random().nextInt(radius));
+        int maxZ = z + (radius - context.random().nextInt(radius));
 
         //class provides a iterator                                                             goes throw things to give you
         Iterable<BlockPos> cubePos = () -> BlockPos.betweenClosedStream(minX, minY, minZ, maxX, maxY, maxZ).iterator();
@@ -126,22 +128,22 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
         */
 
         //to-do fix the getVeinAtChunk and getNearbyVeins to make sure veins do not overlap.\\
-        if (randomIn.nextInt(oreVeinGenFeatureConfig.rarity) == 0) {
+        if (context.random().nextInt(context.config().rarity) == 0) {
             /*
             if(y > groundHeight){
                 y = chunkGeneratorIn.getSpawnHeight() - maxHeight;
             }
             /*
-            iSeedReaderIn.setBlockState(upperLeft, Blocks.COAL_BLOCK.getDefaultState(), 2);
-            iSeedReaderIn.setBlockState(upperRight, Blocks.GOLD_BLOCK.getDefaultState(), 2);
-            iSeedReaderIn.setBlockState(lowerLeft, Blocks.OBSIDIAN.getDefaultState(), 2);
-            iSeedReaderIn.setBlockState(lowerRight, Blocks.DIAMOND_BLOCK.getDefaultState(), 2);
-            iSeedReaderIn.setBlockState(new BlockPos(minX, maxY, minZ), Blocks.COAL_BLOCK.getDefaultState(), 2);
-            iSeedReaderIn.setBlockState(new BlockPos(minX, maxY, maxZ), Blocks.GOLD_BLOCK.getDefaultState(), 2);
-            iSeedReaderIn.setBlockState(new BlockPos(maxX, maxY, minZ), Blocks.OBSIDIAN.getDefaultState(), 2);
-            iSeedReaderIn.setBlockState(new BlockPos(maxX, maxY, maxZ), Blocks.DIAMOND_BLOCK.getDefaultState(), 2);
+            context.level().setBlockState(upperLeft, Blocks.COAL_BLOCK.getDefaultState(), 2);
+            context.level().setBlockState(upperRight, Blocks.GOLD_BLOCK.getDefaultState(), 2);
+            context.level().setBlockState(lowerLeft, Blocks.OBSIDIAN.getDefaultState(), 2);
+            context.level().setBlockState(lowerRight, Blocks.DIAMOND_BLOCK.getDefaultState(), 2);
+            context.level().setBlockState(new BlockPos(minX, maxY, minZ), Blocks.COAL_BLOCK.getDefaultState(), 2);
+            context.level().setBlockState(new BlockPos(minX, maxY, maxZ), Blocks.GOLD_BLOCK.getDefaultState(), 2);
+            context.level().setBlockState(new BlockPos(maxX, maxY, minZ), Blocks.OBSIDIAN.getDefaultState(), 2);
+            context.level().setBlockState(new BlockPos(maxX, maxY, maxZ), Blocks.DIAMOND_BLOCK.getDefaultState(), 2);
             */
-            System.out.println(x + " " + y + " " + z + " " + "/" + oreVeinGenFeatureConfig.name);
+            System.out.println(x + " " + y + " " + z + " " + "/" + context.config().name);
 
 
             for (BlockPos pos : cubePos) {
@@ -150,12 +152,12 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
                 int zBlockPos = pos.getZ();
 
                 blockpos$mutable.set(xBlockPos, yBlockPos, zBlockPos);
-                BlockState replacedBlock = iSeedReaderIn.getBlockState(blockpos$mutable);
-                BlockState smallOreThatCanReplaceBlock = replacementStoneLayerOre(randomIn, oreVeinGenFeatureConfig, replacedBlock, "small_ore");
-                BlockState oreThatCanReplaceBlock = replacementStoneLayerOre(randomIn, oreVeinGenFeatureConfig, replacedBlock, "ore");
-                BlockState denseOreThatCanReplaceBlock = replacementStoneLayerOre(randomIn, oreVeinGenFeatureConfig, replacedBlock, "dense_ore");
+                BlockState replacedBlock = context.level().getBlockState(blockpos$mutable);
+                BlockState smallOreThatCanReplaceBlock = replacementStoneLayerOre(context.random(), context.config(), replacedBlock, "small_ore");
+                BlockState oreThatCanReplaceBlock = replacementStoneLayerOre(context.random(), context.config(), replacedBlock, "ore");
+                BlockState denseOreThatCanReplaceBlock = replacementStoneLayerOre(context.random(), context.config(), replacedBlock, "dense_ore");
 
-                if (randomIn.nextInt(100) <= 20 && smallOreThatCanReplaceBlock != null && oreThatCanReplaceBlock != null && denseOreThatCanReplaceBlock != null) {
+                if (context.random().nextInt(100) <= 20 && smallOreThatCanReplaceBlock != null && oreThatCanReplaceBlock != null && denseOreThatCanReplaceBlock != null) {
                     //to-do sides have ores fix bellow to make sure that it gets fixed\\
                     if (xBlockPos < minX + maxSmallOreBlocksExtend || yBlockPos < minY + maxSmallOreBlocksExtend || zBlockPos < minZ + maxSmallOreBlocksExtend ||
                             xBlockPos > maxX - maxSmallOreBlocksExtend || yBlockPos > maxY - maxSmallOreBlocksExtend || zBlockPos > maxZ - maxSmallOreBlocksExtend) {
@@ -163,22 +165,22 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
                             if (xBlockPos == minX + i || yBlockPos == minY + i || zBlockPos == minZ + i ||
                                     xBlockPos == maxX - i || yBlockPos == maxY - i || zBlockPos == maxZ - i) {
                                 if (i == 0) {
-                                    iSeedReaderIn.setBlock(pos, smallOreThatCanReplaceBlock, 2);
+                                    context.level().setBlock(pos, smallOreThatCanReplaceBlock, 2);
                                 } else {
-                                    if (randomIn.nextInt(100) <= (20 * i)) {
-                                        iSeedReaderIn.setBlock(pos, oreThatCanReplaceBlock, 2);
+                                    if (context.random().nextInt(100) <= (20 * i)) {
+                                        context.level().setBlock(pos, oreThatCanReplaceBlock, 2);
                                     } else {
-                                        iSeedReaderIn.setBlock(pos, denseOreThatCanReplaceBlock, 2);
+                                        context.level().setBlock(pos, denseOreThatCanReplaceBlock, 2);
                                     }
                                 }
                             }
                         }
                     } else {
                         //To-do Dense ore is more dense in small vein, and less in bigger veins\\
-                        if (randomIn.nextInt(75) == 0) {
-                            iSeedReaderIn.setBlock(pos, denseOreThatCanReplaceBlock, 2);
+                        if (context.random().nextInt(75) == 0) {
+                            context.level().setBlock(pos, denseOreThatCanReplaceBlock, 2);
                         } else {
-                            iSeedReaderIn.setBlock(pos, oreThatCanReplaceBlock, 2);
+                            context.level().setBlock(pos, oreThatCanReplaceBlock, 2);
                         }
                     }
 
@@ -190,7 +192,7 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
             for (BlockPos pos : getValidVeins) {
                 if (pos != null) {
                     //System.out.println(pos.getX() + " " + 120 + " " + pos.getY() + " a vein can generate");
-                    if (getVeinAtChunk(pos.getX(), pos.getY(), randomIn, oreGenFeatureConfig) != null) {
+                    if (getVeinAtChunk(pos.getX(), pos.getY(), context.random(), oreGenFeatureConfig) != null) {
                         //System.out.println(pos.getX() + " " + 120 + " " + pos.getY() + " true");
                     }
                 }

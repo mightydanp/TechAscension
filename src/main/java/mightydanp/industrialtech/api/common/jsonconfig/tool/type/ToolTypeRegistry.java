@@ -135,11 +135,6 @@ public class ToolTypeRegistry extends JsonConfigMultiFile<IToolType> {
             public Pair<String, String> getFixes() {
                 return new Pair<>(prefix, suffix);
             }
-
-            @Override
-            public Tag.Named<Block> getToolTypeTag() {
-                return BlockTags.bind("tool/" + name);
-            }
         };
     }
 

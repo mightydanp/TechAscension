@@ -248,7 +248,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
             materialIn.toolTypes.forEach(((iToolType, integer) -> {
                 JsonObject toolTypeProperties = new JsonObject();
 
-                toolTypeProperties.addProperty("tool_type", iToolType.getName());
+                toolTypeProperties.addProperty("tool_type", ((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(iToolType)).getName());
                 toolTypeProperties.addProperty("tool_level", integer);
 
                 if (toolTypeProperties.size() > 0) {
@@ -366,16 +366,18 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
                         int durabilityJson = Properties.get("durability").getAsInt();
                         float attackDamageJson = Properties.get("attack_damage").getAsFloat();
                         float weightJson = Properties.get("weight").getAsFloat();
-                        List<Pair<IToolType, Integer>> toolTypesJsonList = new ArrayList<>();
+                        Map<String, Integer> toolTypesJsonList = new HashMap<>();
                         List<IToolPart> toolPartJsonList = new ArrayList<>();
 
                         for (int i = 0; i < toolTypesArray.size(); i++) {
                             JsonObject toolTypeProperties = toolTypesArray.get(i).getAsJsonObject();
                             if (toolTypeProperties.has("tool_type") && toolTypeProperties.has("tool_level")) {
-                                IToolType toolTypeJson = (IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(toolTypeProperties.get("tool_type").getAsString());
+
+                                String toolTypeJson = toolTypeProperties.get("tool_type").getAsString();
                                 int toolLevelJson = toolTypeProperties.get("tool_level").getAsInt();
 
-                                toolTypesJsonList.add(new Pair<>(toolTypeJson, toolLevelJson));
+
+                                toolTypesJsonList.put(toolTypeJson, toolLevelJson);
                             }
                         }
 

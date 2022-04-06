@@ -4,6 +4,9 @@ import mightydanp.industrialtech.api.common.blocks.HoleBlock;
 import mightydanp.industrialtech.api.common.crafting.recipe.HoleRecipe;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
 import mightydanp.industrialtech.common.tileentities.ModBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,7 +27,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
@@ -34,7 +36,7 @@ import java.util.*;
 /**
  * Created by MightyDanp on 10/10/2021.
  */
-public class HoleTileEntity extends BlockEntity implements MenuProvider, TickableBlockEntity {
+public class HoleTileEntity extends BlockEntity implements MenuProvider, BlockEntityTicker<HoleTileEntity> {
 
     public static int numberOfLogSlots = 1;
     public static int numberOfOutputSlots = 1;
@@ -67,8 +69,8 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider, Tickabl
 
     public Random random = new Random();
 
-    public HoleTileEntity() {
-        super(ModBlockEntity.hole_block_entity.get());
+    public HoleTileEntity(BlockPos blockPos, BlockState blockState) {
+        super(ModBlockEntity.hole_block_entity.get(), blockPos, blockState);
     }
 
     public ItemStack getDesiredBlockSlot() {
@@ -96,9 +98,9 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider, Tickabl
     }
 
     @Override
-    public void tick() {
-        HoleBlock holeBlock = (HoleBlock) this.getBlockState().getBlock();
-        if (level != null){
+    public void tick(Level level, BlockPos blockPos, BlockState blockState, HoleTileEntity holeTileEntityIn){
+        HoleBlock holeBlock = (HoleBlock) blockState.getBlock();
+        if (this.level != null){
             if(recipe == null){
                 Optional<HoleRecipe> validRecipe = getValidRecipe(new ItemStack(getDesiredBlockSlot().getItem()));
                 if(validRecipe.isPresent()){
@@ -118,7 +120,7 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider, Tickabl
                         if (0 == randomTickNumber) {
                             ItemStack output = recipe.getResultItem();
                             FluidStack outputFluid = new FluidStack(recipe.getResultFluid(), 0);
-                            level.setBlockAndUpdate(getBlockPos(), getBlockState().setValue(HoleBlock.RESIN, true));
+                            this.level.setBlockAndUpdate(getBlockPos(), getBlockState().setValue(HoleBlock.RESIN, true));
 
                             progress = 0;
 

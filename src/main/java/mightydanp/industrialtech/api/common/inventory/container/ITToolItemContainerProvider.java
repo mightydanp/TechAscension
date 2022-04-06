@@ -31,7 +31,7 @@ public class ITToolItemContainerProvider implements MenuProvider {
     @Nullable
     @Override
     public ITToolItemContainer createMenu(int windowID, Inventory playerInventory, Player playerEntity) {
-        ITToolItemContainer newContainerServerSide = ITToolItemContainer.createContainerServerSide(windowID, playerInventory, itToolItem.getItemStackHandler(itemStack), itemStack);
+        ITToolItemContainer newContainerServerSide = ITToolItemContainer.createContainerServerSide(windowID, playerInventory, itToolItem.inventory, itemStack);
         return newContainerServerSide;
     }
 }

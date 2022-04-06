@@ -17,6 +17,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
+import net.minecraft.world.level.levelgen.heightproviders.BiasedToBottomHeight;
 import net.minecraft.world.level.levelgen.placement.FeatureDecorator;
 import net.minecraft.world.level.levelgen.feature.configurations.RangeDecoratorConfiguration;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
@@ -54,7 +57,8 @@ public class OreGenerationHandler {
         }
 
         Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
-        ConfiguredFeature<?, ?> oreVeinFeature = ore_vein.get().configured(oreVeinGenFeatureConfigIn).decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(oreVeinGenFeatureConfigIn.maxHeight, 0, oreVeinGenFeatureConfigIn.maxHeight)));
+        ConfiguredFeature<?, ?> oreVeinFeature = ore_vein.get().configured(oreVeinGenFeatureConfigIn).decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(
+                BiasedToBottomHeight.of(VerticalAnchor.aboveBottom(oreVeinGenFeatureConfigIn.minHeight), VerticalAnchor.belowTop(oreVeinGenFeatureConfigIn.maxHeight), oreVeinGenFeatureConfigIn.maxHeight - oreVeinGenFeatureConfigIn.minHeight))));
         Registry.register(registry, new ResourceLocation(Ref.mod_id, oreVeinGenFeatureConfigIn.name), oreVeinFeature);
 
         ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).register(oreVeinGenFeatureConfigIn);
@@ -76,7 +80,8 @@ public class OreGenerationHandler {
 
         Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
         OreVeinGenFeatureConfig oreVeinGenFeatureConfig = new OreVeinGenFeatureConfig(veinNameIn, rarityIn, minHeightIn, maxHeightIn, minRadiusIn, numberOfSmallOreLayers, biomes, veinBlocksAndChances);
-        ConfiguredFeature<?, ?> oreVeinFeature = ore_vein.get().configured(oreVeinGenFeatureConfig).decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(minHeightIn, 0, maxHeightIn)));
+        ConfiguredFeature<?, ?> oreVeinFeature = ore_vein.get().configured(oreVeinGenFeatureConfig).decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(
+                BiasedToBottomHeight.of(VerticalAnchor.aboveBottom(minHeightIn), VerticalAnchor.belowTop(maxHeightIn), maxHeightIn - minHeightIn))));
         Registry.register(registry, new ResourceLocation(Ref.mod_id, oreVeinGenFeatureConfig.name), oreVeinFeature);
 
         ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).register(oreVeinGenFeatureConfig);
@@ -90,7 +95,8 @@ public class OreGenerationHandler {
         }
 
         Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
-        ConfiguredFeature<?, ?> oreVeinFeature = small_ore.get().configured(oreGenFeatureConfigIn).decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(oreGenFeatureConfigIn.minHeight, 0, oreGenFeatureConfigIn.maxHeight)));
+        ConfiguredFeature<?, ?> oreVeinFeature = small_ore.get().configured(oreGenFeatureConfigIn).decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(
+                BiasedToBottomHeight.of(VerticalAnchor.aboveBottom(oreGenFeatureConfigIn.minHeight), VerticalAnchor.belowTop(oreGenFeatureConfigIn.maxHeight), oreGenFeatureConfigIn.maxHeight - oreGenFeatureConfigIn.minHeight))));
         Registry.register(registry, new ResourceLocation(Ref.mod_id, oreGenFeatureConfigIn.name), oreVeinFeature);
 
         smallOreGenList.put(oreVeinFeature, biomes);
@@ -120,7 +126,8 @@ public class OreGenerationHandler {
 
         Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
         SmallOreVeinGenFeatureConfig smallOreVeinGenFeatureConfig = new SmallOreVeinGenFeatureConfig(smallOreNameIn, rarityIn, minHeightIn, maxHeightIn, biomes, veinBlocksAndChances);
-        ConfiguredFeature<?, ?> oreVeinFeature = small_ore.get().configured(smallOreVeinGenFeatureConfig).decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(new HminHeightIn, 0, maxHeightIn)));
+        ConfiguredFeature<?, ?> oreVeinFeature = small_ore.get().configured(smallOreVeinGenFeatureConfig).decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(
+                BiasedToBottomHeight.of(VerticalAnchor.aboveBottom(minHeightIn), VerticalAnchor.belowTop(maxHeightIn), maxHeightIn - minHeightIn))));
         Registry.register(registry, new ResourceLocation(Ref.mod_id, smallOreVeinGenFeatureConfig.name), oreVeinFeature);
 
         smallOreGenList.put(oreVeinFeature, biomesIn);

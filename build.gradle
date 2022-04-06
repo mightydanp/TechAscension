@@ -20,7 +20,7 @@ version = '0.0.0.1'
 group = 'mightydanp.industrialtech' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'industrialtech'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
@@ -47,7 +47,7 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-			arg "-mixin.config=modid.mixin.json"
+			arg "-mixin.config=industrialtech.mixin.json"
 		
 
             mods {
@@ -135,7 +135,7 @@ dependencies {
 
 //This is the better way to define the Mixin refmap name, you should use this instead of renaming the file in the jar section (line #69)
 mixin {
-    add sourceSets.main, "modid.mixin-refmap.json"
+    add sourceSets.main, "industrialtech.mixin-refmap.json"
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

@@ -305,7 +305,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
             buffer.writeInt(material.toolTypes.size());
 
             material.toolTypes.forEach(((iToolType, integer) -> {
-                buffer.writeUtf(iToolType.getName());
+                buffer.writeUtf(iToolType);
                 buffer.writeInt(integer);
             }));
         } else {
@@ -396,14 +396,14 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         float attackDamage  = buffer.readFloat();
         float weight  = buffer.readFloat();
 
-        Map<IToolType, Integer> toolTypes = new HashMap<>();
+        Map<String, Integer> toolTypes = new HashMap<>();
         int toolTypesSize = buffer.readInt();
 
         if(toolTypesSize > 0) {
             for (int i = 0; i < toolTypesSize; i++) {
                 String toolType = buffer.readUtf();
                 Integer level = buffer.readInt();
-                toolTypes.put((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(toolType), level);
+                toolTypes.put(toolType, level);
             }
         }
 

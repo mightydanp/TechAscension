@@ -3,6 +3,7 @@ package mightydanp.industrialtech.api.common.items;
 import com.mojang.datafixers.util.Pair;;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
+import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.item.TooltipFlag;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,12 +34,12 @@ public class ToolHeadItem extends Item {
     public Integer boilingPoint;
     public Integer efficiency;
     public Integer durability;
-    public Map<IToolType, Integer> itToolType;
+    public Map<IToolType, Integer> itToolType = new HashMap<>();
     public Float attackDamage;
     public Float weight;
     public Integer maxDamage;
 
-    public ToolHeadItem(Properties properties, String materialIn, String elementIn, Integer colorIn, Pair<String, ITextureIcon> textureFlagIn, Integer boilingPointIn, Integer meltingPointIn, Integer efficiencyIn, Integer durabilityIn, Float attackDamageIn, Float weightIn, Map<IToolType, Integer> itToolTypeIn) {
+    public ToolHeadItem(Properties properties, String materialIn, String elementIn, Integer colorIn, Pair<String, ITextureIcon> textureFlagIn, Integer boilingPointIn, Integer meltingPointIn, Integer efficiencyIn, Integer durabilityIn, Float attackDamageIn, Float weightIn, Map<String, Integer> itToolTypeIn) {
         super(properties);
         material = materialIn;
         color = colorIn;
@@ -50,8 +52,7 @@ public class ToolHeadItem extends Item {
         attackDamage = attackDamageIn;
         weight = weightIn;
 
-        itToolType = itToolTypeIn;
-
+        itToolTypeIn.forEach(((name, toolLeve) -> itToolType.put((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(name), toolLeve)));
 
         properties.stacksTo(1);
         maxDamage = durabilityIn;

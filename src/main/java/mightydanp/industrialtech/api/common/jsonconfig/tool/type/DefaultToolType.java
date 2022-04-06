@@ -9,7 +9,11 @@ import net.minecraft.world.level.block.Block;
  * Created by MightyDanp on 4/23/2021.
  */
 public enum DefaultToolType implements IToolType {
-    NORMAL("", "_tool"),
+    PICKAXE("", "_pickaxe"),
+    AXE("", "_axe"),
+    SHOVEL("", "_shovel"),
+    HOE("", "_hoe"),
+    SWORD("", "_sword"),
     ELECTRICAL("electrical_", "_tool");
 
 

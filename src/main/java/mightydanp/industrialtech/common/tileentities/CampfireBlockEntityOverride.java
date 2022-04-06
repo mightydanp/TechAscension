@@ -4,6 +4,8 @@ import mightydanp.industrialtech.common.blocks.CampfireBlockOverride;
 import mightydanp.industrialtech.common.crafting.recipe.CampfireOverrideCharRecipe;
 import mightydanp.industrialtech.common.crafting.recipe.CampfireOverrideRecipe;
 import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
@@ -31,11 +33,14 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 
+import static mightydanp.industrialtech.common.blocks.CampfireBlockOverride.LOG;
+import static mightydanp.industrialtech.common.blocks.CampfireBlockOverride.isLit;
+
 /**
  * Created by MightyDanp on 5/6/2021.
  */
 
-public class CampfireBlockEntityOverride extends BlockEntity implements MenuProvider, TickableBlockEntity {
+public class CampfireBlockEntityOverride extends BlockEntity implements MenuProvider, BlockEntityTicker<CampfireBlockEntityOverride> {
 
     @Nullable
     private BlockState cachedBlockState;
@@ -65,8 +70,8 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
     public boolean keepLogsFormed = false;
     public boolean canPlaceRecipeItems = false;
 
-    public CampfireBlockEntityOverride() {
-        super(ModBlockEntity.campfire_block_entity.get(), getBlockPos());
+    public CampfireBlockEntityOverride(BlockPos blockPosIn, BlockState blockStateIn) {
+        super(ModBlockEntity.campfire_block_entity.get(), blockPosIn, blockStateIn);
     }
 
     public ItemStack getCookSlot1(){
@@ -89,29 +94,31 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
         return inventory.get(tinderSlotNumber);
     }
 
-    public void tick() {
-        if (level.isClientSide) {
-            if (CampfireBlockOverride.isLit(getBlockState())) {
-                makeParticles();
+    @Override
+    public void tick(Level levelIn, BlockPos blockPosIn, BlockState blockStateIn, CampfireBlockEntityOverride campfireBlockEntityOverrideIn) {
+        if (levelIn.isClientSide) {
+            if (isLit(blockStateIn)) {
+                campfireBlockEntityOverrideIn.makeParticles();
             }
         } else {
-            if (CampfireBlockOverride.isLit(getBlockState())) {
-                cook();
-                burnLogs();
-                ash();
+            if (isLit(blockStateIn)) {
+                campfireBlockEntityOverrideIn.cook();
+                campfireBlockEntityOverrideIn.burnLogs();
+                campfireBlockEntityOverrideIn.ash();
 
-                if(getBlockState().getValue(CampfireBlockOverride.LOG) == 0){
-                    dowse();
-                    canPlaceRecipeItems = false;
+                if (blockStateIn.getValue(LOG) == 0) {
+                    campfireBlockEntityOverrideIn.dowse();
+                    campfireBlockEntityOverrideIn.canPlaceRecipeItems = false;
                 }
             } else {
-                for(int i = 0; i < numberOfCookSlots; ++i) {
-                    if (this.cookingProgresses[i] > 0) {
-                        this.cookingProgresses[i] = Mth.clamp(this.cookingProgresses[i] - 2, 0, this.cookingTimes[i]);
+                for (int i = 0; i < numberOfCookSlots; ++i) {
+                    if (campfireBlockEntityOverrideIn.cookingProgresses[i] > 0) {
+                        campfireBlockEntityOverrideIn.cookingProgresses[i] = Mth.clamp(campfireBlockEntityOverrideIn.cookingProgresses[i] - 2, 0, campfireBlockEntityOverrideIn.cookingTimes[i]);
                     }
                 }
             }
         }
+
     }
 
     private void cook() {
@@ -144,7 +151,7 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
 
     private void burnLogs() {
             if(level != null) {
-                if (getBlockState().getValue(CampfireBlockOverride.LOG) > 0) {
+                if (getBlockState().getValue(LOG) > 0) {
                     //fuelBurnTime = 600;
                     fuelBurnTime = 160;
                     fuelBurnProgress++;
@@ -390,6 +397,4 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
         }
 
     }
-
-
 }

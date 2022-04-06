@@ -39,7 +39,7 @@ public class ModMaterials extends ITMaterials {
 
     public static MaterialHandler flint, stone;
 */
-    public static Map<IToolType, Integer> flintToolTypes, stoneToolTypes;
+    public static Map<String, Integer> flintToolTypes, stoneToolTypes;
     public static List<IToolPart> flintToolParts;
 
 
@@ -63,7 +63,7 @@ public class ModMaterials extends ITMaterials {
         materialRegistry.register(new ITMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH)).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));
 
         flintToolTypes = new HashMap<>();
-        flintToolTypes.put((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get("pickaxe"), 0);
+        flintToolTypes.put("pickaxe", 0);
 
         flintToolParts = new ArrayList<>() {{
             add(TOOL_HEAD);

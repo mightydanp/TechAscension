@@ -34,6 +34,7 @@ import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 
 /**
@@ -72,7 +73,7 @@ public class GenLootTables extends LootTableProvider {
                         LootTable.Builder tableBuilder = LootTable.lootTable();
                         LootPool.Builder poolBuilder = LootPool.lootPool();
 
-                        blockTable(blockRegistered, tableBuilder.withPool(poolBuilder.setRolls(NumberProvider)
+                        blockTable(blockRegistered, tableBuilder.withPool(poolBuilder.setRolls(ConstantValue.exactly(1))
                                         .add(AlternativesEntry.alternatives().otherwise(LootItem.lootTableItem(blockRegistered)
                                                 .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1)))))))
                                         .add(LootItem.lootTableItem(material.oreList.get(i)))
@@ -100,7 +101,7 @@ public class GenLootTables extends LootTableProvider {
     }
 
     public static LootPool.Builder createStandardDrops(ItemLike itemProvider) {
-        return LootPool.lootPool().setRolls(ConstantIntValue.exactly(1)).when(ExplosionCondition.survivesExplosion()).add(LootItem.lootTableItem(itemProvider));
+        return LootPool.lootPool().setRolls(ConstantValue.exactly(1)).when(ExplosionCondition.survivesExplosion()).add(LootItem.lootTableItem(itemProvider));
     }
 
     @Override

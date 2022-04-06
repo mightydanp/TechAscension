@@ -1,5 +1,6 @@
 package mightydanp.industrialtech.common.datagen;
 
+import io.netty.util.Constant;
 import mightydanp.industrialtech.api.common.datagen.GenLootTables;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.items.ModItems;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 /**
  * Created by MightyDanp on 3/6/2021.
@@ -30,7 +32,7 @@ public class ModBlockLootTable extends GenLootTables {
         LootPool.Builder poolBuilder = LootPool.lootPool();
 
         blockTable(ModBlocks.rock_block.get(), tableBuilder.withPool(
-                poolBuilder.setRolls(ConstantIntValue.exactly(1))
+                poolBuilder.setRolls(ConstantValue.exactly(1.0F))
                         .add(AlternativesEntry.alternatives().otherwise(LootItem.lootTableItem(ModBlocks.rock_block.get())
                         .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1)))))
                         ))

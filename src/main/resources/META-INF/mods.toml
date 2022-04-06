@@ -30,6 +30,6 @@ null
 [[dependencies.industrialtech]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.3]"
+    versionRange="[1.17.1]"
     ordering="NONE"
     side="BOTH"

@@ -2,13 +2,12 @@ package mightydanp.industrialtech.api.common.items;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.capabilities.ITToolItemCapabilityProvider;
-import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
+import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemInventoryHelper;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
@@ -28,19 +27,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.common.TierSortingRegistry;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -60,6 +52,7 @@ public class ITToolItem extends Item {
     public Map<String, Integer> craftingToolsNeeded = new HashMap<>();
     public Map<String, Integer> parts = new HashMap<>();
     public List<String> disassembleTools = new ArrayList<>();
+    public ITToolItemInventoryHelper inventory = new ITToolItemInventoryHelper();
 
     public ITToolItem(String nameIn, List<String> effectiveBlocksIn, Properties propertiesIn) {
         super(propertiesIn.stacksTo(1));
@@ -86,9 +79,7 @@ public class ITToolItem extends Item {
         tooltip.add(Component.nullToEmpty(""));
 
         if (!getPartsDamage(itemStackIn).isEmpty()) {
-            for (Pair<String, String> pair : getPartsDamage(itemStackIn)) {
-                tooltip.add(Component.nullToEmpty("\u00A7f" + pair.getFirst() + ":" + "\u00A7f" + " " + "\u00A7a" + pair.getSecond() + "\u00A7a"));
-            }
+            getPartsDamage(itemStackIn).forEach(((s1, s2) -> tooltip.add(Component.nullToEmpty("\u00A7f" + s1 + ":" + "\u00A7f" + " " + "\u00A7a" + s2 + "\u00A7a"))));
         }
 
         tooltip.add(Component.nullToEmpty(""));
@@ -142,20 +133,24 @@ public class ITToolItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerEntityIn, InteractionHand handIn) {
         ItemStack mainHandItemStack = playerEntityIn.getMainHandItem();
-        ItemStack offHandItemStack = playerEntityIn.getOffhandItem();
-        ItemStack toolHeadOnTool = getItemStackHandler(mainHandItemStack).getToolHead();
-        ItemStack toolBindingOnTool = getItemStackHandler(mainHandItemStack).getToolBinding();
-        ItemStack toolHandleOnTool = getItemStackHandler(mainHandItemStack).getToolHandle();
+        ItemStack offHandItemStack = playerEntityIn.getOffhandItem();;
 
         if (canWork(mainHandItemStack) && preformAction) {
-            if(preformAction) {
-                damageToolParts(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 1);
-            }
+            damageToolParts(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 1);
+        }
+
+        if (canWork(offHandItemStack) && preformAction) {
+            damageToolParts(playerEntityIn.getOffhandItem(), playerEntityIn, worldIn, 1);
         }
 
         if (!canWork(mainHandItemStack)){
-            disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 1, disassembleTools);
+            disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 2, disassembleTools);
             playerEntityIn.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        }
+
+        if (!canWork(offHandItemStack)){
+            disassembleTool(playerEntityIn.getOffhandItem(), playerEntityIn, worldIn, 2, disassembleTools);
+            playerEntityIn.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
         }
 
         //playerEntityIn.getCooldowns().addCooldown(this, 20);
@@ -377,37 +372,14 @@ public class ITToolItem extends Item {
         return InputConstants.isKeyDown(minecraftWindow, GLFW.GLFW_KEY_LEFT_SHIFT);
     }
 
-    @Nonnull
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag oldCapNbt) {
-        return new ITToolItemCapabilityProvider();//bucket
-    }
-
-    public ITToolItemItemStackHandler getItemStackHandler(ItemStack itemStack) {
-        IItemHandler flowerBag = itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (!(flowerBag instanceof ITToolItemItemStackHandler)) {
-            IndustrialTech.LOGGER.error("ITToolItem did not have the expected ITEM_HANDLER_CAPABILITY");
-            return new ITToolItemItemStackHandler(3);
-        }
-        return (ITToolItemItemStackHandler) flowerBag;
-    }
-
     @Nullable
     @Override
     public CompoundTag getShareTag(ItemStack stack) {
-        CompoundTag baseTag = stack.getTag();
-        ITToolItemItemStackHandler itemStackHandlerFlowerBag = getItemStackHandler(stack);
-        CompoundTag capabilityTag = itemStackHandlerFlowerBag.serializeNBT();
-        CompoundTag combinedTag = new CompoundTag();
-
-        if (baseTag != null) {
-            combinedTag.put("base", baseTag);
+        if(stack.getTag() != null) {
+            ContainerHelper.saveAllItems(stack.getTag(), this.inventory);
         }
 
-        if (capabilityTag != null) {
-            combinedTag.put("capability", capabilityTag);
-        }
-        return combinedTag;
+        return stack.getTag();
     }
 
     @Override
@@ -416,31 +388,28 @@ public class ITToolItem extends Item {
             stack.setTag(null);
             return;
         }
-        CompoundTag baseTag = nbt.getCompound("base");              // empty if not found
-        CompoundTag capabilityTag = nbt.getCompound("capability"); // empty if not found
-        stack.setTag(baseTag);
-        ITToolItemItemStackHandler itemStackHandlerFlowerBag = getItemStackHandler(stack);
-        itemStackHandlerFlowerBag.deserializeNBT(capabilityTag);
+
+        ContainerHelper.loadAllItems(nbt, this.inventory);
     }
 
     public boolean canWork(ItemStack itemStackIn){
-        ITToolItemItemStackHandler handler = getItemStackHandler(itemStackIn);
-        ITToolItem toolItem = (ITToolItem) itemStackIn.getItem();
-        if ((toolItem.partsToWork == 1 || toolItem.partsToWork == 2 || toolItem.partsToWork == 3) & handler.getToolHead() != null) {
-            if(handler.getToolHead().getDamageValue() < handler.getToolHead().getMaxDamage()){
-                return true;
+        if(itemStackIn.getItem() instanceof ITToolItem toolItem) {
+            if ((toolItem.partsToWork == 1 || toolItem.partsToWork == 2 || toolItem.partsToWork == 3) & toolItem.inventory.getToolHead() != null) {
+                if (toolItem.inventory.getToolHead().getDamageValue() < toolItem.inventory.getToolHead().getMaxDamage()) {
+                    return true;
+                }
             }
-        }
 
-        if ((toolItem.partsToWork == 2 || toolItem.partsToWork == 3) && handler.getToolHandle() != null && handler.getToolHead() != null) {
-            if(handler.getToolHandle().getDamageValue() < handler.getToolHandle().getMaxDamage() && handler.getToolHead().getDamageValue() < handler.getToolHead().getMaxDamage()){
-                return true;
+            if ((toolItem.partsToWork == 2 || toolItem.partsToWork == 3) && toolItem.inventory.getToolHandle() != null && toolItem.inventory.getToolHead() != null) {
+                if (toolItem.inventory.getToolHandle().getDamageValue() < toolItem.inventory.getToolHandle().getMaxDamage() && toolItem.inventory.getToolHead().getDamageValue() < toolItem.inventory.getToolHead().getMaxDamage()) {
+                    return true;
+                }
             }
-        }
 
-        if (toolItem.partsToWork == 3 && handler.getToolHandle() != null && handler.getToolHead() != null && handler.getToolBinding() != null) {
-            if(handler.getToolHandle().getDamageValue() < handler.getToolHandle().getMaxDamage() && handler.getToolHead().getDamageValue() < handler.getToolHead().getMaxDamage() && handler.getToolBinding().getDamageValue() < handler.getToolBinding().getMaxDamage()){
-                return true;
+            if (toolItem.partsToWork == 3 && toolItem.inventory.getToolHandle() != null && toolItem.inventory.getToolHead() != null && toolItem.inventory.getToolBinding() != null) {
+                if (toolItem.inventory.getToolHandle().getDamageValue() < toolItem.inventory.getToolHandle().getMaxDamage() && toolItem.inventory.getToolHead().getDamageValue() < toolItem.inventory.getToolHead().getMaxDamage() && toolItem.inventory.getToolBinding().getDamageValue() < toolItem.inventory.getToolBinding().getMaxDamage()) {
+                    return true;
+                }
             }
         }
 
@@ -449,55 +418,54 @@ public class ITToolItem extends Item {
 
     public Boolean damageToolParts(ItemStack itemStackIn, Player playerIn, Level worldIn, int amountIn) {
         Random random = new Random();
-        ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(itemStackIn);
-        ITToolItem toolItem = (ITToolItem) itemStackIn.getItem();
-        ItemStack toolHeadOnTool = itemStackHandler.getToolHead();
-        ItemStack toolBindingOnTool = itemStackHandler.getToolBinding();
-        ItemStack toolHandleOnTool = itemStackHandler.getToolHandle();
 
-        if (toolHeadOnTool != null && (toolItem.partsToWork == 3 || toolItem.partsToWork == 2 || toolItem.partsToWork == 1)) {
-            int headDamage = toolHeadOnTool.getDamageValue();
-            int headMaxDamage = toolHeadOnTool.getMaxDamage();
+        if(itemStackIn.getItem() instanceof ITToolItem toolItem) {
+            ItemStack toolHeadOnTool = toolItem.inventory.getToolHead();
+            ItemStack toolBindingOnTool = toolItem.inventory.getToolBinding();
+            ItemStack toolHandleOnTool = toolItem.inventory.getToolHandle();
 
-            if (headDamage != headMaxDamage) {
-                toolHeadOnTool.setDamageValue(headDamage + amountIn);
-                return true;
-            } else {
-                playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                return false;
+            if (toolHeadOnTool != null && (toolItem.partsToWork == 3 || toolItem.partsToWork == 2 || toolItem.partsToWork == 1)) {
+                int headDamage = toolHeadOnTool.getDamageValue();
+                int headMaxDamage = toolHeadOnTool.getMaxDamage();
+
+                if (headDamage != headMaxDamage) {
+                    toolHeadOnTool.setDamageValue(headDamage + amountIn);
+                    return true;
+                } else {
+                    playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
+                    worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                    return false;
+                }
             }
-        }
 
-        if (toolHandleOnTool != null && (toolItem.partsToWork == 3 || toolItem.partsToWork == 2)){
-            int handleDamage = toolHandleOnTool.getDamageValue();
-            int handleMaxDamage = toolHandleOnTool.getMaxDamage();
+            if (toolHandleOnTool != null && (toolItem.partsToWork == 3 || toolItem.partsToWork == 2)) {
+                int handleDamage = toolHandleOnTool.getDamageValue();
+                int handleMaxDamage = toolHandleOnTool.getMaxDamage();
 
-            if (handleDamage != handleMaxDamage) {
-                toolHandleOnTool.setDamageValue(handleDamage + amountIn);
-                return true;
-            } else {
-                playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                return false;
+                if (handleDamage != handleMaxDamage) {
+                    toolHandleOnTool.setDamageValue(handleDamage + amountIn);
+                    return true;
+                } else {
+                    playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
+                    worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                    return false;
+                }
             }
-        }
 
-        if (toolBindingOnTool != null && toolItem.partsToWork == 3){
-            int bindingDamage = toolBindingOnTool.getDamageValue();
-            int bindingMaxDamage = toolBindingOnTool.getMaxDamage();
-            if (bindingDamage != bindingMaxDamage) {
-                toolBindingOnTool.setDamageValue(bindingDamage + amountIn);
-                return true;
-            } else {
-                playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
-                return false;
+            if (toolBindingOnTool != null && toolItem.partsToWork == 3) {
+                int bindingDamage = toolBindingOnTool.getDamageValue();
+                int bindingMaxDamage = toolBindingOnTool.getMaxDamage();
+                if (bindingDamage != bindingMaxDamage) {
+                    toolBindingOnTool.setDamageValue(bindingDamage + amountIn);
+                    return true;
+                } else {
+                    playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
+                    worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                    return false;
+                }
             }
-        }
 
-        if(!canWork(itemStackIn)){
-            return false;
+            return canWork(itemStackIn);
         }
 
         return true;
@@ -505,46 +473,44 @@ public class ITToolItem extends Item {
 
     public void disassembleTool(ItemStack itemStackIn, Player playerIn, Level worldIn, int toolInDamage, List<String> toolNeededIn) {
         Random random = new Random();
-        ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(itemStackIn);
-        ItemStack toolHeadItemStack = itemStackHandler.getToolHead();
-        ItemStack toolBindingItemStack = itemStackHandler.getToolBinding();
-        ItemStack toolHandleItemStack = itemStackHandler.getToolHandle();
 
-        damageToolsNeededInPlayerInventory(playerIn, worldIn, toolInDamage, toolNeededIn);
+        if(itemStackIn.getItem() instanceof ITToolItem toolItem) {
+            ItemStack toolHeadItemStack = toolItem.inventory.getToolHead();
+            ItemStack toolBindingItemStack = toolItem.inventory.getToolBinding();
+            ItemStack toolHandleItemStack = toolItem.inventory.getToolHandle();
 
-        if (toolHandleItemStack != null){
-            if (playerIn.getInventory().canPlaceItem(1, toolHandleItemStack)) {
-                playerIn.getInventory().add(toolHandleItemStack);
-                itemStackHandler.setToolHandle(ItemStack.EMPTY);
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
-            } else {
-                worldIn.addFreshEntity(new ItemEntity(worldIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), toolHandleItemStack));
+            damageToolsNeededInPlayerInventory(playerIn, worldIn, toolInDamage, toolNeededIn);
+
+            if (toolHandleItemStack != null) {
+                if (playerIn.getInventory().canPlaceItem(1, toolHandleItemStack)) {
+                    playerIn.getInventory().add(toolHandleItemStack);
+                    toolItem.inventory.setToolHandle(ItemStack.EMPTY);
+                    worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                } else {
+                    worldIn.addFreshEntity(new ItemEntity(worldIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), toolHandleItemStack));
+                }
+
             }
 
-        }
-
-        if (toolHeadItemStack != null){
-            if (playerIn.getInventory().canPlaceItem(1, toolHeadItemStack)) {
-                playerIn.getInventory().add(toolHeadItemStack);
-                itemStackHandler.setToolHead(ItemStack.EMPTY);
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
-            } else {
-                worldIn.addFreshEntity(new ItemEntity(worldIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), toolHeadItemStack));
+            if (toolHeadItemStack != null) {
+                if (playerIn.getInventory().canPlaceItem(1, toolHeadItemStack)) {
+                    playerIn.getInventory().add(toolHeadItemStack);
+                    toolItem.inventory.setToolHead(ItemStack.EMPTY);
+                    worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                } else {
+                    worldIn.addFreshEntity(new ItemEntity(worldIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), toolHeadItemStack));
+                }
             }
-        }
 
-        if (toolBindingItemStack != null){
-            if (playerIn.getInventory().canPlaceItem(1, toolBindingItemStack)) {
-                playerIn.getInventory().add(toolBindingItemStack);
-                itemStackHandler.setToolBinding(ItemStack.EMPTY);
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
-            } else {
-                worldIn.addFreshEntity(new ItemEntity(worldIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), toolBindingItemStack));
+            if (toolBindingItemStack != null) {
+                if (playerIn.getInventory().canPlaceItem(1, toolBindingItemStack)) {
+                    playerIn.getInventory().add(toolBindingItemStack);
+                    toolItem.inventory.setToolBinding(ItemStack.EMPTY);
+                    worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                } else {
+                    worldIn.addFreshEntity(new ItemEntity(worldIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), toolBindingItemStack));
+                }
             }
-        }
-
-        if (toolHandleItemStack == null && toolHeadItemStack == null && toolBindingItemStack == null) {
-
         }
     }
 
@@ -576,22 +542,21 @@ public class ITToolItem extends Item {
             if(toolNeededIn.contains(toolNeeded.getItem())){
                 if(toolNeeded.getItem() instanceof ITToolItem){
                     ITToolItem toolNeededItem = (ITToolItem)playerIn.getInventory().getItem(i).getItem();
-                    ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(toolNeeded);
 
-                    if((toolNeededItem.partsToWork == 1 || toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHead() != null){
-                        if(itemStackHandler.getToolHead().getDamageValue() < itemStackHandler.getToolHead().getMaxDamage()) {
+                    if((toolNeededItem.partsToWork == 1 || toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & toolNeededItem.inventory.getToolHead() != null){
+                        if(toolNeededItem.inventory.getToolHead().getDamageValue() < toolNeededItem.inventory.getToolHead().getMaxDamage()) {
                             toolNeededIn.remove(toolNeeded.getItem());
                         }
                     }
 
-                    if((toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHandle() != null){
-                       if(itemStackHandler.getToolHandle().getDamageValue() < itemStackHandler.getToolHandle().getDamageValue()){
+                    if((toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & toolNeededItem.inventory.getToolHandle() != null){
+                       if(toolNeededItem.inventory.getToolHandle().getDamageValue() < toolNeededItem.inventory.getToolHandle().getDamageValue()){
                            toolNeededIn.remove(toolNeeded.getItem());
                        }
                     }
 
-                    if(toolNeededItem.partsToWork == 3 & itemStackHandler.getToolBinding() != null){
-                       if(itemStackHandler.getToolBinding().getDamageValue() < itemStackHandler.getToolBinding().getDamageValue()){
+                    if(toolNeededItem.partsToWork == 3 & toolNeededItem.inventory.getToolBinding() != null){
+                       if(toolNeededItem.inventory.getToolBinding().getDamageValue() < toolNeededItem.inventory.getToolBinding().getDamageValue()){
                            toolNeededIn.remove(toolNeeded.getItem());
                        }
                     }
@@ -605,27 +570,30 @@ public class ITToolItem extends Item {
         return toolNeededIn.size() == 0;
     }
 
-    public List<Pair<String, String>> getPartsDamage(ItemStack itemstackIn) {
-        ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(itemstackIn);
-        ItemStack toolHeadOnTool = itemStackHandler.getToolHead();
-        ItemStack toolBindingOnTool = itemStackHandler.getToolBinding();
-        ItemStack toolHandleOnTool = itemStackHandler.getToolHandle();
+    public Map<String, String> getPartsDamage(ItemStack itemStackIn) {
+        if(itemStackIn.getItem() instanceof ITToolItem toolItem) {
+            ItemStack toolHeadOnTool = toolItem.inventory.getToolHead();
+            ItemStack toolBindingOnTool = toolItem.inventory.getToolBinding();
+            ItemStack toolHandleOnTool = toolItem.inventory.getToolHandle();
 
-        List<Pair<String, String>> list = new ArrayList<>();
+            Map<String, String> map = new HashMap<>();
 
-        if (toolHandleOnTool != null) {
-            list.add(new Pair<>(toolHandleOnTool.getDisplayName().getString().replace("[", "").replace("]", "") + " ", toolHandleOnTool.getMaxDamage() - toolHandleOnTool.getDamageValue() + "/" + toolHandleOnTool.getMaxDamage()));
+            if (toolHandleOnTool != null) {
+                map.put(toolHandleOnTool.getDisplayName().getString().replace("[", "").replace("]", "") + " ", toolHandleOnTool.getMaxDamage() - toolHandleOnTool.getDamageValue() + "/" + toolHandleOnTool.getMaxDamage());
+            }
+
+            if (toolHeadOnTool != null) {
+                map.put(toolHeadOnTool.getDisplayName().getString().replace("[", "").replace("]", "") + " ", toolHeadOnTool.getMaxDamage() - toolHeadOnTool.getDamageValue() + "/" + toolHeadOnTool.getMaxDamage());
+            }
+
+            if (toolBindingOnTool != null) {
+                map.put(toolBindingOnTool.getDisplayName().getString().replace("[", "").replace("]", "") + " ", toolBindingOnTool.getMaxDamage() - toolBindingOnTool.getDamageValue() + "/" + toolBindingOnTool.getMaxDamage());
+            }
+
+            return map;
         }
 
-        if (toolHeadOnTool != null) {
-            list.add(new Pair<>(toolHeadOnTool.getDisplayName().getString().replace("[", "").replace("]", "") + " ", toolHeadOnTool.getMaxDamage() - toolHeadOnTool.getDamageValue() + "/" + toolHeadOnTool.getMaxDamage()));
-        }
-
-        if (toolBindingOnTool != null) {
-            list.add(new Pair<>(toolBindingOnTool.getDisplayName().getString().replace("[", "").replace("]", "") + " ", toolBindingOnTool.getMaxDamage() - toolBindingOnTool.getDamageValue() + "/" + toolBindingOnTool.getMaxDamage()));
-        }
-
-        return list;
+        return new HashMap<>();
     }
 
     public int getPartsToWork() {
