@@ -2,18 +2,17 @@ package mightydanp.industrialtech.api.common.handler;
 
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityType;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.*;
@@ -23,7 +22,7 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class RegistryHandler extends RegisterHelper{
-    public static RegistryKey<Registry<ITMaterial>> material;
+    public static ResourceKey<Registry<ITMaterial>> material;
 
     public static List<Block> blocks = new ArrayList<>();
     public static List<Item> items = new ArrayList<>();
@@ -31,12 +30,12 @@ public class RegistryHandler extends RegisterHelper{
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Ref.mod_id);
     public static final DeferredRegister<Item> BLOCK_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
-    public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Ref.mod_id);
+    public static final DeferredRegister<BlockEntityType<?>> Block_Entities = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Ref.mod_id);
     public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, Ref.mod_id);
-    public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Ref.mod_id);
+    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Ref.mod_id);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Ref.mod_id);
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(ForgeRegistries.FEATURES, Ref.mod_id);
-    public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Ref.mod_id);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Ref.mod_id);
     public static final IForgeRegistry<ITMaterial> MATERIAL = makeRegistry("material", ITMaterial.class, Ref.mod_id, false);
     private static final DeferredRegister<ITMaterial> MATERIALS = DeferredRegister.create(MATERIAL, Ref.mod_id);
 
@@ -45,13 +44,13 @@ public class RegistryHandler extends RegisterHelper{
     }
 
     public static void init(IEventBus IEventBus) {
-        material = RegistryKey.createRegistryKey(new ResourceLocation(Ref.mod_id, "material"));
+        material = ResourceKey.createRegistryKey(new ResourceLocation(Ref.mod_id, "material"));
         MATERIALS.register(IEventBus);
         ITEMS.register(IEventBus);
         BLOCKS.register(IEventBus);
         BLOCK_ITEMS.register(IEventBus);
         FLUIDS.register(IEventBus);
-        TILES.register(IEventBus);
+        Block_Entities.register(IEventBus);
         CONTAINERS.register(IEventBus);
         ENTITIES.register(IEventBus);
         FEATURES.register(IEventBus);

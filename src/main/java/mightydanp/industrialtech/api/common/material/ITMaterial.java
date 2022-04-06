@@ -12,6 +12,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.datapack.DataPackRegistry
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.DefaultFluidState;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.material.fluid.ITFluid;
@@ -21,22 +22,22 @@ import mightydanp.industrialtech.api.common.jsonconfig.material.ore.DefaultOreTy
 import mightydanp.industrialtech.api.common.jsonconfig.material.ore.IOreType;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.fluid.FlowingFluid;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag.*;
@@ -75,7 +76,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public Integer attackSpeed = null;
     public Float attackDamage = null;
     public Float weight = null;
-    public List<Pair<ToolType, Integer>> toolTypes;
+    public Map<IToolType, Integer> toolTypes;
     public List<IToolPart> toolParts = new ArrayList<>();
 
     public  List<IMaterialFlag> materialFlags = new ArrayList<>();
@@ -181,7 +182,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         return this;
     }
 
-    public ITMaterial setToolProperties(int attackSpeedIn, int durabilityIn, float attackDamageIn, float weightIn, List<Pair<ToolType, Integer>> toolTypesIn, List<IToolPart> toolPartIn){
+    public ITMaterial setToolProperties(int attackSpeedIn, int durabilityIn, float attackDamageIn, float weightIn, Map<IToolType, Integer> toolTypesIn, List<IToolPart> toolPartIn){
         attackSpeed = attackSpeedIn;
         durability = durabilityIn;
         attackDamage = attackDamageIn;
@@ -235,7 +236,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     );
                     enLang.addTranslation("item." + Ref.mod_id + "." + name + "_rock", LangData.translateUpperCase(name + "_rock"));
                     //--//
-                    thinSlabBlock = RegistryHandler.registerBlock(Ref.mod_id,"thin_" + name + "_slab", new ThinSlabBlock(AbstractBlock.Properties.of(Material.STONE), stoneLayerBlockName));
+                    thinSlabBlock = RegistryHandler.registerBlock(Ref.mod_id,"thin_" + name + "_slab", new ThinSlabBlock(BlockBehaviour.Properties.of(Material.STONE), stoneLayerBlockName));
                     //
                     DataPackRegistry.blockStateDataMap.put("thin_" + name + "_slab", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/stone_layer/thin_slab/" + "thin_" + name + "_slab")));
                     DataPackRegistry.blockModelDataMap.put("thin_" + name + "_slab", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/thin_slab"))
@@ -265,7 +266,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     if(flag == ORE || flag == GEM) {
                         String stoneLayerBlockName = stoneLayer.stoneLayerBlock.equals("")? String.valueOf(layerBlock.getRegistryName()) : stoneLayer.stoneLayerBlock;
                         //--//
-                        Block ore = RegistryHandler.registerBlock(Ref.mod_id, stoneLayer.name + "_" + name + "_ore", new OreBlock(name + "_ore", AbstractBlock.Properties.of(net.minecraft.block.material.Material.STONE), stoneLayerBlockName));
+                        Block ore = RegistryHandler.registerBlock(Ref.mod_id, stoneLayer.name + "_" + name + "_ore", new OreBlock(name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), stoneLayerBlockName));
                         oreList.add(ore);
                         //
                         DataPackRegistry.blockStateDataMap.put(stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore")));
@@ -279,7 +280,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         enLang.addTranslation("item." + Ref.mod_id + "." + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase(stoneLayer.name + "_" + name + "_ore"));
                         //--//
                         Block smallOreBlockR = RegistryHandler.registerBlock(Ref.mod_id, "small_" + stoneLayer.name + "_" + name + "_ore",
-                                new SmallOreBlock("small_" + name + "_ore", AbstractBlock.Properties.of(net.minecraft.block.material.Material.STONE), stoneLayerBlockName));
+                                new SmallOreBlock("small_" + name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), stoneLayerBlockName));
                         smallOreList.add(smallOreBlockR);
                         //
                         DataPackRegistry.blockStateDataMap.put("small_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
@@ -293,7 +294,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         enLang.addTranslation("item." + Ref.mod_id + "." + "small_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("small_" + stoneLayer.name + "_" + name + "_ore"));
                         //--//
                         Block denseOreBlockR = RegistryHandler.registerBlock(Ref.mod_id, "dense_" + stoneLayer.name + "_" + name + "_ore",
-                                new DenseOreBlock("dense_" + name + "_ore", AbstractBlock.Properties.of(net.minecraft.block.material.Material.STONE), denseOreDensity, stoneLayerBlockName));
+                                new DenseOreBlock("dense_" + name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), denseOreDensity, stoneLayerBlockName));
                         denseOreList.add(denseOreBlockR);
                         //
                         DataPackRegistry.blockStateDataMap.put("dense_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/dense_ore/" + "dense_" + stoneLayer.name + "_ore")));
@@ -501,11 +502,11 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
     public void clientRenderLayerInit(){
         if(rockBlock != null) {
-            RenderTypeLookup.setRenderLayer(rockBlock, RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(rockBlock, RenderType.cutout());
         }
 
         if(thinSlabBlock != null) {
-            RenderTypeLookup.setRenderLayer(thinSlabBlock, RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(thinSlabBlock, RenderType.cutout());
         }
     }
 
@@ -526,7 +527,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     }
 
     public void setupABlockColor(Block block){
-        RenderTypeLookup.setRenderLayer(block, RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout());
         Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
             if (tintIndex != 0)
                 return 0xFFFFFFFF;

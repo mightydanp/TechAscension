@@ -1,27 +1,22 @@
 package mightydanp.industrialtech.api.common.handler;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import mightydanp.industrialtech.api.client.settings.keybindings.KeyBindings;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.*;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.*;
@@ -31,20 +26,6 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.DrawHighlightEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +33,10 @@ import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.Random;
+
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 
 /**
  * Created by MightyDanp on 9/30/2020.
@@ -90,6 +75,7 @@ public class EventHandler {
     }
 
 
+    /*
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void blockPlacementPreviewEvent(DrawHighlightEvent.HighlightBlock event) {
@@ -105,28 +91,28 @@ public class EventHandler {
         }
 
         if(hasBeenPressed && instance.player != null && instance.player.level != null && !instance.player.getMainHandItem().isEmpty() && instance.player.getMainHandItem().getItem() instanceof BlockItem) {
-            ClientPlayerEntity player = instance.player;
-            World world = player.level;
+            LocalPlayer player = instance.player;
+            Level world = player.level;
 
             int rayLength = 100;
-            Vector3d playerRotation = player.getViewVector(0);
-            Vector3d rayPath = playerRotation.scale(rayLength);
+            Vec3 playerRotation = player.getViewVector(0);
+            Vec3 rayPath = playerRotation.scale(rayLength);
 
             //RAY START AND END POINTS
-            Vector3d from = player.getEyePosition(0);
-            Vector3d to = from.add(rayPath);
+            Vec3 from = player.getEyePosition(0);
+            Vec3 to = from.add(rayPath);
 
             //CREATE THE RAY
-            RayTraceContext rayCtx = new RayTraceContext(from, to, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.ANY, null);
+            ClipContext rayCtx = new ClipContext(from, to, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, null);
             //CAST THE RAY
-            BlockRayTraceResult rayHit = world.clip(rayCtx);
+            BlockHitResult rayHit = world.clip(rayCtx);
 
             //CHECK THE RESULTS
-            if (event.getMatrix() == null || rayHit.getType() == RayTraceResult.Type.MISS){
+            if (event.getMatrix() == null || rayHit.getType() == HitResult.Type.MISS){
                 return;
             }
 
-            Vector3d hitLocation = rayHit.getLocation();
+            Vec3 hitLocation = rayHit.getLocation();
 
             BlockPos blockPos = new BlockPos(hitLocation.x, hitLocation.y, hitLocation.z);
 
@@ -142,9 +128,9 @@ public class EventHandler {
                 newPosition = true;
             }
 
-            ItemUseContext itemUseContext = new ItemUseContext(player, Hand.MAIN_HAND, rayHit);
+            UseOnContext itemUseContext = new UseOnContext(player, InteractionHand.MAIN_HAND, rayHit);
 
-            BlockState blockStatePlacement = ((BlockItem)player.getMainHandItem().getItem()).getBlock().getStateForPlacement(new BlockItemUseContext(itemUseContext));
+            BlockState blockStatePlacement = ((BlockItem)player.getMainHandItem().getItem()).getBlock().getStateForPlacement(new BlockPlaceContext(itemUseContext));
 
             copyBlockPos = copyBlockPos.equals(new BlockPos(0, 0, 0)) ? blockPos : copyBlockPos;
 
@@ -153,7 +139,7 @@ public class EventHandler {
                 double y = (-1.62 + (blockPos.getY() - (player.getPosition(0).y)) - (itemUseContext.getClickedFace() == Direction.DOWN ? 1 : 0));
                 double z = (blockPos.getZ() - (player.getPosition(0).z) - (itemUseContext.getClickedFace() == Direction.NORTH ? 1 : 0));
 
-                RenderType blockStateRenderType = RenderTypeLookup.getRenderType(blockStatePlacement, false);
+                RenderType blockStateRenderType = ItemBlockRenderTypes.getRenderType(blockStatePlacement, false);
                 event.getMatrix().pushPose();
                 event.getMatrix().scale(1, 1, 1);
                 event.getMatrix().translate(x, y, z);
@@ -168,5 +154,7 @@ public class EventHandler {
             copyBlockPos = blockPos;
         }
     }
+
+     */
 
 }

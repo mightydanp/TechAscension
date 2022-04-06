@@ -11,13 +11,13 @@ import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.common.items.ModItems;
 import mightydanp.industrialtech.common.tool.ModTools;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelBuilder;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.*;
 
 import java.util.Arrays;

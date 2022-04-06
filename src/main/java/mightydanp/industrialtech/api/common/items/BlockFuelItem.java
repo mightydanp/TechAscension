@@ -1,15 +1,17 @@
 package mightydanp.industrialtech.api.common.items;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import net.minecraft.world.item.Item.Properties;
 
 /**
  * Created by MightyDanp on 7/31/2021.
@@ -23,15 +25,15 @@ public class BlockFuelItem extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if (burnTime != 0) {
-            tooltip.add(ITextComponent.nullToEmpty("Burn Time:" + burnTime));
+            tooltip.add(Component.nullToEmpty("Burn Time:" + burnTime));
         }
     }
 
     @Override
-    public int getBurnTime(ItemStack itemStack) {
-        return super.getBurnTime(itemStack);
+    public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+        return super.getBurnTime(itemStack, recipeType);
     }
 }

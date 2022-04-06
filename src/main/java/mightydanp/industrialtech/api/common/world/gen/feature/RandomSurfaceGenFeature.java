@@ -1,15 +1,15 @@
 package mightydanp.industrialtech.api.common.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ISeedReader;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -25,9 +25,9 @@ public class RandomSurfaceGenFeature extends Feature<RandomSurfaceGenFeatureConf
     }
 
     @Override
-    public boolean place(ISeedReader iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, RandomSurfaceGenFeatureConfig randomSurfaceGenFeatureConfigIn) {
+    public boolean place(WorldGenLevel iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, RandomSurfaceGenFeatureConfig randomSurfaceGenFeatureConfigIn) {
         boolean canSpawn = false;
-        BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
         int x = blockPosIn.getX();
         int z = blockPosIn.getZ();
         for (int xx = 0; xx <= 16; xx++) {
@@ -35,7 +35,7 @@ public class RandomSurfaceGenFeature extends Feature<RandomSurfaceGenFeatureConf
             for (int zz = 0; zz <= 16; zz++) {
                 int z2 = zz + z;
 
-                int groundHeight = iSeedReaderIn.getHeight(Heightmap.Type.WORLD_SURFACE, x2, z2);
+                int groundHeight = iSeedReaderIn.getHeight(Heightmap.Types.WORLD_SURFACE, x2, z2);
                 blockpos$mutable.set(x2, groundHeight, z2);
                 BlockState blockState = iSeedReaderIn.getBlockState(blockpos$mutable);
                 BlockState blockStateDown = iSeedReaderIn.getBlockState(blockpos$mutable.below());

@@ -4,7 +4,7 @@ import mightydanp.industrialtech.api.common.items.ToolBindingItem;
 import mightydanp.industrialtech.api.common.items.ToolHandleItem;
 import mightydanp.industrialtech.api.common.items.ToolHeadItem;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;

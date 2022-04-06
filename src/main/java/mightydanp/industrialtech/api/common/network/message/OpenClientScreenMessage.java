@@ -2,11 +2,11 @@ package mightydanp.industrialtech.api.common.network.message;
 
 import io.netty.buffer.Unpooled;
 import mightydanp.industrialtech.api.common.handler.ClientScreenHandler;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -15,21 +15,21 @@ import java.util.function.Supplier;
  */
 public class OpenClientScreenMessage {
     private final ResourceLocation id;
-    private final PacketBuffer additionalData;
+    private final FriendlyByteBuf additionalData;
 
-    public OpenClientScreenMessage(final ResourceLocation id, final PacketBuffer additionalData) {
+    public OpenClientScreenMessage(final ResourceLocation id, final FriendlyByteBuf additionalData) {
         this.id = id;
         this.additionalData = additionalData;
     }
 
-    public static OpenClientScreenMessage decode(final PacketBuffer buffer) {
+    public static OpenClientScreenMessage decode(final FriendlyByteBuf buffer) {
         final ResourceLocation id = buffer.readResourceLocation();
-        final PacketBuffer additionalData = new PacketBuffer(Unpooled.wrappedBuffer(buffer.readByteArray(32600)));
+        final FriendlyByteBuf additionalData = new FriendlyByteBuf(Unpooled.wrappedBuffer(buffer.readByteArray(32600)));
 
         return new OpenClientScreenMessage(id, additionalData);
     }
 
-    public static void encode(final OpenClientScreenMessage message, final PacketBuffer buffer) {
+    public static void encode(final OpenClientScreenMessage message, final FriendlyByteBuf buffer) {
         buffer.writeResourceLocation(message.id);
         buffer.writeByteArray(message.additionalData.readByteArray());
     }
@@ -45,7 +45,7 @@ public class OpenClientScreenMessage {
         return id;
     }
 
-    public PacketBuffer getAdditionalData() {
+    public FriendlyByteBuf getAdditionalData() {
         return additionalData;
     }
 }

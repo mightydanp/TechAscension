@@ -3,8 +3,8 @@ package mightydanp.industrialtech.api.common.jsonconfig.stonelayer;
 import com.google.gson.JsonObject;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.CrashReport;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.File;
 import java.nio.file.Path;

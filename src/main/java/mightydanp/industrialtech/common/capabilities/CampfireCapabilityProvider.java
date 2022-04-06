@@ -1,10 +1,10 @@
 package mightydanp.industrialtech.common.capabilities;
 
 import mightydanp.industrialtech.common.handler.itemstack.CampfireItemStackHandler;
-import mightydanp.industrialtech.common.tileentities.CampfireTileEntityOverride;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
+import mightydanp.industrialtech.common.tileentities.CampfireBlockEntityOverride;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.Tag;
+import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -18,14 +18,14 @@ import javax.annotation.Nullable;
  * Created by MightyDanp on 5/10/2021.
  */
 
-public class CampfireCapabilityProvider implements ICapabilitySerializable<INBT> {
+public class CampfireCapabilityProvider implements ICapabilitySerializable<Tag> {
 
     private final Direction numberOfSlots = null;
     private final int maxSlots = putItemStackAndGetNumberOfSlots(ItemStack.EMPTY);;
     public CampfireItemStackHandler campFireItemStackHandler;
-    private CampfireTileEntityOverride campfireTileEntityOverride;
+    private CampfireBlockEntityOverride campfireTileEntityOverride;
 
-    public CampfireCapabilityProvider(CampfireTileEntityOverride tileEntityOverride){
+    public CampfireCapabilityProvider(CampfireBlockEntityOverride tileEntityOverride){
         campfireTileEntityOverride = tileEntityOverride;
     }
 
@@ -48,12 +48,12 @@ public class CampfireCapabilityProvider implements ICapabilitySerializable<INBT>
     private final LazyOptional<IItemHandler> lazyInitialisionSupplier = LazyOptional.of(this::getCachedInventory);
 
     @Override
-    public INBT serializeNBT() {
+    public Tag serializeNBT() {
         return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(getCachedInventory(), null);
     }
 
     @Override
-    public void deserializeNBT(INBT nbt) {
+    public void deserializeNBT(Tag nbt) {
         CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(getCachedInventory(), numberOfSlots, nbt);
     }
 

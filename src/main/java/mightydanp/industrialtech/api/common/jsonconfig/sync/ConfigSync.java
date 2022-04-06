@@ -32,15 +32,14 @@ import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeServer;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.materials.ModMaterials;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.*;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.FolderName;
+import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -50,13 +49,17 @@ import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.minecraft.client.gui.screens.DisconnectedScreen;
+import net.minecraft.client.gui.screens.LevelLoadingScreen;
+import net.minecraft.client.gui.screens.ProgressScreen;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 
 /**
  * Created by MightyDanp on 1/4/2022.
@@ -145,7 +148,7 @@ public class ConfigSync {
     public static void onPlayerJoinServer(PlayerEvent.PlayerLoggedInEvent event) {
         if(event.getPlayer().getServer() != null) {
             boolean isSinglePlayer = event.getPlayer().getServer().isSingleplayer();
-            String singlePlayerWorldName = isSinglePlayer ? event.getPlayer().getServer().getWorldPath(FolderName.ROOT).getParent().getFileName().toString(): "";/////////
+            String singlePlayerWorldName = isSinglePlayer ? event.getPlayer().getServer().getWorldPath(LevelResource.ROOT).getParent().getFileName().toString(): "";/////////
 
             SyncMessage syncMessage = new SyncMessage(isSinglePlayer, singlePlayerWorldName);
 
@@ -154,7 +157,7 @@ public class ConfigSync {
                 syncMessage.setConfig(i, config.getFirst().getAllValues());
             }
 
-            ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+            ServerPlayer player = (ServerPlayer) event.getPlayer();
 
             if (player != null) {
                 NetworkHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), syncMessage);
@@ -219,27 +222,27 @@ public class ConfigSync {
                 if (server.isSingleplayer() && Minecraft.getInstance().getSingleplayerServer() != null) {
                         IntegratedServer integratedServer = Minecraft.getInstance().getSingleplayerServer();
 
-                    if (event.getGui() instanceof WorkingScreen) {
-                        if (!(new File("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id).exists()) && !IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id)) {
+                    if (event.getGui() instanceof ProgressScreen) {
+                        if (!(new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id).exists()) && !IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id)) {
                             for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
                                 Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = IndustrialTech.configSync.configs.get(i);
                                 try {
-                                    config.getSecond().syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
+                                    config.getSecond().syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
                             }
 
 
-                            IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
+                            IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
                             IndustrialTech.mainJsonConfig.reloadMainConfigJson();
                         }
                     }
 
-                    if (event.getGui() instanceof WorldLoadProgressScreen) {
-                        if((new File("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id).exists())) {
-                            if (!IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id)) {
-                                IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
+                    if (event.getGui() instanceof LevelLoadingScreen) {
+                        if((new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id).exists())) {
+                            if (!IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id)) {
+                                IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
                                 IndustrialTech.mainJsonConfig.reloadMainConfigJson();
                                 Minecraft.getInstance().close();
                             }

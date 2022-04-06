@@ -2,21 +2,17 @@ package mightydanp.industrialtech.common.generation;
 
 import mightydanp.industrialtech.api.common.handler.generation.PlantGenerationHandler;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.biome.Biome;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.minecraft.world.biome.Biome.Category.*;
-import static net.minecraft.world.biome.Biome.Category.MUSHROOM;
+import static net.minecraft.world.level.biome.Biome.BiomeCategory.*;
 
-/**
- * Created by MightyDanp on 2/18/2021.
- */
 public class PlantGeneration {
-    public static List<Biome.Category> OverWorldBiomes = new ArrayList<Biome.Category>(){{
+    public static List<Biome.BiomeCategory> OverWorldBiomes = new ArrayList<Biome.BiomeCategory>(){{
             add(TAIGA); 
             add(EXTREME_HILLS);
             add(JUNGLE);

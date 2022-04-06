@@ -2,10 +2,10 @@ package mightydanp.industrialtech.api.common.handler;
 
 import mightydanp.industrialtech.api.common.material.fluid.ITBucket;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemModelsProperties;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.item.Item;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 /**
  * Created by MightyDanp on 10/22/2021.
@@ -23,7 +23,7 @@ public class FluidHandler {
     public void initProperties() {
             if(bucket.isPresent()) {
                 ITBucket iTBucket = (ITBucket)bucket.get();
-                ItemModelsProperties.register(bucket.get(), new ResourceLocation(Ref.mod_id, "redness_level"), (stack, world, living) -> {
+                ItemProperties.register(bucket.get(), new ResourceLocation(Ref.mod_id, "redness_level"), (stack, world, living, dsf) -> {
                     if (living != null){
                         return iTBucket.getRednessLevel();
                     }

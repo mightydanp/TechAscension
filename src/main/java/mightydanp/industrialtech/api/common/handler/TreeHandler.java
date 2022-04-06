@@ -5,19 +5,24 @@ import mightydanp.industrialtech.api.common.items.BlockFuelItem;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import mightydanp.industrialtech.api.common.libs.EnumTreeFlags;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.trees.OakTree;
-import net.minecraft.block.trees.Tree;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.grower.OakTreeGrower;
+import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.item.Item;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.world.item.Item;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 /**
  * Created by MightyDanp on 7/23/2021.
@@ -31,7 +36,7 @@ public class TreeHandler {
     public int plankBurnTime;
     public int saplingBurnTime;
     public List<ITToolItem> toolForLogHole;
-    public Tree treeFeature;
+    public AbstractTreeGrower treeFeature;
 
     public RegistryObject<Block> log_block, plank_block, leave_block, sapling_block, resin_block;
 
@@ -39,7 +44,7 @@ public class TreeHandler {
 
     public List<EnumTreeFlags> treeFlags = new ArrayList<>();
 
-    public TreeHandler (String treeNameIn, Tree treeFeatureIn, int colorIn, int leafDecayLengthIn, int leafBurnTimeIn, int logBurnTimeIn, int plankBurnTimeIn, int saplingBurnTimeIn, EnumTreeFlags... flagsIn){
+    public TreeHandler (String treeNameIn, AbstractTreeGrower treeFeatureIn, int colorIn, int leafDecayLengthIn, int leafBurnTimeIn, int logBurnTimeIn, int plankBurnTimeIn, int saplingBurnTimeIn, EnumTreeFlags... flagsIn){
         treeName = treeNameIn;
         color = colorIn;
         treeFeature = treeFeatureIn;
@@ -52,7 +57,7 @@ public class TreeHandler {
         registerFlags(flagsIn);
     }
 
-    public TreeHandler (String treeNameIn, Tree treeFeatureIn, int colorIn, int leafDecayLengthIn, int leafBurnTimeIn, int logBurnTimeIn, List<ITToolItem> toolForLogHoleIn, int plankBurnTimeIn, int saplingBurnTimeIn, EnumTreeFlags... flagsIn){
+    public TreeHandler (String treeNameIn, AbstractTreeGrower treeFeatureIn, int colorIn, int leafDecayLengthIn, int leafBurnTimeIn, int logBurnTimeIn, List<ITToolItem> toolForLogHoleIn, int plankBurnTimeIn, int saplingBurnTimeIn, EnumTreeFlags... flagsIn){
         treeName = treeNameIn;
         treeFeature = treeFeatureIn;
         color = colorIn;
@@ -69,22 +74,22 @@ public class TreeHandler {
     public void registerFlags(EnumTreeFlags... flags){
         for(EnumTreeFlags flag : flags) {
             if (flag == EnumTreeFlags.LEAVE) {
-                leave_block = RegistryHandler.BLOCKS.register(treeName + "_leave", () -> new LeaveBlock(treeName + "_leave", AbstractBlock.Properties.of(Material.LEAVES), leafDecayLength));
+                leave_block = RegistryHandler.BLOCKS.register(treeName + "_leave", () -> new LeaveBlock(treeName + "_leave", BlockBehaviour.Properties.of(Material.LEAVES), leafDecayLength));
                 leave_item = RegistryHandler.ITEMS.register(treeName + "_leave", () -> new BlockFuelItem(leave_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), leafBurnTime));
             }
 
             if (flag == EnumTreeFlags.LOG) {
-                log_block = RegistryHandler.BLOCKS.register(treeName + "_log", () -> new RotatedPillarBlock(AbstractBlock.Properties.of(Material.WOOD)));
+                log_block = RegistryHandler.BLOCKS.register(treeName + "_log", () -> new RotatedPillarBlock(BlockBehaviour.Properties.of(Material.WOOD)));
                 log_item = RegistryHandler.ITEMS.register(treeName + "_log", () -> new BlockFuelItem(log_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), logBurnTime));
             }
 
             if (flag == EnumTreeFlags.PLANK) {
-                plank_block = RegistryHandler.BLOCKS.register(treeName + "_plank", () -> new Block(AbstractBlock.Properties.of(Material.WOOD)));
+                plank_block = RegistryHandler.BLOCKS.register(treeName + "_plank", () -> new Block(BlockBehaviour.Properties.of(Material.WOOD)));
                 plank_item = RegistryHandler.ITEMS.register(treeName + "_plank", () -> new BlockFuelItem(plank_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), plankBurnTime));
             }
 
             if (flag == EnumTreeFlags.SAPLING) {
-                sapling_block = RegistryHandler.BLOCKS.register(treeName + "_sapling", () -> new SaplingBlock(new OakTree(), AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
+                sapling_block = RegistryHandler.BLOCKS.register(treeName + "_sapling", () -> new SaplingBlock(new OakTreeGrower(), BlockBehaviour.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
                 sapling_item = RegistryHandler.ITEMS.register(treeName + "_sapling", () -> new BlockFuelItem(sapling_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), saplingBurnTime));
             }
             if (flag == EnumTreeFlags.RESIN) {
@@ -100,7 +105,7 @@ public class TreeHandler {
     }
 
     public void setupABlockColor(RegistryObject<Block> block){
-        RenderTypeLookup.setRenderLayer(block.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(block.get(), RenderType.cutout());
         Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
             if (tintIndex != 0)
                 return 0xFFFFFFFF;

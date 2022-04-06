@@ -13,12 +13,12 @@ import mightydanp.industrialtech.api.common.jsonconfig.material.ore.IOreType;
 import mightydanp.industrialtech.api.common.jsonconfig.material.ore.OreTypeRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.CrashReport;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -245,16 +245,16 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
 
         JsonArray toolTypesArray = new JsonArray();
         if(materialIn.toolTypes != null){
-            for (Pair<ToolType, Integer> toolType : materialIn.toolTypes) {
+            materialIn.toolTypes.forEach(((iToolType, integer) -> {
                 JsonObject toolTypeProperties = new JsonObject();
 
-                toolTypeProperties.addProperty("tool_type", toolType.getFirst().getName());
-                toolTypeProperties.addProperty("tool_level", toolType.getSecond());
+                toolTypeProperties.addProperty("tool_type", iToolType.getName());
+                toolTypeProperties.addProperty("tool_level", integer);
 
                 if (toolTypeProperties.size() > 0) {
                     toolTypesArray.add(toolTypeProperties);
                 }
-            }
+            }));
             if (toolTypesArray.size() > 0) {
                 jsonObject.add("tool_types", toolTypesArray);
 
@@ -366,13 +366,13 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
                         int durabilityJson = Properties.get("durability").getAsInt();
                         float attackDamageJson = Properties.get("attack_damage").getAsFloat();
                         float weightJson = Properties.get("weight").getAsFloat();
-                        List<Pair<ToolType, Integer>> toolTypesJsonList = new ArrayList<>();
+                        List<Pair<IToolType, Integer>> toolTypesJsonList = new ArrayList<>();
                         List<IToolPart> toolPartJsonList = new ArrayList<>();
 
                         for (int i = 0; i < toolTypesArray.size(); i++) {
                             JsonObject toolTypeProperties = toolTypesArray.get(i).getAsJsonObject();
                             if (toolTypeProperties.has("tool_type") && toolTypeProperties.has("tool_level")) {
-                                ToolType toolTypeJson = ToolType.get(toolTypeProperties.get("tool_type").getAsString());
+                                IToolType toolTypeJson = (IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(toolTypeProperties.get("tool_type").getAsString());
                                 int toolLevelJson = toolTypeProperties.get("tool_level").getAsInt();
 
                                 toolTypesJsonList.add(new Pair<>(toolTypeJson, toolLevelJson));

@@ -3,10 +3,10 @@ package mightydanp.industrialtech.common.datagen.recipes;
 import mightydanp.industrialtech.api.common.datagen.recipes.builder.CustomCookingRecipeBuilder;
 import mightydanp.industrialtech.api.common.datagen.JsonDataProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created by MightyDanp on 6/6/2021.

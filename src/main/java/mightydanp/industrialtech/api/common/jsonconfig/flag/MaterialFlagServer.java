@@ -8,7 +8,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -193,14 +193,14 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, IMaterialFlag materialFlag) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, IMaterialFlag materialFlag) {//friendlybotbuff
         buffer.writeUtf(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()));
         buffer.writeUtf(materialFlag.getPrefix());
         buffer.writeUtf(materialFlag.getSuffix());
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<IMaterialFlag> list = message.getConfig(IndustrialTech.configSync.materialFlagID).stream()
                 .filter(IMaterialFlag.class::isInstance)
                 .map(IMaterialFlag.class::cast)
@@ -214,7 +214,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
     }
 
     @Override
-    public IMaterialFlag singleFromBuffer(PacketBuffer buffer) {
+    public IMaterialFlag singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
         String prefix = buffer.readUtf();
         String suffix = buffer.readUtf();
@@ -238,7 +238,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
     }
 
     @Override
-    public List<IMaterialFlag> multipleFromBuffer(PacketBuffer buffer) {
+    public List<IMaterialFlag> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<IMaterialFlag> materialFlags = new ArrayList<>();
 
         int size = buffer.readVarInt();

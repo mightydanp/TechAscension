@@ -1,13 +1,11 @@
 package mightydanp.industrialtech.api.common.inventory.container;
 
 import mightydanp.industrialtech.api.common.items.ITToolItem;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nonnull;
@@ -16,7 +14,7 @@ import javax.annotation.Nullable;
 /**
  * Created by MightyDanp on 4/7/2021.
  */
-public class ITToolItemContainerProvider implements INamedContainerProvider {
+public class ITToolItemContainerProvider implements MenuProvider {
     private final ITToolItem itToolItem;
     private final ItemStack itemStack;
 
@@ -26,13 +24,13 @@ public class ITToolItemContainerProvider implements INamedContainerProvider {
     }
 
     @Override
-    public ITextComponent getDisplayName() {
+    public Component getDisplayName() {
         return itemStack.getHoverName();
     }
 
     @Nullable
     @Override
-    public ITToolItemContainer createMenu(int windowID, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public ITToolItemContainer createMenu(int windowID, Inventory playerInventory, Player playerEntity) {
         ITToolItemContainer newContainerServerSide = ITToolItemContainer.createContainerServerSide(windowID, playerInventory, itToolItem.getItemStackHandler(itemStack), itemStack);
         return newContainerServerSide;
     }

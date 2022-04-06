@@ -1,11 +1,11 @@
 package mightydanp.industrialtech.api.common.libs;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
 /**
  * Created by MightyDanp on 3/25/2021.
  */
-public enum EnumVeinRarityFlags implements IStringSerializable {
+public enum EnumVeinRarityFlags implements StringRepresentable {
     common("common"),
     uncommon("uncommon"),
     rare("rare");

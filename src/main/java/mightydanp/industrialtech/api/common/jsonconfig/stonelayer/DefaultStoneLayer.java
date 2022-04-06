@@ -1,7 +1,7 @@
 package mightydanp.industrialtech.api.common.jsonconfig.stonelayer;
 
 import mightydanp.industrialtech.api.common.jsonconfig.stonelayer.IStoneLayer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created by MightyDanp on 12/29/2021.

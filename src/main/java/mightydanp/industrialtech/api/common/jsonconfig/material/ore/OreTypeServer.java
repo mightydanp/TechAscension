@@ -6,7 +6,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -191,12 +191,12 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, IOreType oreType) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, IOreType oreType) {//friendlybotbuff
         buffer.writeUtf(oreType.getName());
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<IOreType> list = message.getConfig(IndustrialTech.configSync.oreTypeID).stream()
                 .filter(IOreType.class::isInstance)
                 .map(IOreType.class::cast)
@@ -210,7 +210,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
     }
 
     @Override
-    public IOreType singleFromBuffer(PacketBuffer buffer) {
+    public IOreType singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
 
         return new IOreType() {
@@ -223,7 +223,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
     }
 
     @Override
-    public List<IOreType> multipleFromBuffer(PacketBuffer buffer) {
+    public List<IOreType> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<IOreType> oreTypes = new ArrayList<>();
 
         int size = buffer.readVarInt();

@@ -10,7 +10,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.Sync
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -192,7 +192,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, BlocksInWaterGenFeatureConfig blocksInWater) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, BlocksInWaterGenFeatureConfig blocksInWater) {//friendlybotbuff
         buffer.writeUtf(blocksInWater.name);
         buffer.writeInt(blocksInWater.rarity);
         buffer.writeInt(blocksInWater.height);
@@ -214,7 +214,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<BlocksInWaterGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.blocksInWaterID).stream()
                 .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
                 .map(BlocksInWaterGenFeatureConfig.class::cast)
@@ -226,7 +226,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     }
 
     @Override
-    public BlocksInWaterGenFeatureConfig singleFromBuffer(PacketBuffer buffer) {
+    public BlocksInWaterGenFeatureConfig singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
         int rarity = buffer.readInt();
         int height = buffer.readInt();
@@ -254,7 +254,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         return new BlocksInWaterGenFeatureConfig(name, rarity, height, shallowWater, goAboveWater, biomes, validBlocks, topState, bellowState);
     }
 
-    public List<BlocksInWaterGenFeatureConfig> multipleFromBuffer(PacketBuffer buffer) {
+    public List<BlocksInWaterGenFeatureConfig> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<BlocksInWaterGenFeatureConfig> blocksInWaters = new ArrayList<>();
 
         int size = buffer.readVarInt();

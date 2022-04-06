@@ -1,9 +1,9 @@
 package mightydanp.industrialtech.api.common.items;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.BlockItem;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.item.Item.Properties;
 
 /**
  * Created by MightyDanp on 10/10/2020.

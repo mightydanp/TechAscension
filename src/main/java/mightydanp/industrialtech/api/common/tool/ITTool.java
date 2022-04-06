@@ -6,16 +6,16 @@ import mightydanp.industrialtech.api.common.items.*;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -90,10 +90,10 @@ public class ITTool {
     }
 
     public static void handToolCrafting(ITToolItem toolItemIn, PlayerInteractEvent.RightClickItem event, int toolNeededDamage, Map<String, Integer> toolNeededIn) {
-        PlayerEntity playerEntity = event.getPlayer();
+        Player playerEntity = event.getPlayer();
         ItemStack mainHand = playerEntity.getMainHandItem();
         ItemStack offHand = playerEntity.getOffhandItem();
-        ItemStack toolItem = new ItemStack(toolItemIn.getItem());
+        ItemStack toolItem = new ItemStack(toolItemIn.asItem());
         ITToolItemItemStackHandler itemStackHandler = toolItemIn.getItemStackHandler(toolItem);
         List<String> firstItemsNeeded = compareAndAddToNewArray(1, toolNeededIn);
         List<String> firstItemsThatCanBeUsed = compareAndAddToNewArray(-1, toolNeededIn);
@@ -133,14 +133,14 @@ public class ITTool {
 
                     toolItemIn.setAttackDamage(toolItem, toolHeadItem.attackDamage);
                     toolItemIn.setEfficiency(toolItem, toolHeadItem.efficiency);
-                    toolItemIn.setHarvestLevel(toolItem, toolHeadItem.getItToolType());
+                    toolItemIn.setToolLevel(toolItem, toolHeadItem.getItToolType());
 
                     if (toolItemIn.getPartsToWork() == 2) {
                         toolItemIn.setAttackSpeed(toolItem, toolHandleItem.weight + toolHeadItem.weight);
                     }
 
-                    playerEntity.setItemInHand(Hand.MAIN_HAND, toolItem);
-                    playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? Hand.OFF_HAND : Hand.MAIN_HAND, ItemStack.EMPTY);
+                    playerEntity.setItemInHand(InteractionHand.MAIN_HAND, toolItem);
+                    playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                 }
             }
         }
@@ -179,24 +179,24 @@ public class ITTool {
                     newToolItem.setAttackDamage(newToolItemStack, headItem.attackDamage);
                     newToolItem.setEfficiency(newToolItemStack, headItem.efficiency);
                     newToolItem.setAttackSpeed(newToolItemStack, handleItem.weight + headItem.weight + bindingItem.weight);
-                    newToolItem.setHarvestLevel(newToolItemStack, headItem.getItToolType());
+                    newToolItem.setToolLevel(newToolItemStack, headItem.getItToolType());
 
-                    playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? Hand.MAIN_HAND : Hand.OFF_HAND, newToolItemStack);
-                    playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? Hand.OFF_HAND : Hand.MAIN_HAND, ItemStack.EMPTY);
+                    playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, newToolItemStack);
+                    playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                 }
             }
         }
     }
 
-    public static boolean inventoryToolCheck(PlayerEntity playerIn, List<String> toolNeededIn){
+    public static boolean inventoryToolCheck(Player playerIn, List<String> toolNeededIn){
         List<Item> toolNeededList = convertToItem(toolNeededIn);
 
         for(int i = 9; i <= 45; i++){
 
-            ItemStack toolNeeded = playerIn.inventory.getItem(i);
+            ItemStack toolNeeded = playerIn.getInventory().getItem(i);
             if(toolNeededList.contains(toolNeeded.getItem())){
                 if(toolNeeded.getItem() instanceof ITToolItem){
-                    ITToolItem toolNeededItem = (ITToolItem)playerIn.inventory.getItem(i).getItem();
+                    ITToolItem toolNeededItem = (ITToolItem)playerIn.getInventory().getItem(i).getItem();
                     ITToolItemItemStackHandler itemStackHandler = toolNeededItem.getItemStackHandler(toolNeeded);
 
                     if((toolNeededItem.partsToWork == 1 || toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHead() != null){

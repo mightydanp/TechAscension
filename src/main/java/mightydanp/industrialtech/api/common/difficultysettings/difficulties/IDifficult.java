@@ -1,12 +1,12 @@
 package mightydanp.industrialtech.api.common.difficultysettings.difficulties;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 /**
  * Created by MightyDanp on 12/1/2021.
  */
 public interface IDifficult {
     int getId();
-    ITextComponent getDisplayName();
+    Component getDisplayName();
     String getKey();
 }

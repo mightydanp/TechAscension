@@ -3,9 +3,9 @@ package mightydanp.industrialtech.api.common.items;
 import mightydanp.industrialtech.api.common.blocks.ITBlocks;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.common.libs.ItemRef;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 /**
  * Created by MightyDanp on 10/11/2021.

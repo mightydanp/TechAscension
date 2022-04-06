@@ -1,21 +1,17 @@
 package mightydanp.industrialtech.api.common.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
 
 import java.util.List;
 
-import net.minecraft.block.AbstractBlock.Properties;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 /**
  * Created by MightyDanp on 3/15/2021.
@@ -36,20 +32,20 @@ public class DenseOreBlock extends Block {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(densityProperty);
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState iBlockState) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState iBlockState) {
+        return RenderShape.MODEL;
     }
 
     @Override
-    public void destroy(IWorld worldIn, BlockPos pos, BlockState state) {
+    public void destroy(LevelAccessor worldIn, BlockPos pos, BlockState state) {
         super.destroy(worldIn, pos, state);
-        if(state.getBlockState().getValue(densityProperty) > 1) {
-            worldIn.setBlock(pos, state.setValue(densityProperty, state.getBlockState().getValue(densityProperty) - 1), 2);
+        if(state.getValue(densityProperty) > 1) {
+            worldIn.setBlock(pos, state.setValue(densityProperty, state.getValue(densityProperty) - 1), 2);
         }else{
             worldIn.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
         }

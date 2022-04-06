@@ -7,7 +7,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.libs.EnumTreeFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.common.data.ExistingFileHelper;

@@ -9,7 +9,7 @@ import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.industrialtech.api.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -191,7 +191,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, RandomSurfaceGenFeatureConfig randomSurface) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, RandomSurfaceGenFeatureConfig randomSurface) {//friendlybotbuff
         buffer.writeUtf(randomSurface.name);
         buffer.writeInt(randomSurface.rarity);
         buffer.writeInt(randomSurface.biomes.size());
@@ -212,7 +212,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<RandomSurfaceGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
                 .map(RandomSurfaceGenFeatureConfig.class::cast)
@@ -224,7 +224,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     }
 
     @Override
-    public RandomSurfaceGenFeatureConfig singleFromBuffer(PacketBuffer buffer) {
+    public RandomSurfaceGenFeatureConfig singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
         int rarity = buffer.readInt();
         int biomesSize = buffer.readInt();
@@ -254,7 +254,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     }
 
     @Override
-    public List<RandomSurfaceGenFeatureConfig> multipleFromBuffer(PacketBuffer buffer) {
+    public List<RandomSurfaceGenFeatureConfig> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<RandomSurfaceGenFeatureConfig> randomSurfaces = new ArrayList<>();
 
         int size = buffer.readVarInt();

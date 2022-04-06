@@ -5,28 +5,31 @@ import com.google.common.collect.Multimap;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.capabilities.ITToolItemCapabilityProvider;
 import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.block.BlockState;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
+import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.common.TierSortingRegistry;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -36,6 +39,14 @@ import org.lwjgl.glfw.GLFW;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 
 /**
  * Created by MightyDanp on 3/29/2021.
@@ -68,47 +79,48 @@ public class ITToolItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStackIn, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        List<ITextComponent> tooltipList = tooltip;
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+    public void appendHoverText(ItemStack itemStackIn, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        List<Component> tooltipList = tooltip;
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
 
-        tooltip.add(ITextComponent.nullToEmpty(""));
+        tooltip.add(Component.nullToEmpty(""));
 
         if (!getPartsDamage(itemStackIn).isEmpty()) {
             for (Pair<String, String> pair : getPartsDamage(itemStackIn)) {
-                tooltip.add(ITextComponent.nullToEmpty("\u00A7f" + pair.getFirst() + ":" + "\u00A7f" + " " + "\u00A7a" + pair.getSecond() + "\u00A7a"));
+                tooltip.add(Component.nullToEmpty("\u00A7f" + pair.getFirst() + ":" + "\u00A7f" + " " + "\u00A7a" + pair.getSecond() + "\u00A7a"));
             }
         }
 
-        tooltip.add(ITextComponent.nullToEmpty(""));
+        tooltip.add(Component.nullToEmpty(""));
 
-        if (nbt.contains("harvest_levels") && nbt.contains("it_tool_types")) {
-            Map<ToolType, Integer> toolTypeList = getHarvestLevelsList(itemStackIn);
+        if (nbt.contains("tool_levels") && nbt.contains("it_tool_types")) {
+            Map<IToolType, Tag.Named<Block>> toolTypeList = getToolLevelsList(itemStackIn);
             for (int i = 0; i < toolTypeList.size(); i++) {
-                String toolTypeName = ((ToolType) (toolTypeList.keySet().toArray()[i])).getName();
-                int toolTypeLevel = (int) toolTypeList.values().toArray()[i];
-                tooltip.add(ITextComponent.nullToEmpty("\u00A7f" + toolTypeName + " level:" + "\u00A7f" + " " + "\u00A7a" + toolTypeLevel + "\u00A7a"));
+                String toolTypeName = toolTypeList.keySet().stream().toList().get(i).getName();
+                Tag.Named<Block> toolTypeLevel = toolTypeList.values().stream().toList().get(i);
+                tooltip.add(Component.nullToEmpty("\u00A7f" + toolTypeName + " level:" + "\u00A7f" + " " + "\u00A7a" + toolTypeLevel.getName().getPath() + "\u00A7a"));
             }
         }
 
         if (nbt.contains("efficiency")) {
-            tooltip.add(ITextComponent.nullToEmpty("\u00A7f" + "efficiency:" + "\u00A7f" + " " + "\u00A7a" + getEfficiency(itemStackIn) + "\u00A7a"));
+            tooltip.add(Component.nullToEmpty("\u00A7f" + "efficiency:" + "\u00A7f" + " " + "\u00A7a" + getEfficiency(itemStackIn) + "\u00A7a"));
         }
     }
 
     @Override
-    public boolean mineBlock(ItemStack itemStackIn, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
-        if (state.requiresCorrectToolForDrops()) {
-            if (canWork(itemStackIn)) {
-                for (ToolType toolType : itemStackIn.getToolTypes()) {
-                    if (state.isToolEffective(toolType)) {
-                        damageToolParts(entityLiving.getMainHandItem(), (PlayerEntity) entityLiving, worldIn, 1);
-                    } else {
-                        damageToolParts(entityLiving.getMainHandItem(), (PlayerEntity) entityLiving, worldIn, 2);
-                        return false;
-                    }
-                }
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+        return false;
+    }
+
+    @Override
+    public boolean mineBlock(ItemStack itemStackIn, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
+
+        if (canWork(itemStackIn)) {
+            if (state.requiresCorrectToolForDrops()) {
+                damageToolParts(entityLiving.getMainHandItem(), (Player) entityLiving, worldIn, 1);
+                return true;
             } else {
+                damageToolParts(entityLiving.getMainHandItem(), (Player) entityLiving, worldIn, 2);
                 return false;
             }
         }
@@ -116,37 +128,19 @@ public class ITToolItem extends Item {
     }
 
     @Override
-    public boolean canHarvestBlock(ItemStack itemStackIn, BlockState blockStateIn) {
-        if (canWork(itemStackIn)) {
-            super.canHarvestBlock(itemStackIn, blockStateIn);
-        } else {
-            return false;
-        }
-        return super.canHarvestBlock(itemStackIn, blockStateIn);
-    }
-
-    @Override
     public float getDestroySpeed(ItemStack itemStackIn, BlockState state) {
-        boolean canWork = canWork(itemStackIn);
-
-        if (canWork) {
-            if (getToolTypes(itemStackIn).stream().anyMatch(state::isToolEffective)) {
+        if (canWork(itemStackIn)) {
+            if (state.requiresCorrectToolForDrops()) {
                 return getEfficiency(itemStackIn);
             } else {
-                return 1.0F;
+                return 1F;
             }
-        }else{
-            return 1.0F;
         }
+        return 1F;
     }
 
     @Override
-    public java.util.Set<net.minecraftforge.common.ToolType> getToolTypes(ItemStack itemStackIn) {
-        return getHarvestLevelsList(itemStackIn).keySet();
-    }
-
-    @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerEntityIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerEntityIn, InteractionHand handIn) {
         ItemStack mainHandItemStack = playerEntityIn.getMainHandItem();
         ItemStack offHandItemStack = playerEntityIn.getOffhandItem();
         ItemStack toolHeadOnTool = getItemStackHandler(mainHandItemStack).getToolHead();
@@ -161,7 +155,7 @@ public class ITToolItem extends Item {
 
         if (!canWork(mainHandItemStack)){
             disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 1, disassembleTools);
-            playerEntityIn.setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+            playerEntityIn.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
 
         //playerEntityIn.getCooldowns().addCooldown(this, 20);
@@ -172,59 +166,85 @@ public class ITToolItem extends Item {
                     (packetBuffer)->{packetBuffer.writeInt(40);});
         }
         */
-        return ActionResult.sidedSuccess(mainHandItemStack, worldIn.isClientSide());
+        return InteractionResultHolder.sidedSuccess(mainHandItemStack, worldIn.isClientSide());
     }
 
     @Override
-    public void onUseTick(World worldIn, LivingEntity playerEntityIn, ItemStack itemStack, int p_219972_4_) {
+    public void onUseTick(Level worldIn, LivingEntity playerEntityIn, ItemStack itemStack, int p_219972_4_) {
         /*if(canWork(itemStack) && preformAction) {
             damageItemstack(playerEntityIn.getMainHandItem(), (PlayerEntity) playerEntityIn, worldIn, null, 1);
         }*/
     }
 
-    public void setHarvestLevel(ItemStack itemStackIn, List<Pair<ToolType, Integer>> toolTypeIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+    public void setToolLevel(ItemStack itemStackIn, Map<IToolType, Integer> toolTypeIn) {
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         int[] harvestArray = new int[toolTypeIn.size()];
         StringBuilder itToolTypeString = new StringBuilder();
 
-        for (Pair<ToolType, Integer> toolType : toolTypeIn) {
+        toolTypeIn.forEach(((iToolType, integer) -> {
             for (int i = 0; i < toolTypeIn.size(); i++) {
                 if (i == 0) {
-                    harvestArray[i] = toolType.getSecond();
-                    itToolTypeString.append(toolType.getFirst().getName());
+                    harvestArray[i] = integer;
+                    itToolTypeString.append(iToolType.getName());
                 } else {
-                    harvestArray[i] = toolType.getSecond();
-                    itToolTypeString.append("_").append(toolType.getFirst().getName());
+                    harvestArray[i] = integer;
+                    itToolTypeString.append(", ").append(iToolType.getName());
                 }
             }
-        }
+        }));
+
         nbt.putString("it_tool_types", String.valueOf(itToolTypeString));
-        nbt.putIntArray("harvest_levels", harvestArray);
+        nbt.putIntArray("tool_levels", harvestArray);
     }
 
-    public Map<ToolType, Integer> getHarvestLevelsList(ItemStack itemStackIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
-        Map<ToolType, Integer> toolTypes = new HashMap<>();
-        int[] intArray = nbt.getIntArray("harvest_levels");
-        String[] stringArray = nbt.getString("it_tool_types").split("_");
+    public Map<IToolType, Tag.Named<Block>> getToolLevelsList(ItemStack itemStackIn) {
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
+        Map<IToolType, Tag.Named<Block>> toolTypes = new HashMap<>();
+        int[] intArray = nbt.getIntArray("tool_levels");
+        String[] stringArray = nbt.getString("it_tool_types").split(", ");
         for (int i = 0; i < intArray.length; i++) {
-            toolTypes.putIfAbsent(ToolType.get(stringArray[i]), intArray[i]);
+            toolTypes.putIfAbsent((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(stringArray[i]), BlockTags.bind("tool_level/" + intArray[i]));
         }
         return toolTypes;
     }
 
     @Override
-    public int getHarvestLevel(ItemStack itemStackIn, net.minecraftforge.common.ToolType tool, @Nullable PlayerEntity player, @Nullable BlockState blockState) {
-        return canWork(itemStackIn) ? getHarvestLevelsList(itemStackIn).getOrDefault(tool, -1) : - 1;
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+        AtomicBoolean isCorrect = new AtomicBoolean(true);
+
+        getToolLevelsList(stack).forEach((iToolType, toolLevel) -> {
+            if (state.is(iToolType.getToolTypeTag())) {
+                int level = Integer.parseInt(toolLevel.getName().toString().split("/")[1]);
+
+                for(int i = 0; i <= level; i++){
+                    if(!state.is(BlockTags.bind("tool_level/" + i))){
+                        isCorrect.set(false);
+                    }
+                }
+            }});
+
+        if(!isCorrect.get()){
+            List<Block> blocks = new ArrayList<>();
+
+            effectiveBlocks.forEach(string -> {
+                Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(string));
+
+                blocks.add(block);
+            });
+
+            return blocks.contains(state.getBlock());
+        }
+
+        return isCorrect.get();
     }
 
     public void setAttackDamage(ItemStack itemStackIn, float attackDamageIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putFloat("attack_damage", attackDamageIn);
     }
 
     public float getAttackDamage(ItemStack itemStackIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         if (nbt.contains("attack_damage")) {
             return nbt.getFloat("attack_damage");
         } else {
@@ -233,12 +253,12 @@ public class ITToolItem extends Item {
     }
 
     public void setAttackSpeed(ItemStack itemStackIn, float attackSpeedIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putFloat("attack_speed", attackSpeedIn);
     }
 
     public float getAttackSpeed(ItemStack itemStackIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         if (nbt.contains("attack_speed")) {
             return nbt.getFloat("attack_speed");
         } else {
@@ -248,12 +268,12 @@ public class ITToolItem extends Item {
     }
 
     public void setEfficiency(ItemStack itemStackIn, float efficiencyIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putFloat("efficiency", efficiencyIn);
     }
 
     public float getEfficiency(ItemStack itemStackIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         if (nbt.contains("efficiency")) {
             return nbt.getFloat("efficiency");
         } else {
@@ -262,12 +282,12 @@ public class ITToolItem extends Item {
     }
 
     public void setMaterialName(ItemStack itemStackIn, String materialNameIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putString("material_name", materialNameIn);
     }
 
     public String getMaterialName(ItemStack itemStackIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         if (nbt.contains("material_name")) {
             return nbt.getString("material_name");
         } else {
@@ -276,14 +296,14 @@ public class ITToolItem extends Item {
     }
 
     public void setHeadColor(ItemStack itemStackIn, int colorIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putInt("head_color", colorIn);
     }
 
     @OnlyIn(Dist.CLIENT)
     public int getHeadColor(ItemStack itemStackIn) {
         if (itemStackIn != null) {
-            CompoundNBT nbt = itemStackIn.getOrCreateTag();
+            CompoundTag nbt = itemStackIn.getOrCreateTag();
             if (nbt.contains("head_color")) {
                 return nbt.getInt("head_color");
             } else {
@@ -295,14 +315,14 @@ public class ITToolItem extends Item {
     }
 
     public void setBindingColor(ItemStack itemStackIn, int colorIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putInt("binding_color", colorIn);
     }
 
     @OnlyIn(Dist.CLIENT)
     public int getBindingColor(ItemStack itemStackIn) {
         if (itemStackIn != null) {
-            CompoundNBT nbt = itemStackIn.getOrCreateTag();
+            CompoundTag nbt = itemStackIn.getOrCreateTag();
             if (nbt.contains("binding_color")) {
                 return nbt.getInt("binding_color");
             } else {
@@ -314,13 +334,13 @@ public class ITToolItem extends Item {
     }
 
     public void setHandleColor(ItemStack itemStackIn, int colorIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putInt("handle_color", colorIn);
     }
 
     public int getHandleColor(ItemStack itemStackIn) {
         if (itemStackIn != null) {
-            CompoundNBT nbt = itemStackIn.getOrCreateTag();
+            CompoundTag nbt = itemStackIn.getOrCreateTag();
             if (nbt.contains("handle_color")) {
                 return nbt.getInt("handle_color");
             } else {
@@ -331,19 +351,19 @@ public class ITToolItem extends Item {
         }
     }
 
-    public CompoundNBT getCompoundNBT(ItemStack itemStackIn) {
+    public CompoundTag getCompoundNBT(ItemStack itemStackIn) {
         return itemStackIn.getOrCreateTag();
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
-        CompoundNBT nbt = stack.getTag();
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+        CompoundTag nbt = stack.getTag();
         if (nbt == null) {
             return ImmutableMultimap.of();
         }
 
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        if (slot == EquipmentSlotType.MAINHAND) {
+        if (slot == EquipmentSlot.MAINHAND) {
             builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
         }
@@ -354,12 +374,12 @@ public class ITToolItem extends Item {
     @OnlyIn(Dist.CLIENT)
     public boolean getIsHoldingShift() {
         long minecraftWindow = Minecraft.getInstance().getWindow().getWindow();
-        return InputMappings.isKeyDown(minecraftWindow, GLFW.GLFW_KEY_LEFT_SHIFT);
+        return InputConstants.isKeyDown(minecraftWindow, GLFW.GLFW_KEY_LEFT_SHIFT);
     }
 
     @Nonnull
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundNBT oldCapNbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag oldCapNbt) {
         return new ITToolItemCapabilityProvider();//bucket
     }
 
@@ -374,11 +394,11 @@ public class ITToolItem extends Item {
 
     @Nullable
     @Override
-    public CompoundNBT getShareTag(ItemStack stack) {
-        CompoundNBT baseTag = stack.getTag();
+    public CompoundTag getShareTag(ItemStack stack) {
+        CompoundTag baseTag = stack.getTag();
         ITToolItemItemStackHandler itemStackHandlerFlowerBag = getItemStackHandler(stack);
-        CompoundNBT capabilityTag = itemStackHandlerFlowerBag.serializeNBT();
-        CompoundNBT combinedTag = new CompoundNBT();
+        CompoundTag capabilityTag = itemStackHandlerFlowerBag.serializeNBT();
+        CompoundTag combinedTag = new CompoundTag();
 
         if (baseTag != null) {
             combinedTag.put("base", baseTag);
@@ -391,13 +411,13 @@ public class ITToolItem extends Item {
     }
 
     @Override
-    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
+    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt) {
         if (nbt == null) {
             stack.setTag(null);
             return;
         }
-        CompoundNBT baseTag = nbt.getCompound("base");              // empty if not found
-        CompoundNBT capabilityTag = nbt.getCompound("capability"); // empty if not found
+        CompoundTag baseTag = nbt.getCompound("base");              // empty if not found
+        CompoundTag capabilityTag = nbt.getCompound("capability"); // empty if not found
         stack.setTag(baseTag);
         ITToolItemItemStackHandler itemStackHandlerFlowerBag = getItemStackHandler(stack);
         itemStackHandlerFlowerBag.deserializeNBT(capabilityTag);
@@ -427,7 +447,8 @@ public class ITToolItem extends Item {
         return false;
     }
 
-    public Boolean damageToolParts(ItemStack itemStackIn, PlayerEntity playerIn, World worldIn, int amountIn) {
+    public Boolean damageToolParts(ItemStack itemStackIn, Player playerIn, Level worldIn, int amountIn) {
+        Random random = new Random();
         ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(itemStackIn);
         ITToolItem toolItem = (ITToolItem) itemStackIn.getItem();
         ItemStack toolHeadOnTool = itemStackHandler.getToolHead();
@@ -443,7 +464,7 @@ public class ITToolItem extends Item {
                 return true;
             } else {
                 playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
                 return false;
             }
         }
@@ -457,7 +478,7 @@ public class ITToolItem extends Item {
                 return true;
             } else {
                 playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
                 return false;
             }
         }
@@ -470,7 +491,7 @@ public class ITToolItem extends Item {
                 return true;
             } else {
                 playerIn.broadcastBreakEvent(playerIn.getUsedItemHand());
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_BREAK, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
                 return false;
             }
         }
@@ -482,7 +503,8 @@ public class ITToolItem extends Item {
         return true;
     }
 
-    public void disassembleTool(ItemStack itemStackIn, PlayerEntity playerIn, World worldIn, int toolInDamage, List<String> toolNeededIn) {
+    public void disassembleTool(ItemStack itemStackIn, Player playerIn, Level worldIn, int toolInDamage, List<String> toolNeededIn) {
+        Random random = new Random();
         ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(itemStackIn);
         ItemStack toolHeadItemStack = itemStackHandler.getToolHead();
         ItemStack toolBindingItemStack = itemStackHandler.getToolBinding();
@@ -491,10 +513,10 @@ public class ITToolItem extends Item {
         damageToolsNeededInPlayerInventory(playerIn, worldIn, toolInDamage, toolNeededIn);
 
         if (toolHandleItemStack != null){
-            if (playerIn.inventory.canPlaceItem(1, toolHandleItemStack)) {
-                playerIn.inventory.add(toolHandleItemStack);
+            if (playerIn.getInventory().canPlaceItem(1, toolHandleItemStack)) {
+                playerIn.getInventory().add(toolHandleItemStack);
                 itemStackHandler.setToolHandle(ItemStack.EMPTY);
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             } else {
                 worldIn.addFreshEntity(new ItemEntity(worldIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), toolHandleItemStack));
             }
@@ -502,20 +524,20 @@ public class ITToolItem extends Item {
         }
 
         if (toolHeadItemStack != null){
-            if (playerIn.inventory.canPlaceItem(1, toolHeadItemStack)) {
-                playerIn.inventory.add(toolHeadItemStack);
+            if (playerIn.getInventory().canPlaceItem(1, toolHeadItemStack)) {
+                playerIn.getInventory().add(toolHeadItemStack);
                 itemStackHandler.setToolHead(ItemStack.EMPTY);
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             } else {
                 worldIn.addFreshEntity(new ItemEntity(worldIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), toolHeadItemStack));
             }
         }
 
         if (toolBindingItemStack != null){
-            if (playerIn.inventory.canPlaceItem(1, toolBindingItemStack)) {
-                playerIn.inventory.add(toolBindingItemStack);
+            if (playerIn.getInventory().canPlaceItem(1, toolBindingItemStack)) {
+                playerIn.getInventory().add(toolBindingItemStack);
                 itemStackHandler.setToolBinding(ItemStack.EMPTY);
-                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+                worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             } else {
                 worldIn.addFreshEntity(new ItemEntity(worldIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), toolBindingItemStack));
             }
@@ -526,15 +548,15 @@ public class ITToolItem extends Item {
         }
     }
 
-    public void damageToolsNeededInPlayerInventory(PlayerEntity playerIn, World worldIn, int Damage, List<String> toolNeededIn){
+    public void damageToolsNeededInPlayerInventory(Player playerIn, Level worldIn, int Damage, List<String> toolNeededIn){
 
 
         if(inventoryToolCheck(playerIn, getItemsFromForge(toolNeededIn)) && toolNeededIn.size() != 0){
             for(Item toolThatIsNeeded : getItemsFromForge(toolNeededIn)){
                 for(int i = 9; i <= 45; i++){
-                    if (toolThatIsNeeded == playerIn.inventory.getItem(i).getItem()){
-                        toolNeededIn.remove(String.valueOf(playerIn.inventory.getItem(i).getItem().getRegistryName()));
-                        ItemStack toolItem = playerIn.inventory.getItem(i);
+                    if (toolThatIsNeeded == playerIn.getInventory().getItem(i).getItem()){
+                        toolNeededIn.remove(String.valueOf(playerIn.getInventory().getItem(i).getItem().getRegistryName()));
+                        ItemStack toolItem = playerIn.getInventory().getItem(i);
                         if(toolThatIsNeeded instanceof ITToolItem) {
                             damageToolParts(toolItem, playerIn, worldIn, 1);
                         }else{
@@ -548,12 +570,12 @@ public class ITToolItem extends Item {
         }
     }
 
-    public boolean inventoryToolCheck(PlayerEntity playerIn, List<Item> toolNeededIn){
+    public boolean inventoryToolCheck(Player playerIn, List<Item> toolNeededIn){
         for(int i = 9; i <= 45; i++){
-            ItemStack toolNeeded = playerIn.inventory.getItem(i);
+            ItemStack toolNeeded = playerIn.getInventory().getItem(i);
             if(toolNeededIn.contains(toolNeeded.getItem())){
                 if(toolNeeded.getItem() instanceof ITToolItem){
-                    ITToolItem toolNeededItem = (ITToolItem)playerIn.inventory.getItem(i).getItem();
+                    ITToolItem toolNeededItem = (ITToolItem)playerIn.getInventory().getItem(i).getItem();
                     ITToolItemItemStackHandler itemStackHandler = getItemStackHandler(toolNeeded);
 
                     if((toolNeededItem.partsToWork == 1 || toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHead() != null){

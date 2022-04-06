@@ -13,14 +13,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DirectoryCache;
-import net.minecraft.data.IDataProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.HashCache;
+import net.minecraft.data.DataProvider;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created by MightyDanp on 4/6/2021.
  */
-public class JsonDataProvider<T> implements IDataProvider
+public class JsonDataProvider<T> implements DataProvider
 {
     /**
      * Used by the CodecDataProvider to determine whether to save jsons to the assets or data folder
@@ -104,7 +104,7 @@ public class JsonDataProvider<T> implements IDataProvider
      * Alternatively, other data providers can invoke this in their own act methods if they choose to do so.
      */
     @Override
-    public void run(DirectoryCache cache) throws IOException
+    public void run(HashCache cache) throws IOException
     {
         Path resourcesFolder = this.generator.getOutputFolder();
         this.objects.forEach((id,object)->
@@ -115,7 +115,7 @@ public class JsonDataProvider<T> implements IDataProvider
                     .ifPresent(jsonElement -> {
                         try
                         {
-                            IDataProvider.save(this.gson, cache, jsonElement, jsonLocation);
+                            DataProvider.save(this.gson, cache, jsonElement, jsonLocation);
                         }
                         catch (IOException e)
                         {

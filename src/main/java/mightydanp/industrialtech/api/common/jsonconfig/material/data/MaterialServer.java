@@ -7,6 +7,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.icons.TextureIconRegistry
 import mightydanp.industrialtech.api.common.jsonconfig.material.ore.OreTypeRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartRegistry;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
@@ -15,8 +16,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.Sync
 import mightydanp.industrialtech.api.common.jsonconfig.material.ore.IOreType;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -186,7 +186,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, ITMaterial material) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, ITMaterial material) {//friendlybotbuff
         buffer.writeUtf(material.name);
         buffer.writeInt(material.color);
         String textureIconString = material.textureIcon.getFirst() + ":" + material.textureIcon.getSecond().getName();
@@ -303,10 +303,11 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
         if(material.toolTypes != null && material.toolTypes.size() > 0){
             buffer.writeInt(material.toolTypes.size());
-            for (Pair<ToolType, Integer> toolType : material.toolTypes) {
-                buffer.writeUtf(toolType.getFirst().getName());
-                buffer.writeInt(toolType.getSecond());
-            }
+
+            material.toolTypes.forEach(((iToolType, integer) -> {
+                buffer.writeUtf(iToolType.getName());
+                buffer.writeInt(integer);
+            }));
         } else {
             buffer.writeInt(0);
         }
@@ -322,7 +323,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<ITMaterial> list = message.getConfig(IndustrialTech.configSync.materialID).stream()
                 .filter(ITMaterial.class::isInstance)
                 .map(ITMaterial.class::cast)
@@ -334,7 +335,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     }
 
     @Override
-    public ITMaterial singleFromBuffer(PacketBuffer buffer) {
+    public ITMaterial singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
         int color = buffer.readInt();
         String textureIconString = buffer.readUtf();
@@ -395,14 +396,14 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         float attackDamage  = buffer.readFloat();
         float weight  = buffer.readFloat();
 
-        List<Pair<ToolType, Integer>> toolTypes = new ArrayList<>();
+        Map<IToolType, Integer> toolTypes = new HashMap<>();
         int toolTypesSize = buffer.readInt();
 
         if(toolTypesSize > 0) {
             for (int i = 0; i < toolTypesSize; i++) {
                 String toolType = buffer.readUtf();
                 Integer level = buffer.readInt();
-                toolTypes.add(new Pair<>(ToolType.get(toolType), level));
+                toolTypes.put((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(toolType), level);
             }
         }
 
@@ -424,7 +425,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     }
 
     @Override
-    public List<ITMaterial> multipleFromBuffer(PacketBuffer buffer) {
+    public List<ITMaterial> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<ITMaterial> materials = new ArrayList<>();
 
         int size = buffer.readVarInt();

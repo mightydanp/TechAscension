@@ -2,19 +2,19 @@ package mightydanp.industrialtech.api.common.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.gen.feature.IFeatureConfig;
-import net.minecraft.world.gen.feature.template.BlockMatchRuleTest;
-import net.minecraft.world.gen.feature.template.RuleTest;
-import net.minecraft.world.gen.feature.template.TagMatchRuleTest;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 
 import java.util.List;
 
 /**
  * Created by MightyDanp on 2/19/2021.
  */
-public class BlocksInWaterGenFeatureConfig implements IFeatureConfig {
+public class BlocksInWaterGenFeatureConfig implements FeatureConfiguration {
     public String name;
     public int rarity;
     public int height;
@@ -54,8 +54,8 @@ public class BlocksInWaterGenFeatureConfig implements IFeatureConfig {
     }
 
     public static final class FillerBlockType {
-        public static final RuleTest NATURAL_STONE = new TagMatchRuleTest(BlockTags.BASE_STONE_OVERWORLD);
-        public static final RuleTest NETHERRACK = new BlockMatchRuleTest(Blocks.NETHERRACK);
-        public static final RuleTest NETHER_ORE_REPLACEABLES = new TagMatchRuleTest(BlockTags.BASE_STONE_NETHER);
+        public static final RuleTest NATURAL_STONE = new TagMatchTest(BlockTags.BASE_STONE_OVERWORLD);
+        public static final RuleTest NETHERRACK = new BlockMatchTest(Blocks.NETHERRACK);
+        public static final RuleTest NETHER_ORE_REPLACEABLES = new TagMatchTest(BlockTags.BASE_STONE_NETHER);
     }
 }

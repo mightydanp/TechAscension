@@ -3,32 +3,29 @@ package mightydanp.industrialtech.api.common.tileentities;
 import mightydanp.industrialtech.api.common.blocks.HoleBlock;
 import mightydanp.industrialtech.api.common.crafting.recipe.HoleRecipe;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
-import mightydanp.industrialtech.common.tileentities.ModTileEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
+import mightydanp.industrialtech.common.tileentities.ModBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,7 +34,7 @@ import java.util.*;
 /**
  * Created by MightyDanp on 10/10/2021.
  */
-public class HoleTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
+public class HoleTileEntity extends BlockEntity implements MenuProvider, TickableBlockEntity {
 
     public static int numberOfLogSlots = 1;
     public static int numberOfOutputSlots = 1;
@@ -71,7 +68,7 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
     public Random random = new Random();
 
     public HoleTileEntity() {
-        super(ModTileEntities.hole_tile_entity.get());
+        super(ModBlockEntity.hole_block_entity.get());
     }
 
     public ItemStack getDesiredBlockSlot() {
@@ -97,15 +94,6 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
     public void setOutputFluid(FluidStack outputTank) {
         this.outputFluid = outputTank;
     }
-
-    public void setDesiredBlockState(BlockState desiredBlockStateIn) {
-        this.desiredBlockState = desiredBlockStateIn;
-        setChanged();
-        if(level != null) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
-        }
-    }
-
 
     @Override
     public void tick() {
@@ -163,30 +151,30 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
             inventoryCopy.set(i, inventory.get(i));
         }
 
-        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(Recipes.holeType, new Inventory(p_213980_1_), this.level);
+        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(Recipes.holeType, new SimpleContainer(p_213980_1_), this.level);
     }
 
     @Override
-    public ITextComponent getDisplayName() {
+    public Component getDisplayName() {
         return null;
     }
 
     @Nullable
     @Override
-    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
+    public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
         return null;
     }
 
     @Override
-    public void load(BlockState blockState, CompoundNBT nbt) {
-        loadMetadataAndItems(blockState, nbt);
+    public void load( CompoundTag nbt) {
+        loadMetadataAndItems(nbt);
     }
 
-    private CompoundNBT loadMetadataAndItems(BlockState blockState, CompoundNBT nbt) {
-        super.load(blockState, nbt);
+    private CompoundTag loadMetadataAndItems(CompoundTag nbt) {
+        super.load(nbt);
         Direction directionNew = Direction.byName(nbt.getString("direction"));
 
-        desiredBlockState = NBTUtil.readBlockState(nbt.getCompound("desired_block_state"));
+        desiredBlockState = NbtUtils.readBlockState(nbt.getCompound("desired_block_state"));
         progress = nbt.getInt("progress");
         finishedProgress = nbt.getInt("finished_progress");
         minTicksForHoleToFill = nbt.getInt("min_ticks");
@@ -197,8 +185,8 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
         resinColor = nbt.getInt("resin_color");
         ingredientItemDamage = nbt.getInt("harvest_tool_damage");
 
-        ItemStackHelper.loadAllItems(nbt, this.inventory);
-        CompoundNBT outputFluidCompound = nbt.getCompound("output_fluid");
+        ContainerHelper.loadAllItems(nbt, this.inventory);
+        CompoundTag outputFluidCompound = nbt.getCompound("output_fluid");
 
         outputFluid = FluidStack.loadFluidStackFromNBT(outputFluidCompound);
 
@@ -206,15 +194,15 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT nbt) {
+    public CompoundTag save(CompoundTag nbt) {
         this.saveMetadataAndItems(nbt);
         return super.save(nbt);
     }
 
-    private CompoundNBT saveMetadataAndItems(CompoundNBT nbt) {
+    private CompoundTag saveMetadataAndItems(CompoundTag nbt) {
         super.save(nbt);
 
-        nbt.put("desired_block_state", NBTUtil.writeBlockState(desiredBlockState));
+        nbt.put("desired_block_state", NbtUtils.writeBlockState(desiredBlockState));
         nbt.putInt("progress", progress);
         nbt.putInt("finished_progress", finishedProgress);
         nbt.putInt("min_ticks", minTicksForHoleToFill);
@@ -225,9 +213,9 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
         nbt.putInt("resin_color", resinColor);
         nbt.putInt("harvest_tool_damage", ingredientItemDamage);
 
-        ItemStackHelper.saveAllItems(nbt, this.inventory, true);
+        ContainerHelper.saveAllItems(nbt, this.inventory, true);
 
-        CompoundNBT outputTankCompound = outputFluid.writeToNBT(new CompoundNBT());
+        CompoundTag outputTankCompound = outputFluid.writeToNBT(new CompoundTag());
         nbt.put("output_tank", outputTankCompound);
 
         return nbt;
@@ -235,18 +223,18 @@ public class HoleTileEntity extends TileEntity implements INamedContainerProvide
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(this.worldPosition, 13, this.getUpdateTag());
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return new ClientboundBlockEntityDataPacket(this.worldPosition, 13, this.getUpdateTag());
     }
 
     @Override
-    public CompoundNBT getUpdateTag() {
-        return this.saveMetadataAndItems(new CompoundNBT());
+    public CompoundTag getUpdateTag() {
+        return this.saveMetadataAndItems(new CompoundTag());
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        load(this.getBlockState(), pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        load(pkt.getTag());
     }
 
     private void markUpdated() {

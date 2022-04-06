@@ -3,11 +3,10 @@ package mightydanp.industrialtech.api.common.blocks;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.libs.ITBlockRef;
 import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 /**
  * Created by MightyDanp on 10/11/2021.

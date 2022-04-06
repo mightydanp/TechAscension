@@ -1,8 +1,8 @@
 package mightydanp.industrialtech.api.common.capabilities;
 
 import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
+import net.minecraft.nbt.Tag;
+import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 /**
  * Created by MightyDanp on 4/7/2021.
  */
-public class ITToolItemCapabilityProvider implements ICapabilitySerializable<INBT> {
+public class ITToolItemCapabilityProvider implements ICapabilitySerializable<Tag> {
 
     private final Direction numberOfSlots = null;
     private static final int maxSlots = 3;
@@ -40,12 +40,12 @@ public class ITToolItemCapabilityProvider implements ICapabilitySerializable<INB
     private final LazyOptional<IItemHandler> lazyInitialisionSupplier = LazyOptional.of(this::getCachedInventory);
 
     @Override
-    public INBT serializeNBT() {
+    public Tag serializeNBT() {
         return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(getCachedInventory(), numberOfSlots);
     }
 
     @Override
-    public void deserializeNBT(INBT nbt) {
+    public void deserializeNBT(Tag nbt) {
         CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(getCachedInventory(), numberOfSlots, nbt);
     }
 }

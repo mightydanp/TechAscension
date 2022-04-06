@@ -1,7 +1,6 @@
 package mightydanp.industrialtech.api.common.libs;
 
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 /**
  * Created by MightyDanp on 7/24/2021.

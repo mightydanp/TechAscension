@@ -6,8 +6,8 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import javax.annotation.Nullable;
 import java.nio.file.Paths;
@@ -47,7 +47,7 @@ public class SyncMessage {
         return singlePlayerWorldName;
     }
 
-    public static SyncMessage read(PacketBuffer buffer) {
+    public static SyncMessage read(FriendlyByteBuf buffer) {
         boolean isSinglePlayer = buffer.readBoolean();
         String singlePlayerWorldName = buffer.readUtf();
 
@@ -62,7 +62,7 @@ public class SyncMessage {
         return message;
     }
 
-    public static void write(SyncMessage message, PacketBuffer buffer) {
+    public static void write(SyncMessage message, FriendlyByteBuf buffer) {
         buffer.writeBoolean(message.isSinglePlayer());
         buffer.writeUtf(message.singlePlayerWorldName);
 

@@ -7,7 +7,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -193,12 +193,12 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, IFluidState fluidState) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, IFluidState fluidState) {//friendlybotbuff
         buffer.writeUtf(fluidState.getName());
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<IFluidState> list = message.getConfig(IndustrialTech.configSync.fluidStateID).stream()
                 .filter(IFluidState.class::isInstance)
                 .map(IFluidState.class::cast)
@@ -212,14 +212,14 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
     }
 
     @Override
-    public IFluidState singleFromBuffer(PacketBuffer buffer) {
+    public IFluidState singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
 
         return () -> name;
     }
 
     @Override
-    public List<IFluidState> multipleFromBuffer(PacketBuffer buffer) {
+    public List<IFluidState> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<IFluidState> fluidStates = new ArrayList<>();
 
         int size = buffer.readVarInt();

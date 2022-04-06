@@ -1,44 +1,34 @@
 package mightydanp.industrialtech.common.blocks;
 
 import mightydanp.industrialtech.common.crafting.recipe.CampfireOverrideRecipe;
-import mightydanp.industrialtech.common.libs.CampfireEnum;
-import mightydanp.industrialtech.common.tileentities.CampfireTileEntityOverride;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.particles.BasicParticleType;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.state.*;
-import net.minecraft.state.properties.BlockStateProperties;
+import mightydanp.industrialtech.common.tileentities.CampfireBlockEntityOverride;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.stats.Stats;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tileentity.CampfireTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -46,11 +36,37 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.Random;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+
 /**
  * Created by MightyDanp on 5/3/2021.
  */
-public class CampfireBlockOverride extends ContainerBlock implements IWaterLoggable {
-    public static final EnumProperty<CampfireEnum> camp_fire = EnumProperty.create("camp_fire", CampfireEnum.class);//, CampfireEnum.---
+public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final IntegerProperty LOG = IntegerProperty.create("log", 0, 5);
@@ -71,42 +87,31 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
     private static final VoxelShape ashV = Block.box(0.0D, 0.0D, 5.0D, 16.0D, 1.0D, 11.0D);
 
     public CampfireBlockOverride() {
-        super(AbstractBlock.Properties.of(Material.WOOD));
+        super(BlockBehaviour.Properties.of(Material.WOOD));
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false).setValue(LIT, false).setValue(LOG, 0).setValue(FACING, Direction.NORTH));
     }
 
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> p_206840_1_) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_206840_1_) {
         p_206840_1_.add(WATERLOGGED, LIT, LOG, FACING);
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new CampfireTileEntityOverride();
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+        return new CampfireBlockEntityOverride();
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
-    @Nullable
-    @Override
-    public TileEntity newBlockEntity(IBlockReader p_196283_1_) {
-        return new CampfireTileEntityOverride();
-    }
-
-    @Override
-    public BlockRenderType getRenderShape(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
-
-    public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext iSelectionContext) {
-        VoxelShape horizontal = VoxelShapes.join(VoxelShapes.or(tinder, log1H, log2H, log3H, log4H, ashH), VoxelShapes.empty(), IBooleanFunction.ONLY_FIRST);
-        VoxelShape vertical = VoxelShapes.join(VoxelShapes.or(tinder, log1V, log2V, log3V, log4V, ashV), VoxelShapes.empty(), IBooleanFunction.ONLY_FIRST);
+    public VoxelShape getShape(BlockState blockState, BlockGetter iBlockReader, BlockPos blockPos, CollisionContext iSelectionContext) {
+        VoxelShape horizontal = Shapes.join(Shapes.or(tinder, log1H, log2H, log3H, log4H, ashH), Shapes.empty(), BooleanOp.ONLY_FIRST);
+        VoxelShape vertical = Shapes.join(Shapes.or(tinder, log1V, log2V, log3V, log4V, ashV), Shapes.empty(), BooleanOp.ONLY_FIRST);
 
 
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) iBlockReader.getBlockEntity(blockPos);
+        CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride) iBlockReader.getBlockEntity(blockPos);
 
         if (tileEntity != null) {
             if(blockState.getValue(FACING) == Direction.NORTH || blockState.getValue(FACING) == Direction.SOUTH){
@@ -137,9 +142,11 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
     }
     */
 
+
+
     @Override
-    public int getLightValue(BlockState state, IBlockReader iBlockReader, BlockPos blockPos) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride)iBlockReader.getBlockEntity(blockPos);
+    public int getLightValue(BlockState state, BlockGetter iBlockReader, BlockPos blockPos) {
+        CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride)iBlockReader.getBlockEntity(blockPos);
         if(tileEntity!= null){
             if(tileEntity.getLevel() != null) {
                 return state.getValue(CampfireBlockOverride.LIT) ? 15 : 0;
@@ -153,14 +160,14 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
 
 
     @Override
-    public ActionResultType use(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult blockRayTraceResult) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
-        AxisAlignedBB cookingSlot1;
-        AxisAlignedBB cookingSlot2 = AxisAlignedBB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
-        AxisAlignedBB cookingSlot3 = AxisAlignedBB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
-        AxisAlignedBB cookingSlot4 = AxisAlignedBB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
-        AxisAlignedBB ashSlot    = AxisAlignedBB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
-        AxisAlignedBB tinderSlot   = AxisAlignedBB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
+    public InteractionResult use(BlockState blockState, Level world, BlockPos blockPos, Player playerEntity, InteractionHand hand, BlockHitResult blockRayTraceResult) {
+        CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride) world.getBlockEntity(blockPos);
+        AABB cookingSlot1;
+        AABB cookingSlot2 = AABB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
+        AABB cookingSlot3 = AABB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
+        AABB cookingSlot4 = AABB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
+        AABB ashSlot      = AABB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
+        AABB tinderSlot   = AABB.ofSize(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
 
         if (tileEntity != null) {
             ItemStack itemstack = playerEntity.getItemInHand(hand);
@@ -170,167 +177,165 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
             int logs = blockState.getValue(LOG);
 
             switch(blockState.getValue(FACING)){
-                case NORTH: cookingSlot1 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
+                case NORTH: cookingSlot1 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
                     break;
-                case SOUTH: cookingSlot1 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
+                case SOUTH: cookingSlot1 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
-                case EAST:  cookingSlot1 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
+                case EAST:  cookingSlot1 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
                     break;
-                case WEST:  cookingSlot1 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
+                case WEST:  cookingSlot1 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + blockState.getValue(FACING));
             }
 
             switch(blockState.getValue(FACING)){
-                case NORTH: cookingSlot2 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
+                case NORTH: cookingSlot2 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
                     break;
-                case SOUTH: cookingSlot2 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
+                case SOUTH: cookingSlot2 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
-                case EAST:  cookingSlot2 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
+                case EAST:  cookingSlot2 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
-                case WEST:  cookingSlot2 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
-                    break;
-            }
-
-            switch(blockState.getValue(FACING)){
-                case NORTH: cookingSlot4 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
-                    break;
-                case SOUTH: cookingSlot4 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
-                    break;
-                case EAST:  cookingSlot4 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
-                    break;
-                case WEST:  cookingSlot4 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
+                case WEST:  cookingSlot2 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
                     break;
             }
 
             switch(blockState.getValue(FACING)){
-                case NORTH: cookingSlot3 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
+                case NORTH: cookingSlot4 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
-                case SOUTH: cookingSlot3 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
+                case SOUTH: cookingSlot4 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
                     break;
-                case EAST:  cookingSlot3 = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
+                case EAST:  cookingSlot4 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
-                case WEST:  cookingSlot3 = new AxisAlignedBB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
+                case WEST:  cookingSlot4 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
                     break;
             }
 
             switch(blockState.getValue(FACING)){
-                case NORTH:
-                case SOUTH:
-                    ashSlot = new AxisAlignedBB(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0625, blockPos.getX() + 1.0 + 0.0001, blockPos.getY() + 0.0625 + 0.0001, blockPos.getZ() + 0.75 + 0.0001);
+                case NORTH: cookingSlot3 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
-                case EAST:
-                case WEST:
-                    ashSlot = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.0, blockPos.getZ() + 0.0, blockPos.getX() + 0.75 + 0.0001, blockPos.getY() + 0.0625 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
+                case SOUTH: cookingSlot3 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
+                    break;
+                case EAST:  cookingSlot3 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
+                    break;
+                case WEST:  cookingSlot3 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
             }
 
             switch(blockState.getValue(FACING)){
                 case NORTH:
                 case SOUTH:
-                    tinderSlot = new AxisAlignedBB(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0625, blockPos.getX() + 1.0 + 0.0001, blockPos.getY() + 0.0625 + 0.0001, blockPos.getZ() + 0.75 + 0.0001);
+                    ashSlot = new AABB(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0625, blockPos.getX() + 1.0 + 0.0001, blockPos.getY() + 0.0625 + 0.0001, blockPos.getZ() + 0.75 + 0.0001);
                     break;
                 case EAST:
                 case WEST:
-                    tinderSlot = new AxisAlignedBB(blockPos.getX() + 0.0625, blockPos.getY() + 0.0, blockPos.getZ() + 0.0, blockPos.getX() + 0.75 + 0.0001, blockPos.getY() + 0.0625 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
+                    ashSlot = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.0, blockPos.getZ() + 0.0, blockPos.getX() + 0.75 + 0.0001, blockPos.getY() + 0.0625 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
+                    break;
+            }
+
+            switch(blockState.getValue(FACING)){
+                case NORTH:
+                case SOUTH:
+                    tinderSlot = new AABB(blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0625, blockPos.getX() + 1.0 + 0.0001, blockPos.getY() + 0.0625 + 0.0001, blockPos.getZ() + 0.75 + 0.0001);
+                    break;
+                case EAST:
+                case WEST:
+                    tinderSlot = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.0, blockPos.getZ() + 0.0, blockPos.getX() + 0.75 + 0.0001, blockPos.getY() + 0.0625 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
                     break;
             }
 
             if(logs < 5 && ItemTags.getAllTags().getTagOrEmpty(log).contains(itemstack.getItem())){
                 itemstack.shrink(1);
-                playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
+                playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
                 increaseLogs(world, blockPos, blockState, 1);
-                blockState.getBlockState();
             }
 
             if(logs > 0 && itemstack.getItem() == Items.FLINT_AND_STEEL){
                 CampfireBlockOverride.setLit(world, blockPos, blockState, true);
                 tileEntity.keepLogsFormed = true;
                 itemstack.setDamageValue(itemstack.getDamageValue() + 1);
-                blockState.getBlockState();
             }
 
             if(logs > 0) {
                 if (cookingSlot1.contains(click(playerEntity, world))) {
                     if (tileEntity.getCookSlot1().isEmpty() && optional.isPresent()) {
-                        tileEntity.placeFood(playerEntity.abilities.instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot1Number, optional.get().getCookingTime());
+                        tileEntity.placeFood(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot1Number, optional.get().getCookingTime());
                         itemstack.shrink(1);
-                        playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
+                        playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
                     } else {
                         if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
-                            playerEntity.inventory.placeItemBackInInventory(world, tileEntity.getCookSlot1());
+                            playerEntity.getInventory().placeItemBackInInventory(tileEntity.getCookSlot1());
                             tileEntity.getInventory().set(tileEntity.cookSlot1Number, ItemStack.EMPTY);
                         }else{
-                            return ActionResultType.FAIL;
+                            return InteractionResult.FAIL;
                         }
                     }
                 }
 
                 if (cookingSlot2.contains(click(playerEntity, world))) {
                     if (tileEntity.getCookSlot2().isEmpty() && optional.isPresent()) {
-                        tileEntity.placeFood(playerEntity.abilities.instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot2Number, optional.get().getCookingTime());
+                        tileEntity.placeFood(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot2Number, optional.get().getCookingTime());
                         itemstack.shrink(1);
-                        playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
+                        playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
                     } else {
                         if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
-                            playerEntity.inventory.placeItemBackInInventory(world, tileEntity.getCookSlot2());
+                            playerEntity.getInventory().placeItemBackInInventory(tileEntity.getCookSlot2());
                             tileEntity.getInventory().set(tileEntity.cookSlot2Number, ItemStack.EMPTY);
                         }else{
-                            return ActionResultType.FAIL;
+                            return InteractionResult.FAIL;
                         }
                     }
                 }
 
                 if (cookingSlot3.contains(click(playerEntity, world))) {
                     if (tileEntity.getCookSlot3().isEmpty() && optional.isPresent()) {
-                        tileEntity.placeFood(playerEntity.abilities.instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot3Number, optional.get().getCookingTime());
+                        tileEntity.placeFood(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot3Number, optional.get().getCookingTime());
                         itemstack.shrink(1);
-                        playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
+                        playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
                     } else {
                         if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
-                            playerEntity.inventory.placeItemBackInInventory(world, tileEntity.getCookSlot3());
+                            playerEntity.getInventory().placeItemBackInInventory(tileEntity.getCookSlot3());
                             tileEntity.getInventory().set(tileEntity.cookSlot3Number, ItemStack.EMPTY);
                         }else{
-                            return ActionResultType.FAIL;
+                            return InteractionResult.FAIL;
                         }
                     }
                 }
 
                 if (cookingSlot4.contains(click(playerEntity, world))) {
                     if (tileEntity.getCookSlot4().isEmpty() && optional.isPresent()) {
-                        tileEntity.placeFood(playerEntity.abilities.instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot4Number, optional.get().getCookingTime());
+                        tileEntity.placeFood(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot4Number, optional.get().getCookingTime());
                         itemstack.shrink(1);
-                        playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
+                        playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
                     } else {
                         if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
-                            playerEntity.inventory.placeItemBackInInventory(world, tileEntity.getCookSlot4());
+                            playerEntity.getInventory().placeItemBackInInventory(tileEntity.getCookSlot4());
                             tileEntity.getInventory().set(tileEntity.cookSlot4Number, ItemStack.EMPTY);
                         }else{
-                            return ActionResultType.FAIL;
+                            return InteractionResult.FAIL;
                         }
                     }
                 }
             }
 
             if(ashSlot.contains(click(playerEntity, world))){
-                tileEntity.placeItemStack(playerEntity.abilities.instabuild ? itemstack.copy() : itemstack, tileEntity.ashSlotNumber);
+                tileEntity.placeItemStack(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.ashSlotNumber);
                 itemstack.shrink(1);
-                playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
+                playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
             }else{
                 if(playerEntity.isCrouching() && !isLit(blockState)){
-                    playerEntity.inventory.placeItemBackInInventory(world, tileEntity.getAshSlot());
+                    playerEntity.getInventory().placeItemBackInInventory(tileEntity.getAshSlot());
                     tileEntity.getInventory().set(tileEntity.ashSlotNumber, ItemStack.EMPTY);
                 }
             }
 
             if(tinderSlot.contains(click(playerEntity, world))){
-                tileEntity.placeItemStack(playerEntity.abilities.instabuild ? itemstack.copy() : itemstack, tileEntity.tinderSlotNumber);
+                tileEntity.placeItemStack(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.tinderSlotNumber);
                 itemstack.shrink(1);
-                playerEntity.setItemInHand(Hand.MAIN_HAND, itemstack);
+                playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
             }else{
                 if(playerEntity.isCrouching()){
-                    playerEntity.inventory.placeItemBackInInventory(world, itemstack);
+                    playerEntity.getInventory().placeItemBackInInventory(itemstack);
                     tileEntity.getInventory().set(tileEntity.tinderSlotNumber, ItemStack.EMPTY);
                 }
             }
@@ -338,31 +343,31 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
             if (optional.isPresent()) {
                 if(!world.isClientSide){
                     playerEntity.awardStat(Stats.INTERACT_WITH_CAMPFIRE);
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
-                return ActionResultType.CONSUME;
+                return InteractionResult.CONSUME;
             }
         }
 
-        return ActionResultType.SUCCESS ;
+        return InteractionResult.SUCCESS ;
     }
 
-    public Vector3d click(PlayerEntity player, World world){
-        Double rayLength = new Double(100);
-        Vector3d playerRotation = player.getViewVector(0);
-        Vector3d rayPath = playerRotation.scale(rayLength);
+    public Vec3 click(Player player, Level world){
+        Double rayLength = 100D;
+        Vec3 playerRotation = player.getViewVector(0);
+        Vec3 rayPath = playerRotation.scale(rayLength);
 
         //RAY START AND END POINTS
-        Vector3d from = player.getEyePosition(0);
-        Vector3d to = from.add(rayPath);
+        Vec3 from = player.getEyePosition(0);
+        Vec3 to = from.add(rayPath);
 
         //CREATE THE RAY
-        RayTraceContext rayCtx = new RayTraceContext(from, to, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.ANY, null);
+        ClipContext rayCtx = new ClipContext(from, to, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, null);
         //CAST THE RAY
-        BlockRayTraceResult rayHit = world.clip(rayCtx);
+        BlockHitResult rayHit = world.clip(rayCtx);
 
         //CHECK THE RESULTS
-        if (rayHit.getType() == RayTraceResult.Type.MISS){
+        if (rayHit.getType() == HitResult.Type.MISS){
             return null;
         }
 
@@ -375,7 +380,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         return p_220099_1_.is(Blocks.HAY_BLOCK);
     }
 
-    public void entityInside(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+    public void entityInside(BlockState blockState, Level world, BlockPos blockPos, Entity entity) {
         if (!entity.fireImmune() && blockState.getValue(LIT) && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
             entity.hurt(DamageSource.IN_FIRE, (float)1);
         }
@@ -384,11 +389,11 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
     }
 
     //to-do change to leave ash behind
-    public void onRemove(BlockState p_196243_1_, World world, BlockPos blockPos, BlockState blockState, boolean p_196243_5_) {
+    public void onRemove(BlockState p_196243_1_, Level world, BlockPos blockPos, BlockState blockState, boolean p_196243_5_) {
         if (!p_196243_1_.is(blockState.getBlock())) {
-            TileEntity tileentity = world.getBlockEntity(blockPos);
-            if (tileentity instanceof CampfireTileEntityOverride) {
-                InventoryHelper.dropContents(world, blockPos, ((CampfireTileEntityOverride)tileentity).getInventory());
+            BlockEntity tileentity = world.getBlockEntity(blockPos);
+            if (tileentity instanceof CampfireBlockEntityOverride) {
+                Containers.dropContents(world, blockPos, ((CampfireBlockEntityOverride)tileentity).getInventory());
             }
 
             super.onRemove(p_196243_1_, world, blockPos, blockState, p_196243_5_);
@@ -397,8 +402,8 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext useContext) {
-        IWorld iworld = useContext.getLevel();
+    public BlockState getStateForPlacement(BlockPlaceContext useContext) {
+        LevelAccessor iworld = useContext.getLevel();
         BlockPos blockpos = useContext.getClickedPos();
         final FluidState fluidState = useContext.getLevel().getFluidState(useContext.getClickedPos());
         boolean flag = iworld.getFluidState(blockpos).getType() == Fluids.WATER && fluidState.getAmount() == 8;
@@ -406,8 +411,8 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         return this.defaultBlockState().setValue(WATERLOGGED, flag).setValue(LIT, false).setValue(LOG, 0).setValue(FACING, useContext.getHorizontalDirection());
     }
 
-    public BlockState updateShape(BlockState blockState, Direction direction, BlockState underBlock, IWorld world, BlockPos blockPos, BlockPos p_196271_6_) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
+    public BlockState updateShape(BlockState blockState, Direction direction, BlockState underBlock, LevelAccessor world, BlockPos blockPos, BlockPos p_196271_6_) {
+        CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride) world.getBlockEntity(blockPos);
         if (blockState.getValue(WATERLOGGED)) {
             world.getLiquidTicks().scheduleTick(blockPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
@@ -421,15 +426,15 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         return super.updateShape(blockState, direction, underBlock, world, blockPos, p_196271_6_);
     }
 
-    public boolean isPathfindable(BlockState p_196266_1_, IBlockReader p_196266_2_, BlockPos p_196266_3_, PathType p_196266_4_) {
+    public boolean isPathfindable(BlockState p_196266_1_, BlockGetter p_196266_2_, BlockPos p_196266_3_, PathComputationType p_196266_4_) {
         return false;
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    public void animateTick(BlockState blockState, Level world, BlockPos blockPos, Random random) {
         if (blockState.getValue(CampfireBlockOverride.LIT)) {
             if (random.nextInt(10) == 0) {
-                world.playLocalSound((double)blockPos.getX() + 0.5D, (double)blockPos.getY() + 0.5D, (double)blockPos.getZ() + 0.5D, SoundEvents.CAMPFIRE_CRACKLE, SoundCategory.BLOCKS, 0.5F + random.nextFloat(), random.nextFloat() * 0.7F + 0.6F, false);
+                world.playLocalSound((double)blockPos.getX() + 0.5D, (double)blockPos.getY() + 0.5D, (double)blockPos.getZ() + 0.5D, SoundEvents.CAMPFIRE_CRACKLE, SoundSource.BLOCKS, 0.5F + random.nextFloat(), random.nextFloat() * 0.7F + 0.6F, false);
             }
 
             if (random.nextInt(5) == 0) {
@@ -441,11 +446,11 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         }
     }
 
-    public static void dowse(IWorld iWorld, BlockPos blockPos) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride)iWorld.getBlockEntity(blockPos);
+    public static void dowse(LevelAccessor iWorld, BlockPos blockPos) {
+        CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride)iWorld.getBlockEntity(blockPos);
         if (iWorld.isClientSide()) {
             for(int i = 0; i < 20; ++i) {
-                makeParticles((World)iWorld, blockPos, tileEntity.signalFire, true);
+                makeParticles((Level)iWorld, blockPos, tileEntity.signalFire, true);
             }
         }
         if (tileEntity != null) {
@@ -454,11 +459,11 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
 
     }
 
-    public boolean placeLiquid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
+    public boolean placeLiquid(LevelAccessor iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
         if (!blockState.getValue(BlockStateProperties.WATERLOGGED) && fluidState.getType() == Fluids.WATER) {
             if (blockState.getValue(LIT)) {
                 if (!iWorld.isClientSide()) {
-                    iWorld.playSound(null, blockPos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    iWorld.playSound(null, blockPos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
                 dowse(iWorld, blockPos);
             }
@@ -471,10 +476,10 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         }
     }
 
-    public void onProjectileHit(World world, BlockState blockState, BlockRayTraceResult traceResult, ProjectileEntity projectile) {
+    public void onProjectileHit(Level world, BlockState blockState, BlockHitResult traceResult, Projectile projectile) {
         if (!world.isClientSide && projectile.isOnFire()) {
             Entity entity = projectile.getOwner();
-            boolean flag = entity == null || entity instanceof PlayerEntity || net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, entity);
+            boolean flag = entity == null || entity instanceof Player || net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, entity);
             if (flag && !blockState.getValue(LIT) && !blockState.getValue(WATERLOGGED)) {
                 BlockPos blockpos = traceResult.getBlockPos();
                 world.setBlock(blockpos, blockState.setValue(BlockStateProperties.LIT, true), 11);
@@ -483,9 +488,9 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
 
     }
 
-    public static void makeParticles(World world, BlockPos blockPos, boolean signalFire, boolean isLit) {
+    public static void makeParticles(Level world, BlockPos blockPos, boolean signalFire, boolean isLit) {
         Random random = world.getRandom();
-        BasicParticleType basicparticletype = signalFire ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
+        SimpleParticleType basicparticletype = signalFire ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
         world.addAlwaysVisibleParticle(basicparticletype, true, (double)blockPos.getX() + 0.5D + random.nextDouble() / 3.0D * (double)(random.nextBoolean() ? 1 : -1), (double)blockPos.getY() + random.nextDouble() + random.nextDouble(), (double)blockPos.getZ() + 0.5D + random.nextDouble() / 3.0D * (double)(random.nextBoolean() ? 1 : -1), 0.0D, 0.07D, 0.0D);
         if (isLit) {
             world.addParticle(ParticleTypes.SMOKE, (double)blockPos.getX() + 0.25D + random.nextDouble() / 2.0D * (double)(random.nextBoolean() ? 1 : -1), (double)blockPos.getY() + 0.4D, (double)blockPos.getZ() + 0.25D + random.nextDouble() / 2.0D * (double)(random.nextBoolean() ? 1 : -1), 0.0D, 0.005D, 0.0D);
@@ -493,12 +498,12 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
 
     }
 
-    public static void makeParticles(World world, BlockPos blockPos) {
-        CampfireTileEntityOverride tileEntity = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
+    public static void makeParticles(Level world, BlockPos blockPos) {
+        CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride) world.getBlockEntity(blockPos);
         Random random = world.getRandom();
 
         if(tileEntity != null) {
-            BasicParticleType basicparticletype = tileEntity.signalFire ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
+            SimpleParticleType basicparticletype = tileEntity.signalFire ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
             world.addAlwaysVisibleParticle(basicparticletype, true, (double) blockPos.getX() + 0.5D + random.nextDouble() / 3.0D * (double) (random.nextBoolean() ? 1 : -1), (double) blockPos.getY() + random.nextDouble() + random.nextDouble(), (double) blockPos.getZ() + 0.5D + random.nextDouble() / 3.0D * (double) (random.nextBoolean() ? 1 : -1), 0.0D, 0.07D, 0.0D);
             if (world.getBlockState(blockPos).getValue(CampfireBlockOverride.LIT)) {
                 world.addParticle(ParticleTypes.SMOKE, (double) blockPos.getX() + 0.25D + random.nextDouble() / 2.0D * (double) (random.nextBoolean() ? 1 : -1), (double) blockPos.getY() + 0.4D, (double) blockPos.getZ() + 0.25D + random.nextDouble() / 2.0D * (double) (random.nextBoolean() ? 1 : -1), 0.0D, 0.005D, 0.0D);
@@ -506,7 +511,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         }
     }
 
-    public static boolean isSmokeyPos(World world, BlockPos blockPos) {
+    public static boolean isSmokeyPos(Level world, BlockPos blockPos) {
         for(int i = 1; i <= 5; ++i) {
             BlockPos blockpos = blockPos.below(i);
             BlockState blockstate = world.getBlockState(blockpos);
@@ -514,7 +519,7 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
                 return true;
             }
 
-            boolean flag = VoxelShapes.joinIsNotEmpty(VIRTUAL_FENCE_POST, blockstate.getCollisionShape(world, blockpos, ISelectionContext.empty()), IBooleanFunction.AND);//Forge fix: MC-201374
+            boolean flag = Shapes.joinIsNotEmpty(VIRTUAL_FENCE_POST, blockstate.getCollisionShape(world, blockpos, CollisionContext.empty()), BooleanOp.AND);//Forge fix: MC-201374
             if (flag) {
                 return blockstate.getValue(CampfireBlockOverride.LIT);
             }
@@ -538,8 +543,8 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
 
 
     @Override
-    public int getLightBlock(BlockState blockState, IBlockReader world, BlockPos blockPos) {
-        CampfireTileEntityOverride tile = (CampfireTileEntityOverride) world.getBlockEntity(blockPos);
+    public int getLightBlock(BlockState blockState, BlockGetter world, BlockPos blockPos) {
+        CampfireBlockEntityOverride tile = (CampfireBlockEntityOverride) world.getBlockEntity(blockPos);
 
         if(tile != null && blockState.getValue(CampfireBlockOverride.LIT)){
             return 16;
@@ -553,17 +558,17 @@ public class CampfireBlockOverride extends ContainerBlock implements IWaterLogga
         return p_204507_1_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_204507_1_);
     }
 
-    public static void shrinkLogs(World world, BlockPos blockPos, BlockState blockState, int amount){
+    public static void shrinkLogs(Level world, BlockPos blockPos, BlockState blockState, int amount){
         BlockState blockState1 = blockState.setValue(CampfireBlockOverride.LOG, blockState.getValue(CampfireBlockOverride.LOG) - amount);
         world.setBlock(blockPos, blockState1, 3);
     }
 
-    public static void increaseLogs(World world, BlockPos blockPos, BlockState blockState, int amount){
+    public static void increaseLogs(Level world, BlockPos blockPos, BlockState blockState, int amount){
         BlockState blockState1 = blockState.setValue(CampfireBlockOverride.LOG, blockState.getValue(CampfireBlockOverride.LOG) + amount);
         world.setBlock(blockPos, blockState1, 3);
     }
 
-    public static void setLit(World world, BlockPos blockPos, BlockState blockState, boolean lit){
+    public static void setLit(Level world, BlockPos blockPos, BlockState blockState, boolean lit){
         BlockState blockState1 = blockState.setValue(CampfireBlockOverride.LIT, lit);
         world.setBlock(blockPos, blockState1, 3);
     }

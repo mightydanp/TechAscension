@@ -9,19 +9,19 @@ import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 
@@ -44,14 +44,14 @@ public class KnifeToolItem extends ITToolItem {
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext itemUseContext) {
-        World world = itemUseContext.getLevel();
-        PlayerEntity playerEntity = itemUseContext.getPlayer();
+    public InteractionResult useOn(UseOnContext itemUseContext) {
+        Level world = itemUseContext.getLevel();
+        Player playerEntity = itemUseContext.getPlayer();
         BlockPos blockPos = itemUseContext.getClickedPos();
         Direction clickedFace = itemUseContext.getClickedFace();
         BlockState clickedBlockState = world.getBlockState(blockPos);
 
-        IInventory iinventory = new Inventory(new ItemStack(clickedBlockState.getBlock()));
+        Container iinventory = new SimpleContainer(new ItemStack(clickedBlockState.getBlock()));
         List<HoleRecipe> recipe = world.getRecipeManager().getRecipesFor(Recipes.holeType, iinventory, world);
         Optional<HoleRecipe> validRecipe = world.getRecipeManager().getRecipeFor(Recipes.holeType, iinventory, world);
 
@@ -92,7 +92,7 @@ public class KnifeToolItem extends ITToolItem {
 
                     newBlockState = newBlockState.setValue(HoleBlock.FACING, clickedFace).setValue(HoleBlock.RESIN, false);
                     world.setBlockAndUpdate(blockPos, newBlockState);
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
             }
         }
@@ -100,7 +100,7 @@ public class KnifeToolItem extends ITToolItem {
         return super.useOn(itemUseContext);
     }
 
-    public Optional<HoleRecipe> getValidRecipe(World worldIn, ItemStack itemStackIn) {
-        return worldIn.getRecipeManager().getRecipeFor(Recipes.holeType, new Inventory(itemStackIn), worldIn);
+    public Optional<HoleRecipe> getValidRecipe(Level worldIn, ItemStack itemStackIn) {
+        return worldIn.getRecipeManager().getRecipeFor(Recipes.holeType, new SimpleContainer(itemStackIn), worldIn);
     }
 }

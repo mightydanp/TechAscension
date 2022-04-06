@@ -5,26 +5,28 @@ import com.google.gson.JsonObject;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.ICriterionInstance;
-import net.minecraft.advancements.IRequirementsStrategy;
-import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.fluid.FlowingFluid;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.advancements.CriterionTriggerInstance;
+import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -34,8 +36,7 @@ import java.util.function.Consumer;
 public class HoleRecipeBuilder {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Item desiredBlock;
-    private final NonNullList<Ingredient> ingredientItems = new NonNullList<Ingredient>() {
-    };
+    private final List<Ingredient> ingredientItems = new ArrayList<>();
     private final int minTicks;
     private final int maxTicks;
     private final Advancement.Builder advancement = Advancement.Builder.advancement();
@@ -60,14 +61,14 @@ public class HoleRecipeBuilder {
     }
 
     @SafeVarargs
-    public final HoleRecipeBuilder requiredIngredientItem(ITag<Item>... iTagsIn) {
-        for (ITag<Item> itemITag : iTagsIn) {
+    public final HoleRecipeBuilder requiredIngredientItem(Tag<Item>... iTagsIn) {
+        for (Tag<Item> itemITag : iTagsIn) {
             this.requiredIngredientItem(Ingredient.of(itemITag));
         }
         return this;
     }
 
-    public HoleRecipeBuilder requiredIngredientItem(IItemProvider... iItemProvidersIn) {
+    public HoleRecipeBuilder requiredIngredientItem(ItemLike... iItemProvidersIn) {
         this.requiredIngredientItem(Ingredient.of(iItemProvidersIn));
         return this;
     }
@@ -122,7 +123,7 @@ public class HoleRecipeBuilder {
         return this;
     }
 
-    public HoleRecipeBuilder unlockedBy(String p_200483_1_, ICriterionInstance p_200483_2_) {
+    public HoleRecipeBuilder unlockedBy(String p_200483_1_, CriterionTriggerInstance p_200483_2_) {
         this.advancement.addCriterion(p_200483_1_, p_200483_2_);
         return this;
     }
@@ -136,8 +137,8 @@ public class HoleRecipeBuilder {
         return this;
     }
 
-    public void save(Consumer<IFinishedRecipe> p_200484_1_, String p_200484_2_) {
-        ResourceLocation resourcelocation = Registry.ITEM.getKey(this.result.getItem());
+    public void save(Consumer<FinishedRecipe> p_200484_1_, String p_200484_2_) {
+        ResourceLocation resourcelocation = Registry.ITEM.getKey(this.result.asItem());
         if ((new ResourceLocation(p_200484_2_)).equals(resourcelocation)) {
             throw new IllegalStateException("Hole Recipe " + p_200484_2_ + " should remove its 'save' argument");
         } else {
@@ -145,12 +146,15 @@ public class HoleRecipeBuilder {
         }
     }
 
-    public void save(Consumer<IFinishedRecipe> p_200485_1_, ResourceLocation p_200485_2_) {
+    public void save(Consumer<FinishedRecipe> p_200485_1_, ResourceLocation p_200485_2_) {
         this.ensureValid(p_200485_2_);
-        this.advancement.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_hole_recipe", RecipeUnlockedTrigger.unlocked(p_200485_2_)).rewards(AdvancementRewards.Builder.recipe(p_200485_2_)).requirements(IRequirementsStrategy.OR);
+        this.advancement.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_hole_recipe", RecipeUnlockedTrigger.unlocked(p_200485_2_)).rewards(AdvancementRewards.Builder.recipe(p_200485_2_)).requirements(RequirementsStrategy.OR);
         p_200485_1_.accept(new HoleRecipeBuilder.Result(p_200485_2_,
-                this.group == null ? "" : this.group, desiredBlock, ingredientItems, ingredientItemDamage, consumeIngredients, minTicks, maxTicks, result, resultFluid, minResult, maxResult, holeColor, resinColor,
-                this.advancement, new ResourceLocation(p_200485_2_.getNamespace(), "recipes/" + Objects.requireNonNull(this.result == null ? ItemGroup.TAB_SEARCH : this.result.getItem().getItemCategory()).getRecipeFolderName() + "/" + p_200485_2_.getPath())));
+                //
+                //
+                //
+                this.group == null ? "" : this.group, desiredBlock, (NonNullList<Ingredient>)ingredientItems, ingredientItemDamage, consumeIngredients, minTicks, maxTicks, result, resultFluid, minResult, maxResult, holeColor, resinColor,
+                this.advancement, new ResourceLocation(p_200485_2_.getNamespace(), "recipes/" + Objects.requireNonNull(this.result == null ? CreativeModeTab.TAB_SEARCH : this.result.asItem().getItemCategory()).getRecipeFolderName() + "/" + p_200485_2_.getPath())));
     }
 
     private void ensureValid(ResourceLocation p_200481_1_) {
@@ -159,7 +163,7 @@ public class HoleRecipeBuilder {
         }
     }
 
-    public static class Result implements IFinishedRecipe {
+    public static class Result implements FinishedRecipe {
         private final ResourceLocation id;
         private final String group;
         private final Item desiredBlock;
@@ -226,7 +230,7 @@ public class HoleRecipeBuilder {
             jsonObject.addProperty("resin_color", resinColor);
         }
 
-        public IRecipeSerializer<?> getType() {
+        public RecipeSerializer<?> getType() {
             return Recipes.holeSerializer.get();
         }
 

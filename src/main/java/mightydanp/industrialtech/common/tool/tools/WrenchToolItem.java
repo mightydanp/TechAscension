@@ -4,14 +4,11 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
-import net.minecraft.block.Block;
 
 import java.util.*;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.Item.Properties;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.Item;
 
 /**
  * Created by MightyDanp on 4/7/2021.

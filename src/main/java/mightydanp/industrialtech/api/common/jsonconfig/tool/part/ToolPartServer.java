@@ -8,7 +8,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -193,14 +193,14 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, IToolPart toolPart) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, IToolPart toolPart) {//friendlybotbuff
         buffer.writeUtf(fixesToName(toolPart.getPrefix(), toolPart.getSuffix()));
         buffer.writeUtf(toolPart.getPrefix());
         buffer.writeUtf(toolPart.getSuffix());
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<IToolPart> list = message.getConfig(IndustrialTech.configSync.toolPartID).stream()
                 .filter(IToolPart.class::isInstance)
                 .map(IToolPart.class::cast)
@@ -212,7 +212,7 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
     }
 
     @Override
-    public IToolPart singleFromBuffer(PacketBuffer buffer) {
+    public IToolPart singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
         String prefix = buffer.readUtf();
         String suffix = buffer.readUtf();
@@ -236,7 +236,7 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
     }
 
     @Override
-    public List<IToolPart> multipleFromBuffer(PacketBuffer buffer) {
+    public List<IToolPart> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<IToolPart> toolParts = new ArrayList<>();
 
         int size = buffer.readVarInt();

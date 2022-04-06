@@ -1,14 +1,14 @@
 package mightydanp.industrialtech.api.common.material.fluid;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.block.material.Material;
-import net.minecraft.fluid.FlowingFluid;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.FlowingFluid;
 
 /**
  * Created by MightyDanp on 10/22/2021.
  */
-public class ITFluidBlock extends FlowingFluidBlock {
+public class ITFluidBlock extends LiquidBlock {
     private final double acceleration;
     public int fluidRGB;
 

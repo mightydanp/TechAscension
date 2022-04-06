@@ -7,18 +7,18 @@ import mightydanp.industrialtech.api.common.blocks.OreBlock;
 import mightydanp.industrialtech.api.common.blocks.SmallOreBlock;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.ISeedReader;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.CrashReport;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -54,12 +54,12 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
     }
 
     @ParametersAreNonnullByDefault
-    public boolean place(ISeedReader iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, OreVeinGenFeatureConfig oreVeinGenFeatureConfig) {
+    public boolean place(WorldGenLevel iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, OreVeinGenFeatureConfig oreVeinGenFeatureConfig) {
         ChunkPos chunkPos = new ChunkPos(blockPosIn);
         List<BlockPos> getValidVeins = getNearbyVeins(iSeedReaderIn.getSeed(), chunkPos.x, chunkPos.z, randomIn, 9, oreVeinGenFeatureConfig);
         randomIn.setSeed(iSeedReaderIn.getSeed() + chunkPos.x * 341873128712L + chunkPos.z * 132897987541L);
         boolean canSpawn = false;
-        BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
         int radius = oreVeinGenFeatureConfig.minRadius;//24;
         int diameter = radius * 2;
         int maxSmallOreBlocksExtend = oreVeinGenFeatureConfig.minNumberOfSmallOreLayers;//3;
@@ -67,7 +67,7 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
         int y = blockPosIn.getY();
         int z = blockPosIn.getZ() + 8;
 
-        int groundHeight = iSeedReaderIn.getHeight(Heightmap.Type.WORLD_SURFACE, x, z);
+        int groundHeight = iSeedReaderIn.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
 
         int minHeight = 3 + (maxSmallOreBlocksExtend * 2);
         int maxHeight = 7 + (maxSmallOreBlocksExtend);

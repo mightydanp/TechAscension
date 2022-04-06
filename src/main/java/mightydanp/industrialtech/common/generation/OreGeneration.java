@@ -2,9 +2,9 @@ package mightydanp.industrialtech.common.generation;
 
 import mightydanp.industrialtech.api.common.handler.generation.OreGenerationHandler;
 import mightydanp.industrialtech.common.materials.ModMaterials;
-import static net.minecraft.world.biome.Biome.Category.*;
+import static net.minecraft.world.level.biome.Biome.BiomeCategory.*;
 
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.biome.Biome;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +15,7 @@ import static mightydanp.industrialtech.api.common.libs.EnumVeinRarityFlags.*;
  * Created by MightyDanp on 10/3/2020.
  */
 public class OreGeneration {
-    public static Biome.Category[] OverWorldBiomes = {
+    public static Biome.BiomeCategory[] OverWorldBiomes = {
         TAIGA, EXTREME_HILLS, JUNGLE, MESA, PLAINS, SAVANNA, ICY, BEACH, FOREST, OCEAN, DESERT, RIVER, SWAMP, MUSHROOM
     };
 

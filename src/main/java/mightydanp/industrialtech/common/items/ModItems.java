@@ -6,9 +6,9 @@ import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import mightydanp.industrialtech.api.common.items.RockBlockItem;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.libs.ItemRef;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 /**
  * Created by MightyDanp on 10/10/2020.

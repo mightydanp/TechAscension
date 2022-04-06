@@ -1,7 +1,9 @@
 package mightydanp.industrialtech.api.common.jsonconfig.tool.type;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.block.Block;
 
 /**
  * Created by MightyDanp on 4/23/2021.
@@ -13,7 +15,6 @@ public enum DefaultToolType implements IToolType {
 
     private final String prefix;
     private final String suffix;
-    private final ToolType toolType;
 
     public String getPrefixString() {
         return this.prefix;
@@ -23,11 +24,9 @@ public enum DefaultToolType implements IToolType {
         return this.suffix;
     }
 
-    private DefaultToolType(String prefix, String Suffix) {
+    DefaultToolType(String prefix, String Suffix) {
         this.prefix = prefix;
         this.suffix = Suffix;
-
-        toolType = ToolType.get(fixesToName(getFixes()));
     }
 
     @Override
@@ -41,13 +40,18 @@ public enum DefaultToolType implements IToolType {
     }
 
     @Override
-    public ToolType getToolType() {
-        return toolType;
+    public String getName() {
+        return fixesToName(new Pair<>(getPrefix(), getSuffix()));
     }
 
     @Override
     public Pair<String, String> getFixes() {
         return new Pair<>(prefix, suffix);
+    }
+
+    @Override
+    public Tag.Named<Block> getToolTypeTag() {
+        return BlockTags.bind("tool/" + fixesToName(getFixes()));
     }
 
     public static String fixesToName(Pair<String, String> fixes){

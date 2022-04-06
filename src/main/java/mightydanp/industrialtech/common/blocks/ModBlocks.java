@@ -4,11 +4,14 @@ import mightydanp.industrialtech.api.common.blocks.HoleBlock;
 import mightydanp.industrialtech.api.common.blocks.RockBlock;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.common.libs.BlockRef;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 /**
  * Created by MightyDanp on 9/30/2020.
@@ -24,16 +27,16 @@ public class ModBlocks {
 
 
     public static void init() {
-        cattail_plant_bottom_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_bottom_name, () -> new CatTailPlantBottomBlock(AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
-        cattail_plant_top_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_top_name, () -> new CatTailPlantTopBlock(AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
+        cattail_plant_bottom_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_bottom_name, () -> new CatTailPlantBottomBlock(BlockBehaviour.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
+        cattail_plant_top_block = RegistryHandler.BLOCKS.register(BlockRef.cattail_top_name, () -> new CatTailPlantTopBlock(BlockBehaviour.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
         rock_block = RegistryHandler.BLOCKS.register(BlockRef.rock_block_name, RockBlock::new);
         campfire_override = RegistryHandler.BLOCKS.register(BlockRef.campfire_override_name, CampfireBlockOverride::new);
     }
 
     public static void setRenderType(){
-        RenderTypeLookup.setRenderLayer(cattail_plant_bottom_block.get(), RenderType.cutout());
-        RenderTypeLookup.setRenderLayer(cattail_plant_top_block.get(), RenderType.cutout());
-        RenderTypeLookup.setRenderLayer(rock_block.get(), RenderType.cutout());
-        RenderTypeLookup.setRenderLayer(campfire_override.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(cattail_plant_bottom_block.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(cattail_plant_top_block.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(rock_block.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(campfire_override.get(), RenderType.cutout());
     }
 }

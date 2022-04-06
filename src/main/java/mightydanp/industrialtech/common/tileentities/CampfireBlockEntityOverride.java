@@ -4,35 +4,38 @@ import mightydanp.industrialtech.common.blocks.CampfireBlockOverride;
 import mightydanp.industrialtech.common.crafting.recipe.CampfireOverrideCharRecipe;
 import mightydanp.industrialtech.common.crafting.recipe.CampfireOverrideRecipe;
 import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.*;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.Random;
 
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
+import net.minecraft.world.SimpleContainer;
+
 /**
  * Created by MightyDanp on 5/6/2021.
  */
 
-public class CampfireTileEntityOverride extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
+public class CampfireBlockEntityOverride extends BlockEntity implements MenuProvider, TickableBlockEntity {
 
     @Nullable
     private BlockState cachedBlockState;
@@ -62,8 +65,8 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     public boolean keepLogsFormed = false;
     public boolean canPlaceRecipeItems = false;
 
-    public CampfireTileEntityOverride() {
-        super(ModTileEntities.campfire_tile_entity.get());
+    public CampfireBlockEntityOverride() {
+        super(ModBlockEntity.campfire_block_entity.get(), getBlockPos());
     }
 
     public ItemStack getCookSlot1(){
@@ -104,7 +107,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
             } else {
                 for(int i = 0; i < numberOfCookSlots; ++i) {
                     if (this.cookingProgresses[i] > 0) {
-                        this.cookingProgresses[i] = MathHelper.clamp(this.cookingProgresses[i] - 2, 0, this.cookingTimes[i]);
+                        this.cookingProgresses[i] = Mth.clamp(this.cookingProgresses[i] - 2, 0, this.cookingTimes[i]);
                     }
                 }
             }
@@ -118,7 +121,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
                 if (!itemstack.isEmpty()) {
                     this.cookingProgresses[i]++;
                     if (this.cookingProgresses[i] >= this.cookingTimes[i] && this.cookedSlotChecker[i] == 0) {
-                        IInventory iinventory = new Inventory(itemstack);
+                        Container iinventory = new SimpleContainer(itemstack);
                         ItemStack itemStack1 = this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireType, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
                         BlockPos blockpos = this.getBlockPos();
                         //InventoryHelper.dropItemStack(this.level, blockpos.getX(), blockpos.getY(), blockpos.getZ(), itemStack1);
@@ -127,7 +130,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
                         this.markUpdated();
                     } else {
                         if (this.cookedSlotChecker[i] == 1) {
-                            IInventory iinventory = new Inventory(itemstack);
+                            Container iinventory = new SimpleContainer(itemstack);
                             ItemStack itemStack1 = this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireCharType, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
                             this.inventory.set(i, itemStack1);
                         }
@@ -177,7 +180,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     }
 
     private void makeParticles() {
-        World world = this.getLevel();
+        Level world = this.getLevel();
         if (world != null) {
             BlockPos blockpos = this.getBlockPos();
             Random random = world.random;
@@ -205,17 +208,17 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
         }
     }
 
-    public NonNullList<net.minecraft.item.ItemStack> getInventory() {
+    public NonNullList<net.minecraft.world.item.ItemStack> getInventory() {
         return inventory;
     }
 
     @Override
-    public void load(BlockState blockState, CompoundNBT nbt) {
-        loadMetadataAndItems(blockState, nbt);
+    public void load(CompoundTag nbt) {
+        loadMetadataAndItems(nbt);
     }
 
-    private CompoundNBT loadMetadataAndItems(BlockState blockState, CompoundNBT nbt) {
-        super.load(blockState, nbt);
+    private CompoundTag loadMetadataAndItems(CompoundTag nbt) {
+        super.load(nbt);
         Direction directionNew = Direction.byName(nbt.getString("direction"));
 
         fuelBurnTime = nbt.getInt("fuel_burn_time");
@@ -224,7 +227,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
         keepLogsFormed = nbt.getBoolean("keep_logs_formed");
         canPlaceRecipeItems = nbt.getBoolean("can_place_recipe_items");
 
-        ItemStackHelper.loadAllItems(nbt, this.inventory);
+        ContainerHelper.loadAllItems(nbt, this.inventory);
 
         if (nbt.contains("cooking_times", 11)) {
             int[] aint = nbt.getIntArray("cooking_times");
@@ -244,13 +247,13 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT nbt) {
+    public CompoundTag save(CompoundTag nbt) {
         this.saveMetadataAndItems(nbt);
 
         return super.save(nbt);
     }
 
-    private CompoundNBT saveMetadataAndItems(CompoundNBT nbt) {
+    private CompoundTag saveMetadataAndItems(CompoundTag nbt) {
         super.save(nbt);
         nbt.putInt("fuel_burn_time", fuelBurnTime);
         nbt.putInt("fuel_burn_progress", fuelBurnProgress);
@@ -261,24 +264,24 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
         nbt.putBoolean("keep_logs_formed", keepLogsFormed);
         nbt.putBoolean("can_place_recipe_items", canPlaceRecipeItems);
 
-        ItemStackHelper.saveAllItems(nbt, this.inventory, true);
+        ContainerHelper.saveAllItems(nbt, this.inventory, true);
         return nbt;
     }
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(this.worldPosition, 13, this.getUpdateTag());
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return new ClientboundBlockEntityDataPacket(this.worldPosition, 13, this.getUpdateTag());
     }
 
     @Override
-    public CompoundNBT getUpdateTag() {
-        return this.saveMetadataAndItems(new CompoundNBT());
+    public CompoundTag getUpdateTag() {
+        return this.saveMetadataAndItems(new CompoundTag());
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        load(this.getBlockState(), pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        load(pkt.getTag());
     }
 
     public Optional<CampfireOverrideRecipe> getCookableRecipe(ItemStack p_213980_1_) {
@@ -286,7 +289,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
         for(int i = 0; i == numberOfCookSlots; i++){
             inventoryCopy.set(i, inventory.get(i));
         }
-        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireType, new Inventory(p_213980_1_), this.level);
+        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireType, new SimpleContainer(p_213980_1_), this.level);
     }
 
     public Optional<CampfireOverrideCharRecipe> getCookedChardRecipe(ItemStack p_213980_1_) {
@@ -294,7 +297,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
         for(int i = 0; i == numberOfCookSlots; i++){
             inventoryCopy.set(i, inventory.get(i));
         }
-        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireCharType, new Inventory(p_213980_1_), this.level);
+        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireCharType, new SimpleContainer(p_213980_1_), this.level);
     }
 
     public boolean placeFood(ItemStack p_213984_1_, int slotNumber, int cookTime) {
@@ -338,7 +341,7 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
                     inventoryCopy.set(i, inventory.get(i));
                     inventory.set(i, ItemStack.EMPTY);
                 }
-                InventoryHelper.dropContents(this.level, this.getBlockPos(), inventoryCopy);
+                Containers.dropContents(this.level, this.getBlockPos(), inventoryCopy);
             }
 
             this.markUpdated();
@@ -358,17 +361,17 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     }
 
     @Override
-    public ITextComponent getDisplayName() {
+    public Component getDisplayName() {
         return null;
     }
 
     @Nullable
     @Override
-    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
+    public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
         return null;
     }
 
-    public boolean canPlayerAccessInventory(PlayerEntity player) {
+    public boolean canPlayerAccessInventory(Player player) {
         if (this.level.getBlockEntity(this.getBlockPos()) != this) return false;
         final double X_CENTRE_OFFSET = 0.5;
         final double Y_CENTRE_OFFSET = 0.5;
@@ -380,18 +383,12 @@ public class CampfireTileEntityOverride extends TileEntity implements INamedCont
     public void markDirty() {
         if (this.level != null) {
             this.cachedBlockState = this.level.getBlockState(this.worldPosition);
-            this.level.blockEntityChanged(this.worldPosition, this);
-            if (!this.cachedBlockState.isAir(this.level, this.worldPosition)) {
+            this.level.blockEntityChanged(getBlockPos());
+            if (!this.cachedBlockState.isAir()) {
                 this.level.updateNeighbourForOutputSignal(this.worldPosition, this.cachedBlockState.getBlock());
             }
         }
 
-    }
-
-    public static int getItemBurnTime(World world, ItemStack stack)
-    {
-        int burnTime = net.minecraftforge.common.ForgeHooks.getBurnTime(stack);
-        return burnTime;
     }
 
 

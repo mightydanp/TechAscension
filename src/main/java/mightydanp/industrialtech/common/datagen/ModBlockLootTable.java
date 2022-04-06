@@ -3,20 +3,19 @@ package mightydanp.industrialtech.common.datagen;
 import mightydanp.industrialtech.api.common.datagen.GenLootTables;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.items.ModItems;
-import net.minecraft.advancements.criterion.EnchantmentPredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.enchantment.SilkTouchEnchantment;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Items;
-import net.minecraft.loot.*;
-import net.minecraft.loot.conditions.Alternative;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.loot.conditions.MatchTool;
-import net.minecraft.loot.conditions.TableBonus;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.storage.loot.predicates.MatchTool;
+import net.minecraft.world.level.storage.loot.predicates.BonusLevelTableCondition;
+
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
 
 /**
  * Created by MightyDanp on 3/6/2021.
@@ -31,14 +30,14 @@ public class ModBlockLootTable extends GenLootTables {
         LootPool.Builder poolBuilder = LootPool.lootPool();
 
         blockTable(ModBlocks.rock_block.get(), tableBuilder.withPool(
-                poolBuilder.setRolls(ConstantRange.exactly(1))
-                        .add(AlternativesLootEntry.alternatives().otherwise(ItemLootEntry.lootTableItem(ModBlocks.rock_block.get())
-                        .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.IntBound.atLeast(1)))))
+                poolBuilder.setRolls(ConstantIntValue.exactly(1))
+                        .add(AlternativesEntry.alternatives().otherwise(LootItem.lootTableItem(ModBlocks.rock_block.get())
+                        .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1)))))
                         ))
-                        .add(ItemLootEntry.lootTableItem(Items.FLINT)
-                        .when(TableBonus.bonusLevelFlatChance(Enchantments.BLOCK_FORTUNE, 0.1F , 0.14285715F, 0.25F, 1.0F)
+                        .add(LootItem.lootTableItem(Items.FLINT)
+                        .when(BonusLevelTableCondition.bonusLevelFlatChance(Enchantments.BLOCK_FORTUNE, 0.1F , 0.14285715F, 0.25F, 1.0F)
                         ))
-                        .add(ItemLootEntry.lootTableItem(ModItems.rock_block.get()))
+                        .add(LootItem.lootTableItem(ModItems.rock_block.get()))
         ));
     }
 

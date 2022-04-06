@@ -1,9 +1,9 @@
 package mightydanp.industrialtech.api.common.handler;
 
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryBuilder;

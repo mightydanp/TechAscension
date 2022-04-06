@@ -1,11 +1,11 @@
 package mightydanp.industrialtech.api.common.libs;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
 /**
  * Created by MightyDanp on 10/10/2020.
  */
-public enum EnumGrate implements IStringSerializable
+public enum EnumGrate implements StringRepresentable
 {
     NO_COOKWARE("no_cookware"),
     CLAY_POT("clay_pot"),

@@ -2,15 +2,22 @@ package mightydanp.industrialtech.api.common.items;
 
 import com.mojang.datafixers.util.Pair;;
 import mightydanp.industrialtech.api.common.jsonconfig.icons.ITextureIcon;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import net.minecraft.world.item.Item.Properties;
+import net.minecraft.world.level.block.Block;
 
 /**
  * Created by MightyDanp on 3/29/2021.
@@ -25,12 +32,12 @@ public class ToolHeadItem extends Item {
     public Integer boilingPoint;
     public Integer efficiency;
     public Integer durability;
-    public List<Pair<ToolType,Integer>> itToolType;
+    public Map<IToolType, Integer> itToolType;
     public Float attackDamage;
     public Float weight;
     public Integer maxDamage;
 
-    public ToolHeadItem(Properties properties, String materialIn, String elementIn, Integer colorIn, Pair<String, ITextureIcon> textureFlagIn, Integer boilingPointIn, Integer meltingPointIn, Integer efficiencyIn, Integer durabilityIn, Float attackDamageIn, Float weightIn, List<Pair<ToolType, Integer>> itToolTypeIn) {
+    public ToolHeadItem(Properties properties, String materialIn, String elementIn, Integer colorIn, Pair<String, ITextureIcon> textureFlagIn, Integer boilingPointIn, Integer meltingPointIn, Integer efficiencyIn, Integer durabilityIn, Float attackDamageIn, Float weightIn, Map<IToolType, Integer> itToolTypeIn) {
         super(properties);
         material = materialIn;
         color = colorIn;
@@ -42,7 +49,10 @@ public class ToolHeadItem extends Item {
         durability = durabilityIn;
         attackDamage = attackDamageIn;
         weight = weightIn;
+
         itToolType = itToolTypeIn;
+
+
         properties.stacksTo(1);
         maxDamage = durabilityIn;
     }
@@ -53,37 +63,37 @@ public class ToolHeadItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
-        tooltip.add(ITextComponent.nullToEmpty(element));
+        tooltip.add(Component.nullToEmpty(element));
         if(durability != null) {
-            tooltip.add(ITextComponent.nullToEmpty("durability:" + (durability -stack.getDamageValue()) + "/" + durability));
+            tooltip.add(Component.nullToEmpty("durability:" + (durability -stack.getDamageValue()) + "/" + durability));
         }
         if(efficiency != null) {
-            tooltip.add(ITextComponent.nullToEmpty("efficiency:" + efficiency));
+            tooltip.add(Component.nullToEmpty("efficiency:" + efficiency));
         }
         if (meltingPoint != null) {
-            tooltip.add(ITextComponent.nullToEmpty("Melting Point of" + " §5" + meltingPoint));
+            tooltip.add(Component.nullToEmpty("Melting Point of" + " §5" + meltingPoint));
         }
         if (boilingPoint != null) {
-            tooltip.add(ITextComponent.nullToEmpty("Boiling Point of" + " §5" + boilingPoint));
+            tooltip.add(Component.nullToEmpty("Boiling Point of" + " §5" + boilingPoint));
         }
 
         if (meltingPoint != null && boilingPoint != null) {
             if (temperature.equals(boilingPoint)) {
-                tooltip.add(ITextComponent.nullToEmpty("§5" + "Hot"));
+                tooltip.add(Component.nullToEmpty("§5" + "Hot"));
             }
         }
 
 
         if(element != null) {
-            tooltip.add(ITextComponent.nullToEmpty(element));
+            tooltip.add(Component.nullToEmpty(element));
         }
 
         if(itToolType != null) {
-            for(Pair<ToolType,Integer> toolType : itToolType) {
-                tooltip.add(ITextComponent.nullToEmpty(toolType.getFirst().getName() + " level: " + toolType.getSecond()));
-            }
+            itToolType.forEach(((iToolType, integer) -> tooltip.add(
+                    Component.nullToEmpty(iToolType.getName() + " level: " + integer))
+            ));
         }
     }
     public void setElement(String elementIn) {
@@ -102,7 +112,7 @@ public class ToolHeadItem extends Item {
         return temperature;
     }
 
-    public List<Pair<ToolType, Integer>> getItToolType() {
+    public Map<IToolType, Integer> getItToolType() {
         return itToolType;
     }
 }

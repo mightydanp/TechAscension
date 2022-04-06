@@ -4,19 +4,21 @@ import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.material.ITMaterials;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.*;
+
+import net.minecraft.world.item.Item.Properties;
 
 /**
  * Created by MightyDanp on 10/27/2021.
@@ -92,17 +94,17 @@ public class ITBucket extends BucketItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable World world, List<ITextComponent> textComponents, ITooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack itemStack, @Nullable Level world, List<Component> textComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(itemStack, world, textComponents, tooltipFlag);
     }
 
     @Override
-    public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+    public void inventoryTick(ItemStack p_77663_1_, Level p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
         super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
     }
 
     @Override
-    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
+    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt) {
         super.readShareTag(stack, nbt);
         if (nbt == null) {
             stack.setTag(null);
@@ -127,7 +129,7 @@ public class ITBucket extends BucketItem {
 
     public int getTemperature(ItemStack itemStackIn) {
         if (itemStackIn != null) {
-            CompoundNBT nbt = itemStackIn.getOrCreateTag();
+            CompoundTag nbt = itemStackIn.getOrCreateTag();
             if (nbt.contains("temperature")) {
                 return nbt.getInt("temperature");
             } else {
@@ -139,14 +141,14 @@ public class ITBucket extends BucketItem {
     }
 
     public void setTemperature(ItemStack itemStackIn, int temperatureIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putInt("temperature", temperatureIn);
         this.temperature = temperatureIn;
     }
 
     public int getRednessStartingTemperature(ItemStack itemStackIn) {
         if (itemStackIn != null) {
-            CompoundNBT nbt = itemStackIn.getOrCreateTag();
+            CompoundTag nbt = itemStackIn.getOrCreateTag();
             if (nbt.contains("redness_starting_temperature")) {
                 return nbt.getInt("redness_starting_temperature");
             } else {
@@ -158,14 +160,14 @@ public class ITBucket extends BucketItem {
     }
 
     public void setRednessStartingTemperature(ItemStack itemStackIn, int rednessStartingTemperatureIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putInt("redness_starting_temperature", rednessStartingTemperatureIn);
         this.rednessStartingTemperature = rednessStartingTemperatureIn;
     }
 
     public int getMeltingTemperature(ItemStack itemStackIn) {
         if (itemStackIn != null) {
-            CompoundNBT nbt = itemStackIn.getOrCreateTag();
+            CompoundTag nbt = itemStackIn.getOrCreateTag();
             if (nbt.contains("melting_temperature")) {
                 return nbt.getInt("melting_temperature");
             } else {
@@ -177,14 +179,14 @@ public class ITBucket extends BucketItem {
     }
 
     public void setMeltingTemperature(ItemStack itemStackIn, int meltingTemperatureIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putInt("melting_temperature", meltingTemperatureIn);
         this.meltingTemperature = meltingTemperatureIn;
     }
 
     public int getRgbBucket(ItemStack itemStackIn) {
         if (itemStackIn != null) {
-            CompoundNBT nbt = itemStackIn.getOrCreateTag();
+            CompoundTag nbt = itemStackIn.getOrCreateTag();
             if (nbt.contains("rgb_bucket")) {
                 return nbt.getInt("rgb_bucket");
             } else {
@@ -196,7 +198,7 @@ public class ITBucket extends BucketItem {
     }
 
     public void setRgbBucket(ItemStack itemStackIn, int bucketRGBIn) {
-        CompoundNBT nbt = itemStackIn.getOrCreateTag();
+        CompoundTag nbt = itemStackIn.getOrCreateTag();
         nbt.putInt("rgb_bucket", bucketRGBIn);
         this.bucketRGB = bucketRGBIn;
     }

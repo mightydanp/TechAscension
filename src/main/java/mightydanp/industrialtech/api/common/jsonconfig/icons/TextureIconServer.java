@@ -8,7 +8,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.Sync
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -188,12 +188,12 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, ITextureIcon textureIcon) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, ITextureIcon textureIcon) {//friendlybotbuff
         buffer.writeUtf(textureIcon.getName());
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<ITextureIcon> list = message.getConfig(IndustrialTech.configSync.textureIconID).stream()
                 .filter(ITextureIcon.class::isInstance)
                 .map(ITextureIcon.class::cast)
@@ -205,7 +205,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
     }
 
     @Override
-    public ITextureIcon singleFromBuffer(PacketBuffer buffer) {
+    public ITextureIcon singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
 
         return new ITextureIcon() {
@@ -218,7 +218,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
     }
 
     @Override
-    public List<ITextureIcon> multipleFromBuffer(PacketBuffer buffer) {
+    public List<ITextureIcon> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<ITextureIcon> textureIcons = new ArrayList<>();
 
         int size = buffer.readVarInt();

@@ -1,9 +1,8 @@
 package mightydanp.industrialtech.api.common.items;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Item;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.item.Item.Properties;
 
 /**
  * Created by MightyDanp on 10/10/2020.

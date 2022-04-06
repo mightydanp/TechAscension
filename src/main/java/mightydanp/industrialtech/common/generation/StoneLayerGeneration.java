@@ -4,26 +4,22 @@ import mightydanp.industrialtech.api.common.handler.generation.StoneLayerGenerat
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.biome.Biome;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static net.minecraft.world.biome.Biome.Category.*;
-import static net.minecraft.world.biome.Biome.Category.MUSHROOM;
+import static net.minecraft.world.level.biome.Biome.BiomeCategory.*;
 
-/**
- * Created by MightyDanp on 9/8/2021.
- */
 public class StoneLayerGeneration {
-    public static Biome.Category[] OverWorldBiomes = {
+    public static Biome.BiomeCategory[] OverWorldBiomes = {
             TAIGA, EXTREME_HILLS, JUNGLE, MESA, PLAINS, SAVANNA, ICY, BEACH, FOREST, OCEAN, DESERT, RIVER, SWAMP, MUSHROOM
     };
 
-    public static Biome.Category[] OverWorldFlowBiomes = {
+    public static Biome.BiomeCategory[] OverWorldFlowBiomes = {
             BEACH, OCEAN, RIVER, SWAMP
     };
 

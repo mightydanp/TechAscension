@@ -1,7 +1,7 @@
 package mightydanp.industrialtech.api.common.datagen;
 
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.FluidTagsProvider;
+import net.minecraft.data.tags.FluidTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;

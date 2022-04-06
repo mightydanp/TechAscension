@@ -8,12 +8,12 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 
 /**
  * Created by MightyDanp on 4/2/2021.
@@ -23,7 +23,7 @@ public class CustomCookingRecipeBuilder {
     public static final Codec<ItemStack> ITEMSTACK_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Registry.ITEM.fieldOf("item").forGetter(itemstack -> itemstack.getItem()),
             Codec.INT.optionalFieldOf("count",1).forGetter(itemstack -> itemstack.getCount()),
-            CompoundNBT.CODEC.optionalFieldOf("nbt", new CompoundNBT()).forGetter(ItemStack::getTag)
+            CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(ItemStack::getTag)
     ).apply(instance, ItemStack::new));
 
 

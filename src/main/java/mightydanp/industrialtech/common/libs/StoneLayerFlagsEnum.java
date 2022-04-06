@@ -1,7 +1,6 @@
 package mightydanp.industrialtech.common.libs;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.Block;
 
 import java.util.ArrayList;
 import java.util.List;

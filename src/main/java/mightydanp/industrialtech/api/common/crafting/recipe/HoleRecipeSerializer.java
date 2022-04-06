@@ -2,19 +2,15 @@ package mightydanp.industrialtech.api.common.crafting.recipe;
 
 import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -23,13 +19,13 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 /**
  * Created by MightyDanp on 10/10/2021.
  */
-public class HoleRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<HoleRecipe> {
+public class HoleRecipeSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<HoleRecipe> {
     public static ItemStack itemFromJson(JsonObject p_199798_0_) {
-        String s = JSONUtils.getAsString(p_199798_0_, "item");
+        String s = GsonHelper.getAsString(p_199798_0_, "item");
         if (p_199798_0_.has("data")) {
             throw new JsonParseException("Disallowed data tag found");
         } else {
-            int i = JSONUtils.getAsInt(p_199798_0_, "count", 1);
+            int i = GsonHelper.getAsInt(p_199798_0_, "count", 1);
             return CraftingHelper.getItemStack(p_199798_0_, true);
         }
     }
@@ -44,7 +40,7 @@ public class HoleRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?
 
     public static Fluid getFluidStack(JsonObject json, boolean readNBT)
     {
-        String fluidName = JSONUtils.getAsString(json, "item");
+        String fluidName = GsonHelper.getAsString(json, "item");
 
         Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidName));
 
@@ -69,19 +65,19 @@ public class HoleRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?
     }
 
     public HoleRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
-        String group = JSONUtils.getAsString(jsonObject, "group", "");
+        String group = GsonHelper.getAsString(jsonObject, "group", "");
 
         if (!jsonObject.has("desired_block")) throw new com.google.gson.JsonSyntaxException("Missing result, expected to find a string or object");
         ItemStack desiredBlockItem;
 
-        if (jsonObject.get("desired_block").isJsonObject()) desiredBlockItem = itemFromJson(JSONUtils.getAsJsonObject(jsonObject, "desired_block"));
+        if (jsonObject.get("desired_block").isJsonObject()) desiredBlockItem = itemFromJson(GsonHelper.getAsJsonObject(jsonObject, "desired_block"));
         else {
-            String s1 = JSONUtils.getAsString(jsonObject, "desired_block");
+            String s1 = GsonHelper.getAsString(jsonObject, "desired_block");
             ResourceLocation resourcelocation = new ResourceLocation(s1);
             desiredBlockItem = new ItemStack(Registry.ITEM.getOptional(resourcelocation).orElseThrow(() -> new IllegalStateException("Item: " + s1 + " does not exist")));
         }
 
-        NonNullList<Ingredient> ingredientItems = itemsFromJson(JSONUtils.getAsJsonArray(jsonObject, "ingredient_items"));
+        NonNullList<Ingredient> ingredientItems = itemsFromJson(GsonHelper.getAsJsonArray(jsonObject, "ingredient_items"));
 
         if (ingredientItems.isEmpty()) {
             throw new JsonParseException("No harvest tools for recipe");
@@ -89,19 +85,19 @@ public class HoleRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?
             throw new JsonParseException("Too many harvest tools for recipe the max is " + 2);
         }
 
-        int harvestToolDamage = JSONUtils.getAsInt(jsonObject, "ingredient_item_damage", 0);
+        int harvestToolDamage = GsonHelper.getAsInt(jsonObject, "ingredient_item_damage", 0);
 
-        boolean consumeIngredients = JSONUtils.getAsBoolean(jsonObject, "consume_ingredients", false);
+        boolean consumeIngredients = GsonHelper.getAsBoolean(jsonObject, "consume_ingredients", false);
 
-        int minTicks = JSONUtils.getAsInt(jsonObject, "min_ticks", 100);
-        int maxTicks = JSONUtils.getAsInt(jsonObject, "max_ticks", 100);
+        int minTicks = GsonHelper.getAsInt(jsonObject, "min_ticks", 100);
+        int maxTicks = GsonHelper.getAsInt(jsonObject, "max_ticks", 100);
 
         ItemStack resultItem = null;
         if(jsonObject.has("result_item")) {
             if (jsonObject.get("result_item").isJsonObject())
-                resultItem = itemFromJson(JSONUtils.getAsJsonObject(jsonObject, "result_item"));
+                resultItem = itemFromJson(GsonHelper.getAsJsonObject(jsonObject, "result_item"));
             else {
-                String s1 = JSONUtils.getAsString(jsonObject, "result_item");
+                String s1 = GsonHelper.getAsString(jsonObject, "result_item");
                 ResourceLocation resourcelocation = new ResourceLocation(s1);
                 resultItem = new ItemStack(Registry.ITEM.getOptional(resourcelocation).orElseThrow(() -> new IllegalStateException("Item: " + s1 + " does not exist")));
             }
@@ -110,24 +106,24 @@ public class HoleRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?
         Fluid resultFluid = null;
         if(jsonObject.has("result_fluid")) {
             if (jsonObject.get("result_fluid").isJsonObject())
-                resultFluid = fluidFromJson(JSONUtils.getAsJsonObject(jsonObject, "result_fluid"));
+                resultFluid = fluidFromJson(GsonHelper.getAsJsonObject(jsonObject, "result_fluid"));
             else {
-                String s1 = JSONUtils.getAsString(jsonObject, "result_fluid");
+                String s1 = GsonHelper.getAsString(jsonObject, "result_fluid");
                 ResourceLocation resourcelocation = new ResourceLocation(s1);
                 resultFluid = Registry.FLUID.getOptional(resourcelocation).orElseThrow(() -> new IllegalStateException("Fluid: " + s1 + " does not exist"));
             }
         }
 
-        int minResult = JSONUtils.getAsInt(jsonObject, "min_result", 1);
-        int maxResult = JSONUtils.getAsInt(jsonObject, "max_result", 1);
+        int minResult = GsonHelper.getAsInt(jsonObject, "min_result", 1);
+        int maxResult = GsonHelper.getAsInt(jsonObject, "max_result", 1);
 
-        int holeColor = JSONUtils.getAsInt(jsonObject, "hole_color", 0);
-        int resinColor = JSONUtils.getAsInt(jsonObject, "resin_color", 0);
+        int holeColor = GsonHelper.getAsInt(jsonObject, "hole_color", 0);
+        int resinColor = GsonHelper.getAsInt(jsonObject, "resin_color", 0);
 
         return new HoleRecipe(resourceLocation, group, desiredBlockItem, ingredientItems, harvestToolDamage, consumeIngredients, minTicks, maxTicks, resultItem, resultFluid, minResult, maxResult, holeColor, resinColor);
     }
 
-    public HoleRecipe fromNetwork(ResourceLocation resourceLocation, PacketBuffer packetBuffer) {
+    public HoleRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf packetBuffer) {
         String group = packetBuffer.readUtf(32767);
 
         ItemStack desiredBlock = packetBuffer.readItem();
@@ -158,7 +154,7 @@ public class HoleRecipeSerializer extends ForgeRegistryEntry<IRecipeSerializer<?
         return new HoleRecipe(resourceLocation, group, desiredBlock, ingredientItems, ingredientItemDamage, consumeIngredients, minTicks, maxTicks, itemstack, fluidStack, minResult, maxResult, holeColor, resinColor);
     }
 
-    public void toNetwork(PacketBuffer packetBuffer, HoleRecipe holeRecipe) {
+    public void toNetwork(FriendlyByteBuf packetBuffer, HoleRecipe holeRecipe) {
 
         packetBuffer.writeUtf(holeRecipe.getGroup());
         packetBuffer.writeItem(holeRecipe.getDesiredBlock());

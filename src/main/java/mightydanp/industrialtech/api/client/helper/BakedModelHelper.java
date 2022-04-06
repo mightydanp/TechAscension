@@ -1,19 +1,19 @@
 package mightydanp.industrialtech.api.client.helper;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.*;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.minecraftforge.client.model.SimpleModelTransform.IDENTITY;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockFaceUV;
+import net.minecraft.client.renderer.block.model.FaceBakery;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Created by MightyDanp on 11/1/2021.
@@ -21,7 +21,7 @@ import static net.minecraftforge.client.model.SimpleModelTransform.IDENTITY;
 public class BakedModelHelper {
     private static FaceBakery faceBakery = new FaceBakery();
 
-    private static void putVertex(BakedQuadBuilder builder,  Vector3d normal, double x, double y, double z, float u, float v, TextureAtlasSprite sprite, float r, float g, float b, float a) {
+    private static void putVertex(BakedQuadBuilder builder,  Vec3 normal, double x, double y, double z, float u, float v, TextureAtlasSprite sprite, float r, float g, float b, float a) {
         builder.setQuadOrientation(Direction.getNearest(normal.x, normal.y, normal.z));
 
         ImmutableList<VertexFormatElement> elements = builder.getVertexFormat().getElements().asList();
@@ -61,25 +61,25 @@ public class BakedModelHelper {
         builder.setApplyDiffuseLighting(true);
     }
 
-    public static List<BakedQuad> createCube(float red, float green, float blue, float alpha, int tintIndex, TextureAtlasSprite sprite, Direction.Axis axis, float rotation, AxisAlignedBB cube, BlockFaceUV north, BlockFaceUV east, BlockFaceUV south, BlockFaceUV west, BlockFaceUV up, BlockFaceUV down) {
+    public static List<BakedQuad> createCube(float red, float green, float blue, float alpha, int tintIndex, TextureAtlasSprite sprite, Direction.Axis axis, float rotation, AABB cube, BlockFaceUV north, BlockFaceUV east, BlockFaceUV south, BlockFaceUV west, BlockFaceUV up, BlockFaceUV down) {
         int texWidth = sprite.getWidth();
         int texHeight = sprite.getHeight();
         
         List<BakedQuad> bakedQuadList = new ArrayList<>();
-        Vector3d vertex0 = new Vector3d((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.minZ / 16);
-        Vector3d vertex1 = new Vector3d((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16);
-        Vector3d vertex2 = new Vector3d((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16);
-        Vector3d vertex3 = new Vector3d((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16);
-        Vector3d vertex4 = new Vector3d((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16);
-        Vector3d vertex5 = new Vector3d((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16);
-        Vector3d vertex6 = new Vector3d((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16);
-        Vector3d vertex7 = new Vector3d((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.minZ / 16);
+        Vec3 vertex0 = new Vec3((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.minZ / 16);
+        Vec3 vertex1 = new Vec3((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16);
+        Vec3 vertex2 = new Vec3((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.minZ / 16);
+        Vec3 vertex3 = new Vec3((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16);
+        Vec3 vertex4 = new Vec3((float)cube.maxX / 16, (float)cube.minY / 16, (float)cube.maxZ / 16);
+        Vec3 vertex5 = new Vec3((float)cube.maxX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16);
+        Vec3 vertex6 = new Vec3((float)cube.minX / 16, (float)cube.maxY / 16, (float)cube.maxZ / 16);
+        Vec3 vertex7 = new Vec3((float)cube.minX / 16, (float)cube.minY / 16, (float)cube.minZ / 16);
 
         if(axis != null) {
             switch (axis) {
                 case X:
                 if(rotation < 0.0) {
-                    Vector3d translate = new Vector3d(0,0.81,1.3644);
+                    Vec3 translate = new Vec3(0,0.81,1.3644);
 
                     vertex0 = vertex0.xRot(-rotation).add(translate);
                     vertex1 = vertex1.xRot(-rotation).add(translate);
@@ -90,7 +90,7 @@ public class BakedModelHelper {
                     vertex6 = vertex6.xRot(-rotation).add(translate);
                     vertex7 = vertex7.xRot(-rotation).add(translate);
                 }else{
-                    Vector3d translate = new Vector3d(0,0.695,0.63);
+                    Vec3 translate = new Vec3(0,0.695,0.63);
                     vertex0 = vertex0.xRot(-rotation).add(translate);
                     vertex1 = vertex1.xRot(-rotation).add(translate);
                     vertex2 = vertex2.xRot(-rotation).add(translate);
@@ -103,7 +103,7 @@ public class BakedModelHelper {
                 break;
                 case Y:
                     if(rotation < 0.0) {
-                        Vector3d translate = new Vector3d(0,0,0);
+                        Vec3 translate = new Vec3(0,0,0);
                         vertex0 = vertex0.subtract(translate).yRot(-rotation);
                         vertex1 = vertex1.subtract(translate).yRot(-rotation);
                         vertex2 = vertex2.subtract(translate).yRot(-rotation);
@@ -113,7 +113,7 @@ public class BakedModelHelper {
                         vertex6 = vertex6.subtract(translate).yRot(-rotation);
                         vertex7 = vertex7.subtract(translate).yRot(-rotation);
                     }else{
-                        Vector3d translate = new Vector3d(0,0,0);
+                        Vec3 translate = new Vec3(0,0,0);
                         vertex0 = vertex0.subtract(translate).yRot(-rotation);
                         vertex1 = vertex1.subtract(translate).yRot(-rotation);
                         vertex2 = vertex2.subtract(translate).yRot(-rotation);
@@ -126,7 +126,7 @@ public class BakedModelHelper {
                     break;
                 case Z:
                     if(rotation < 0.0) {
-                        Vector3d translate = new Vector3d(0.63,0.695,0);
+                        Vec3 translate = new Vec3(0.63,0.695,0);
                         vertex0 = vertex0.zRot(-rotation).add(translate);
                         vertex1 = vertex1.zRot(-rotation).add(translate);
                         vertex2 = vertex2.zRot(-rotation).add(translate);
@@ -136,7 +136,7 @@ public class BakedModelHelper {
                         vertex6 = vertex6.zRot(-rotation).add(translate);
                         vertex7 = vertex7.zRot(-rotation).add(translate);
                     }else{
-                        Vector3d translate = new Vector3d(1.3644,0.81,0);
+                        Vec3 translate = new Vec3(1.3644,0.81,0);
                         vertex0 = vertex0.zRot(-rotation).add(translate);
                         vertex1 = vertex1.zRot(-rotation).add(translate);
                         vertex2 = vertex2.zRot(-rotation).add(translate);
@@ -166,33 +166,33 @@ public class BakedModelHelper {
          */
 
         // Up
-        Vector3d normalUp = new Vector3d(0.5, 1, 0.5);
+        Vec3 normalUp = new Vec3(0.5, 1, 0.5);
         bakedQuadList.add(createQuad(vertex1, vertex2, vertex6, vertex5, normalUp, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[south.getReverseIndex(1)] / texHeight, north.uvs[north.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
 
         // Down
-        Vector3d normalDown = new Vector3d(0.5, -1, 0.5);
+        Vec3 normalDown = new Vec3(0.5, -1, 0.5);
         bakedQuadList.add(createQuad(vertex4, vertex3, vertex7, vertex0, normalDown, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[south.getReverseIndex(1)] / texHeight, north.uvs[north.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
 
         // West side
-        Vector3d normalWest = new Vector3d(-0.5, 0, 0.5);
+        Vec3 normalWest = new Vec3(-0.5, 0, 0.5);
         bakedQuadList.add(createQuad(vertex7, vertex3, vertex6, vertex2, normalWest, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[south.getReverseIndex(1)] / texHeight, north.uvs[north.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
 
         // East side
-        Vector3d normalEast = new Vector3d(1.5, 0, 0.5);
+        Vec3 normalEast = new Vec3(1.5, 0, 0.5);
         bakedQuadList.add(createQuad(vertex4, vertex0, vertex1, vertex5, normalEast, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[south.getReverseIndex(1)] / texHeight, north.uvs[north.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
 
         // North side
-        Vector3d normalNorth = new Vector3d(0.5, 0, 1.5);
+        Vec3 normalNorth = new Vec3(0.5, 0, 1.5);
         bakedQuadList.add(createQuad(vertex3, vertex4, vertex5, vertex6, normalNorth, north.uvs[north.getReverseIndex(0)] / texWidth, north.uvs[north.getReverseIndex(2)] / texWidth, north.uvs[south.getReverseIndex(1)] / texHeight, north.uvs[north.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
 
         // South side
-        Vector3d normalSouth = new Vector3d(0, 0, -1);
+        Vec3 normalSouth = new Vec3(0, 0, -1);
         bakedQuadList.add(createQuad(vertex0, vertex7, vertex2, vertex1, normalSouth, south.uvs[south.getReverseIndex(0)] / texWidth, south.uvs[south.getReverseIndex(2)] / texWidth, south.uvs[south.getReverseIndex(1)] / texHeight, south.uvs[south.getReverseIndex(3)] / texHeight, sprite, red, green, blue, alpha, tintIndex));
 
         return bakedQuadList;
     }
 
-    private static BakedQuad createQuad(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, Vector3d normal, float ulow, float uhigh, float vlow, float vhigh, TextureAtlasSprite sprite, float red, float green, float blue, float alpha, int tintIndex) {
+    private static BakedQuad createQuad(Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4, Vec3 normal, float ulow, float uhigh, float vlow, float vhigh, TextureAtlasSprite sprite, float red, float green, float blue, float alpha, int tintIndex) {
         BakedQuadBuilder builder = new BakedQuadBuilder(sprite);
         builder.setQuadOrientation(Direction.getNearest(normal.x(), normal.y(), normal.z()));
         builder.setApplyDiffuseLighting(true);

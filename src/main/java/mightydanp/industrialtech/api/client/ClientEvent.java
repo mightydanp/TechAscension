@@ -11,13 +11,10 @@ import mightydanp.industrialtech.api.common.tileentities.TileEntities;
 import mightydanp.industrialtech.client.rendering.models.CampFireBakedModel;
 import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.renderer.BlockModelShapes;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -28,11 +25,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static net.minecraft.client.renderer.texture.AtlasTexture.LOCATION_BLOCKS;
-
-/**
- * Created by MightyDanp on 4/7/2021.
- */
 @Mod.EventBusSubscriber(modid = Ref.mod_id, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientEvent {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -53,8 +45,8 @@ public class ClientEvent {
     @SubscribeEvent
     public static void onModelBakeEvent(ModelBakeEvent event) {
         for (BlockState blockState : ModBlocks.campfire_override.get().getStateDefinition().getPossibleStates()) {
-            ModelResourceLocation variantMRL = BlockModelShapes.stateToModelLocation(blockState);
-            IBakedModel existingModel = event.getModelRegistry().get(variantMRL);
+            ModelResourceLocation variantMRL = BlockModelShaper.stateToModelLocation(blockState);
+            BakedModel existingModel = event.getModelRegistry().get(variantMRL);
             if (existingModel == null) {
                 IndustrialTech.LOGGER.warn("Did not find the expected vanilla baked model(s) for HoleModel in registry");
             } else if (existingModel instanceof CampFireBakedModel) {
@@ -63,13 +55,6 @@ public class ClientEvent {
                 CampFireBakedModel customModel = new CampFireBakedModel(existingModel);
                 event.getModelRegistry().put(variantMRL, customModel);
             }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
-        if (event.getMap().location() == LOCATION_BLOCKS) {
-            //event.addSprite(new ResourceLocation("block/campfire_log"));
         }
     }
 

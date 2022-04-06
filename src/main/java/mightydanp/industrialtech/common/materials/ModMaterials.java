@@ -4,19 +4,21 @@ import com.mojang.datafixers.util.Pair;;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialServer;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
+import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.material.ITMaterials;
 import mightydanp.industrialtech.api.common.jsonconfig.material.ore.DefaultOreType;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.block.Blocks;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.world.level.block.Blocks;
 
 import static mightydanp.industrialtech.api.common.jsonconfig.icons.DefaultTextureIcon.*;
 import static mightydanp.industrialtech.api.common.jsonconfig.tool.part.DefaultToolPart.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by MightyDanp on 9/26/2020.
@@ -37,7 +39,7 @@ public class ModMaterials extends ITMaterials {
 
     public static MaterialHandler flint, stone;
 */
-    public static List<Pair<ToolType, Integer>> flintToolTypes, stoneToolTypes;
+    public static Map<IToolType, Integer> flintToolTypes, stoneToolTypes;
     public static List<IToolPart> flintToolParts;
 
 
@@ -60,11 +62,10 @@ public class ModMaterials extends ITMaterials {
         materialRegistry.register(new ITMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL)).setOreType(DefaultOreType.ORE).setDenseOreDensity(8));
         materialRegistry.register(new ITMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH)).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));
 
-        flintToolTypes = new ArrayList<Pair<ToolType, Integer>>() {{
-            add(new Pair<>(ToolType.PICKAXE, 0));
-        }};
+        flintToolTypes = new HashMap<>();
+        flintToolTypes.put((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get("pickaxe"), 0);
 
-        flintToolParts = new ArrayList<IToolPart>() {{
+        flintToolParts = new ArrayList<>() {{
             add(TOOL_HEAD);
             add(TOOL_WEDGE);
             add(TOOL_WEDGE_HANDLE);

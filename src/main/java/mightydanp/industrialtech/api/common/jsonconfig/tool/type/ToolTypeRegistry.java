@@ -5,8 +5,10 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.client.Minecraft;
-import net.minecraft.crash.CrashReport;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.CrashReport;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.block.Block;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -93,7 +95,6 @@ public class ToolTypeRegistry extends JsonConfigMultiFile<IToolType> {
                         IToolType toolType = getFromJsonObject(jsonObject);
 
                         registryMap.put(fixesToName(toolType.getFixes()), toolType);
-                        ToolType.get(toolTypeName);
 
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to tool type list because a tool type already exist!!", file.getAbsolutePath());
@@ -126,13 +127,18 @@ public class ToolTypeRegistry extends JsonConfigMultiFile<IToolType> {
             }
 
             @Override
+            public String getName() {
+                return fixesToName(new Pair<>(prefix, suffix));
+            }
+
+            @Override
             public Pair<String, String> getFixes() {
                 return new Pair<>(prefix, suffix);
             }
 
             @Override
-            public ToolType getToolType() {
-                return ToolType.get(fixesToName(new Pair<>(prefix, suffix)));
+            public Tag.Named<Block> getToolTypeTag() {
+                return BlockTags.bind("tool/" + name);
             }
         };
     }

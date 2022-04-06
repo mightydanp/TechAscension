@@ -3,8 +3,7 @@ package mightydanp.industrialtech.api.common.material;
 import com.google.gson.JsonObject;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -1,23 +1,28 @@
 package mightydanp.industrialtech.api.common.crafting.recipe;
 
 import mightydanp.industrialtech.api.common.blocks.ITBlocks;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.*;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
+
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by MightyDanp on 10/9/2021.
  */
-public class HoleRecipe implements IRecipe<IInventory> {
+public class HoleRecipe implements Recipe<Container> {
     protected final ResourceLocation id;
     protected final String group;
     protected final ItemStack desiredBlock;
@@ -58,11 +63,11 @@ public class HoleRecipe implements IRecipe<IInventory> {
         resinColor = resinColorIn;
     }
 
-    public boolean matches(IInventory inventory, World world) {
+    public boolean matches(Container inventory, Level world) {
         return inventory.getItem(0).sameItem(desiredBlock);
     }
 
-    public ItemStack assemble(IInventory p_77572_1_) {
+    public ItemStack assemble(Container p_77572_1_) {
         return result.copy();
     }
 
@@ -71,7 +76,7 @@ public class HoleRecipe implements IRecipe<IInventory> {
     }
 
     @Override
-    public IRecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return Recipes.holeType;
     }
 
@@ -85,12 +90,6 @@ public class HoleRecipe implements IRecipe<IInventory> {
 
     public ItemStack getDesiredBlock() {
         return desiredBlock;
-    }
-
-    public NonNullList<Ingredient> getIngredients() {
-        return new NonNullList<Ingredient>(){{
-            addAll(ingredientItems);
-        }};
     }
     
     public int getIngredientItemDamage(){
@@ -107,6 +106,11 @@ public class HoleRecipe implements IRecipe<IInventory> {
 
     public int getMaxTicks() {
         return maxTicks;
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return ingredientItems;
     }
 
     public ItemStack getResultItem() {
@@ -133,7 +137,7 @@ public class HoleRecipe implements IRecipe<IInventory> {
         return new ItemStack(ITBlocks.hole_block.get());
     }
 
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return Recipes.holeSerializer.get();
     }
 

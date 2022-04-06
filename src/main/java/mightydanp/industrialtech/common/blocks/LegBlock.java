@@ -1,11 +1,15 @@
 package mightydanp.industrialtech.common.blocks;
 
-import net.minecraft.block.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Created by MightyDanp on 7/3/2021.
@@ -14,17 +18,17 @@ public class LegBlock extends Block{
     private static final VoxelShape[] SHAPES = new VoxelShape[]{
             Block.box(0.0D, 0.0D, 0.0D, 16.0D, 1.0D, 16.0D)};
 
-    public LegBlock(AbstractBlock.Properties properties) {
+    public LegBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPES[0];
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
         BlockState blockStateTop = worldIn.getBlockState(pos.above());
         BlockState blockstate = worldIn.getBlockState(pos.below());
         if (blockstate == Blocks.AIR.defaultBlockState()) {

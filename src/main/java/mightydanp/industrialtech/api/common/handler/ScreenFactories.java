@@ -4,10 +4,9 @@ import com.google.common.base.Preconditions;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.gui.screen.SyncScreen;
 import mightydanp.industrialtech.api.common.libs.RefScreenIDs;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -43,10 +42,10 @@ public class ScreenFactories {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends TileEntity> T getTileEntity(final BlockPos pos, final Class<T> tileEntityClass) {
-        final ClientWorld world = getClientWorld();
+    private static <T extends BlockEntity> T getTileEntity(final BlockPos pos, final Class<T> tileEntityClass) {
+        final ClientLevel world = getClientWorld();
 
-        final TileEntity tileEntity = world.getBlockEntity(pos);
+        final BlockEntity tileEntity = world.getBlockEntity(pos);
 
         Preconditions.checkNotNull(tileEntity, "No TileEntity found at %s", pos);
         Preconditions.checkState(tileEntityClass.isInstance(tileEntity), "Invalid TileEntity at %s: expected %s, got %s", pos, tileEntityClass, tileEntity.getClass());
@@ -54,7 +53,7 @@ public class ScreenFactories {
         return (T) tileEntity;
     }
 
-    private static ClientWorld getClientWorld() {
+    private static ClientLevel getClientWorld() {
         return Preconditions.checkNotNull(Minecraft.getInstance().level, "Client world is null");
     }
 }

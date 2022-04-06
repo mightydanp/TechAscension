@@ -20,7 +20,7 @@ import mightydanp.industrialtech.client.ModClientEvent;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
 import mightydanp.industrialtech.common.items.ModItems;
-import mightydanp.industrialtech.common.tileentities.ModTileEntities;
+import mightydanp.industrialtech.common.tileentities.ModBlockEntity;
 import mightydanp.industrialtech.common.tool.ModTools;
 import mightydanp.industrialtech.common.trees.ModTrees;
 import mightydanp.industrialtech.data.config.DataConfig;
@@ -79,7 +79,7 @@ public class IndustrialTech {
         ModTrees.commonInit();
         Containers.init();
         TileEntities.init();
-        ModTileEntities.init();
+        ModBlockEntity.init();
 
         Recipes.init();
         ModRecipes.init();

@@ -1,48 +1,52 @@
 package mightydanp.industrialtech.api.common.blocks;
 
-import net.minecraft.block.*;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 
 import javax.annotation.Nullable;
+
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Created by MightyDanp on 7/3/2021.
  */
-public class ThinSlabBlock extends Block implements ILiquidContainer {
+public class ThinSlabBlock extends Block implements LiquidBlockContainer {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     private static final VoxelShape SHAPES = Block.box(0.0D, 0.0D, 0.0D, 15.99D, 1.0D, 15.99D);
 
     public String stoneLayerBlock;
 
-    public ThinSlabBlock(AbstractBlock.Properties properties, String stoneLayerBlockIn) {
+    public ThinSlabBlock(BlockBehaviour.Properties properties, String stoneLayerBlockIn) {
         super(properties);
         stoneLayerBlock = stoneLayerBlockIn;
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.valueOf(false)));
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPES;
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(final BlockItemUseContext context) {
+    public BlockState getStateForPlacement(final BlockPlaceContext context) {
         final FluidState fluidState = context.getLevel().getFluidState(context.getClickedPos());
 
         return fluidState.is(FluidTags.WATER) && fluidState.getAmount() == 8 ? super.getStateForPlacement(context).setValue(WATERLOGGED, Boolean.valueOf(true)) : this.defaultBlockState();
@@ -50,10 +54,10 @@ public class ThinSlabBlock extends Block implements ILiquidContainer {
 
     @SuppressWarnings("deprecation")
     @Override
-    public BlockState updateShape(final BlockState blockState, final Direction direction, final BlockState facingState, final IWorld world, final BlockPos currentPos, final BlockPos facingPos) {
+    public BlockState updateShape(final BlockState blockState, final Direction direction, final BlockState facingState, final LevelAccessor world, final BlockPos currentPos, final BlockPos facingPos) {
         final BlockState newState = super.updateShape(blockState, direction, facingState, world, currentPos, facingPos);
 
-        if (!newState.isAir(world, currentPos)) {
+        if (!newState.isAir()) {
             world.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
 
@@ -67,17 +71,17 @@ public class ThinSlabBlock extends Block implements ILiquidContainer {
     }
 
     @Override
-    public boolean canPlaceLiquid(final IBlockReader world, final BlockPos pos, final BlockState state, final Fluid fluid) {
+    public boolean canPlaceLiquid(final BlockGetter world, final BlockPos pos, final BlockState state, final Fluid fluid) {
         return false;
     }
 
     @Override
-    public boolean placeLiquid(final IWorld world, final BlockPos pos, final BlockState state, final FluidState fluidState) {
+    public boolean placeLiquid(final LevelAccessor world, final BlockPos pos, final BlockState state, final FluidState fluidState) {
         return false;
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
         BlockState blockStateTop = worldIn.getBlockState(pos.above());
         BlockState blockstate = worldIn.getBlockState(pos.below());
         if (blockstate == Blocks.AIR.defaultBlockState()) {
@@ -88,7 +92,7 @@ public class ThinSlabBlock extends Block implements ILiquidContainer {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(WATERLOGGED);
     }
 }

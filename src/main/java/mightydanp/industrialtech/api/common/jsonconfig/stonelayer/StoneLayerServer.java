@@ -7,7 +7,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.Sync
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -192,12 +192,12 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, IStoneLayer stoneLayer) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, IStoneLayer stoneLayer) {//friendlybotbuff
         buffer.writeUtf(stoneLayer.getBlock());
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<IStoneLayer> list = message.getConfig(IndustrialTech.configSync.stoneLayerID).stream()
                 .filter(IStoneLayer.class::isInstance)
                 .map(IStoneLayer.class::cast)
@@ -209,14 +209,14 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
     }
 
     @Override
-    public IStoneLayer singleFromBuffer(PacketBuffer buffer) {
+    public IStoneLayer singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
 
         return () -> name;
     }
 
     @Override
-    public List<IStoneLayer> multipleFromBuffer(PacketBuffer buffer) {
+    public List<IStoneLayer> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<IStoneLayer> stoneLayers = new ArrayList<>();
 
         int size = buffer.readVarInt();

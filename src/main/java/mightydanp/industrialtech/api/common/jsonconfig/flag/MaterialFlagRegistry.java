@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialtech.api.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.crash.CrashReport;
+import net.minecraft.CrashReport;
 
 import java.io.File;
 import java.nio.file.Path;

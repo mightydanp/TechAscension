@@ -8,7 +8,7 @@ import mightydanp.industrialtech.common.datagen.recipes.ModGenCampfireRecipes;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 /**
  * Created by MightyDanp on 10/2/2020.

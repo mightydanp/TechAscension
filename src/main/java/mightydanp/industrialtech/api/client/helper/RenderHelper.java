@@ -1,20 +1,20 @@
 package mightydanp.industrialtech.api.client.helper;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.model.BlockFaceUV;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector4f;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.block.model.BlockFaceUV;
+import net.minecraft.world.phys.AABB;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector4f;
 
 /**
  * Created by MightyDanp on 5/9/2021.
  */
 public class RenderHelper {
 
-    public static void renderUVCube(MatrixStack matrixStack, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha, float texWidth, float texHeight, AxisAlignedBB cube, BlockFaceUV north, BlockFaceUV east, BlockFaceUV south, BlockFaceUV west, BlockFaceUV up, BlockFaceUV down){
+    public static void renderUVCube(PoseStack matrixStack, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha, float texWidth, float texHeight, AABB cube, BlockFaceUV north, BlockFaceUV east, BlockFaceUV south, BlockFaceUV west, BlockFaceUV up, BlockFaceUV down){
         matrixStack.pushPose();
-        MatrixStack.Entry matrixStackLast = matrixStack.last();
+        PoseStack.Pose matrixStackLast = matrixStack.last();
         Matrix4f matrix4f = matrixStackLast.pose();
 
         Vector4f vertex = new Vector4f((float)cube.maxX / 16 - 0.5F, (float)cube.minY / 16, (float)cube.minZ / 16 - 0.5F,1.0F);

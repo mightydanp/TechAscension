@@ -1,17 +1,17 @@
 package mightydanp.industrialtech.api.common.items;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.item.Item.Properties;
 
 /**
  * Created by MightyDanp on 9/26/2020.
@@ -29,17 +29,17 @@ public class BlockOreItem extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if (element != null) {
-            tooltip.add(ITextComponent.nullToEmpty(element));
+            tooltip.add(Component.nullToEmpty(element));
         }
 
         if (meltingPoint != null) {
-            tooltip.add(ITextComponent.nullToEmpty("Melting Point of" + " §5" + meltingPoint));
+            tooltip.add(Component.nullToEmpty("Melting Point of" + " §5" + meltingPoint));
         }
         if (boilingPoint != null) {
-            tooltip.add(ITextComponent.nullToEmpty("Boiling Point of" + " §5" + boilingPoint));
+            tooltip.add(Component.nullToEmpty("Boiling Point of" + " §5" + boilingPoint));
         }
     }
 

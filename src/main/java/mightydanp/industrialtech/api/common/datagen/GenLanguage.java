@@ -6,10 +6,9 @@ import mightydanp.industrialtech.api.common.libs.ITScreenRef;
 import mightydanp.industrialtech.api.common.libs.ITScreenTextRef;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Item;
-import net.minecraft.util.RegistryKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.common.data.LanguageProvider;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
@@ -25,7 +24,7 @@ public class GenLanguage extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        for(Map.Entry<RegistryKey<Item>, Item> item : ForgeRegistries.ITEMS.getEntries().stream().filter(items -> items.getKey().location().getNamespace().equals(Ref.mod_id)).collect(Collectors.toList())) {
+        for(Map.Entry<ResourceKey<Item>, Item> item : ForgeRegistries.ITEMS.getEntries().stream().filter(items -> items.getKey().location().getNamespace().equals(Ref.mod_id)).collect(Collectors.toList())) {
             String itemName = translateUpperCase(item.getKey().location().toString());
             add(item.getValue(), itemName);
         }

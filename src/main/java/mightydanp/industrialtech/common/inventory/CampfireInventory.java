@@ -1,17 +1,17 @@
 package mightydanp.industrialtech.common.inventory;
 
 import mightydanp.industrialtech.common.handler.itemstack.CampfireItemStackHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.function.Predicate;
 
 /**
  * Created by MightyDanp on 5/16/2021.
  */
-public class CampfireInventory implements IInventory {
+public class CampfireInventory implements Container {
 
     /**
      * Use this constructor to create a CampFireInventory which is linked to its parent TileEntity.
@@ -28,7 +28,7 @@ public class CampfireInventory implements IInventory {
      *                                     this is TileEntity::markDirty
      * @return the new ChestContents.
      */
-    public static CampfireInventory createForTileEntity(int size, Predicate<PlayerEntity> canPlayerAccessInventoryLambda, Notify markDirtyNotificationLambda) {
+    public static CampfireInventory createForTileEntity(int size, Predicate<Player> canPlayerAccessInventoryLambda, Notify markDirtyNotificationLambda) {
         return new CampfireInventory(size, canPlayerAccessInventoryLambda, markDirtyNotificationLambda);
     }
 
@@ -50,7 +50,7 @@ public class CampfireInventory implements IInventory {
      * Writes the chest contents to a CompoundNBT tag (used to save the contents to disk)
      * @return the tag containing the contents
      */
-    public CompoundNBT serializeNBT()  {
+    public CompoundTag serializeNBT()  {
         return campFireItemStackHandler.serializeNBT();
     }
 
@@ -58,7 +58,7 @@ public class CampfireInventory implements IInventory {
      * Fills the chest contents from the nbt; resizes automatically to fit.  (used to load the contents from disk)
      * @param nbt
      */
-    public void deserializeNBT(CompoundNBT nbt)   {
+    public void deserializeNBT(CompoundTag nbt)   {
         campFireItemStackHandler.deserializeNBT(nbt);
     }
 
@@ -80,7 +80,7 @@ public class CampfireInventory implements IInventory {
      * sets the function that the container should call in order to decide if the given player can access the container's
      *   contents not.  The lambda function is only used on the server side
      */
-    public void setCanPlayerAccessInventoryLambda(Predicate<PlayerEntity> canPlayerAccessInventoryLambda) {
+    public void setCanPlayerAccessInventoryLambda(Predicate<Player> canPlayerAccessInventoryLambda) {
         this.canPlayerAccessInventoryLambda = canPlayerAccessInventoryLambda;
     }
 
@@ -110,7 +110,7 @@ public class CampfireInventory implements IInventory {
     //    or ask the parent TileEntity.
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return canPlayerAccessInventoryLambda.test(player);  // on the client, this does nothing. on the server, ask our parent TileEntity.
     }
 
@@ -134,12 +134,12 @@ public class CampfireInventory implements IInventory {
     }
 
     @Override
-    public void startOpen(PlayerEntity player) {
+    public void startOpen(Player player) {
         openInventoryNotificationLambda.invoke();
     }
 
     @Override
-    public void stopOpen(PlayerEntity player) {
+    public void stopOpen(Player player) {
         closeInventoryNotificationLambda.invoke();
     }
 
@@ -221,7 +221,7 @@ public class CampfireInventory implements IInventory {
         this.campFireItemStackHandler = new CampfireItemStackHandler(size);
     }
 
-    private CampfireInventory(int size, Predicate<PlayerEntity> canPlayerAccessInventoryLambda, Notify markDirtyNotificationLambda) {
+    private CampfireInventory(int size, Predicate<Player> canPlayerAccessInventoryLambda, Notify markDirtyNotificationLambda) {
         this.campFireItemStackHandler = new CampfireItemStackHandler(size);
         this.canPlayerAccessInventoryLambda = canPlayerAccessInventoryLambda;
         this.markDirtyNotificationLambda = markDirtyNotificationLambda;
@@ -230,7 +230,7 @@ public class CampfireInventory implements IInventory {
     // the function that the container should call in order to decide if the
     // given player can access the container's Inventory or not.  Only valid server side
     //  default is "true".
-    private Predicate<PlayerEntity> canPlayerAccessInventoryLambda = x-> true;
+    private Predicate<Player> canPlayerAccessInventoryLambda = x-> true;
 
     // the function that the container should call in order to tell the parent TileEntity that the
     // contents of its inventory have been changed.

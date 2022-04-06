@@ -9,8 +9,10 @@ import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.ToolPartRegistry;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.block.Block;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -195,14 +197,14 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, IToolType toolType) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, IToolType toolType) {//friendlybotbuff
         buffer.writeUtf(fixesToName(toolType.getPrefix(), toolType.getSuffix()));
         buffer.writeUtf(toolType.getPrefix());
         buffer.writeUtf(toolType.getSuffix());
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<IToolType> list = message.getConfig(IndustrialTech.configSync.toolTypeID).stream()
                 .filter(IToolType.class::isInstance)
                 .map(IToolType.class::cast)
@@ -214,7 +216,7 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
     }
 
     @Override
-    public IToolType singleFromBuffer(PacketBuffer buffer) {
+    public IToolType singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
         String prefix = buffer.readUtf();
         String suffix = buffer.readUtf();
@@ -231,19 +233,26 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
             }
 
             @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
             public Pair<String, String> getFixes() {
                 return new Pair<>(prefix, suffix);
             }
 
             @Override
-            public ToolType getToolType() {
-                return ToolType.get(fixesToName(prefix, suffix));
+            public Tag.Named<Block> getToolTypeTag() {
+                return BlockTags.bind("tool/" + name);
             }
+
+
         };
     }
 
     @Override
-    public List<IToolType> multipleFromBuffer(PacketBuffer buffer) {
+    public List<IToolType> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<IToolType> toolTypes = new ArrayList<>();
 
         int size = buffer.readVarInt();

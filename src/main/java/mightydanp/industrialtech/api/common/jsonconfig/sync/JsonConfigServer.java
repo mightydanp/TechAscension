@@ -8,7 +8,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.flag.MaterialFlagRegistry
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -48,19 +48,19 @@ public class JsonConfigServer<T> {
 
     }
 
-    public void singleToBuffer(PacketBuffer buffer, T materialFlag) {
+    public void singleToBuffer(FriendlyByteBuf buffer, T materialFlag) {
 
     }
 
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
 
     }
 
-    public T singleFromBuffer(PacketBuffer buffer) {
+    public T singleFromBuffer(FriendlyByteBuf buffer) {
        return null;
     }
 
-    public List<T> multipleFromBuffer(PacketBuffer buffer){
+    public List<T> multipleFromBuffer(FriendlyByteBuf buffer){
         return null;
     }
 

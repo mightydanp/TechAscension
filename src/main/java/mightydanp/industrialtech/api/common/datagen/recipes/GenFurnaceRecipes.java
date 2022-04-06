@@ -5,12 +5,12 @@ import mightydanp.industrialtech.api.common.datagen.recipes.builder.CustomCookin
 import mightydanp.industrialtech.api.common.datagen.JsonDataProvider;
 import mightydanp.industrialtech.common.datagen.recipes.ModFurnaceRecipes;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +37,7 @@ public class GenFurnaceRecipes extends RecipeProvider {
     }
 
     @Override
-    protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
-
+    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
     }
 
     public void furnaceRecipes(){

@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.api.common.libs;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created by MightyDanp on 1/11/2022.

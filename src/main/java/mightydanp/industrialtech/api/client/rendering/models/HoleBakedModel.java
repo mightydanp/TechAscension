@@ -3,19 +3,16 @@ package mightydanp.industrialtech.api.client.rendering.models;
 import com.google.common.collect.ImmutableList;
 import mightydanp.industrialtech.api.common.blocks.HoleBlock;
 import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.Direction;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
@@ -34,11 +31,11 @@ import java.util.Random;
  */
 public class HoleBakedModel implements IDynamicBakedModel {
 
-    private final IBakedModel baseModel;
+    private final BakedModel baseModel;
     private IModelData modelData;
     private BlockState blockState;
 
-    public HoleBakedModel(IBakedModel baseModelIn)
+    public HoleBakedModel(BakedModel baseModelIn)
     {
         this.baseModel = baseModelIn;
     }
@@ -57,8 +54,8 @@ public class HoleBakedModel implements IDynamicBakedModel {
         List<BakedQuad> quads = new ArrayList<>(baseModel.getQuads(state, side, rand));
 
         if (desiredBlockState != null && !(desiredBlockState.getBlock() instanceof HoleBlock)) {
-            if (layer == null || RenderTypeLookup.canRenderInLayer(desiredBlockState, layer)) {
-                IBakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(desiredBlockState);
+            if (layer == null || ItemBlockRenderTypes.canRenderInLayer(desiredBlockState, layer)) {
+                BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(desiredBlockState);
                 try {
                     quads.addAll(model.getQuads(desiredBlockState, side, rand, EmptyModelData.INSTANCE));
                     return quads;
@@ -98,16 +95,16 @@ public class HoleBakedModel implements IDynamicBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleIcon() {
-        return baseModel.getParticleTexture(modelData);
+        return baseModel.getParticleIcon(modelData);
     }
 
     @Override
-    public ItemOverrideList getOverrides() {
+    public ItemOverrides getOverrides() {
         return baseModel.getOverrides();
     }
 
     @Override
-    public ItemCameraTransforms getTransforms() {
-        return ItemCameraTransforms.NO_TRANSFORMS;
+    public ItemTransforms getTransforms() {
+        return ItemTransforms.NO_TRANSFORMS;
     }
 }

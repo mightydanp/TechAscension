@@ -10,7 +10,7 @@ import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -192,7 +192,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
     }
 
     @Override
-    public void singleToBuffer(PacketBuffer buffer, OreVeinGenFeatureConfig oreVein) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, OreVeinGenFeatureConfig oreVein) {//friendlybotbuff
         buffer.writeUtf(oreVein.name);
         buffer.writeInt(oreVein.rarity);
         buffer.writeInt(oreVein.minHeight);
@@ -213,7 +213,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
     }
 
     @Override
-    public void multipleToBuffer(SyncMessage message, PacketBuffer buffer) {
+    public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<OreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.oreVeinID).stream()
                 .filter(OreVeinGenFeatureConfig.class::isInstance)
                 .map(OreVeinGenFeatureConfig.class::cast)
@@ -225,7 +225,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
     }
 
     @Override
-    public OreVeinGenFeatureConfig singleFromBuffer(PacketBuffer buffer) {
+    public OreVeinGenFeatureConfig singleFromBuffer(FriendlyByteBuf buffer) {
         String veinName = buffer.readUtf();
         int rarity = buffer.readInt();
         int minHeight = buffer.readInt();
@@ -251,7 +251,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
     }
 
     @Override
-    public List<OreVeinGenFeatureConfig> multipleFromBuffer(PacketBuffer buffer) {
+    public List<OreVeinGenFeatureConfig> multipleFromBuffer(FriendlyByteBuf buffer) {
         List<OreVeinGenFeatureConfig> oreVeins = new ArrayList<>();
 
         int size = buffer.readVarInt();

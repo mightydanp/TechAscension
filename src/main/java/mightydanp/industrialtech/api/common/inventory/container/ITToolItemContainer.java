@@ -3,23 +3,23 @@ package mightydanp.industrialtech.api.common.inventory.container;
 import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemItemStackHandler;
 import mightydanp.industrialtech.api.common.libs.ContainerRef;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.items.SlotItemHandler;
 
 /**
  * Created by MightyDanp on 4/7/2021.
  */
-public class ITToolItemContainer extends Container {
+public class ITToolItemContainer extends AbstractContainerMenu {
 
     public static final String itToolItemContainerContainerType = ContainerRef.IT_TOOL_CONTAINER_NAME;
-    public final ContainerType<?> itToolItemContainerType;
+    public final MenuType<?> itToolItemContainerType;
     private final ITToolItemItemStackHandler itToolItemItemStackHandler;
     public final ItemStack itemStackBeingHeld;
 
@@ -40,7 +40,7 @@ public class ITToolItemContainer extends Container {
     public static final int firstSlotStartingIndex = vanillaFirstSlotIndex + vanillaSlotCount;
 
 
-    private ITToolItemContainer(int containerIdIn, PlayerInventory playerInventoryIn, ITToolItemItemStackHandler itToolItemItemStackHandlerIn, ItemStack itemStackBeingHeldIn) {
+    private ITToolItemContainer(int containerIdIn, Inventory playerInventoryIn, ITToolItemItemStackHandler itToolItemItemStackHandlerIn, ItemStack itemStackBeingHeldIn) {
         super(Containers.itToolItemContainer, containerIdIn);
         itToolItemContainerType = Containers.itToolItemContainer;
         itToolItemItemStackHandler = itToolItemItemStackHandlerIn;
@@ -64,11 +64,11 @@ public class ITToolItemContainer extends Container {
         addSlot(new SlotItemHandler(itToolItemItemStackHandler, 2, 8, 33));
     }
 
-    public static ITToolItemContainer createContainerServerSide(int windowIDIn, PlayerInventory playerInventoryIn, ITToolItemItemStackHandler itToolItemItemStackHandlerIn, ItemStack itemStackIn) {
+    public static ITToolItemContainer createContainerServerSide(int windowIDIn, Inventory playerInventoryIn, ITToolItemItemStackHandler itToolItemItemStackHandlerIn, ItemStack itemStackIn) {
         return new ITToolItemContainer(windowIDIn, playerInventoryIn, itToolItemItemStackHandlerIn, itemStackIn);
     }
 
-    public static ITToolItemContainer createContainerClientSide(int windowID, PlayerInventory playerInventory, PacketBuffer packetBufferIn) {
+    public static ITToolItemContainer createContainerClientSide(int windowID, Inventory playerInventory, FriendlyByteBuf packetBufferIn) {
         int numberOfSlotsIn = packetBufferIn.readInt();
 
         try {
@@ -84,7 +84,7 @@ public class ITToolItemContainer extends Container {
     @Override
     public void broadcastChanges() {
         if (itToolItemItemStackHandler.isDirty()) {
-            CompoundNBT nbt = itemStackBeingHeld.getOrCreateTag();
+            CompoundTag nbt = itemStackBeingHeld.getOrCreateTag();
             int dirtyCounter = nbt.getInt("dirtyCounter");
             nbt.putInt("dirtyCounter", dirtyCounter + 1);
             itemStackBeingHeld.setTag(nbt);
@@ -93,7 +93,7 @@ public class ITToolItemContainer extends Container {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity playerEntityIn) {
+    public boolean stillValid(Player playerEntityIn) {
         return true;
     }
 

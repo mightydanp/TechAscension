@@ -3,9 +3,8 @@ package mightydanp.industrialtech.api.common.handler;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.java.games.input.Component;
 import net.java.games.input.Keyboard;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.settings.ToggleableKeyBinding;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraft.client.KeyMapping;
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +16,16 @@ import java.util.List;
 public class KeyBindingHandler {
 
     public Keyboard keyboard;
-    private static List<KeyBinding> keyBindingList = new ArrayList<>();
-    public KeyBinding keyBinding;
+    private static List<KeyMapping> keyBindingList = new ArrayList<>();
+    public KeyMapping keyBinding;
     public Component.Identifier.Key key;
 
     public KeyBindingHandler(String buttonName, int buttonNumber){
-        keyBindingList.add(keyBinding = new KeyBinding("key." + buttonName , buttonNumber , "key.categories." + Ref.mod_id));
+        keyBindingList.add(keyBinding = new KeyMapping("key." + buttonName , buttonNumber , "key.categories." + Ref.mod_id));
     }
 
     public static void clientInit(){
-        for(KeyBinding keyBinding : keyBindingList) {
+        for(KeyMapping keyBinding : keyBindingList) {
             ClientRegistry.registerKeyBinding(keyBinding);
         }
     }

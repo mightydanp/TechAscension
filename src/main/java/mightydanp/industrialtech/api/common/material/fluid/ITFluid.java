@@ -1,9 +1,11 @@
 package mightydanp.industrialtech.api.common.material.fluid;
 
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.state.StateContainer;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
+
+import net.minecraftforge.fluids.ForgeFlowingFluid.Properties;
 
 /**
  * Created by MightyDanp on 10/22/2021.
@@ -16,7 +18,7 @@ public class ITFluid extends ForgeFlowingFluid {
         super(propertiesIn);
         this.source = sourceIn;
         if(!source) {
-            registerDefaultState(this.defaultFluidState().getFluidState().setValue(LEVEL, 7));
+            registerDefaultState(this.defaultFluidState().setValue(LEVEL, 7));
         }
 
         fluidRGB = fluidRGBIn;
@@ -39,7 +41,7 @@ public class ITFluid extends ForgeFlowingFluid {
     }
 
     @Override
-    protected void createFluidStateDefinition(StateContainer.Builder<Fluid, FluidState> builder) {
+    protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> builder) {
         super.createFluidStateDefinition(builder);
 
         if(!source) {

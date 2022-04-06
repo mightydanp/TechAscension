@@ -1,11 +1,11 @@
 package mightydanp.industrialtech.api.common.libs;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
 /**
  * Created by MightyDanp on 10/6/2020.
  */
-public enum EnumGenerationWorlds implements IStringSerializable
+public enum EnumGenerationWorlds implements StringRepresentable
 {
     overworld("overworld"),
     end("end"),

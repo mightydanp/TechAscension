@@ -1,15 +1,15 @@
 package mightydanp.industrialtech.api.common.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ISeedReader;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -26,16 +26,16 @@ public class BlocksInWaterGenFeature extends Feature<BlocksInWaterGenFeatureConf
         super(codecIn);
     }
 
-    public boolean place(ISeedReader iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, BlocksInWaterGenFeatureConfig waterGenConfigIn) {
+    public boolean place(WorldGenLevel iSeedReaderIn, ChunkGenerator chunkGeneratorIn, Random randomIn, BlockPos blockPosIn, BlocksInWaterGenFeatureConfig waterGenConfigIn) {
         boolean canSpawn = false;
-        BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
         int x = blockPosIn.getX();
         int z = blockPosIn.getZ();
         for(int xx = 0; xx <= 16 ; xx++){
             int x2=  xx + x;
             for(int zz = 0; zz <= 16; zz++){
                 int z2 = zz + z;
-                int groundHeight = iSeedReaderIn.getHeight(Heightmap.Type.OCEAN_FLOOR_WG, x2, z2);
+                int groundHeight = iSeedReaderIn.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, x2, z2);
                 for(int yy = groundHeight; yy <= 256; yy++){
                     blockpos$mutable.set(x2, yy, z2);
                     BlockState blockStateUp = iSeedReaderIn.getBlockState(blockpos$mutable.above());

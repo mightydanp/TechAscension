@@ -10,20 +10,23 @@ import mightydanp.industrialtech.api.common.world.gen.feature.RandomSurfaceGenFe
 import mightydanp.industrialtech.api.common.world.gen.feature.BlocksInWaterGenFeature;
 import mightydanp.industrialtech.api.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
-import net.minecraft.block.Block;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.WorldGenRegistries;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.feature.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
+
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 /**
  * Created by MightyDanp on 2/18/2021.
@@ -34,22 +37,22 @@ public class PlantGenerationHandler {
 
     public static final RegistryObject<Feature<RandomSurfaceGenFeatureConfig>> randomSurface = RegistryHandler.createFeature("random_surface", () -> new RandomSurfaceGenFeature(RandomSurfaceGenFeatureConfig.CODEC));
 
-    private static final Map<ConfiguredFeature<?, ?>, List<Biome.Category>> blockInWaterGenerationList = new HashMap<>();
-    private static final Map<ConfiguredFeature<?, ?>, List<Biome.Category>> randomSurfaceGenList = new HashMap<>();
+    private static final Map<ConfiguredFeature<?, ?>, List<Biome.BiomeCategory>> blockInWaterGenerationList = new HashMap<>();
+    private static final Map<ConfiguredFeature<?, ?>, List<Biome.BiomeCategory>> randomSurfaceGenList = new HashMap<>();
 
     public static void addRegistryBlockInWaterGenerate(BlocksInWaterGenFeatureConfig blocksInWaterGenConfigInFeature){
-        List<Biome.Category> biomes = new ArrayList<>();
+        List<Biome.BiomeCategory> biomes = new ArrayList<>();
         for(String biomeName : blocksInWaterGenConfigInFeature.biomes){
-            biomes.add(Biome.Category.byName(biomeName));
+            biomes.add(Biome.BiomeCategory.byName(biomeName));
         }
 
-        Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
+        Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
         ConfiguredFeature<?, ?> topWaterCropFeature = topWaterCrop.get().configured(blocksInWaterGenConfigInFeature);
         Registry.register(registry, new ResourceLocation(Ref.mod_id, blocksInWaterGenConfigInFeature.name), topWaterCropFeature);
         blockInWaterGenerationList.put(topWaterCropFeature, biomes);
     }
 
-    public static void addBlockInWaterGenerate(String nameIn, int rarityIn, int heightIn, boolean shallowWaterIn, boolean goesAboveWaterIn, List<Biome.Category> biomesIn, List<Block>  validBlocksIn, Block topStateIn, Block bellowStateIn){
+    public static void addBlockInWaterGenerate(String nameIn, int rarityIn, int heightIn, boolean shallowWaterIn, boolean goesAboveWaterIn, List<Biome.BiomeCategory> biomesIn, List<Block>  validBlocksIn, Block topStateIn, Block bellowStateIn){
         List<String> validBlocks = new ArrayList<>();
         List<String> biomes = new ArrayList<>();
 
@@ -73,7 +76,7 @@ public class PlantGenerationHandler {
         }
 
 
-        Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
+        Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
         BlocksInWaterGenFeatureConfig waterGenConfig = new BlocksInWaterGenFeatureConfig(nameIn, rarityIn, heightIn, shallowWaterIn, goesAboveWaterIn, biomes, validBlocks, topState, bellowState);
         ConfiguredFeature<?, ?> topWaterCropFeature = topWaterCrop.get().configured(waterGenConfig);
         Registry.register(registry, new ResourceLocation(Ref.mod_id, waterGenConfig.name), topWaterCropFeature);
@@ -82,18 +85,18 @@ public class PlantGenerationHandler {
     }
 
     public static void addRegistryRandomSurfaceGenerate(RandomSurfaceGenFeatureConfig randomSurfaceGenFeatureConfigIn){
-        List<Biome.Category> biomes = new ArrayList<>();
+        List<Biome.BiomeCategory> biomes = new ArrayList<>();
         for(String biomeName : randomSurfaceGenFeatureConfigIn.biomes){
-            biomes.add(Biome.Category.byName(biomeName));
+            biomes.add(Biome.BiomeCategory.byName(biomeName));
         }
 
-        Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
+        Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
         ConfiguredFeature<?, ?> randomSurfaceFeature = randomSurface.get().configured(randomSurfaceGenFeatureConfigIn);
         Registry.register(registry, new ResourceLocation(Ref.mod_id, randomSurfaceGenFeatureConfigIn.name), randomSurfaceFeature);
         randomSurfaceGenList.put(randomSurfaceFeature, biomes);
     }
 
-    public static void addRandomSurfaceGenerate(String nameIn, int rarityIn, List<Biome.Category> biomesIn, List<Block> validBlocksIn, List<Block> blocksIn){
+    public static void addRandomSurfaceGenerate(String nameIn, int rarityIn, List<Biome.BiomeCategory> biomesIn, List<Block> validBlocksIn, List<Block> blocksIn){
         List<String> validBlocks = new ArrayList<>();
         List<String> blocks = new ArrayList<>();
         List<String> biomes = new ArrayList<>();
@@ -112,7 +115,7 @@ public class PlantGenerationHandler {
 
         biomesIn.forEach(o -> biomes.add(o.getName()));
 
-        Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
+        Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
         RandomSurfaceGenFeatureConfig topBlockSurfaceConfig = new RandomSurfaceGenFeatureConfig(nameIn, rarityIn, biomes, blocks, validBlocks);
         ConfiguredFeature<?, ?> randomSurfaceFeature = randomSurface.get().configured(topBlockSurfaceConfig);
         Registry.register(registry, new ResourceLocation(Ref.mod_id, topBlockSurfaceConfig.name), randomSurfaceFeature);
@@ -126,21 +129,21 @@ public class PlantGenerationHandler {
 
         if(blockInWaterGenerationList.size() > 0) {
             List<ConfiguredFeature<?, ?>> configuredFeatures = new ArrayList<>(blockInWaterGenerationList.keySet());
-            List<List<Biome.Category>> biomes = new ArrayList<>(blockInWaterGenerationList.values());
+            List<List<Biome.BiomeCategory>> biomes = new ArrayList<>(blockInWaterGenerationList.values());
             for(int i = 0; i < blockInWaterGenerationList.size(); i++) {
                 if (biomeCheck(biomes.get(i), event) || biomes.size() == 0) {
-                    event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, configuredFeatures.get(i));
+                    event.getGeneration().addFeature(GenerationStep.Decoration.UNDERGROUND_DECORATION, configuredFeatures.get(i));
                 }
             }
         }
 
         if(randomSurfaceGenList.size() > 0) {
             List<ConfiguredFeature<?, ?>> configuredFeatures = new ArrayList<>(randomSurfaceGenList.keySet());
-            List<List<Biome.Category>> biomes = new ArrayList<>(randomSurfaceGenList.values());
+            List<List<Biome.BiomeCategory>> biomes = new ArrayList<>(randomSurfaceGenList.values());
 
             for(int i = 0; i < blockInWaterGenerationList.size(); i++) {
                 if (biomeCheck(biomes.get(i), event) || biomes.size() == 0) {
-                    event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, configuredFeatures.get(i));
+                    event.getGeneration().addFeature(GenerationStep.Decoration.UNDERGROUND_DECORATION, configuredFeatures.get(i));
                 }
             }
         }
@@ -148,8 +151,8 @@ public class PlantGenerationHandler {
         return true;
     }
 
-    public static boolean biomeCheck(List<Biome.Category> biomeListVeinIn, BiomeLoadingEvent event) {
-        for (Biome.Category biomes : biomeListVeinIn) {
+    public static boolean biomeCheck(List<Biome.BiomeCategory> biomeListVeinIn, BiomeLoadingEvent event) {
+        for (Biome.BiomeCategory biomes : biomeListVeinIn) {
             if (biomes == event.getCategory()) {
                 return true;
             }
@@ -157,7 +160,7 @@ public class PlantGenerationHandler {
         return false;
     }
 
-    private static <C extends IFeatureConfig, F extends Feature<C>> F register(String key, F value) {
+    private static <C extends FeatureConfiguration, F extends Feature<C>> F register(String key, F value) {
         return Registry.register(Registry.FEATURE, key, value);
     }
 }

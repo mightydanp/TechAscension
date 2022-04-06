@@ -1,9 +1,12 @@
 package mightydanp.industrialtech.common.crafting.recipe;
 
 import mightydanp.industrialtech.common.blocks.ModBlocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.*;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 
 /**
  * Created by MightyDanp on 6/6/2021.
@@ -17,7 +20,7 @@ public class CampfireOverrideRecipe extends AbstractCookingRecipe {
         return new ItemStack(ModBlocks.campfire_override.get());
     }
 
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return ModRecipes.campfireSerializer.get();
     }
 

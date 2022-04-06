@@ -1,12 +1,11 @@
 package mightydanp.industrialtech.api.common.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.StateContainer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 
-import net.minecraft.block.AbstractBlock.Properties;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 /**
  * Created by MightyDanp on 3/1/2021.
@@ -22,12 +21,12 @@ public class SmallOreBlock extends Block {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState iBlockState) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState iBlockState) {
+        return RenderShape.MODEL;
     }
 }

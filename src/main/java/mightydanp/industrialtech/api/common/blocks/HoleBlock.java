@@ -5,35 +5,46 @@ import mightydanp.industrialtech.api.common.crafting.recipe.HoleRecipe;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.BlockState;
+
 /**
  * Created by MightyDanp on 7/24/2021.
  */
-public class HoleBlock extends ContainerBlock {
+public class HoleBlock extends BaseEntityBlock {
 
     private static final VoxelShape SHAPES = Block.box(0.0D, 0.0D, 0.0D, 15.99D, 16.0D, 15.99D);
-    public static final DirectionProperty FACING = HorizontalBlock.FACING;
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty RESIN = ITBlockStateProperties.RESIN;
 
 
@@ -43,16 +54,16 @@ public class HoleBlock extends ContainerBlock {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPES;
     }
 
-    public BlockState getStateForPlacement(BlockItemUseContext p_196258_1_) {
+    public BlockState getStateForPlacement(BlockPlaceContext p_196258_1_) {
         return this.defaultBlockState().setValue(FACING, p_196258_1_.getHorizontalDirection().getOpposite());
     }
 
     @Override
-    public ActionResultType use(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult blockRayTraceResult) {
+    public InteractionResult use(BlockState blockState, Level world, BlockPos blockPos, Player playerEntity, InteractionHand hand, BlockHitResult blockRayTraceResult) {
         HoleTileEntity tileEntity = (HoleTileEntity) world.getBlockEntity(blockPos);
         BlockPos itemStackSpawnPos = blockPos.relative(blockRayTraceResult.getDirection());
 
@@ -85,7 +96,7 @@ public class HoleBlock extends ContainerBlock {
 
                     world.addFreshEntity(new ItemEntity(world, itemStackSpawnPos.getX(), itemStackSpawnPos.getY(), itemStackSpawnPos.getZ(), new ItemStack(tileEntity.getOutputSlot().getItem(), tileEntity.getOutputSlot().getCount())));
                     tileEntity.setOutputSlot(ItemStack.EMPTY);
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
 
                 if (validRecipe.get().getIngredients().size() == 1 && blockRayTraceResult.getDirection() == blockRayTraceResult.getDirection() && blockRayTraceResult.getDirection() != Direction.UP && blockRayTraceResult.getDirection() != Direction.DOWN) {
@@ -121,38 +132,29 @@ public class HoleBlock extends ContainerBlock {
 
                     world.addFreshEntity(new ItemEntity(world, itemStackSpawnPos.getX(), itemStackSpawnPos.getY(), itemStackSpawnPos.getZ(), new ItemStack(tileEntity.getOutputSlot().getItem(), tileEntity.getOutputSlot().getCount())));
                     tileEntity.setOutputSlot(ItemStack.EMPTY);
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
             }
         }
 
-        return ActionResultType.FAIL;
+        return InteractionResult.FAIL;
     }
 
-    public Optional<HoleRecipe> getValidRecipe(World worldIn, ItemStack itemStackIn) {
-        return worldIn.getRecipeManager().getRecipeFor(Recipes.holeType, new Inventory(itemStackIn), worldIn);
+    public Optional<HoleRecipe> getValidRecipe(Level worldIn, ItemStack itemStackIn) {
+        return worldIn.getRecipeManager().getRecipeFor(Recipes.holeType, new SimpleContainer(itemStackIn), worldIn);
     }
 
-    public BlockRenderType getRenderShape(BlockState p_149645_1_) {
-        return BlockRenderType.MODEL;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity newBlockEntity(IBlockReader p_196283_1_) {
-        return new HoleTileEntity();
-    }
-
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
+    public RenderShape getRenderShape(BlockState p_149645_1_) {
+        return RenderShape.MODEL;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new HoleTileEntity();
     }
+
+
 
     public BlockState rotate(BlockState p_185499_1_, Rotation p_185499_2_) {
         return p_185499_1_.setValue(FACING, p_185499_2_.rotate(p_185499_1_.getValue(FACING)));
@@ -162,8 +164,7 @@ public class HoleBlock extends ContainerBlock {
         return p_185471_1_.rotate(p_185471_2_.getRotation(p_185471_1_.getValue(FACING)));
     }
 
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> p_206840_1_) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_206840_1_) {
         p_206840_1_.add(FACING, RESIN);
     }
-
 }

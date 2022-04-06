@@ -3,16 +3,14 @@ package mightydanp.industrialtech.client.rendering.models;
 import mightydanp.industrialtech.api.client.helper.BakedModelHelper;
 import mightydanp.industrialtech.api.common.blocks.HoleBlock;
 import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.model.*;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -26,13 +24,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockFaceUV;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.resources.model.BakedModel;
+
 public class CampFireBakedModel implements IDynamicBakedModel {
 
-    private final IBakedModel baseModel;
+    private final BakedModel baseModel;
     private IModelData modelData;
     private BlockState blockState;
 
-    public CampFireBakedModel(IBakedModel baseModelIn) {
+    public CampFireBakedModel(BakedModel baseModelIn) {
         this.baseModel = baseModelIn;
     }
 
@@ -46,12 +50,12 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         List<BakedQuad> quads = new ArrayList<>(baseModel.getQuads(state, side, rand));
 
-        AtlasTexture blocksStitchedTextures = ModelLoader.instance().getSpriteMap().getAtlas(AtlasTexture.LOCATION_BLOCKS);
+        TextureAtlas blocksStitchedTextures = ModelLoader.instance().getSpriteMap().getAtlas(TextureAtlas.LOCATION_BLOCKS);
         TextureAtlasSprite campfire = blocksStitchedTextures.getSprite((new ResourceLocation("block/campfire_log")));
 
         //rock 1
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(7, 0, 0, 9, 2, 2),
+                new AABB(7, 0, 0, 9, 2, 2),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -61,7 +65,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 2
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(5, 0, 1, 7, 2, 3),
+                new AABB(5, 0, 1, 7, 2, 3),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -71,7 +75,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 3
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(3, 0, 3, 5, 2, 5),
+                new AABB(3, 0, 3, 5, 2, 5),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -81,7 +85,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 4
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(1, 0, 5, 3, 2, 7),
+                new AABB(1, 0, 5, 3, 2, 7),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -91,7 +95,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 5
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(0, 0, 7, 2, 2, 9),
+                new AABB(0, 0, 7, 2, 2, 9),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -101,7 +105,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 6
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(1, 0, 9, 3, 2, 11),
+                new AABB(1, 0, 9, 3, 2, 11),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -111,7 +115,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 7
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(3, 0, 11, 5, 2, 13),
+                new AABB(3, 0, 11, 5, 2, 13),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -121,7 +125,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 8
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(5, 0, 13, 7, 2, 15),
+                new AABB(5, 0, 13, 7, 2, 15),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -131,7 +135,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 9
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(7, 0, 14, 9, 2, 16),
+                new AABB(7, 0, 14, 9, 2, 16),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -141,7 +145,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 10
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(9, 0, 13, 11, 2, 15),
+                new AABB(9, 0, 13, 11, 2, 15),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -151,7 +155,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 11
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(11, 0, 11, 13, 2, 13),
+                new AABB(11, 0, 11, 13, 2, 13),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -161,7 +165,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 12
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(13, 0, 9, 15, 2, 11),
+                new AABB(13, 0, 9, 15, 2, 11),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -171,7 +175,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 13
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(14, 0, 7, 16, 2, 9),
+                new AABB(14, 0, 7, 16, 2, 9),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -181,7 +185,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 14
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(13, 0, 5, 15, 2, 7),
+                new AABB(13, 0, 5, 15, 2, 7),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -191,7 +195,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 15
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(11, 0, 3, 13, 2, 5),
+                new AABB(11, 0, 3, 13, 2, 5),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -201,7 +205,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
         //rock 16
         quads.addAll(BakedModelHelper.createCube(1, 1, 1, 1.0f, -1, campfire, null, 0,
-                new AxisAlignedBB(9, 0, 1, 11, 2, 3),
+                new AABB(9, 0, 1, 11, 2, 3),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
                 new BlockFaceUV(new float[]{0, 0, 2, 2}, 0),
@@ -234,16 +238,16 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleIcon() {
-        return baseModel.getParticleTexture(modelData);
+        return baseModel.getParticleIcon(modelData);
     }
 
     @Override
-    public ItemOverrideList getOverrides() {
+    public ItemOverrides getOverrides() {
         return baseModel.getOverrides();
     }
 
     @Override
-    public ItemCameraTransforms getTransforms() {
-        return ItemCameraTransforms.NO_TRANSFORMS;
+    public ItemTransforms getTransforms() {
+        return ItemTransforms.NO_TRANSFORMS;
     }
 }

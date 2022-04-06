@@ -7,18 +7,17 @@ import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.common.datagen.ModBlockLootTable;
-import net.minecraft.advancements.criterion.EnchantmentPredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.MinMaxBounds;
-import net.minecraft.block.Block;
+import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.LootTableProvider;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.loot.*;
-import net.minecraft.loot.conditions.MatchTool;
-import net.minecraft.loot.conditions.SurvivesExplosion;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.storage.loot.predicates.MatchTool;
+import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,18 +26,28 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.LootTables;
+import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+
 /**
  * Created by MightyDanp on 3/5/2021.
  */
 public class GenLootTables extends LootTableProvider {
 
-    private static final List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> tables = new ArrayList<>();
+    private static final List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> tables = new ArrayList<>();
 
     public GenLootTables(DataGenerator dataGeneratorIn) {
         super(dataGeneratorIn);
     }
     @Override
-    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
+    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
         tables.clear();
 
         for (ITMaterial material : RegistryHandler.MATERIAL.getValues()) {
@@ -63,10 +72,10 @@ public class GenLootTables extends LootTableProvider {
                         LootTable.Builder tableBuilder = LootTable.lootTable();
                         LootPool.Builder poolBuilder = LootPool.lootPool();
 
-                        blockTable(blockRegistered, tableBuilder.withPool(poolBuilder.setRolls(ConstantRange.exactly(1))
-                                        .add(AlternativesLootEntry.alternatives().otherwise(ItemLootEntry.lootTableItem(blockRegistered)
-                                                .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.IntBound.atLeast(1)))))))
-                                        .add(ItemLootEntry.lootTableItem(material.oreList.get(i)))
+                        blockTable(blockRegistered, tableBuilder.withPool(poolBuilder.setRolls(NumberProvider)
+                                        .add(AlternativesEntry.alternatives().otherwise(LootItem.lootTableItem(blockRegistered)
+                                                .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1)))))))
+                                        .add(LootItem.lootTableItem(material.oreList.get(i)))
                         ));
                         i++;
                     }
@@ -83,19 +92,19 @@ public class GenLootTables extends LootTableProvider {
     }
 
     public static void blockTable(Block b, LootTable.Builder lootTable) {
-        addTable(b.getLootTable(), lootTable, LootParameterSets.BLOCK);
+        addTable(b.getLootTable(), lootTable, LootContextParamSets.BLOCK);
     }
 
-    public static void addTable(ResourceLocation path, LootTable.Builder lootTable, LootParameterSet paramSet) {
+    public static void addTable(ResourceLocation path, LootTable.Builder lootTable, LootContextParamSet paramSet) {
         tables.add(Pair.of(() -> (lootBuilder) -> lootBuilder.accept(path, lootTable), paramSet));
     }
 
-    public static LootPool.Builder createStandardDrops(IItemProvider itemProvider) {
-        return LootPool.lootPool().setRolls(ConstantRange.exactly(1)).when(SurvivesExplosion.survivesExplosion()).add(ItemLootEntry.lootTableItem(itemProvider));
+    public static LootPool.Builder createStandardDrops(ItemLike itemProvider) {
+        return LootPool.lootPool().setRolls(ConstantIntValue.exactly(1)).when(ExplosionCondition.survivesExplosion()).add(LootItem.lootTableItem(itemProvider));
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationtracker) {
-        map.forEach((loc, table) -> LootTableManager.validate(validationtracker, loc, table));
+    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
+        map.forEach((loc, table) -> LootTables.validate(validationtracker, loc, table));
     }
 }
