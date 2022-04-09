@@ -1,9 +1,6 @@
 package mightydanp.industrialtech.api.common.jsonconfig.generation.blocksinwater;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import mightydanp.industrialtech.api.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
@@ -22,8 +19,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-
 public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatureConfig> {
 
     @Override
@@ -40,8 +35,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
         List<BlocksInWaterGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.blocksInWaterID).stream()
                 .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
-                .map(BlocksInWaterGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
 
         if(list.size() != getServerMap().size()){
             sync.set(false);
@@ -97,7 +91,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = ((BlocksInWaterRegistry)IndustrialTech.configSync.blocksInWater.getFirst()).getJsonObject(file.getName());
+                JsonObject jsonObject = IndustrialTech.configSync.blocksInWater.getFirst().getJsonObject(file.getName());
                 BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry)IndustrialTech.configSync.blocksInWater.getFirst()).getFromJsonObject(jsonObject);
                 clientBlocksInWaters.put(blocksInWater.name, blocksInWater);
             }
@@ -156,7 +150,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = ((BlocksInWaterRegistry)IndustrialTech.configSync.blocksInWater.getFirst()).getJsonObject(file.getName());
+                    JsonObject jsonObject = IndustrialTech.configSync.blocksInWater.getFirst().getJsonObject(file.getName());
                     BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry)IndustrialTech.configSync.blocksInWater.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = blocksInWater.name;
@@ -179,8 +173,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     public void loadFromServer(SyncMessage message) {
         List<BlocksInWaterGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.blocksInWaterID).stream()
                 .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
-                .map(BlocksInWaterGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
 
         Map<String, BlocksInWaterGenFeatureConfig> BlocksInWaters = list.stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
@@ -192,24 +185,27 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, BlocksInWaterGenFeatureConfig blocksInWater) {//friendlybotbuff
-        buffer.writeUtf(blocksInWater.name);
-        buffer.writeInt(blocksInWater.rarity);
-        buffer.writeInt(blocksInWater.height);
-        buffer.writeBoolean(blocksInWater.shallowWater);
-        buffer.writeBoolean(blocksInWater.goAboveWater);
-        buffer.writeInt(blocksInWater.biomes.size());
-        for(String biome : blocksInWater.biomes){
-            buffer.writeUtf(biome);
-        }
+    public void singleToBuffer(FriendlyByteBuf buffer, BlocksInWaterGenFeatureConfig config) {//friendlybotbuff
+        buffer.writeUtf(config.name);
+        buffer.writeInt(config.rarity);
+        buffer.writeInt(config.height);
+        buffer.writeBoolean(config.shallowWater);
+        buffer.writeBoolean(config.goAboveWater);
 
-        buffer.writeInt(blocksInWater.validBlocks.size());
-        for(String validBlock : blocksInWater.validBlocks){
-            buffer.writeUtf(validBlock);
-        }
+        buffer.writeInt(config.dimensions.size());
+        config.dimensions.forEach(buffer::writeUtf);
 
-        buffer.writeUtf(blocksInWater.topState);
-        buffer.writeUtf(blocksInWater.bellowState);
+        buffer.writeInt(config.validBiomes.size());
+        config.validBiomes.forEach(buffer::writeUtf);
+
+        buffer.writeInt(config.invalidBiomes.size());
+        config.invalidBiomes.forEach(buffer::writeUtf);
+
+        buffer.writeInt(config.validBlocks.size());
+        config.validBlocks.forEach(buffer::writeUtf);
+
+        buffer.writeUtf(config.topState);
+        buffer.writeUtf(config.bellowState);
 
     }
 
@@ -217,8 +213,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<BlocksInWaterGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.blocksInWaterID).stream()
                 .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
-                .map(BlocksInWaterGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -233,11 +228,25 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         boolean shallowWater = buffer.readBoolean();
         boolean goAboveWater = buffer.readBoolean();
 
-        int biomesSize = buffer.readInt();
-        List<String> biomes = new ArrayList<>();
-        for(int i = 0; i < biomesSize; i++){
-            String biome = buffer.readUtf();
-            biomes.add(biome);
+        int dimensions = buffer.readInt();
+        List<String> dimensionsList = new ArrayList<>();
+        for(int i = 0; i < dimensions; i++){
+            String dimension = buffer.readUtf();
+            dimensionsList.add(dimension);
+        }
+
+        int validBiomes = buffer.readInt();
+        List<String> validBiomesList = new ArrayList<>();
+        for(int i = 0; i < validBiomes; i++){
+            String validBiome = buffer.readUtf();
+            validBiomesList.add(validBiome);
+        }
+
+        int invalidBiomes = buffer.readInt();
+        List<String> invalidBiomesList = new ArrayList<>();
+        for(int i = 0; i < invalidBiomes; i++){
+            String invalidBiome = buffer.readUtf();
+            invalidBiomesList.add(invalidBiome);
         }
 
         List<String> validBlocks = new ArrayList<>();
@@ -251,7 +260,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         String topState = buffer.readUtf();
         String bellowState = buffer.readUtf();
 
-        return new BlocksInWaterGenFeatureConfig(name, rarity, height, shallowWater, goAboveWater, biomes, validBlocks, topState, bellowState);
+        return new BlocksInWaterGenFeatureConfig(name, rarity, height, shallowWater, goAboveWater, dimensionsList, validBiomesList, invalidBiomesList, validBlocks, topState, bellowState);
     }
 
     public List<BlocksInWaterGenFeatureConfig> multipleFromBuffer(FriendlyByteBuf buffer) {

@@ -5,7 +5,7 @@ import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.common.libs.ItemRef;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Created by MightyDanp on 10/11/2021.

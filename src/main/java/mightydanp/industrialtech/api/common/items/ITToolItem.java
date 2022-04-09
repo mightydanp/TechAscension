@@ -7,6 +7,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -39,6 +40,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+
+import net.minecraft.world.item.Item.Properties;
 
 /**
  * Created by MightyDanp on 3/29/2021.
@@ -85,11 +88,11 @@ public class ITToolItem extends Item {
         tooltip.add(Component.nullToEmpty(""));
 
         if (nbt.contains("tool_levels") && nbt.contains("it_tool_types")) {
-            Map<IToolType, Tag.Named<Block>> toolTypeList = getToolLevelsList(itemStackIn);
+            Map<IToolType, TagKey<Block>> toolTypeList = getToolLevelsList(itemStackIn);
             for (int i = 0; i < toolTypeList.size(); i++) {
                 String toolTypeName = toolTypeList.keySet().stream().toList().get(i).getName();
-                Tag.Named<Block> toolTypeLevel = toolTypeList.values().stream().toList().get(i);
-                tooltip.add(Component.nullToEmpty("\u00A7f" + toolTypeName + " level:" + "\u00A7f" + " " + "\u00A7a" + toolTypeLevel.getName().getPath() + "\u00A7a"));
+                TagKey<Block> toolTypeLevel = toolTypeList.values().stream().toList().get(i);
+                tooltip.add(Component.nullToEmpty("\u00A7f" + toolTypeName + " level:" + "\u00A7f" + " " + "\u00A7a" + toolTypeLevel.location().getPath() + "\u00A7a"));
             }
         }
 
@@ -192,13 +195,13 @@ public class ITToolItem extends Item {
         nbt.putIntArray("tool_levels", harvestArray);
     }
 
-    public Map<IToolType, Tag.Named<Block>> getToolLevelsList(ItemStack itemStackIn) {
+    public Map<IToolType, TagKey<Block>> getToolLevelsList(ItemStack itemStackIn) {
         CompoundTag nbt = itemStackIn.getOrCreateTag();
-        Map<IToolType, Tag.Named<Block>> toolTypes = new HashMap<>();
+        Map<IToolType, TagKey<Block>> toolTypes = new HashMap<>();
         int[] intArray = nbt.getIntArray("tool_levels");
         String[] stringArray = nbt.getString("it_tool_types").split(", ");
         for (int i = 0; i < intArray.length; i++) {
-            toolTypes.putIfAbsent((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(stringArray[i]), BlockTags.bind("tool_level/" + intArray[i]));
+            toolTypes.putIfAbsent((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(stringArray[i]), BlockTags.create(new ResourceLocation("tool_level/" + intArray[i])));
         }
         return toolTypes;
     }
@@ -209,10 +212,10 @@ public class ITToolItem extends Item {
 
         getToolLevelsList(stack).forEach((iToolType, toolLevel) -> {
             if (state.is(iToolType.getToolTypeTag())) {
-                int level = Integer.parseInt(toolLevel.getName().toString().split("/")[1]);
+                int level = Integer.parseInt(toolLevel.location().getPath().split("/")[1]);
 
                 for(int i = 0; i <= level; i++){
-                    if(!state.is(BlockTags.bind("tool_level/" + i))){
+                    if(!state.is(BlockTags.create(new ResourceLocation("tool_level/" + i)))){
                         isCorrect.set(false);
                     }
                 }

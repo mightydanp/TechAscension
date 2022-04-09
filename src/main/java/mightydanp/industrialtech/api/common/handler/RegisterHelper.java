@@ -3,10 +3,10 @@ package mightydanp.industrialtech.api.common.handler;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryBuilder;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
@@ -28,6 +28,6 @@ public class RegisterHelper {
             builder.disableSaving();
             builder.disableSync();
         }
-        return (ForgeRegistry<T>) builder.create();
+        return (ForgeRegistry<T>) builder.getCreate();
     }
 }

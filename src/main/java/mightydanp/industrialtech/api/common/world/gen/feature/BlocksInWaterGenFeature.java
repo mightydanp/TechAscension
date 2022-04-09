@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
@@ -38,6 +39,7 @@ public class BlocksInWaterGenFeature extends Feature<BlocksInWaterGenFeatureConf
             for(int zz = 0; zz <= 16; zz++){
                 int z2 = zz + z;
                 int groundHeight = context.level().getHeight(Heightmap.Types.OCEAN_FLOOR_WG, x2, z2);
+                DimensionType worldgenlevel = context.level().dimensionType();
                 for(int yy = groundHeight; yy <= 256; yy++){
                     blockpos$mutable.set(x2, yy, z2);
                     BlockState blockStateUp = context.level().getBlockState(blockpos$mutable.above());

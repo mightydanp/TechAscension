@@ -1,8 +1,10 @@
 package mightydanp.industrialtech.api.common.jsonconfig.tool.type;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
 /**
@@ -54,8 +56,8 @@ public enum DefaultToolType implements IToolType {
     }
 
     @Override
-    public Tag.Named<Block> getToolTypeTag() {
-        return BlockTags.bind("tool/" + fixesToName(getFixes()));
+    public TagKey<Block> getToolTypeTag() {
+        return BlockTags.create(new ResourceLocation("tool/" + fixesToName(getFixes())));
     }
 
     public static String fixesToName(Pair<String, String> fixes){

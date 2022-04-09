@@ -65,7 +65,7 @@ public class ModClientEvent implements ISidedReference {
 
     @SubscribeEvent
     public static void onTextureStitchEvent(TextureStitchEvent.Pre event) {
-        if (event.getMap().location() == LOCATION_BLOCKS) {
+        if (event.getAtlas().location() == LOCATION_BLOCKS) {
             event.addSprite(new ResourceLocation("block/campfire_log"));
         }
     }

@@ -4,6 +4,7 @@ import mightydanp.industrialtech.api.common.handler.generation.StoneLayerGenerat
 import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.biome.Biome;
@@ -37,7 +38,7 @@ public class StoneLayerGeneration {
                 }
             }
         }
-        StoneLayerGenerationHandler.addThinSlabGenerate("thin_slab", thinSlabBlocks, 5000, true, false, OverWorldFlowBiomes);
+        StoneLayerGenerationHandler.addThinSlabGenerate("thin_slab", thinSlabBlocks, 5000, true, false, List.of(Level.OVERWORLD), List.of(), List.of());
     }
 
 

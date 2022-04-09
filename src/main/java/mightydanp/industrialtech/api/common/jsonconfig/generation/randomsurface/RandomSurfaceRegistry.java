@@ -74,10 +74,17 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
         JsonArray biomesJson = jsonObjectIn.getAsJsonArray("biomes");
         List<String> biomesList = new ArrayList<>();
 
-        biomesJson.forEach((jsonElement) -> {
-            String biome = jsonElement.getAsString();
-            biomesList.add(biome);
-        });
+        JsonArray dimensionsJson = jsonObjectIn.getAsJsonArray("dimensions");
+        List<String> dimensionsList = new ArrayList<>();
+        dimensionsJson.forEach(jsonElement -> dimensionsList.add(jsonElement.getAsString()));
+
+        JsonArray validBiomesJson = jsonObjectIn.getAsJsonArray("valid_biomes");
+        List<String> validBiomesList = new ArrayList<>();
+        validBiomesJson.forEach(jsonElement -> validBiomesList.add(jsonElement.getAsString()));
+
+        JsonArray invalidBiomesJson = jsonObjectIn.getAsJsonArray("invalid_biomes");
+        List<String> invalidBiomesList = new ArrayList<>();
+        invalidBiomesJson.forEach(jsonElement -> invalidBiomesList.add(jsonElement.getAsString()));
 
         JsonArray validBlocksJson = jsonObjectIn.getAsJsonArray("valid_blocks");
         List<String> validBlocks = new ArrayList<>();
@@ -93,31 +100,41 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
             blocks.add(jsonElement.getAsString());
         });
 
-        return new RandomSurfaceGenFeatureConfig(name, rarity, biomesList, validBlocks, blocks);
+        return new RandomSurfaceGenFeatureConfig(name, rarity, dimensionsList, validBiomesList, invalidBiomesList, validBlocks, blocks);
     }
 
-    public JsonObject toJsonObject(RandomSurfaceGenFeatureConfig randomSurface) {
+    public JsonObject toJsonObject(RandomSurfaceGenFeatureConfig config) {
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("name", randomSurface.name);
-        jsonObject.addProperty("rarity", randomSurface.rarity);
+        jsonObject.addProperty("name", config.name);
+        jsonObject.addProperty("rarity", config.rarity);
 
-        JsonArray biomes = new JsonArray();
+        JsonArray dimensions = new JsonArray();
         {
-            for(String biome : randomSurface.biomes){
-                biomes.add(biome);
-            }
+            config.dimensions.forEach(dimensions::add);
         }
-        jsonObject.add("biomes", biomes);
+        jsonObject.add("dimensions", dimensions);
+
+        JsonArray validBiomes = new JsonArray();
+        {
+            config.validBiomes.forEach(validBiomes::add);
+        }
+        jsonObject.add("valid_biomes", validBiomes);
+
+        JsonArray invalid_biomes = new JsonArray();
+        {
+            config.invalidBiomes.forEach(invalid_biomes::add);
+        }
+        jsonObject.add("invalid_biomes", invalid_biomes);
 
         JsonArray validBlocks = new JsonArray();
         {
-            randomSurface.validBlocks.forEach(validBlocks::add);
+            config.validBlocks.forEach(validBlocks::add);
         }
 
         JsonArray blocks = new JsonArray();
         {
-            randomSurface.blocks.forEach(blocks::add);
+            config.blocks.forEach(blocks::add);
         }
 
         return jsonObject;

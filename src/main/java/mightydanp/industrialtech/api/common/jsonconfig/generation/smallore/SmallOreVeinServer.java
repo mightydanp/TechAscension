@@ -2,12 +2,10 @@ package mightydanp.industrialtech.api.common.jsonconfig.generation.smallore;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface.RandomSurfaceRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.api.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
 import mightydanp.industrialtech.api.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
@@ -22,7 +20,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 
 public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureConfig> {
 
@@ -40,8 +37,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
         List<SmallOreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.smallOreID).stream()
                 .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
-                .map(SmallOreVeinGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
 
         if(list.size() != getServerMap().size()){
             sync.set(false);
@@ -156,7 +152,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).getJsonObject(file.getName());
+                    JsonObject jsonObject = IndustrialTech.configSync.smallOre.getFirst().getJsonObject(file.getName());
                     SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = oreVein.name;
@@ -179,8 +175,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
     public void loadFromServer(SyncMessage message) {
         List<SmallOreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.smallOreID).stream()
                 .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
-                .map(SmallOreVeinGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
 
         Map<String, SmallOreVeinGenFeatureConfig> SmallOreVeins = list.stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
@@ -192,36 +187,37 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, SmallOreVeinGenFeatureConfig oreVein) {//friendlybotbuff
-        buffer.writeUtf(oreVein.name);
-        buffer.writeInt(oreVein.rarity);
-        buffer.writeInt(oreVein.minHeight);
-        buffer.writeInt(oreVein.maxHeight);
-        buffer.writeInt(oreVein.biomes.size());
-        for(String biome : oreVein.biomes){
-            buffer.writeUtf(biome);
-        }
+    public void singleToBuffer(FriendlyByteBuf buffer, SmallOreVeinGenFeatureConfig config) {
+        buffer.writeUtf(config.name);
+        buffer.writeInt(config.rarity);
+        buffer.writeInt(config.minHeight);
+        buffer.writeInt(config.maxHeight);
 
-        buffer.writeInt(oreVein.blocksAndChances.size());
+        buffer.writeInt(config.dimensions.size());
+        config.dimensions.forEach(buffer::writeUtf);
 
-        for(Pair<String, Integer> veinBlockAndChance : oreVein.blocksAndChances){
-            buffer.writeUtf(veinBlockAndChance.getFirst());
-            buffer.writeInt(veinBlockAndChance.getSecond());
-        }
+        buffer.writeInt(config.validBiomes.size());
+        config.validBiomes.forEach(buffer::writeUtf);
+
+        buffer.writeInt(config.invalidBiomes.size());
+        config.invalidBiomes.forEach(buffer::writeUtf);
+
+        buffer.writeInt(config.blocksAndChances.size());
+        config.blocksAndChances.forEach(stringIntegerPair -> {
+            buffer.writeUtf(stringIntegerPair.getFirst());
+            buffer.writeInt(stringIntegerPair.getSecond());
+        });
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<SmallOreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.smallOreID).stream()
                 .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
-                .map(SmallOreVeinGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
-        list.forEach((smallOreVein) -> {
-            singleToBuffer(buffer, smallOreVein);
-        });
+        list.forEach(smallOreVein -> singleToBuffer(buffer, smallOreVein));
     }
 
     @Override
@@ -230,11 +226,26 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
         int rarity = buffer.readInt();
         int minHeight = buffer.readInt();
         int maxHeight = buffer.readInt();
-        int biomesSize = buffer.readInt();
-        List<String> biomes = new ArrayList<>();
-        for(int i = 0; i < biomesSize; i++){
-            String biome = buffer.readUtf();
-            biomes.add(biome);
+
+        int dimensions = buffer.readInt();
+        List<String> dimensionsList = new ArrayList<>();
+        for(int i = 0; i < dimensions; i++){
+            String dimension = buffer.readUtf();
+            dimensionsList.add(dimension);
+        }
+
+        int validBiomes = buffer.readInt();
+        List<String> validBiomesList = new ArrayList<>();
+        for(int i = 0; i < validBiomes; i++){
+            String validBiome = buffer.readUtf();
+            validBiomesList.add(validBiome);
+        }
+
+        int invalidBiomes = buffer.readInt();
+        List<String> invalidBiomesList = new ArrayList<>();
+        for(int i = 0; i < invalidBiomes; i++){
+            String invalidBiome = buffer.readUtf();
+            invalidBiomesList.add(invalidBiome);
         }
 
         List<Pair<String, Integer>> veinBlocksAndChances = new ArrayList<>();
@@ -245,7 +256,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
             int chance = buffer.readInt();
             veinBlocksAndChances.add(new Pair<>(block, chance));
         }
-        return new SmallOreVeinGenFeatureConfig(name, rarity, minHeight, maxHeight, biomes, veinBlocksAndChances);
+        return new SmallOreVeinGenFeatureConfig(name, rarity, minHeight, maxHeight, dimensionsList, validBiomesList, invalidBiomesList, veinBlocksAndChances);
     }
 
     @Override

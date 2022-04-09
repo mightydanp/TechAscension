@@ -170,7 +170,7 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
 
         if (tileEntity != null) {
             ItemStack itemstack = playerEntity.getItemInHand(hand);
-            ResourceLocation log = ItemTags.LOGS.getName();
+            ResourceLocation log = ItemTags.LOGS.location();
 
             Optional<CampfireOverrideRecipe> optional = tileEntity.getCookableRecipe(itemstack);
             int logs = blockState.getValue(LOG);
@@ -243,7 +243,7 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
                     break;
             }
 
-            if(logs < 5 && ItemTags.getAllTags().getTagOrEmpty(log).contains(itemstack.getItem())){
+            if(logs < 5 && itemstack.is(ItemTags.LOGS)){
                 itemstack.shrink(1);
                 playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
                 increaseLogs(world, blockPos, blockState, 1);
@@ -413,7 +413,7 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
     public BlockState updateShape(BlockState blockState, Direction direction, BlockState underBlock, LevelAccessor world, BlockPos blockPos, BlockPos p_196271_6_) {
         CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride) world.getBlockEntity(blockPos);
         if (blockState.getValue(WATERLOGGED)) {
-            world.getLiquidTicks().scheduleTick(blockPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
+            world.scheduleTick(blockPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
 
         if(direction == Direction.DOWN){
@@ -468,7 +468,7 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
             }
 
             iWorld.setBlock(blockPos, blockState.setValue(WATERLOGGED, true).setValue(LIT, false), 3);
-            iWorld.getLiquidTicks().scheduleTick(blockPos, fluidState.getType(), fluidState.getType().getTickDelay(iWorld));
+            iWorld.scheduleTick(blockPos, fluidState.getType(), fluidState.getType().getTickDelay(iWorld));
             return true;
         } else {
             return false;

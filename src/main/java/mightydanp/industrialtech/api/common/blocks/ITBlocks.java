@@ -5,8 +5,7 @@ import mightydanp.industrialtech.api.common.libs.ITBlockRef;
 import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Created by MightyDanp on 10/11/2021.

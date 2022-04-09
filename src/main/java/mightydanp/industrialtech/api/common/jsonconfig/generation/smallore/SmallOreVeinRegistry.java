@@ -71,49 +71,61 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
         int rarity = jsonObjectIn.get("rarity").getAsInt();
         int minHeight = jsonObjectIn.get("min_height").getAsInt();
         int maxHeight = jsonObjectIn.get("max_height").getAsInt();
-        JsonArray biomesJson = jsonObjectIn.getAsJsonArray("biomes");
-        List<String> biomesList = new ArrayList<>();
 
-        biomesJson.forEach((jsonElement) -> {
-            String biome = jsonElement.getAsString();
-            biomesList.add(biome);
-        });
+        JsonArray dimensionsJson = jsonObjectIn.getAsJsonArray("dimensions");
+        List<String> dimensionsList = new ArrayList<>();
+        dimensionsJson.forEach(jsonElement -> dimensionsList.add(jsonElement.getAsString()));
+
+        JsonArray validBiomesJson = jsonObjectIn.getAsJsonArray("valid_biomes");
+        List<String> validBiomesList = new ArrayList<>();
+        validBiomesJson.forEach(jsonElement -> validBiomesList.add(jsonElement.getAsString()));
+
+        JsonArray invalidBiomesJson = jsonObjectIn.getAsJsonArray("invalid_biomes");
+        List<String> invalidBiomesList = new ArrayList<>();
+        invalidBiomesJson.forEach(jsonElement -> invalidBiomesList.add(jsonElement.getAsString()));
 
 
         JsonArray veinBlocksJson = jsonObjectIn.getAsJsonArray("vein_blocks_and_chances");
         List<Pair<String, Integer>> veinBlockChances = new ArrayList<>();
 
-        veinBlocksJson.forEach((jsonElement) -> {
-            JsonObject object = jsonElement.getAsJsonObject();
-            veinBlockChances.add(new Pair<>(object.get("vein_block").getAsString(), object.get("vein_block_chance").getAsInt()));
-        });
+        veinBlocksJson.forEach(jsonElement -> veinBlockChances.add(new Pair<>(jsonElement.getAsJsonObject().get("vein_block").getAsString(), jsonElement.getAsJsonObject().get("vein_block_chance").getAsInt())));
 
-        return new SmallOreVeinGenFeatureConfig(name, rarity, minHeight, maxHeight, biomesList, veinBlockChances);
+        return new SmallOreVeinGenFeatureConfig(name, rarity, minHeight, maxHeight, dimensionsList, validBiomesList, invalidBiomesList, veinBlockChances);
     }
 
-    public JsonObject toJsonObject(SmallOreVeinGenFeatureConfig smallOreVein) {
+    public JsonObject toJsonObject(SmallOreVeinGenFeatureConfig config) {
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("name", smallOreVein.name);
-        jsonObject.addProperty("rarity", smallOreVein.rarity);
-        jsonObject.addProperty("min_height", smallOreVein.minHeight);
-        jsonObject.addProperty("max_height", smallOreVein.maxHeight);
+        jsonObject.addProperty("name", config.name);
+        jsonObject.addProperty("rarity", config.rarity);
+        jsonObject.addProperty("min_height", config.minHeight);
+        jsonObject.addProperty("max_height", config.maxHeight);
 
-        JsonArray biomes = new JsonArray();
+        JsonArray dimensions = new JsonArray();
         {
-            for(String biome : smallOreVein.biomes){
-                biomes.add(biome);
-            }
+            config.dimensions.forEach(dimensions::add);
         }
-        jsonObject.add("biomes", biomes);
+        jsonObject.add("dimensions", dimensions);
+
+        JsonArray validBiomes = new JsonArray();
+        {
+            config.validBiomes.forEach(validBiomes::add);
+        }
+        jsonObject.add("valid_biomes", validBiomes);
+
+        JsonArray invalid_biomes = new JsonArray();
+        {
+            config.invalidBiomes.forEach(invalid_biomes::add);
+        }
+        jsonObject.add("invalid_biomes", invalid_biomes);
 
         JsonArray veinBlocks = new JsonArray();
         {
             JsonObject veinBlocksArray = new JsonObject();
             {
-                for (int i = 0; i < smallOreVein.blocksAndChances.size(); i++) {
-                    veinBlocksArray.addProperty("vein_block", smallOreVein.blocksAndChances.get(i).getFirst());
-                    veinBlocksArray.addProperty("vein_block_chance", smallOreVein.blocksAndChances.get(i).getSecond());
+                for (int i = 0; i < config.blocksAndChances.size(); i++) {
+                    veinBlocksArray.addProperty("vein_block", config.blocksAndChances.get(i).getFirst());
+                    veinBlocksArray.addProperty("vein_block_chance", config.blocksAndChances.get(i).getSecond());
                 }
                 veinBlocks.add(veinBlocksArray);
             }

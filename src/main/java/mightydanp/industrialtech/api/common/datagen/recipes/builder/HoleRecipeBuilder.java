@@ -9,6 +9,7 @@ import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.Item;
@@ -61,8 +62,8 @@ public class HoleRecipeBuilder {
     }
 
     @SafeVarargs
-    public final HoleRecipeBuilder requiredIngredientItem(Tag<Item>... iTagsIn) {
-        for (Tag<Item> itemITag : iTagsIn) {
+    public final HoleRecipeBuilder requiredIngredientItem(TagKey<Item>... iTagsIn) {
+        for (TagKey<Item> itemITag : iTagsIn) {
             this.requiredIngredientItem(Ingredient.of(itemITag));
         }
         return this;

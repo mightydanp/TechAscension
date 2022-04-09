@@ -76,8 +76,6 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
                 this.saveJsonObject(material.name, materialJson);
             }
 
-            RegistryHandler.MATERIAL.register(material.setRegistryName(new ResourceLocation(Ref.mod_id, material.name)));
-
         }
     }
 
@@ -93,7 +91,6 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
                         ITMaterial material = getFromJsonObject(jsonObject);
 
                         registryMap.put(material.name, material);
-                        RegistryHandler.MATERIAL.register(material.setRegistryName(new ResourceLocation(Ref.mod_id, material.name)));
                     } else {
                         IndustrialTech.LOGGER.fatal("[{}] could not be added to material list because a material already exist!!", file.getAbsolutePath());
                     }
@@ -102,10 +99,6 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
         } else {
             IndustrialTech.LOGGER.warn(new CrashReport("material json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
-    }
-
-    public ITMaterial grabMaterialFromRegistry(String materialNameIn){
-        return RegistryHandler.MATERIAL.getValue(new ResourceLocation(Ref.mod_id, materialNameIn));
     }
 
     public JsonObject getJsonObject(ITMaterial materialIn) {

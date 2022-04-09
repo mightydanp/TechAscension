@@ -8,7 +8,7 @@ import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.libs.ItemRef;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Created by MightyDanp on 10/10/2020.

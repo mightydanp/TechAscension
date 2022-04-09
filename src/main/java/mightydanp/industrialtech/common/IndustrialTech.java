@@ -55,8 +55,6 @@ public class IndustrialTech {
 
         mainJsonConfig.initiate();
 
-        MinecraftForge.EVENT_BUS.register(ConfigSync.class);
-
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
         modLoadingContext.registerConfig(ModConfig.Type.SERVER, DataConfig.SERVER_SPEC);
         modLoadingContext.registerConfig(ModConfig.Type.CLIENT, DataConfig.CLIENT_SPEC);
@@ -89,5 +87,7 @@ public class IndustrialTech {
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientEvent::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientEvent::init);
+
+        MinecraftForge.EVENT_BUS.register(ConfigSync.class);
     }
 }

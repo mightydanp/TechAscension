@@ -8,6 +8,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.DefaultToolPart;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
+import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.items.ModItems;
 import mightydanp.industrialtech.common.tool.ModTools;
 import net.minecraft.data.DataGenerator;
@@ -35,56 +36,56 @@ public class GenItemModel extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        for(ITMaterial material : RegistryHandler.MATERIAL.getValues()) {
-            for(IMaterialFlag flag : material.materialFlags) {
+        IndustrialTech.configSync.material.getFirst().registryMap.values().forEach(material -> {
+            for (IMaterialFlag flag : ((ITMaterial)material).materialFlags) {
                 if (flag == DefaultMaterialFlag.ORE) {
                 }
 
                 if (flag == DefaultMaterialFlag.GEM) {
-                    coloredMaterialPart(material.gem, material);
-                    coloredMaterialPart(material.chippedGem, material);
-                    coloredMaterialPart(material.flawedGem, material);
-                    coloredMaterialPart(material.flawlessGem, material);
-                    coloredMaterialPart(material.legendaryGem, material);
+                    coloredMaterialPart(((ITMaterial)material).gem, ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).chippedGem, ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).flawedGem, ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).flawlessGem, ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).legendaryGem, ((ITMaterial)material));
                 }
 
                 if (flag == DefaultMaterialFlag.GEM || flag == DefaultMaterialFlag.ORE) {
-                    coloredMaterialPart(material.crushedOre, material);
-                    coloredMaterialPart(material.purifiedOre, material);
-                    coloredMaterialPart(material.centrifugedOre, material);
-                    //coloredMaterialPart(material.dust, material);
-                    //coloredMaterialPart(material.smallDust, material);
-                    //coloredMaterialPart(material.tinyDust, material);
-                    for (Item item : material.oreItemList) {
+                    coloredMaterialPart(((ITMaterial)material).crushedOre, ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).purifiedOre, ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).centrifugedOre, ((ITMaterial)material));
+                    //coloredMaterialPart(((ITMaterial)material).dust, ((ITMaterial)material));
+                    //coloredMaterialPart(((ITMaterial)material).smallDust, ((ITMaterial)material));
+                    //coloredMaterialPart(((ITMaterial)material).tinyDust, ((ITMaterial)material));
+                    for (Item item : ((ITMaterial)material).oreItemList) {
                         generateItemBlockSuffix(item);
                     }
-                    for (Item item : material.denseOreItemList) {
+                    for (Item item : ((ITMaterial)material).denseOreItemList) {
                         generatePrefixItemBlockSuffix(item, null);
                     }
-                    for (Item item : material.smallOreItemList) {
+                    for (Item item : ((ITMaterial)material).smallOreItemList) {
                         generatePrefixItemBlockSuffix(item, null);
                     }
                 }
             }
 
-            for(IToolPart flag : material.toolParts){
-                if(flag == DefaultToolPart.TOOL_HEAD){
-                    coloredToolPart(material.dullPickaxe, material);
-                    coloredToolPart(material.pickaxeHead, material);
-                    coloredToolPart(material.hammerHead, material);
-                    coloredToolPart(material.dullChiselHead, material);
-                    coloredToolPart(material.chiselHead, material);
+            for (IToolPart flag : ((ITMaterial)material).toolParts) {
+                if (flag == DefaultToolPart.TOOL_HEAD) {
+                    coloredToolPart(((ITMaterial)material).dullPickaxe, ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).pickaxeHead, ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).hammerHead, ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).dullChiselHead, ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).chiselHead, ((ITMaterial)material));
                 }
-                if(flag == DefaultToolPart.TOOL_WEDGE) {
-                    coloredToolPart(material.wedge, material);
+                if (flag == DefaultToolPart.TOOL_WEDGE) {
+                    coloredToolPart(((ITMaterial)material).wedge, ((ITMaterial)material));
                 }
 
-                if(flag == DefaultToolPart.TOOL_WEDGE_HANDLE){
-                  coloredToolPart(material.wedgeHandle, material);
+                if (flag == DefaultToolPart.TOOL_WEDGE_HANDLE) {
+                    coloredToolPart(((ITMaterial)material).wedgeHandle, ((ITMaterial)material));
                 }
 
             }
-        }
+    });
 
         /*
         for(StoneLayerHandler layer : ModStoneLayers.stoneLayerList ){

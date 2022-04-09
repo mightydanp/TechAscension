@@ -89,7 +89,7 @@ public class CatTailPlantBottomBlock extends CropBlock implements LiquidBlockCon
         final BlockState newState = super.updateShape(state, facing, facingState, world, currentPos, facingPos);
 
         if (!newState.isAir()) {
-            world.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
+            world.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
 
         return newState;

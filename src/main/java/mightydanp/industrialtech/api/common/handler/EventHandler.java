@@ -55,14 +55,6 @@ public class EventHandler {
         }
     }
 
-    @SubscribeEvent
-	@OnlyIn(Dist.CLIENT)
-    public static void onInitGuiEvent(final GuiScreenEvent.InitGuiEvent event) {}
-
-    @SubscribeEvent
-	@OnlyIn(Dist.CLIENT)
-    public static void overrideInventoryEvent(GuiOpenEvent event) {}
-
     public static BlockPos copyBlockPos = new BlockPos(0, 0, 0);
 
     public static boolean newPosition = false;

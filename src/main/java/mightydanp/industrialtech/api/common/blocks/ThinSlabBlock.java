@@ -58,7 +58,7 @@ public class ThinSlabBlock extends Block implements LiquidBlockContainer {
         final BlockState newState = super.updateShape(blockState, direction, facingState, world, currentPos, facingPos);
 
         if (!newState.isAir()) {
-            world.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
+            world.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
 
         return super.updateShape(blockState, direction, facingState, world, currentPos, facingPos);

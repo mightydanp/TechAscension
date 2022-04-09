@@ -36,16 +36,12 @@ public class RegistryHandler extends RegisterHelper{
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Ref.mod_id);
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(ForgeRegistries.FEATURES, Ref.mod_id);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Ref.mod_id);
-    public static final IForgeRegistry<ITMaterial> MATERIAL = makeRegistry("material", ITMaterial.class, Ref.mod_id, false);
-    private static final DeferredRegister<ITMaterial> MATERIALS = DeferredRegister.create(MATERIAL, Ref.mod_id);
 
     public void init(){
 
     }
 
     public static void init(IEventBus IEventBus) {
-        material = ResourceKey.createRegistryKey(new ResourceLocation(Ref.mod_id, "material"));
-        MATERIALS.register(IEventBus);
         ITEMS.register(IEventBus);
         BLOCKS.register(IEventBus);
         BLOCK_ITEMS.register(IEventBus);

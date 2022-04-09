@@ -2,12 +2,10 @@ package mightydanp.industrialtech.api.common.jsonconfig.generation.orevein;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.jsonconfig.generation.blocksinwater.BlocksInWaterRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.api.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
 import mightydanp.industrialtech.api.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
@@ -21,8 +19,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
 
@@ -40,8 +36,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
 
         List<OreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.oreVeinID).stream()
                 .filter(OreVeinGenFeatureConfig.class::isInstance)
-                .map(OreVeinGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(OreVeinGenFeatureConfig.class::cast).toList();
 
         if(list.size() != getServerMap().size()){
             sync.set(false);
@@ -179,8 +174,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
     public void loadFromServer(SyncMessage message) {
         List<OreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.oreVeinID).stream()
                 .filter(OreVeinGenFeatureConfig.class::isInstance)
-                .map(OreVeinGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(OreVeinGenFeatureConfig.class::cast).toList();
 
         Map<String, OreVeinGenFeatureConfig> OreVeins = list.stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
@@ -199,10 +193,15 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
         buffer.writeInt(oreVein.maxHeight);
         buffer.writeInt(oreVein.minRadius);
         buffer.writeInt(oreVein.minNumberOfSmallOreLayers);
-        buffer.writeInt(oreVein.biomes.size());
-        for(String biome : oreVein.biomes){
-            buffer.writeUtf(biome);
-        }
+
+        buffer.writeInt(oreVein.dimensions.size());
+        oreVein.dimensions.forEach(buffer::writeUtf);
+
+        buffer.writeInt(oreVein.validBiomes.size());
+        oreVein.validBiomes.forEach(buffer::writeUtf);
+
+        buffer.writeInt(oreVein.invalidBiomes.size());
+        oreVein.invalidBiomes.forEach(buffer::writeUtf);
 
         buffer.writeInt(oreVein.blocksAndChances.size());
 
@@ -216,8 +215,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<OreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.oreVeinID).stream()
                 .filter(OreVeinGenFeatureConfig.class::isInstance)
-                .map(OreVeinGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(OreVeinGenFeatureConfig.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -233,10 +231,26 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
         int minRadius = buffer.readInt();
         int minNumberOfSmallOreLayers = buffer.readInt();
         int biomesSize = buffer.readInt();
-        List<String> biomes = new ArrayList<>();
-        for(int i = 0; i < biomesSize; i++){
-            String biome = buffer.readUtf();
-            biomes.add(biome);
+
+        int dimensions = buffer.readInt();
+        List<String> dimensionsList = new ArrayList<>();
+        for(int i = 0; i < dimensions; i++){
+            String dimension = buffer.readUtf();
+            dimensionsList.add(dimension);
+        }
+
+        int validBiomes = buffer.readInt();
+        List<String> validBiomesList = new ArrayList<>();
+        for(int i = 0; i < validBiomes; i++){
+            String validBiome = buffer.readUtf();
+            validBiomesList.add(validBiome);
+        }
+
+        int invalidBiomes = buffer.readInt();
+        List<String> invalidBiomesList = new ArrayList<>();
+        for(int i = 0; i < invalidBiomes; i++){
+            String invalidBiome = buffer.readUtf();
+            invalidBiomesList.add(invalidBiome);
         }
 
         List<Pair<String, Integer>> veinBlocksAndChances = new ArrayList<>();
@@ -247,7 +261,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
             int chance = buffer.readInt();
             veinBlocksAndChances.add(new Pair<>(block, chance));
         }
-        return new OreVeinGenFeatureConfig(veinName, rarity, minHeight, maxHeight, minRadius, minNumberOfSmallOreLayers, biomes, veinBlocksAndChances);
+        return new OreVeinGenFeatureConfig(veinName, rarity, minHeight, maxHeight, minRadius, minNumberOfSmallOreLayers, dimensionsList, validBiomesList, invalidBiomesList, veinBlocksAndChances);
     }
 
     @Override

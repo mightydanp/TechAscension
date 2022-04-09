@@ -21,8 +21,8 @@ import net.minecraft.core.Registry;
 public class CustomCookingRecipeBuilder {
     // result itemstack json format isn't the same as the standard format for itemstacks, stupidly
     public static final Codec<ItemStack> ITEMSTACK_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Registry.ITEM.fieldOf("item").forGetter(itemstack -> itemstack.getItem()),
-            Codec.INT.optionalFieldOf("count",1).forGetter(itemstack -> itemstack.getCount()),
+            Registry.ITEM.byNameCodec().fieldOf("item").forGetter(ItemStack::getItem),
+            Codec.INT.optionalFieldOf("count",1).forGetter(ItemStack::getCount),
             CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(ItemStack::getTag)
     ).apply(instance, ItemStack::new));
 
@@ -42,7 +42,7 @@ public class CustomCookingRecipeBuilder {
             },
             ingredient -> new Dynamic<JsonElement>(JsonOps.INSTANCE, ingredient.toJson()));
 
-    public static final Codec<Either<Item,ItemStack>> ITEM_OR_STACK_CODEC = Codec.either(Registry.ITEM, ITEMSTACK_CODEC);
+    public static final Codec<Either<Item,ItemStack>> ITEM_OR_STACK_CODEC = Codec.either(Registry.ITEM.byNameCodec(), ITEMSTACK_CODEC);
 
     public static final Codec<CustomCookingRecipeBuilder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceLocation.CODEC.fieldOf("type").forGetter(CustomCookingRecipeBuilder::getType),

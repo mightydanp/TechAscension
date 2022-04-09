@@ -1,12 +1,14 @@
 package mightydanp.industrialtech.api.common.datagen;
 
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
+import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.handler.TreeHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.libs.EnumTreeFlags;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
+import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.client.model.generators.*;
@@ -25,9 +27,7 @@ public class GenBlockStates extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        for(ITMaterial material : RegistryHandler.MATERIAL.getValues()) {
-            materialHandlerHelper(material);
-        }
+        IndustrialTech.configSync.material.getFirst().registryMap.values().forEach(material -> materialHandlerHelper((ITMaterial) material));
     }
 
     private void materialHandlerHelper(ITMaterial material) {

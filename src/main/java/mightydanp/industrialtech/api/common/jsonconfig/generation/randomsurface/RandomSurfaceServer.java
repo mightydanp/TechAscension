@@ -1,12 +1,10 @@
 package mightydanp.industrialtech.api.common.jsonconfig.generation.randomsurface;
 
 import com.google.gson.JsonObject;
-import mightydanp.industrialtech.api.common.jsonconfig.generation.orevein.OreVeinRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.api.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.industrialtech.api.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
@@ -21,7 +19,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 
 public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatureConfig> {
 
@@ -39,8 +36,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
         List<RandomSurfaceGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
-                .map(RandomSurfaceGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
         
         if(list.size() != getServerMap().size()){
             sync.set(false);
@@ -178,8 +174,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     public void loadFromServer(SyncMessage message) {
         List<RandomSurfaceGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
-                .map(RandomSurfaceGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
 
         Map<String, RandomSurfaceGenFeatureConfig> RandomSurfaces = list.stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
@@ -191,23 +186,24 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, RandomSurfaceGenFeatureConfig randomSurface) {//friendlybotbuff
-        buffer.writeUtf(randomSurface.name);
-        buffer.writeInt(randomSurface.rarity);
-        buffer.writeInt(randomSurface.biomes.size());
-        for(String biome : randomSurface.biomes){
-            buffer.writeUtf(biome);
-        }
+    public void singleToBuffer(FriendlyByteBuf buffer, RandomSurfaceGenFeatureConfig config) {//friendlybotbuff
+        buffer.writeUtf(config.name);
+        buffer.writeInt(config.rarity);
 
-        buffer.writeInt(randomSurface.validBlocks.size());
-        for(String validBlock : randomSurface.validBlocks){
-            buffer.writeUtf(validBlock);
-        }
+        buffer.writeInt(config.dimensions.size());
+        config.dimensions.forEach(buffer::writeUtf);
 
-        buffer.writeInt(randomSurface.biomes.size());
-        for(String block : randomSurface.biomes){
-            buffer.writeUtf(block);
-        }
+        buffer.writeInt(config.validBiomes.size());
+        config.validBiomes.forEach(buffer::writeUtf);
+
+        buffer.writeInt(config.invalidBiomes.size());
+        config.invalidBiomes.forEach(buffer::writeUtf);
+
+        buffer.writeInt(config.validBlocks.size());
+        config.validBlocks.forEach(buffer::writeUtf);
+
+        buffer.writeInt(config.blocks.size());
+        config.blocks.forEach(buffer::writeUtf);
 
     }
 
@@ -215,8 +211,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<RandomSurfaceGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
-                .map(RandomSurfaceGenFeatureConfig.class::cast)
-                .collect(toList());
+                .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -227,11 +222,26 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     public RandomSurfaceGenFeatureConfig singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
         int rarity = buffer.readInt();
-        int biomesSize = buffer.readInt();
-        List<String> biomes = new ArrayList<>();
-        for(int i = 0; i < biomesSize; i++){
-            String biome = buffer.readUtf();
-            biomes.add(biome);
+
+        int dimensions = buffer.readInt();
+        List<String> dimensionsList = new ArrayList<>();
+        for(int i = 0; i < dimensions; i++){
+            String dimension = buffer.readUtf();
+            dimensionsList.add(dimension);
+        }
+
+        int validBiomes = buffer.readInt();
+        List<String> validBiomesList = new ArrayList<>();
+        for(int i = 0; i < validBiomes; i++){
+            String validBiome = buffer.readUtf();
+            validBiomesList.add(validBiome);
+        }
+
+        int invalidBiomes = buffer.readInt();
+        List<String> invalidBiomesList = new ArrayList<>();
+        for(int i = 0; i < invalidBiomes; i++){
+            String invalidBiome = buffer.readUtf();
+            invalidBiomesList.add(invalidBiome);
         }
 
         List<String> validBlocks = new ArrayList<>();
@@ -250,7 +260,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
             blocks.add(block);
         }
 
-        return new RandomSurfaceGenFeatureConfig(name, rarity, biomes, validBlocks, blocks);
+        return new RandomSurfaceGenFeatureConfig(name, rarity, dimensionsList, validBiomesList, invalidBiomesList, validBlocks, blocks);
     }
 
     @Override

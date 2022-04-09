@@ -12,8 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.ForgeModelBakery;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 
@@ -29,6 +28,7 @@ import net.minecraft.client.renderer.block.model.BlockFaceUV;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraftforge.fml.ModLoader;
 
 public class CampFireBakedModel implements IDynamicBakedModel {
 
@@ -43,14 +43,14 @@ public class CampFireBakedModel implements IDynamicBakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        RenderType layer = MinecraftForgeClient.getRenderLayer();
+        RenderType layer = MinecraftForgeClient.getRenderType();
         modelData = extraData;
         blockState = state;
         BlockState desiredBlockState = extraData.getData(HoleTileEntity.desiredBlock);
 
         List<BakedQuad> quads = new ArrayList<>(baseModel.getQuads(state, side, rand));
 
-        TextureAtlas blocksStitchedTextures = ModelLoader.instance().getSpriteMap().getAtlas(TextureAtlas.LOCATION_BLOCKS);
+        TextureAtlas blocksStitchedTextures = ForgeModelBakery.instance().getSpriteMap().getAtlas(TextureAtlas.LOCATION_BLOCKS);
         TextureAtlasSprite campfire = blocksStitchedTextures.getSprite((new ResourceLocation("block/campfire_log")));
 
         //rock 1
@@ -218,7 +218,7 @@ public class CampFireBakedModel implements IDynamicBakedModel {
 
     @Override
     public boolean useAmbientOcclusion() {
-        return baseModel.isAmbientOcclusion(blockState);
+        return baseModel.useAmbientOcclusion(blockState);
     }
 
     @Override

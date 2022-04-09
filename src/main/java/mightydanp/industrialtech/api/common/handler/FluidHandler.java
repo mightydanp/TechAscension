@@ -5,7 +5,7 @@ import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.world.item.Item;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Created by MightyDanp on 10/22/2021.

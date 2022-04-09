@@ -163,12 +163,12 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider, BlockEn
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
+    public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
         return null;
     }
 
     @Override
-    public void load( CompoundTag nbt) {
+    public void load(CompoundTag nbt) {
         loadMetadataAndItems(nbt);
     }
 
@@ -195,43 +195,33 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider, BlockEn
         return nbt;
     }
 
+
+
     @Override
-    public CompoundTag save(CompoundTag nbt) {
-        this.saveMetadataAndItems(nbt);
-        return super.save(nbt);
+    public void saveAdditional(CompoundTag tag){
+        this.saveMetadataAndItems(tag);
     }
 
-    private CompoundTag saveMetadataAndItems(CompoundTag nbt) {
-        super.save(nbt);
+    private void saveMetadataAndItems(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.put("desired_block_state", NbtUtils.writeBlockState(desiredBlockState));
+        tag.putInt("progress", progress);
+        tag.putInt("finished_progress", finishedProgress);
+        tag.putInt("min_ticks", minTicksForHoleToFill);
+        tag.putInt("max_ticks", maxTicksForHoleToFill);
+        tag.putInt("min_result", minResult);
+        tag.putInt("max_result", maxResult);
+        tag.putInt("hole_color", holeColor);
+        tag.putInt("resin_color", resinColor);
+        tag.putInt("harvest_tool_damage", ingredientItemDamage);
 
-        nbt.put("desired_block_state", NbtUtils.writeBlockState(desiredBlockState));
-        nbt.putInt("progress", progress);
-        nbt.putInt("finished_progress", finishedProgress);
-        nbt.putInt("min_ticks", minTicksForHoleToFill);
-        nbt.putInt("max_ticks", maxTicksForHoleToFill);
-        nbt.putInt("min_result", minResult);
-        nbt.putInt("max_result", maxResult);
-        nbt.putInt("hole_color", holeColor);
-        nbt.putInt("resin_color", resinColor);
-        nbt.putInt("harvest_tool_damage", ingredientItemDamage);
-
-        ContainerHelper.saveAllItems(nbt, this.inventory, true);
-
+        ContainerHelper.saveAllItems(tag, this.inventory, true);
         CompoundTag outputTankCompound = outputFluid.writeToNBT(new CompoundTag());
-        nbt.put("output_tank", outputTankCompound);
-
-        return nbt;
+        tag.put("output_tank", outputTankCompound);
     }
 
-    @Nullable
-    @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return new ClientboundBlockEntityDataPacket(this.worldPosition, 13, this.getUpdateTag());
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return this.saveMetadataAndItems(new CompoundTag());
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override

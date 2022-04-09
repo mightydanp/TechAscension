@@ -2,6 +2,7 @@ package mightydanp.industrialtech.common.generation;
 
 import mightydanp.industrialtech.api.common.handler.generation.PlantGenerationHandler;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.biome.Biome;
@@ -52,7 +53,7 @@ public class PlantGeneration {
 
 
     public static void init() {
-        PlantGenerationHandler.addBlockInWaterGenerate("cattail", 10, 1, true, true, OverWorldBiomes, cattailValidBlocks, ModBlocks.cattail_plant_top_block.get(), ModBlocks.cattail_plant_bottom_block.get());
-        PlantGenerationHandler.addRandomSurfaceGenerate("rocks", 50, OverWorldBiomes, rockSoilBlocks, rockBlocks);
+        PlantGenerationHandler.addBlockInWaterGenerate("cattail", 10, 1, true, true, List.of(Level.OVERWORLD.location().toString()), List.of(), List.of(), cattailValidBlocks, ModBlocks.cattail_plant_top_block.get(), ModBlocks.cattail_plant_bottom_block.get());
+        PlantGenerationHandler.addRandomSurfaceGenerate("rocks", 50, List.of(Level.OVERWORLD.location().toString()), List.of(), List.of(), rockSoilBlocks, rockBlocks);
     }
 }

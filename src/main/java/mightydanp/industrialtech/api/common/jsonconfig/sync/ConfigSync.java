@@ -43,7 +43,7 @@ import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.ScreenOpenEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -58,8 +58,8 @@ import java.util.Map;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.gui.screens.ProgressScreen;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
-import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 /**
  * Created by MightyDanp on 1/4/2022.
@@ -209,20 +209,20 @@ public class ConfigSync {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void onDisconnect(GuiOpenEvent event) {
+    public static void onDisconnect(ScreenOpenEvent event) {
         SyncScreen screen = new SyncScreen();
 
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
-        if(event.getGui() != null) {
-            IndustrialTech.LOGGER.debug(event.getGui());
-            IndustrialTech.LOGGER.debug(event.getGui().getTitle().getString());
+        if(event.getScreen() != null) {
+            IndustrialTech.LOGGER.debug(event.getScreen());
+            IndustrialTech.LOGGER.debug(event.getScreen().getTitle().getString());
 
             if (server != null) {
                 if (server.isSingleplayer() && Minecraft.getInstance().getSingleplayerServer() != null) {
                         IntegratedServer integratedServer = Minecraft.getInstance().getSingleplayerServer();
 
-                    if (event.getGui() instanceof ProgressScreen) {
+                    if (event.getScreen() instanceof ProgressScreen) {
                         if (!(new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id).exists()) && !IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id)) {
                             for(int i = 0; i < IndustrialTech.configSync.configs.size(); i++){
                                 Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = IndustrialTech.configSync.configs.get(i);
@@ -239,7 +239,7 @@ public class ConfigSync {
                         }
                     }
 
-                    if (event.getGui() instanceof LevelLoadingScreen) {
+                    if (event.getScreen() instanceof LevelLoadingScreen) {
                         if((new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id).exists())) {
                             if (!IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig" + "/" + Ref.mod_id)) {
                                 IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
@@ -251,9 +251,9 @@ public class ConfigSync {
                 }
             }
 
-            if (event.getGui() instanceof DisconnectedScreen) {
+            if (event.getScreen() instanceof DisconnectedScreen) {
                 if (IndustrialTech.configSync.syncedJson.containsValue(false)) {
-                    event.setGui(screen);
+                    event.setScreen(screen);
                 }
             }
         }

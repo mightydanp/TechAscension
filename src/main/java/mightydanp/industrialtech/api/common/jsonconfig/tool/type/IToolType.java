@@ -1,8 +1,10 @@
 package mightydanp.industrialtech.api.common.jsonconfig.tool.type;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
 /**
@@ -13,7 +15,7 @@ public interface IToolType {
     String getSuffix();
     String getName();
     Pair<String, String> getFixes();
-    default Tag.Named<Block> getToolTypeTag(){
-        return BlockTags.bind("tool/" + getName());
+    default TagKey<Block> getToolTypeTag(){
+        return BlockTags.create(new ResourceLocation("tool/" + getName()));
     };
 }

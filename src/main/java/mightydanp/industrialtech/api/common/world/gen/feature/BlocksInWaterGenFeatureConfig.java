@@ -16,14 +16,10 @@ import java.util.List;
  */
 public class BlocksInWaterGenFeatureConfig implements FeatureConfiguration {
     public String name;
-    public int rarity;
-    public int height;
-    public boolean shallowWater;
-    public boolean goAboveWater;
-    public List<String> biomes;
-    public List<String> validBlocks;
-    public String topState;
-    public String bellowState;
+    public int rarity, height;
+    public boolean shallowWater, goAboveWater;
+    public List<String> dimensions, validBiomes, invalidBiomes, validBlocks;
+    public String topState, bellowState;
 
 
     public static final Codec<BlocksInWaterGenFeatureConfig> CODEC = RecordCodecBuilder.create((a) -> a.group(
@@ -32,7 +28,9 @@ public class BlocksInWaterGenFeatureConfig implements FeatureConfiguration {
             Codec.INT.fieldOf("height").forGetter(z -> z.height),
             Codec.BOOL.fieldOf("shallow_water").forGetter(z -> z.shallowWater),
             Codec.BOOL.fieldOf("go_above_water").forGetter(z -> z.goAboveWater),
-            Codec.STRING.listOf().fieldOf("biomes").forGetter(z -> z.biomes),
+            Codec.STRING.listOf().fieldOf("dimension").forGetter((config) -> config.dimensions),
+            Codec.STRING.listOf().fieldOf("valid_biomes").forGetter((config) -> config.validBiomes),
+            Codec.STRING.listOf().fieldOf("invalid_biomes").forGetter((config) -> config.invalidBiomes),
             Codec.STRING.listOf().fieldOf("valid_blocks").forGetter(z -> z.validBlocks),
             Codec.STRING.fieldOf("top_state").forGetter(z -> z.topState),
             Codec.STRING.fieldOf("bellow_state").forGetter(z -> z.bellowState)
@@ -40,17 +38,18 @@ public class BlocksInWaterGenFeatureConfig implements FeatureConfiguration {
 
 
 
-    public BlocksInWaterGenFeatureConfig(String nameIn, int rarityIn, int heightIn, boolean shallowWaterIn, boolean goAboveWaterIn, List<String> biomesIn, List<String> validBlocksIn, String topStateIn, String bellowStateIn) {
+    public BlocksInWaterGenFeatureConfig(String nameIn, int rarityIn, int heightIn, boolean shallowWaterIn, boolean goAboveWaterIn, List<String> dimensionsIn, List<String> validBiomesIn, List<String> invalidBiomesIn, List<String> validBlocksIn, String topStateIn, String bellowStateIn) {
         name = nameIn;
         rarity = rarityIn;
         height = heightIn;
         shallowWater = shallowWaterIn;
         goAboveWater = goAboveWaterIn;
-        biomes = biomesIn;
+        dimensions = dimensionsIn;
+        validBiomes = validBiomesIn;
+        invalidBiomes = invalidBiomesIn;
         validBlocks = validBlocksIn;
         topState = topStateIn;
         bellowState = bellowStateIn;
-
     }
 
     public static final class FillerBlockType {

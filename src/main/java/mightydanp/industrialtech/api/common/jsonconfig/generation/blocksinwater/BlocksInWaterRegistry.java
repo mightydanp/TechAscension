@@ -77,55 +77,68 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
         int minHeight = jsonObjectIn.get("height").getAsInt();
         boolean shallowWater = jsonObjectIn.get("shallow_water").getAsBoolean();
         boolean goAboveWater = jsonObjectIn.get("go_above_water").getAsBoolean();
-        JsonArray biomesJson = jsonObjectIn.getAsJsonArray("biomes");
-        List<String> biomesList = new ArrayList<>();
 
-        biomesJson.forEach((jsonElement) -> {
-            String biome = jsonElement.getAsString();
-            biomesList.add(biome);
-        });
+        JsonArray dimensionsJson = jsonObjectIn.getAsJsonArray("dimensions");
+        List<String> dimensionsList = new ArrayList<>();
+        dimensionsJson.forEach(jsonElement -> dimensionsList.add(jsonElement.getAsString()));
+
+        JsonArray validBiomesJson = jsonObjectIn.getAsJsonArray("valid_biomes");
+        List<String> validBiomesList = new ArrayList<>();
+        validBiomesJson.forEach(jsonElement -> validBiomesList.add(jsonElement.getAsString()));
+
+        JsonArray invalidBiomesJson = jsonObjectIn.getAsJsonArray("invalid_biomes");
+        List<String> invalidBiomesList = new ArrayList<>();
+        invalidBiomesJson.forEach(jsonElement -> invalidBiomesList.add(jsonElement.getAsString()));
 
 
         JsonArray validBlocksJson = jsonObjectIn.getAsJsonArray("valid_blocks");
         List<String> validBlocks = new ArrayList<>();
 
-        validBlocksJson.forEach((jsonElement) -> {
-            validBlocks.add(jsonElement.getAsString());
-        });
+        validBlocksJson.forEach(jsonElement -> validBlocks.add(jsonElement.getAsString()));
 
         String topState = jsonObjectIn.get("top_state").getAsString();
 
         String bellowState = jsonObjectIn.get("bellow_state").getAsString();
 
-        return new BlocksInWaterGenFeatureConfig(name, rarity, minHeight, shallowWater, goAboveWater, biomesList, validBlocks, topState, bellowState);
+        return new BlocksInWaterGenFeatureConfig(name, rarity, minHeight, shallowWater, goAboveWater, dimensionsList, validBiomesList, invalidBiomesList, validBlocks, topState, bellowState);
     }
 
-    public JsonObject toJsonObject(BlocksInWaterGenFeatureConfig blocksInWater) {
+    public JsonObject toJsonObject(BlocksInWaterGenFeatureConfig config) {
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("name", blocksInWater.name);
-        jsonObject.addProperty("rarity", blocksInWater.rarity);
-        jsonObject.addProperty("height", blocksInWater.height);
-        jsonObject.addProperty("shallow_water", blocksInWater.shallowWater);
-        jsonObject.addProperty("go_above_water", blocksInWater.goAboveWater);
+        jsonObject.addProperty("name", config.name);
+        jsonObject.addProperty("rarity", config.rarity);
+        jsonObject.addProperty("height", config.height);
+        jsonObject.addProperty("shallow_water", config.shallowWater);
+        jsonObject.addProperty("go_above_water", config.goAboveWater);
 
-        JsonArray biomes = new JsonArray();
+        JsonArray dimensions = new JsonArray();
         {
-            for(String biome : blocksInWater.biomes){
-                biomes.add(biome);
-            }
+            config.dimensions.forEach(dimensions::add);
         }
-        jsonObject.add("biomes", biomes);
+        jsonObject.add("dimensions", dimensions);
 
+        JsonArray validBiomes = new JsonArray();
+        {
+            config.validBiomes.forEach(validBiomes::add);
+        }
+        jsonObject.add("valid_biomes", validBiomes);
+
+        JsonArray invalid_biomes = new JsonArray();
+        {
+            config.invalidBiomes.forEach(invalid_biomes::add);
+        }
+        jsonObject.add("invalid_biomes", invalid_biomes);
 
         JsonArray validBlocks = new JsonArray();
         {
-            blocksInWater.validBlocks.forEach(validBlocks::add);
+            config.validBlocks.forEach(validBlocks::add);
         }
+        jsonObject.add("valid_blocks", validBlocks);
 
-        jsonObject.addProperty("top_state", blocksInWater.topState);
+        jsonObject.addProperty("top_state", config.topState);
 
-        jsonObject.addProperty("bellow_state", blocksInWater.bellowState);
+        jsonObject.addProperty("bellow_state", config.bellowState);
 
         return jsonObject;
     }

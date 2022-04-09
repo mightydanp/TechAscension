@@ -26,11 +26,11 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig
     }
 
     @Override
-    public void register(OreVeinGenFeatureConfig feature) {
-        if (registryMap.containsKey(feature.name)) {
-            throw new IllegalArgumentException("ore vein with name(" + feature.name + "), already exists.");
+    public void register(OreVeinGenFeatureConfig config) {
+        if (registryMap.containsKey(config.name)) {
+            throw new IllegalArgumentException("ore vein with name(" + config.name + "), already exists.");
         } else {
-            registryMap.put(feature.name, feature);
+            registryMap.put(config.name, config);
         }
     }
 
@@ -74,12 +74,26 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig
         int maxHeight = jsonObjectIn.get("max_height").getAsInt();
         int minRadius = jsonObjectIn.get("min_radius").getAsInt();
         int minNumberOfSmallOreLayers = jsonObjectIn.get("min_number_of_small_ore_layers").getAsInt();
-        JsonArray biomesJson = jsonObjectIn.getAsJsonArray("biomes");
-        List<String> biomesList = new ArrayList<>();
 
-        biomesJson.forEach((jsonElement) -> {
+        JsonArray dimensionsJson = jsonObjectIn.getAsJsonArray("dimensions");
+        List<String> dimensionsList = new ArrayList<>();
+        dimensionsJson.forEach((jsonElement) -> {
+            String dimension = jsonElement.getAsString();
+            dimensionsList.add(dimension);
+        });
+
+        JsonArray validBiomesJson = jsonObjectIn.getAsJsonArray("valid_biomes");
+        List<String> validBiomesList = new ArrayList<>();
+        validBiomesJson.forEach((jsonElement) -> {
             String biome = jsonElement.getAsString();
-            biomesList.add(biome);
+            validBiomesList.add(biome);
+        });
+
+        JsonArray invalidBiomesJson = jsonObjectIn.getAsJsonArray("invalid_biomes");
+        List<String> invalidBiomesList = new ArrayList<>();
+        invalidBiomesJson.forEach((jsonElement) -> {
+            String biome = jsonElement.getAsString();
+            invalidBiomesList.add(biome);
         });
 
 
@@ -91,34 +105,44 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig
             veinBlockChances.add(new Pair<>(object.get("vein_block").getAsString(), object.get("vein_block_chance").getAsInt()));
         });
 
-        return new OreVeinGenFeatureConfig(name, rarity, minHeight, maxHeight, minRadius, minNumberOfSmallOreLayers, biomesList, veinBlockChances);
+        return new OreVeinGenFeatureConfig(name, rarity, minHeight, maxHeight, minRadius, minNumberOfSmallOreLayers, dimensionsList, validBiomesList, invalidBiomesList, veinBlockChances);
     }
 
-    public JsonObject toJsonObject(OreVeinGenFeatureConfig oreVein) {
+    public JsonObject toJsonObject(OreVeinGenFeatureConfig config) {
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("name", oreVein.name);
-        jsonObject.addProperty("rarity", oreVein.rarity);
-        jsonObject.addProperty("min_height", oreVein.minHeight);
-        jsonObject.addProperty("max_height", oreVein.maxHeight);
-        jsonObject.addProperty("min_radius", oreVein.minRadius);
-        jsonObject.addProperty("min_number_of_small_ore_layers", oreVein.minNumberOfSmallOreLayers);
+        jsonObject.addProperty("name", config.name);
+        jsonObject.addProperty("rarity", config.rarity);
+        jsonObject.addProperty("min_height", config.minHeight);
+        jsonObject.addProperty("max_height", config.maxHeight);
+        jsonObject.addProperty("min_radius", config.minRadius);
+        jsonObject.addProperty("min_number_of_small_ore_layers", config.minNumberOfSmallOreLayers);
 
-        JsonArray biomes = new JsonArray();
+        JsonArray dimensions = new JsonArray();
         {
-            for(String biome : oreVein.biomes){
-                biomes.add(biome);
-            }
+            config.dimensions.forEach(dimensions::add);
         }
-        jsonObject.add("biomes", biomes);
+        jsonObject.add("dimensions", dimensions);
+
+        JsonArray validBiomes = new JsonArray();
+        {
+            config.validBiomes.forEach(validBiomes::add);
+        }
+        jsonObject.add("valid_biomes", validBiomes);
+
+        JsonArray invalid_biomes = new JsonArray();
+        {
+            config.invalidBiomes.forEach(invalid_biomes::add);
+        }
+        jsonObject.add("invalid_biomes", invalid_biomes);
 
         JsonArray veinBlocks = new JsonArray();
         {
             JsonObject veinBlocksArray = new JsonObject();
             {
-                for (int i = 0; i < oreVein.blocksAndChances.size(); i++) {
-                    veinBlocksArray.addProperty("vein_block", oreVein.blocksAndChances.get(i).getFirst());
-                    veinBlocksArray.addProperty("vein_block_chance", oreVein.blocksAndChances.get(i).getSecond());
+                for (int i = 0; i < config.blocksAndChances.size(); i++) {
+                    veinBlocksArray.addProperty("vein_block", config.blocksAndChances.get(i).getFirst());
+                    veinBlocksArray.addProperty("vein_block_chance", config.blocksAndChances.get(i).getSecond());
                 }
                 veinBlocks.add(veinBlocksArray);
             }

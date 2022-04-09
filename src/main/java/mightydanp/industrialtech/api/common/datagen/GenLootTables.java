@@ -6,6 +6,7 @@ import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialtech.api.common.jsonconfig.flag.IMaterialFlag;
+import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.datagen.ModBlockLootTable;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -51,38 +52,39 @@ public class GenLootTables extends LootTableProvider {
     protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
         tables.clear();
 
-        for (ITMaterial material : RegistryHandler.MATERIAL.getValues()) {
-            for (IMaterialFlag flag : material.materialFlags) {
+        IndustrialTech.configSync.material.getFirst().registryMap.values().forEach(material -> {
+
+            for (IMaterialFlag flag : ((ITMaterial)material).materialFlags) {
                 if (flag == DefaultMaterialFlag.ORE) {
-                    for(Block blockRegistered : material.oreList) {
+                    for (Block blockRegistered : ((ITMaterial)material).oreList) {
                         standardDropTable(blockRegistered);
                     }
                 }
                 if (flag == DefaultMaterialFlag.GEM) {
-                    for(Block blockRegistered : material.oreList) {
+                    for (Block blockRegistered : ((ITMaterial)material).oreList) {
                         standardDropTable(blockRegistered);
                     }
                 }
                 if (flag == DefaultMaterialFlag.ORE || flag == DefaultMaterialFlag.GEM) {
-                    for(Block blockRegistered : material.smallOreList) {
+                    for (Block blockRegistered : ((ITMaterial)material).smallOreList) {
                         standardDropTable(blockRegistered);
                     }
 
                     int i = 0;
-                    for(Block blockRegistered : material.denseOreList) {
+                    for (Block blockRegistered : ((ITMaterial)material).denseOreList) {
                         LootTable.Builder tableBuilder = LootTable.lootTable();
                         LootPool.Builder poolBuilder = LootPool.lootPool();
 
                         blockTable(blockRegistered, tableBuilder.withPool(poolBuilder.setRolls(ConstantValue.exactly(1))
-                                        .add(AlternativesEntry.alternatives().otherwise(LootItem.lootTableItem(blockRegistered)
-                                                .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1)))))))
-                                        .add(LootItem.lootTableItem(material.oreList.get(i)))
+                                .add(AlternativesEntry.alternatives().otherwise(LootItem.lootTableItem(blockRegistered)
+                                        .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1)))))))
+                                .add(LootItem.lootTableItem(((ITMaterial)material).oreList.get(i)))
                         ));
                         i++;
                     }
                 }
             }
-        }
+    });
 
         ModBlockLootTable.registerModBlockTables();
         return tables;

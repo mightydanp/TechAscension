@@ -4,6 +4,8 @@ import mightydanp.industrialtech.common.blocks.CampfireBlockOverride;
 import mightydanp.industrialtech.common.crafting.recipe.CampfireOverrideCharRecipe;
 import mightydanp.industrialtech.common.crafting.recipe.CampfireOverrideRecipe;
 import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
@@ -254,41 +256,27 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
-        this.saveMetadataAndItems(nbt);
-
-        return super.save(nbt);
+    public void saveAdditional(CompoundTag tag){
+        this.saveMetadataAndItems(tag);
+        super.saveAdditional(tag);
     }
 
-    private CompoundTag saveMetadataAndItems(CompoundTag nbt) {
-        super.save(nbt);
-        nbt.putInt("fuel_burn_time", fuelBurnTime);
-        nbt.putInt("fuel_burn_progress", fuelBurnProgress);
-        nbt.putIntArray("cooking_times", cookingProgresses);
-        nbt.putIntArray("cooking_total_times", cookingTimes);
-        nbt.putIntArray("cooked_checker", cookedSlotChecker);
-        nbt.putBoolean("signal_fire", signalFire);
-        nbt.putBoolean("keep_logs_formed", keepLogsFormed);
-        nbt.putBoolean("can_place_recipe_items", canPlaceRecipeItems);
+    private void saveMetadataAndItems(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.putInt("fuel_burn_time", fuelBurnTime);
+        tag.putInt("fuel_burn_progress", fuelBurnProgress);
+        tag.putIntArray("cooking_times", cookingProgresses);
+        tag.putIntArray("cooking_total_times", cookingTimes);
+        tag.putIntArray("cooked_checker", cookedSlotChecker);
+        tag.putBoolean("signal_fire", signalFire);
+        tag.putBoolean("keep_logs_formed", keepLogsFormed);
+        tag.putBoolean("can_place_recipe_items", canPlaceRecipeItems);
 
-        ContainerHelper.saveAllItems(nbt, this.inventory, true);
-        return nbt;
+        ContainerHelper.saveAllItems(tag, this.inventory, true);
     }
 
-    @Nullable
-    @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return new ClientboundBlockEntityDataPacket(this.worldPosition, 13, this.getUpdateTag());
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return this.saveMetadataAndItems(new CompoundTag());
-    }
-
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        load(pkt.getTag());
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     public Optional<CampfireOverrideRecipe> getCookableRecipe(ItemStack p_213980_1_) {

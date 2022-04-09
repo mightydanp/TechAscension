@@ -43,7 +43,7 @@ public class HoleBakedModel implements IDynamicBakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        RenderType layer = MinecraftForgeClient.getRenderLayer();
+        RenderType layer = MinecraftForgeClient.getRenderType();
         modelData = extraData;
         blockState = state;
 
@@ -75,7 +75,7 @@ public class HoleBakedModel implements IDynamicBakedModel {
 
     @Override
     public boolean useAmbientOcclusion() {
-        return baseModel.isAmbientOcclusion(blockState);
+        return baseModel.useAmbientOcclusion(blockState);
     }
 
     @Override

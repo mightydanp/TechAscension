@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "mightydanp.industrialtech.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "client": [
   ],
   "injectors": {
