@@ -10,11 +10,12 @@ import net.minecraftforge.registries.RegistryObject;
  * Created by MightyDanp on 10/10/2021.
  */
 public class Recipes {
-    public static final RecipeType<HoleRecipe> holeType = RecipeType.register(Ref.mod_id + ":hole");
+    public static RecipeType<HoleRecipe> holeType;
     public static RegistryObject<RecipeSerializer<?>> holeSerializer;
 
 
     public static void init() {
+        holeType = RecipeType.register(Ref.mod_id + ":hole");
         holeSerializer = RegistryHandler.RECIPE_SERIALIZER.register("hole", HoleRecipeSerializer::new);
     }
 }

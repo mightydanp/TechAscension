@@ -6,7 +6,6 @@ import mightydanp.industrialtech.api.common.CommonEvent;
 import mightydanp.industrialtech.api.common.ISidedReference;
 import mightydanp.industrialtech.api.common.blocks.ITBlocks;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
-import mightydanp.industrialtech.api.common.handler.EventHandler;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.items.ITItems;
@@ -86,6 +85,12 @@ public class IndustrialTech {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientEvent::init);
 
         MinecraftForge.EVENT_BUS.register(ConfigSync.class);
-        MinecraftForge.EVENT_BUS.register(EventHandler.class);
+        bus.addListener(this::event);
+    }
+
+    public void event(FMLCommonSetupEvent event){
+        event.enqueueWork(Recipes::init);
+
+        event.enqueueWork(ModRecipes::init);
     }
 }

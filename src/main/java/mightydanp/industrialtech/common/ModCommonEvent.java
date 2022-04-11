@@ -1,6 +1,8 @@
 package mightydanp.industrialtech.common;
 
+import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
 import mightydanp.industrialtech.common.generation.OreGeneration;
 import mightydanp.industrialtech.common.generation.PlantGeneration;
 import mightydanp.industrialtech.common.generation.StoneLayerGeneration;

@@ -11,13 +11,15 @@ import net.minecraftforge.registries.RegistryObject;
  */
 public class ModRecipes{
     //RecipeType
-    public static final RecipeType<CampfireOverrideRecipe> campfireType = RecipeType.register(Ref.mod_id + ":campfire");
-    public static final RecipeType<CampfireOverrideCharRecipe> campfireCharType = RecipeType.register(Ref.mod_id + ":campfire_char");;
+    public static RecipeType<CampfireOverrideRecipe> campfireType;
+    public static RecipeType<CampfireOverrideCharRecipe> campfireCharType;
     public static RegistryObject<RecipeSerializer<?>> campfireSerializer;
     public static RegistryObject<RecipeSerializer<?>> campfireCharSerializer;
 
 
     public static void init() {
+        campfireType = RecipeType.register(Ref.mod_id + ":campfire");
+        campfireCharType = RecipeType.register(Ref.mod_id + ":campfire_char");
         campfireSerializer = RegistryHandler.RECIPE_SERIALIZER.register("campfire", CampfireOverrideRecipeSerializer::new);
         campfireCharSerializer = RegistryHandler.RECIPE_SERIALIZER.register("campfire_char", CampfireOverrideCharRecipeSerializer::new);
     }

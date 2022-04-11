@@ -46,13 +46,6 @@ import net.minecraft.world.item.context.UseOnContext;
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class EventHandler {
-    @SubscribeEvent
-    public static void event(FMLCommonSetupEvent event){
-        event.enqueueWork(()->{
-            Recipes.init();
-            ModRecipes.init();
-        });
-    }
 
     @SubscribeEvent
     public static void handleFiniteWaterSource(BlockEvent.CreateFluidSourceEvent event){
