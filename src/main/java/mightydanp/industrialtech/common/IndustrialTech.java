@@ -6,6 +6,7 @@ import mightydanp.industrialtech.api.common.CommonEvent;
 import mightydanp.industrialtech.api.common.ISidedReference;
 import mightydanp.industrialtech.api.common.blocks.ITBlocks;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
+import mightydanp.industrialtech.api.common.handler.EventHandler;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.items.ITItems;
@@ -26,10 +27,12 @@ import mightydanp.industrialtech.common.trees.ModTrees;
 import mightydanp.industrialtech.data.config.DataConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +42,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod(Ref.mod_id)
 public class IndustrialTech {
-    public IndustrialTech INSTANCE;
     public static final Logger LOGGER = LogManager.getLogger();
     public static final ISidedReference SIDED_SYSTEM = DistExecutor.safeRunForDist(() -> ModClientEvent::new, () -> DedicatedServerReference::new);
 
@@ -49,9 +51,11 @@ public class IndustrialTech {
     public static DataPackRegistry dataPackRegistry = new DataPackRegistry();
 
     public IndustrialTech(){
-        INSTANCE = this;
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus(), forge = MinecraftForge.EVENT_BUS;
-        SIDED_SYSTEM.setup(modEventBus, forge);
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus(), forge = MinecraftForge.EVENT_BUS;
+        bus.register(this);
+        SIDED_SYSTEM.setup(bus, forge);
+
+        RegistryHandler.init(bus);
 
         mainJsonConfig.initiate();
 
@@ -60,12 +64,7 @@ public class IndustrialTech {
         modLoadingContext.registerConfig(ModConfig.Type.CLIENT, DataConfig.CLIENT_SPEC);
         modLoadingContext.registerConfig(ModConfig.Type.COMMON, DataConfig.COMMON_SPEC);
 
-        RegistryHandler.init(modEventBus);
-
         configSync.init();
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(JsonConfigClient::init);
-
-
         ITTools.init();
         ModTools.init();
         ITItems.init();
@@ -79,9 +78,7 @@ public class IndustrialTech {
         TileEntities.init();
         ModBlockEntity.init();
 
-        Recipes.init();
-        ModRecipes.init();
-
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(JsonConfigClient::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(CommonEvent::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModCommonEvent::init);
 
@@ -89,5 +86,6 @@ public class IndustrialTech {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientEvent::init);
 
         MinecraftForge.EVENT_BUS.register(ConfigSync.class);
+        MinecraftForge.EVENT_BUS.register(EventHandler.class);
     }
 }

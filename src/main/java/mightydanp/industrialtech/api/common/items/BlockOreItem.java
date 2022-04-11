@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 import net.minecraft.world.item.Item.Properties;
+import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Created by MightyDanp on 9/26/2020.
@@ -21,8 +22,8 @@ public class BlockOreItem extends BlockItem {
     public Integer meltingPoint;
     public Integer boilingPoint;
 
-    public BlockOreItem(Block blockIn, Properties builder, Integer boilingPointIn, Integer meltingPointIn, String elementIn) {
-        super(blockIn, builder);
+    public BlockOreItem(RegistryObject<Block> blockIn, Properties builder, Integer boilingPointIn, Integer meltingPointIn, String elementIn) {
+        super(blockIn.get(), builder);
         meltingPoint = meltingPointIn;
         boilingPoint = boilingPointIn;
         element = elementIn;

@@ -22,6 +22,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -219,9 +220,8 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
             if (material != null) {
                 if (oreType.equals("small_ore")) {
                     if (material.smallOreList != null) {
-                        for (Block block : material.smallOreList) {
-                            if (block instanceof SmallOreBlock) {
-                                SmallOreBlock ore = (SmallOreBlock) block;
+                        for (RegistryObject<Block> block : material.smallOreList) {
+                            if (block.get() instanceof SmallOreBlock ore) {
                                 String modID = ore.stoneLayerBlock.split(":")[0];
                                 String blockLocalization = ore.stoneLayerBlock.split(":")[1];
                                 Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, blockLocalization));
@@ -238,9 +238,8 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
 
                 if (oreType.equals("ore")) {
                     if (material.oreList != null) {
-                        for (Block block : material.oreList) {
-                            if (block instanceof OreBlock) {
-                                OreBlock ore = (OreBlock) block;
+                        for (RegistryObject<Block> block : material.oreList) {
+                            if (block.get() instanceof OreBlock ore) {
                                 String modID = ore.stoneLayerBlock.split(":")[0];
                                 String blockLocalization = ore.stoneLayerBlock.split(":")[1];
                                 Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, blockLocalization));
@@ -257,9 +256,8 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
 
                 if (oreType.equals("dense_ore")) {
                     if (material.denseOreList != null) {
-                        for (Block block : material.denseOreList) {
-                            if (block instanceof DenseOreBlock) {
-                                DenseOreBlock ore = (DenseOreBlock) block;
+                        for (RegistryObject<Block> block : material.denseOreList) {
+                            if (block.get() instanceof DenseOreBlock ore) {
                                 String modID = ore.stoneLayerBlock.split(":")[0];
                                 String blockLocalization = ore.stoneLayerBlock.split(":")[1];
                                 Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, blockLocalization));

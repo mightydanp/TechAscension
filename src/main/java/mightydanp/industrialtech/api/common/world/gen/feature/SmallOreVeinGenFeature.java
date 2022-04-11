@@ -19,6 +19,7 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,9 +113,9 @@ public class SmallOreVeinGenFeature extends Feature<SmallOreVeinGenFeatureConfig
 
             if (material != null) {
                     if (material.smallOreList != null) {
-                        for (Block block : material.smallOreList) {
-                            if (block instanceof SmallOreBlock) {
-                                SmallOreBlock ore = (SmallOreBlock) block;
+                        for (RegistryObject<Block> block : material.smallOreList) {
+                            if (block.get() instanceof SmallOreBlock) {
+                                SmallOreBlock ore = (SmallOreBlock)block.get();
                                 String modID = ore.stoneLayerBlock.split(":")[0];
                                 String blockLocalization = ore.stoneLayerBlock.split(":")[1];
                                 Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, blockLocalization));

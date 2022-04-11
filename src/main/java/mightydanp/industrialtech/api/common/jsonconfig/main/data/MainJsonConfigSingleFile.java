@@ -16,7 +16,7 @@ public class MainJsonConfigSingleFile extends JsonConfigSingleFile {
 
     @Override
     public void initiate(){
-        setJsonFolderLocation("config");
+        setJsonFolderLocation("config/");
         setJsonFilename("main_config");
         super.initiate();
         buildMainConfigJson();

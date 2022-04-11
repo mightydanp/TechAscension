@@ -37,6 +37,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Created by MightyDanp on 3/5/2021.
@@ -56,29 +57,29 @@ public class GenLootTables extends LootTableProvider {
 
             for (IMaterialFlag flag : ((ITMaterial)material).materialFlags) {
                 if (flag == DefaultMaterialFlag.ORE) {
-                    for (Block blockRegistered : ((ITMaterial)material).oreList) {
-                        standardDropTable(blockRegistered);
+                    for (RegistryObject<Block> blockRegistered : ((ITMaterial)material).oreList) {
+                        standardDropTable(blockRegistered.get());
                     }
                 }
                 if (flag == DefaultMaterialFlag.GEM) {
-                    for (Block blockRegistered : ((ITMaterial)material).oreList) {
-                        standardDropTable(blockRegistered);
+                    for (RegistryObject<Block> blockRegistered : ((ITMaterial)material).oreList) {
+                        standardDropTable(blockRegistered.get());
                     }
                 }
                 if (flag == DefaultMaterialFlag.ORE || flag == DefaultMaterialFlag.GEM) {
-                    for (Block blockRegistered : ((ITMaterial)material).smallOreList) {
-                        standardDropTable(blockRegistered);
+                    for (RegistryObject<Block> blockRegistered : ((ITMaterial)material).smallOreList) {
+                        standardDropTable(blockRegistered.get());
                     }
 
                     int i = 0;
-                    for (Block blockRegistered : ((ITMaterial)material).denseOreList) {
+                    for (RegistryObject<Block> blockRegistered : ((ITMaterial)material).denseOreList) {
                         LootTable.Builder tableBuilder = LootTable.lootTable();
                         LootPool.Builder poolBuilder = LootPool.lootPool();
 
-                        blockTable(blockRegistered, tableBuilder.withPool(poolBuilder.setRolls(ConstantValue.exactly(1))
-                                .add(AlternativesEntry.alternatives().otherwise(LootItem.lootTableItem(blockRegistered)
+                        blockTable(blockRegistered.get(), tableBuilder.withPool(poolBuilder.setRolls(ConstantValue.exactly(1))
+                                .add(AlternativesEntry.alternatives().otherwise(LootItem.lootTableItem(blockRegistered.get())
                                         .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1)))))))
-                                .add(LootItem.lootTableItem(((ITMaterial)material).oreList.get(i)))
+                                .add(LootItem.lootTableItem(((ITMaterial)material).oreList.get(i).get()))
                         ));
                         i++;
                     }

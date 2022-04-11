@@ -1,12 +1,10 @@
 package mightydanp.industrialtech.common.tool;
 
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeRegistry;
 import mightydanp.industrialtech.api.common.tool.ITTool;
 import mightydanp.industrialtech.api.common.items.*;
-import mightydanp.industrialtech.api.common.jsonconfig.tool.type.DefaultToolType;
 import mightydanp.industrialtech.api.common.material.tool.ITTools;
 import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.tool.tools.ChiselToolItem;
@@ -24,15 +22,15 @@ public class ModTools extends ITTools {
     public static void init(){
         IToolType normal = ((ToolTypeRegistry) IndustrialTech.configSync.toolType.getFirst()).getToolTypeByFixes(new Pair<>("", "_tool"));
 
-        tools.add(chisel = new ITTool("chisel", 1, normal, new ChiselToolItem()));
-        tools.add(hammer = new ITTool("hammer", 1, normal, new HammerToolItem()));
-        tools.add(pickaxe = new ITTool("pickaxe", 1, normal, new PickaxeToolItem()));
-        tools.add(knife = new ITTool("knife", 1, normal, new KnifeToolItem()));
+        tools.add(chisel = new ITTool("chisel", 1, normal, ChiselToolItem::new));
+        tools.add(hammer = new ITTool("hammer", 1, normal, HammerToolItem::new));
+        tools.add(pickaxe = new ITTool("pickaxe", 1, normal, PickaxeToolItem::new));
+        tools.add(knife = new ITTool("knife", 1, normal, KnifeToolItem::new));
     }
 
     public static void handCraftingInit(PlayerInteractEvent.RightClickItem event){
         for(ITTool tool : tools) {
-            ITTool.handToolCrafting((ITToolItem)tool.tool, event, tool.hitDamage, tool.toolCraftingTools);
+            ITTool.handToolCrafting((ITToolItem)tool.toolItem.get(), event, tool.hitDamage, ((ITToolItem)tool.toolItem.get()).craftingToolsNeeded);
         }
     }
 

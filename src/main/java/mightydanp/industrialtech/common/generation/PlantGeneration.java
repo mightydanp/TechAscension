@@ -53,7 +53,7 @@ public class PlantGeneration {
 
 
     public static void init() {
-        PlantGenerationHandler.addBlockInWaterGenerate("cattail", 10, 1, true, true, List.of(Level.OVERWORLD.location().toString()), List.of(), List.of(), cattailValidBlocks, ModBlocks.cattail_plant_top_block.get(), ModBlocks.cattail_plant_bottom_block.get());
-        PlantGenerationHandler.addRandomSurfaceGenerate("rocks", 50, List.of(Level.OVERWORLD.location().toString()), List.of(), List.of(), rockSoilBlocks, rockBlocks);
+        PlantGenerationHandler.addBlockInWaterGenerate("cattail", 2, 1, true, true, List.of(Level.OVERWORLD.location().toString()), List.of(), List.of(), cattailValidBlocks, ModBlocks.cattail_plant_top_block.get(), ModBlocks.cattail_plant_bottom_block.get());
+        PlantGenerationHandler.addRandomSurfaceGenerate("rocks", 2, List.of(Level.OVERWORLD.location().toString()), List.of(), List.of(), rockSoilBlocks, rockBlocks);
     }
 }

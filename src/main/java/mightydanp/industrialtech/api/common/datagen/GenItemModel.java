@@ -20,6 +20,7 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.*;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,46 +43,46 @@ public class GenItemModel extends ItemModelProvider {
                 }
 
                 if (flag == DefaultMaterialFlag.GEM) {
-                    coloredMaterialPart(((ITMaterial)material).gem, ((ITMaterial)material));
-                    coloredMaterialPart(((ITMaterial)material).chippedGem, ((ITMaterial)material));
-                    coloredMaterialPart(((ITMaterial)material).flawedGem, ((ITMaterial)material));
-                    coloredMaterialPart(((ITMaterial)material).flawlessGem, ((ITMaterial)material));
-                    coloredMaterialPart(((ITMaterial)material).legendaryGem, ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).gem.get(), ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).chippedGem.get(), ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).flawedGem.get(), ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).flawlessGem.get(), ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).legendaryGem.get(), ((ITMaterial)material));
                 }
 
                 if (flag == DefaultMaterialFlag.GEM || flag == DefaultMaterialFlag.ORE) {
-                    coloredMaterialPart(((ITMaterial)material).crushedOre, ((ITMaterial)material));
-                    coloredMaterialPart(((ITMaterial)material).purifiedOre, ((ITMaterial)material));
-                    coloredMaterialPart(((ITMaterial)material).centrifugedOre, ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).crushedOre.get(), ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).purifiedOre.get(), ((ITMaterial)material));
+                    coloredMaterialPart(((ITMaterial)material).centrifugedOre.get(), ((ITMaterial)material));
                     //coloredMaterialPart(((ITMaterial)material).dust, ((ITMaterial)material));
                     //coloredMaterialPart(((ITMaterial)material).smallDust, ((ITMaterial)material));
                     //coloredMaterialPart(((ITMaterial)material).tinyDust, ((ITMaterial)material));
-                    for (Item item : ((ITMaterial)material).oreItemList) {
-                        generateItemBlockSuffix(item);
+                    for (RegistryObject<Item> item : ((ITMaterial)material).oreItemList) {
+                        generateItemBlockSuffix(item.get());
                     }
-                    for (Item item : ((ITMaterial)material).denseOreItemList) {
-                        generatePrefixItemBlockSuffix(item, null);
+                    for (RegistryObject<Item> item : ((ITMaterial)material).denseOreItemList) {
+                        generatePrefixItemBlockSuffix(item.get(), null);
                     }
-                    for (Item item : ((ITMaterial)material).smallOreItemList) {
-                        generatePrefixItemBlockSuffix(item, null);
+                    for (RegistryObject<Item> item : ((ITMaterial)material).smallOreItemList) {
+                        generatePrefixItemBlockSuffix(item.get(), null);
                     }
                 }
             }
 
             for (IToolPart flag : ((ITMaterial)material).toolParts) {
                 if (flag == DefaultToolPart.TOOL_HEAD) {
-                    coloredToolPart(((ITMaterial)material).dullPickaxe, ((ITMaterial)material));
-                    coloredToolPart(((ITMaterial)material).pickaxeHead, ((ITMaterial)material));
-                    coloredToolPart(((ITMaterial)material).hammerHead, ((ITMaterial)material));
-                    coloredToolPart(((ITMaterial)material).dullChiselHead, ((ITMaterial)material));
-                    coloredToolPart(((ITMaterial)material).chiselHead, ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).dullPickaxe.get(), ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).pickaxeHead.get(), ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).hammerHead.get(), ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).dullChiselHead.get(), ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).chiselHead.get(), ((ITMaterial)material));
                 }
                 if (flag == DefaultToolPart.TOOL_WEDGE) {
-                    coloredToolPart(((ITMaterial)material).wedge, ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).wedge.get(), ((ITMaterial)material));
                 }
 
                 if (flag == DefaultToolPart.TOOL_WEDGE_HANDLE) {
-                    coloredToolPart(((ITMaterial)material).wedgeHandle, ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).wedgeHandle.get(), ((ITMaterial)material));
                 }
 
             }

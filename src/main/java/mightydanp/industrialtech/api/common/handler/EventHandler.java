@@ -1,7 +1,9 @@
 package mightydanp.industrialtech.api.common.handler;
 
 import mightydanp.industrialtech.api.client.settings.keybindings.KeyBindings;
+import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.common.crafting.recipe.ModRecipes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -27,6 +29,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,6 +46,13 @@ import net.minecraft.world.item.context.UseOnContext;
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class EventHandler {
+    @SubscribeEvent
+    public static void event(FMLCommonSetupEvent event){
+        event.enqueueWork(()->{
+            Recipes.init();
+            ModRecipes.init();
+        });
+    }
 
     @SubscribeEvent
     public static void handleFiniteWaterSource(BlockEvent.CreateFluidSourceEvent event){

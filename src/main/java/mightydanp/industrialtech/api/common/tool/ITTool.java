@@ -21,6 +21,7 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Created by MightyDanp on 3/8/2021.
@@ -34,22 +35,13 @@ public class ITTool {
     public int hitDamage;
 
     public RegistryObject<Item> toolItem;
-    public Item tool;
-
-    public Map<String, Integer> toolParts;
-    public List<String> toolDisassembleTools;
-    public Map<String, Integer> toolCraftingTools;
 
 
-    public ITTool(String nameIn, int hitDamageIn, IToolType toolTypeIn, ITToolItem toolIn) {
-        toolItem = RegistryHandler.ITEMS.register(nameIn, () -> toolIn);
+    public ITTool(String nameIn, int hitDamageIn, IToolType toolTypeIn, Supplier<ITToolItem> toolIn) {
+        toolItem = RegistryHandler.ITEMS.register(nameIn, toolIn);
         toolName = nameIn;
         hitDamage = hitDamageIn;
         toolType = toolTypeIn;
-        tool = toolIn;
-        toolCraftingTools = toolIn.craftingToolsNeeded;
-        toolParts = toolIn.parts;
-        toolDisassembleTools = toolIn.disassembleTools;
 
     }
 
