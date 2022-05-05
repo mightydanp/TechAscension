@@ -147,14 +147,11 @@ public class HoleRecipeBuilder {
         }
     }
 
-    public void save(Consumer<FinishedRecipe> p_200485_1_, ResourceLocation p_200485_2_) {
+    public void save(Consumer<FinishedRecipe> consumer, ResourceLocation p_200485_2_) {
         this.ensureValid(p_200485_2_);
         this.advancement.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_hole_recipe", RecipeUnlockedTrigger.unlocked(p_200485_2_)).rewards(AdvancementRewards.Builder.recipe(p_200485_2_)).requirements(RequirementsStrategy.OR);
-        p_200485_1_.accept(new HoleRecipeBuilder.Result(p_200485_2_,
-                //
-                //
-                //
-                this.group == null ? "" : this.group, desiredBlock, (NonNullList<Ingredient>)ingredientItems, ingredientItemDamage, consumeIngredients, minTicks, maxTicks, result, resultFluid, minResult, maxResult, holeColor, resinColor,
+        consumer.accept(new HoleRecipeBuilder.Result(p_200485_2_,
+                this.group == null ? "" : this.group, desiredBlock, ingredientItems, ingredientItemDamage, consumeIngredients, minTicks, maxTicks, result, resultFluid, minResult, maxResult, holeColor, resinColor,
                 this.advancement, new ResourceLocation(p_200485_2_.getNamespace(), "recipes/" + Objects.requireNonNull(this.result == null ? CreativeModeTab.TAB_SEARCH : this.result.asItem().getItemCategory()).getRecipeFolderName() + "/" + p_200485_2_.getPath())));
     }
 
@@ -168,7 +165,7 @@ public class HoleRecipeBuilder {
         private final ResourceLocation id;
         private final String group;
         private final Item desiredBlock;
-        private final NonNullList<Ingredient> ingredientItems;
+        private final List<Ingredient> ingredientItems;
         private final int ingredientItemDamage;
         private final boolean consumeIngredients;
         private final int minTicks;
@@ -182,7 +179,7 @@ public class HoleRecipeBuilder {
         private final Advancement.Builder advancement;
         private final ResourceLocation advancementId;
 
-        public Result(ResourceLocation p_i48268_1_, String groupIn, Item desiredBlockIn, NonNullList<Ingredient> ingredientItemsIn, int ingredientItemDamageIn, boolean consumeIngredientsIn, int minTicksIn, int maxTicksIn, @Nullable Item resultIn, @Nullable Fluid resultFluidIn, int minResultIn, int maxResultIn, int holeColorIn, int resinColorIn, Advancement.Builder advancementIn, ResourceLocation advancementIdIn) {
+        public Result(ResourceLocation p_i48268_1_, String groupIn, Item desiredBlockIn, List<Ingredient> ingredientItemsIn, int ingredientItemDamageIn, boolean consumeIngredientsIn, int minTicksIn, int maxTicksIn, @Nullable Item resultIn, @Nullable Fluid resultFluidIn, int minResultIn, int maxResultIn, int holeColorIn, int resinColorIn, Advancement.Builder advancementIn, ResourceLocation advancementIdIn) {
             id = p_i48268_1_;
             group = groupIn;
             desiredBlock = desiredBlockIn;

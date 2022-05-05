@@ -87,12 +87,7 @@ public class IndustrialTech {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientEvent::init);
 
         MinecraftForge.EVENT_BUS.register(ConfigSync.class);
-        bus.addListener(this::event);
-    }
-
-    public void event(FMLCommonSetupEvent event){
-        event.enqueueWork(Recipes::init);
-
-        event.enqueueWork(ModRecipes::init);
+        MinecraftForge.EVENT_BUS.register(Recipes.class);
+        MinecraftForge.EVENT_BUS.register(ModRecipes.class);
     }
 }

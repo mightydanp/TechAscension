@@ -18,6 +18,7 @@ import net.minecraftforge.registries.*;
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class RegistryHandler extends RegisterHelper{
 
+    public final RegistryManager registryManager = RegistryManager.ACTIVE;
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Ref.mod_id);
     public static final DeferredRegister<Item> BLOCK_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
@@ -44,5 +45,6 @@ public class RegistryHandler extends RegisterHelper{
         FEATURES.register(IEventBus);
         RECIPE_TYPE.register(IEventBus);
         RECIPE_SERIALIZER.register(IEventBus);
+
     }
 }
