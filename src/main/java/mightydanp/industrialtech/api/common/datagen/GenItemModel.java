@@ -103,7 +103,7 @@ public class GenItemModel extends ItemModelProvider {
          */
 
         for(ITTool tool : ModTools.tools){
-            coloredTool(tool.toolItem.get(), ((ITToolItem)tool.toolItem.get()).partsToWork);
+            coloredTool(tool.toolItem.get(), ((ITToolItem)tool.toolItem.get()).getParts());
         }
 
         singleTextureItem(ModItems.plant_fiber.get());

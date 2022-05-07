@@ -6,7 +6,6 @@ import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemInventor
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.*;
@@ -41,8 +40,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 
-import net.minecraft.world.item.Item.Properties;
-
 /**
  * Created by MightyDanp on 3/29/2021.
  */
@@ -50,9 +47,8 @@ public class ITToolItem extends Item {
     public String name;
     private final List<String> effectiveBlocks;
     private final Item.Properties properties;
-    public int partsToWork;
     public boolean preformAction;
-    public Map<String, Integer> craftingToolsNeeded = new HashMap<>();
+    public Map<String, Integer> toolsNeeded = new HashMap<>();
     public Map<String, Integer> parts = new HashMap<>();
     public List<String> disassembleTools = new ArrayList<>();
     public ITToolItemInventoryHelper inventory = new ITToolItemInventoryHelper();
@@ -397,19 +393,19 @@ public class ITToolItem extends Item {
 
     public boolean canWork(ItemStack itemStackIn){
         if(itemStackIn.getItem() instanceof ITToolItem toolItem) {
-            if ((toolItem.partsToWork == 1 || toolItem.partsToWork == 2 || toolItem.partsToWork == 3) & toolItem.inventory.getToolHead() != null) {
+            if ((toolItem.parts.size() == 1 || toolItem.parts.size()  == 2 || toolItem.parts.size()  == 3) & toolItem.inventory.getToolHead() != null) {
                 if (toolItem.inventory.getToolHead().getDamageValue() < toolItem.inventory.getToolHead().getMaxDamage()) {
                     return true;
                 }
             }
 
-            if ((toolItem.partsToWork == 2 || toolItem.partsToWork == 3) && toolItem.inventory.getToolHandle() != null && toolItem.inventory.getToolHead() != null) {
+            if ((toolItem.parts.size()  == 2 || toolItem.parts.size()  == 3) && toolItem.inventory.getToolHandle() != null && toolItem.inventory.getToolHead() != null) {
                 if (toolItem.inventory.getToolHandle().getDamageValue() < toolItem.inventory.getToolHandle().getMaxDamage() && toolItem.inventory.getToolHead().getDamageValue() < toolItem.inventory.getToolHead().getMaxDamage()) {
                     return true;
                 }
             }
 
-            if (toolItem.partsToWork == 3 && toolItem.inventory.getToolHandle() != null && toolItem.inventory.getToolHead() != null && toolItem.inventory.getToolBinding() != null) {
+            if (toolItem.parts.size()  == 3 && toolItem.inventory.getToolHandle() != null && toolItem.inventory.getToolHead() != null && toolItem.inventory.getToolBinding() != null) {
                 if (toolItem.inventory.getToolHandle().getDamageValue() < toolItem.inventory.getToolHandle().getMaxDamage() && toolItem.inventory.getToolHead().getDamageValue() < toolItem.inventory.getToolHead().getMaxDamage() && toolItem.inventory.getToolBinding().getDamageValue() < toolItem.inventory.getToolBinding().getMaxDamage()) {
                     return true;
                 }
@@ -427,7 +423,7 @@ public class ITToolItem extends Item {
             ItemStack toolBindingOnTool = toolItem.inventory.getToolBinding();
             ItemStack toolHandleOnTool = toolItem.inventory.getToolHandle();
 
-            if (toolHeadOnTool != null && (toolItem.partsToWork == 3 || toolItem.partsToWork == 2 || toolItem.partsToWork == 1)) {
+            if (toolHeadOnTool != null && (toolItem.parts.size()  == 3 || toolItem.parts.size()  == 2 || toolItem.parts.size()  == 1)) {
                 int headDamage = toolHeadOnTool.getDamageValue();
                 int headMaxDamage = toolHeadOnTool.getMaxDamage();
 
@@ -441,7 +437,7 @@ public class ITToolItem extends Item {
                 }
             }
 
-            if (toolHandleOnTool != null && (toolItem.partsToWork == 3 || toolItem.partsToWork == 2)) {
+            if (toolHandleOnTool != null && (toolItem.parts.size()  == 3 || toolItem.parts.size()  == 2)) {
                 int handleDamage = toolHandleOnTool.getDamageValue();
                 int handleMaxDamage = toolHandleOnTool.getMaxDamage();
 
@@ -455,7 +451,7 @@ public class ITToolItem extends Item {
                 }
             }
 
-            if (toolBindingOnTool != null && toolItem.partsToWork == 3) {
+            if (toolBindingOnTool != null && toolItem.parts.size()  == 3) {
                 int bindingDamage = toolBindingOnTool.getDamageValue();
                 int bindingMaxDamage = toolBindingOnTool.getMaxDamage();
                 if (bindingDamage != bindingMaxDamage) {
@@ -546,19 +542,19 @@ public class ITToolItem extends Item {
                 if(toolNeeded.getItem() instanceof ITToolItem){
                     ITToolItem toolNeededItem = (ITToolItem)playerIn.getInventory().getItem(i).getItem();
 
-                    if((toolNeededItem.partsToWork == 1 || toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & toolNeededItem.inventory.getToolHead() != null){
+                    if((toolNeededItem.parts.size()  == 1 || toolNeededItem.parts.size()  == 2 || toolNeededItem.parts.size()  == 3) & toolNeededItem.inventory.getToolHead() != null){
                         if(toolNeededItem.inventory.getToolHead().getDamageValue() < toolNeededItem.inventory.getToolHead().getMaxDamage()) {
                             toolNeededIn.remove(toolNeeded.getItem());
                         }
                     }
 
-                    if((toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & toolNeededItem.inventory.getToolHandle() != null){
+                    if((toolNeededItem.parts.size()  == 2 || toolNeededItem.parts.size()  == 3) & toolNeededItem.inventory.getToolHandle() != null){
                        if(toolNeededItem.inventory.getToolHandle().getDamageValue() < toolNeededItem.inventory.getToolHandle().getDamageValue()){
                            toolNeededIn.remove(toolNeeded.getItem());
                        }
                     }
 
-                    if(toolNeededItem.partsToWork == 3 & toolNeededItem.inventory.getToolBinding() != null){
+                    if(toolNeededItem.parts.size()  == 3 & toolNeededItem.inventory.getToolBinding() != null){
                        if(toolNeededItem.inventory.getToolBinding().getDamageValue() < toolNeededItem.inventory.getToolBinding().getDamageValue()){
                            toolNeededIn.remove(toolNeeded.getItem());
                        }
@@ -599,8 +595,8 @@ public class ITToolItem extends Item {
         return new HashMap<>();
     }
 
-    public int getPartsToWork() {
-        return partsToWork;
+    public int getParts() {
+        return parts.size() ;
     }
 
     public List<Item> getItemsFromForge(List<String> listIn){

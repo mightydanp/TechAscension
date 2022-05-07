@@ -2,9 +2,12 @@ package mightydanp.industrialtech.api.common.handler;
 
 import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
@@ -14,6 +17,8 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.*;
+
+import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class RegistryHandler extends RegisterHelper{

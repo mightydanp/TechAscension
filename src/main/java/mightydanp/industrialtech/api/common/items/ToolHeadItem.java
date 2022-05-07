@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.Block;
  * Created by MightyDanp on 3/29/2021.
  */
 public class ToolHeadItem extends Item {
+    public String suggestedCraftedTool;
     public String material;
     public String element;
     public Integer color;
@@ -39,8 +40,9 @@ public class ToolHeadItem extends Item {
     public Float weight;
     public Integer maxDamage;
 
-    public ToolHeadItem(Properties properties, String materialIn, String elementIn, Integer colorIn, Pair<String, ITextureIcon> textureFlagIn, Integer boilingPointIn, Integer meltingPointIn, Integer efficiencyIn, Integer durabilityIn, Float attackDamageIn, Float weightIn, Map<String, Integer> itToolTypeIn) {
+    public ToolHeadItem(Properties properties, String suggestedCraftedToolIn, String materialIn, String elementIn, Integer colorIn, Pair<String, ITextureIcon> textureFlagIn, Integer boilingPointIn, Integer meltingPointIn, Integer efficiencyIn, Integer durabilityIn, Float attackDamageIn, Float weightIn, Map<String, Integer> itToolTypeIn) {
         super(properties);
+        suggestedCraftedTool = suggestedCraftedToolIn;
         material = materialIn;
         color = colorIn;
         textureFlag = textureFlagIn;

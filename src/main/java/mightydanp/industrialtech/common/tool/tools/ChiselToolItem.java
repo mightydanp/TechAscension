@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableSet;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.Item;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
@@ -18,11 +20,10 @@ public class ChiselToolItem extends ITToolItem {
 
     public ChiselToolItem() {
         super("chisel", new ArrayList<>(EFFECTIVE_ON), new Item.Properties().tab(ModItemGroups.tool_tab));
-        craftingToolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
+        toolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
 
         parts.put("headChisel", 1);
         parts.put("handleWedge", 2);
-
         disassembleTools.add(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")));
         disassembleTools.add(String.valueOf(new ResourceLocation(Ref.mod_id, "chisel")));
     }

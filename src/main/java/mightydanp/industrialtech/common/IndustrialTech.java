@@ -6,6 +6,7 @@ import mightydanp.industrialtech.api.common.CommonEvent;
 import mightydanp.industrialtech.api.common.ISidedReference;
 import mightydanp.industrialtech.api.common.blocks.ITBlocks;
 import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
+import mightydanp.industrialtech.api.common.handler.EventHandler;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.items.ITItems;
@@ -15,6 +16,7 @@ import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.tileentities.TileEntities;
 import mightydanp.industrialtech.api.common.material.tool.ITTools;
+import mightydanp.industrialtech.api.common.tool.ITTool;
 import mightydanp.industrialtech.api.server.DedicatedServerReference;
 import mightydanp.industrialtech.client.ModClientEvent;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
@@ -89,5 +91,7 @@ public class IndustrialTech {
         MinecraftForge.EVENT_BUS.register(ConfigSync.class);
         MinecraftForge.EVENT_BUS.register(Recipes.class);
         MinecraftForge.EVENT_BUS.register(ModRecipes.class);
+        MinecraftForge.EVENT_BUS.register(EventHandler.class);
+        MinecraftForge.EVENT_BUS.register(ITTool.class);
     }
 }

@@ -19,7 +19,7 @@ public class PickaxeToolItem extends ITToolItem {
     public PickaxeToolItem() {
         super("pickaxe", new ArrayList<>(EFFECTIVE_ON), new Item.Properties().tab(ModItemGroups.tool_tab));
 
-        craftingToolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
+        toolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
 
         parts.put("headPickaxe", 1);
         parts.put("handleWedge", 2);

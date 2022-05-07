@@ -18,7 +18,7 @@ public class FileToolItem extends ITToolItem {
 
     public FileToolItem() {
         super("file", new ArrayList<>(EFFECTIVE_ON), new Item.Properties().tab(ModItemGroups.tool_tab));
-        craftingToolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
+        toolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
         parts.put("headFile", 1);
         parts.put("handleWedge", 2);
 

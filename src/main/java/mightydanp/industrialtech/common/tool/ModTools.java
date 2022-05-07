@@ -30,7 +30,7 @@ public class ModTools extends ITTools {
 
     public static void handCraftingInit(PlayerInteractEvent.RightClickItem event){
         for(ITTool tool : tools) {
-            ITTool.handToolCrafting((ITToolItem)tool.toolItem.get(), event, tool.hitDamage, ((ITToolItem)tool.toolItem.get()).craftingToolsNeeded);
+            ITTool.handToolCrafting((ITToolItem)tool.toolItem.get(), event, tool.hitDamage, ((ITToolItem)tool.toolItem.get()).toolsNeeded);
         }
     }
 

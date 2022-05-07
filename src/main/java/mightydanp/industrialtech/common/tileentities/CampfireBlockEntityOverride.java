@@ -47,26 +47,17 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
     @Nullable
     private BlockState cachedBlockState;
 
-    public static int numberOfCookSlots = 4;
     public static int numberOfAshSlots = 1;
     public static int numberOfTinderSlots = 1;
-    public static int numberOfSlots = numberOfCookSlots + numberOfAshSlots + numberOfTinderSlots;
+    public static int numberOfSlots = + numberOfAshSlots + numberOfTinderSlots;
 
     private int fuelBurnProgress = 0;
     private int fuelBurnTime = 1;
 
-    private final int[] cookingProgresses = new int[]{0,0,0,0};
-    private final int[] cookingTimes      = new int[]{1,1,1,1};
-    private final int[] cookedSlotChecker = new int[]{0,0,0,0};
-
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(numberOfSlots, ItemStack.EMPTY);
 
-    public final int cookSlot1Number = 0;
-    public final int cookSlot2Number = 1;
-    public final int cookSlot3Number = 2;
-    public final int cookSlot4Number = 3;
-    public final int ashSlotNumber   = 4;
-    public final int tinderSlotNumber= 5;
+    public final int tinderSlotNumber= 0;
+    public final int ashSlotNumber   = 1;
 
     public boolean signalFire = false;
     public boolean keepLogsFormed = false;
@@ -76,25 +67,14 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
         super(ModBlockEntity.campfire_block_entity.get(), blockPosIn, blockStateIn);
     }
 
-    public ItemStack getCookSlot1(){
-        return inventory.get(cookSlot1Number);
-    }
-
-    public ItemStack getCookSlot2(){
-        return inventory.get(cookSlot2Number);
-    }
-    public ItemStack getCookSlot3(){
-        return inventory.get(cookSlot3Number);
-    }
-    public ItemStack getCookSlot4(){
-        return inventory.get(cookSlot4Number);
-    }
-    public ItemStack getAshSlot(){
-        return inventory.get(ashSlotNumber);
-    }
     public ItemStack getTinderSlot(){
         return inventory.get(tinderSlotNumber);
     }
+
+    public ItemStack getAshSlot(){
+        return inventory.get(ashSlotNumber);
+    }
+
 
     @Override
     public void tick(Level levelIn, BlockPos blockPosIn, BlockState blockStateIn, CampfireBlockEntityOverride campfireBlockEntityOverrideIn) {
@@ -104,7 +84,6 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
             }
         } else {
             if (isLit(blockStateIn)) {
-                campfireBlockEntityOverrideIn.cook();
                 campfireBlockEntityOverrideIn.burnLogs();
                 campfireBlockEntityOverrideIn.ash();
 
@@ -112,43 +91,9 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
                     campfireBlockEntityOverrideIn.dowse();
                     campfireBlockEntityOverrideIn.canPlaceRecipeItems = false;
                 }
-            } else {
-                for (int i = 0; i < numberOfCookSlots; ++i) {
-                    if (campfireBlockEntityOverrideIn.cookingProgresses[i] > 0) {
-                        campfireBlockEntityOverrideIn.cookingProgresses[i] = Mth.clamp(campfireBlockEntityOverrideIn.cookingProgresses[i] - 2, 0, campfireBlockEntityOverrideIn.cookingTimes[i]);
-                    }
-                }
             }
         }
 
-    }
-
-    private void cook() {
-        if(this.level!= null) {
-            for (int i = 0; i < numberOfCookSlots; ++i) {
-                ItemStack itemstack = inventory.get(i);
-                if (!itemstack.isEmpty()) {
-                    this.cookingProgresses[i]++;
-                    if (this.cookingProgresses[i] >= this.cookingTimes[i] && this.cookedSlotChecker[i] == 0) {
-                        Container iinventory = new SimpleContainer(itemstack);
-                        ItemStack itemStack1 = this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireType, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
-                        BlockPos blockpos = this.getBlockPos();
-                        //InventoryHelper.dropItemStack(this.level, blockpos.getX(), blockpos.getY(), blockpos.getZ(), itemStack1);
-                        this.inventory.set(i, itemStack1);
-                        this.cookedSlotChecker[i] = 1;
-                        this.markUpdated();
-                    } else {
-                        if (this.cookedSlotChecker[i] == 1) {
-                            Container iinventory = new SimpleContainer(itemstack);
-                            ItemStack itemStack1 = this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireCharType, iinventory, this.level).map((p_213979_1_) -> p_213979_1_.assemble(iinventory)).orElse(itemstack);
-                            this.inventory.set(i, itemStack1);
-                        }
-                    }
-                } else {
-                    this.cookedSlotChecker[i] = 0;
-                }
-            }
-        }
     }
 
     private void burnLogs() {
@@ -198,22 +143,6 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
                     CampfireBlockOverride.makeParticles(world, blockpos);
                 }
             }
-
-            int l = getBlockState().getValue(CampfireBlockOverride.FACING).get2DDataValue();
-
-            for(int j = 0; j < numberOfCookSlots; ++j) {
-                if (!inventory.get(j).isEmpty() && random.nextFloat() < 0.2F) {
-                    Direction direction = Direction.from2DDataValue(Math.floorMod(j + l, 4));
-                    float f = 0.3125F;
-                    double d0 = (double)blockpos.getX() + 0.5D - (double)((float)direction.getStepX() * 0.3125F) + (double)((float)direction.getClockWise().getStepX() * 0.3125F);
-                    double d1 = (double)blockpos.getY() + 0.5D;
-                    double d2 = (double)blockpos.getZ() + 0.5D - (double)((float)direction.getStepZ() * 0.3125F) + (double)((float)direction.getClockWise().getStepZ() * 0.3125F);
-
-                    for(int k = 0; k < 4; ++k) {
-                        world.addParticle(ParticleTypes.SMOKE, d0, d1, d2, 0.0D, 5.0E-4D, 0.0D);
-                    }
-                }
-            }
         }
     }
 
@@ -237,21 +166,6 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
         canPlaceRecipeItems = nbt.getBoolean("can_place_recipe_items");
 
         ContainerHelper.loadAllItems(nbt, this.inventory);
-
-        if (nbt.contains("cooking_times", 11)) {
-            int[] aint = nbt.getIntArray("cooking_times");
-            System.arraycopy(aint, 0, this.cookingProgresses, 0, Math.min(this.cookingProgresses.length, aint.length));
-        }
-
-        if (nbt.contains("cooking_total_times", 11)) {
-            int[] aint1 = nbt.getIntArray("cooking_total_times");
-            System.arraycopy(aint1, 0, this.cookingTimes, 0, Math.min(this.cookingTimes.length, aint1.length));
-        }
-
-        if (nbt.contains("cooked_checker", 11)) {
-            int[] aint1 = nbt.getIntArray("cooked_checker");
-            System.arraycopy(aint1, 0, this.cookedSlotChecker, 0, Math.min(this.cookedSlotChecker.length, aint1.length));
-        }
         return nbt;
     }
 
@@ -265,9 +179,6 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
         super.saveAdditional(tag);
         tag.putInt("fuel_burn_time", fuelBurnTime);
         tag.putInt("fuel_burn_progress", fuelBurnProgress);
-        tag.putIntArray("cooking_times", cookingProgresses);
-        tag.putIntArray("cooking_total_times", cookingTimes);
-        tag.putIntArray("cooked_checker", cookedSlotChecker);
         tag.putBoolean("signal_fire", signalFire);
         tag.putBoolean("keep_logs_formed", keepLogsFormed);
         tag.putBoolean("can_place_recipe_items", canPlaceRecipeItems);
@@ -277,33 +188,6 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
 
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    public Optional<CampfireOverrideRecipe> getCookableRecipe(ItemStack p_213980_1_) {
-        NonNullList<ItemStack> inventoryCopy = NonNullList.withSize(numberOfCookSlots, ItemStack.EMPTY);
-        for(int i = 0; i == numberOfCookSlots; i++){
-            inventoryCopy.set(i, inventory.get(i));
-        }
-        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireType, new SimpleContainer(p_213980_1_), this.level);
-    }
-
-    public Optional<CampfireOverrideCharRecipe> getCookedChardRecipe(ItemStack p_213980_1_) {
-        NonNullList<ItemStack> inventoryCopy = NonNullList.withSize(numberOfCookSlots, ItemStack.EMPTY);
-        for(int i = 0; i == numberOfCookSlots; i++){
-            inventoryCopy.set(i, inventory.get(i));
-        }
-        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(ModRecipes.campfireCharType, new SimpleContainer(p_213980_1_), this.level);
-    }
-
-    public boolean placeFood(ItemStack p_213984_1_, int slotNumber, int cookTime) {
-            if (inventory.get(slotNumber).isEmpty()) {
-                this.cookingTimes[slotNumber] = cookTime;
-                this.cookingProgresses[slotNumber] = 0;
-                this.inventory.set(slotNumber, p_213984_1_.split(1));
-                this.markUpdated();
-                return true;
-            }
-        return false;
     }
 
     public boolean placeItemStack(ItemStack p_213984_1_, int slotNumber) {
@@ -331,11 +215,7 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
             level.setBlock(this.getBlockPos(), blockState1, 3);
 
             if (!this.level.isClientSide) {
-                NonNullList<ItemStack> inventoryCopy = NonNullList.withSize(numberOfCookSlots, ItemStack.EMPTY);
-                for(int i = 0; i == numberOfCookSlots; i++){
-                    inventoryCopy.set(i, inventory.get(i));
-                    inventory.set(i, ItemStack.EMPTY);
-                }
+                NonNullList<ItemStack> inventoryCopy = NonNullList.withSize(numberOfSlots, ItemStack.EMPTY);
                 Containers.dropContents(this.level, this.getBlockPos(), inventoryCopy);
             }
 
@@ -343,16 +223,8 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
         }
     }
 
-    public CampfireBlockOverride getCampfireBlock(){
-        return (CampfireBlockOverride)getBlockState().getBlock();
-    }
-
     public BlockState getBlockState() {
         return this.level.getBlockState(getBlockPos());
-    }
-
-    public void updateContainingBlockInfo() {
-        this.cachedBlockState = null;
     }
 
     @Override
@@ -364,25 +236,5 @@ public class CampfireBlockEntityOverride extends BlockEntity implements MenuProv
     @Override
     public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
         return null;
-    }
-
-    public boolean canPlayerAccessInventory(Player player) {
-        if (this.level.getBlockEntity(this.getBlockPos()) != this) return false;
-        final double X_CENTRE_OFFSET = 0.5;
-        final double Y_CENTRE_OFFSET = 0.5;
-        final double Z_CENTRE_OFFSET = 0.5;
-        final double MAXIMUM_DISTANCE_SQ = 8.0 * 8.0;
-        return player.distanceToSqr(getBlockPos().getX() + X_CENTRE_OFFSET, getBlockPos().getY() + Y_CENTRE_OFFSET, getBlockPos().getZ() + Z_CENTRE_OFFSET) < MAXIMUM_DISTANCE_SQ;
-    }
-
-    public void markDirty() {
-        if (this.level != null) {
-            this.cachedBlockState = this.level.getBlockState(this.worldPosition);
-            this.level.blockEntityChanged(getBlockPos());
-            if (!this.cachedBlockState.isAir()) {
-                this.level.updateNeighbourForOutputSignal(this.worldPosition, this.cachedBlockState.getBlock());
-            }
-        }
-
     }
 }

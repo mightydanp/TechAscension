@@ -80,12 +80,6 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
     private static final VoxelShape log4H = Block.box(0.0D, 3.0D, 11.0D, 16.0D, 7.0D, 15.0D);
     private static final VoxelShape ashH = Block.box(5.0D, 0.0D, 0.0D, 11.0D, 1.0D, 16.0D);
 
-    private static final VoxelShape log1V = Block.box(0.0D, 0.0D, 1.0D, 16.0D, 4.0D, 5.0D);
-    private static final VoxelShape log2V = Block.box(0.0D, 0.0D, 11.0D, 16.0D, 4.0D, 15.0D);
-    private static final VoxelShape log3V = Block.box(1.0D, 3.0D, 0.0D, 5.0D, 7.0D, 16.0D);
-    private static final VoxelShape log4V = Block.box(11.0D, 3.0D, 0.0D, 15.0D, 7.0D, 16.0D);
-    private static final VoxelShape ashV = Block.box(0.0D, 0.0D, 5.0D, 16.0D, 1.0D, 11.0D);
-
     public CampfireBlockOverride() {
         super(BlockBehaviour.Properties.of(Material.WOOD));
         this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false).setValue(LIT, false).setValue(LOG, 0).setValue(FACING, Direction.NORTH));
@@ -108,8 +102,6 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
 
     public VoxelShape getShape(BlockState blockState, BlockGetter iBlockReader, BlockPos blockPos, CollisionContext iSelectionContext) {
         VoxelShape horizontal = Shapes.join(Shapes.or(tinder, log1H, log2H, log3H, log4H, ashH), Shapes.empty(), BooleanOp.ONLY_FIRST);
-        VoxelShape vertical = Shapes.join(Shapes.or(tinder, log1V, log2V, log3V, log4V, ashV), Shapes.empty(), BooleanOp.ONLY_FIRST);
-
 
         CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride) iBlockReader.getBlockEntity(blockPos);
 
@@ -117,13 +109,21 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
             if(blockState.getValue(FACING) == Direction.NORTH || blockState.getValue(FACING) == Direction.SOUTH){
                 return horizontal;
             }
-
-            if(blockState.getValue(FACING) == Direction.EAST || blockState.getValue(FACING) == Direction.WEST){
-                return vertical;
-            }
         }
 
         return horizontal;
+    }
+
+    public static VoxelShape rotateShape(Direction direction, double x1, double y1, double z1, double x2, double y2, double z2)
+    {
+        return switch (direction)
+                {
+                    case NORTH -> Block.box(x1, y1, z1, x2, y2, z2);
+                    case EAST -> Block.box(16 - z2, y1, x1, 16 - z1, y2, x2);
+                    case SOUTH -> Block.box(16 - x2, y1, 16 - z2, 16 - x1, y2, 16 - z1);
+                    case WEST -> Block.box(z1, y1, 16 - x2, z2, y2, 16 - x1);
+                    default -> throw new IllegalArgumentException("Not horizontal!");
+                };
     }
 
 
@@ -161,65 +161,13 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
     @Override
     public InteractionResult use(BlockState blockState, Level world, BlockPos blockPos, Player playerEntity, InteractionHand hand, BlockHitResult blockRayTraceResult) {
         CampfireBlockEntityOverride tileEntity = (CampfireBlockEntityOverride) world.getBlockEntity(blockPos);
-        AABB cookingSlot1;
-        AABB cookingSlot2 = AABB.ofSize(blockRayTraceResult.getLocation(), blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
-        AABB cookingSlot3 = AABB.ofSize(blockRayTraceResult.getLocation(), blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
-        AABB cookingSlot4 = AABB.ofSize(blockRayTraceResult.getLocation(), blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
         AABB ashSlot      = AABB.ofSize(blockRayTraceResult.getLocation(), blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
         AABB tinderSlot   = AABB.ofSize(blockRayTraceResult.getLocation(), blockPos.getX() + 0.0, blockPos.getY() + 0.0, blockPos.getZ() + 0.0);
 
         if (tileEntity != null) {
             ItemStack itemstack = playerEntity.getItemInHand(hand);
-            ResourceLocation log = ItemTags.LOGS.location();
 
-            Optional<CampfireOverrideRecipe> optional = tileEntity.getCookableRecipe(itemstack);
             int logs = blockState.getValue(LOG);
-
-            switch(blockState.getValue(FACING)){
-                case NORTH: cookingSlot1 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
-                    break;
-                case SOUTH: cookingSlot1 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
-                    break;
-                case EAST:  cookingSlot1 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
-                    break;
-                case WEST:  cookingSlot1 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + blockState.getValue(FACING));
-            }
-
-            switch(blockState.getValue(FACING)){
-                case NORTH: cookingSlot2 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
-                    break;
-                case SOUTH: cookingSlot2 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
-                    break;
-                case EAST:  cookingSlot2 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
-                    break;
-                case WEST:  cookingSlot2 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
-                    break;
-            }
-
-            switch(blockState.getValue(FACING)){
-                case NORTH: cookingSlot4 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
-                    break;
-                case SOUTH: cookingSlot4 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
-                    break;
-                case EAST:  cookingSlot4 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
-                    break;
-                case WEST:  cookingSlot4 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
-                    break;
-            }
-
-            switch(blockState.getValue(FACING)){
-                case NORTH: cookingSlot3 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
-                    break;
-                case SOUTH: cookingSlot3 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
-                    break;
-                case EAST:  cookingSlot3 = new AABB(blockPos.getX() + 0.0625, blockPos.getY() + 0.1875, blockPos.getZ() + 0.0, blockPos.getX() + 0.3125 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 0.375 + 0.0001);
-                    break;
-                case WEST:  cookingSlot3 = new AABB(blockPos.getX() + 0.6825, blockPos.getY() + 0.1875, blockPos.getZ() + 0.625, blockPos.getX() + 0.9375 + 0.0001, blockPos.getY() + 0.4375 + 0.0001, blockPos.getZ() + 1.0 + 0.0001);
-                    break;
-            }
 
             switch(blockState.getValue(FACING)){
                 case NORTH:
@@ -255,68 +203,6 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
                 itemstack.setDamageValue(itemstack.getDamageValue() + 1);
             }
 
-            if(logs > 0) {
-                if (cookingSlot1.contains(click(playerEntity, world))) {
-                    if (tileEntity.getCookSlot1().isEmpty() && optional.isPresent()) {
-                        tileEntity.placeFood(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot1Number, optional.get().getCookingTime());
-                        itemstack.shrink(1);
-                        playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
-                    } else {
-                        if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
-                            playerEntity.getInventory().placeItemBackInInventory(tileEntity.getCookSlot1());
-                            tileEntity.getInventory().set(tileEntity.cookSlot1Number, ItemStack.EMPTY);
-                        }else{
-                            return InteractionResult.FAIL;
-                        }
-                    }
-                }
-
-                if (cookingSlot2.contains(click(playerEntity, world))) {
-                    if (tileEntity.getCookSlot2().isEmpty() && optional.isPresent()) {
-                        tileEntity.placeFood(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot2Number, optional.get().getCookingTime());
-                        itemstack.shrink(1);
-                        playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
-                    } else {
-                        if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
-                            playerEntity.getInventory().placeItemBackInInventory(tileEntity.getCookSlot2());
-                            tileEntity.getInventory().set(tileEntity.cookSlot2Number, ItemStack.EMPTY);
-                        }else{
-                            return InteractionResult.FAIL;
-                        }
-                    }
-                }
-
-                if (cookingSlot3.contains(click(playerEntity, world))) {
-                    if (tileEntity.getCookSlot3().isEmpty() && optional.isPresent()) {
-                        tileEntity.placeFood(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot3Number, optional.get().getCookingTime());
-                        itemstack.shrink(1);
-                        playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
-                    } else {
-                        if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
-                            playerEntity.getInventory().placeItemBackInInventory(tileEntity.getCookSlot3());
-                            tileEntity.getInventory().set(tileEntity.cookSlot3Number, ItemStack.EMPTY);
-                        }else{
-                            return InteractionResult.FAIL;
-                        }
-                    }
-                }
-
-                if (cookingSlot4.contains(click(playerEntity, world))) {
-                    if (tileEntity.getCookSlot4().isEmpty() && optional.isPresent()) {
-                        tileEntity.placeFood(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.cookSlot4Number, optional.get().getCookingTime());
-                        itemstack.shrink(1);
-                        playerEntity.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
-                    } else {
-                        if (playerEntity.getMainHandItem().getItem() == Items.STICK) {
-                            playerEntity.getInventory().placeItemBackInInventory(tileEntity.getCookSlot4());
-                            tileEntity.getInventory().set(tileEntity.cookSlot4Number, ItemStack.EMPTY);
-                        }else{
-                            return InteractionResult.FAIL;
-                        }
-                    }
-                }
-            }
-
             if(ashSlot.contains(click(playerEntity, world))){
                 tileEntity.placeItemStack(playerEntity.getAbilities().instabuild ? itemstack.copy() : itemstack, tileEntity.ashSlotNumber);
                 itemstack.shrink(1);
@@ -337,14 +223,6 @@ public class CampfireBlockOverride extends BaseEntityBlock implements SimpleWate
                     playerEntity.getInventory().placeItemBackInInventory(itemstack);
                     tileEntity.getInventory().set(tileEntity.tinderSlotNumber, ItemStack.EMPTY);
                 }
-            }
-
-            if (optional.isPresent()) {
-                if(!world.isClientSide){
-                    playerEntity.awardStat(Stats.INTERACT_WITH_CAMPFIRE);
-                    return InteractionResult.SUCCESS;
-                }
-                return InteractionResult.CONSUME;
             }
         }
 

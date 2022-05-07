@@ -18,7 +18,7 @@ public class HammerToolItem extends ITToolItem {
 
     public HammerToolItem() {
         super("hammer", new ArrayList<>(EFFECTIVE_ON), new Item.Properties().tab(ModItemGroups.tool_tab));
-        craftingToolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
+        toolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
 
         parts.put("headHammer", 1);
         parts.put("handleWedge", 2);

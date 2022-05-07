@@ -64,11 +64,6 @@ public class EventHandler {
 
     public static boolean hasBeenPressed = false;
 
-    @SubscribeEvent
-    public static void setModelProperties(FMLClientSetupEvent event) {
-
-    }
-
 
     /*
     @SubscribeEvent

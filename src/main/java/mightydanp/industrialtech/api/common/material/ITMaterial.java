@@ -456,12 +456,12 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dull_pickaxe_head")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + "dull_" + name + "_pickaxe_head", LangData.translateUpperCase("dull_" + name + "_pickaxe_head"));
                 //--//
-                pickaxeHead = RegistryHandler.ITEMS.register(  name + "_pickaxe_head", ()-> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
+                pickaxeHead = RegistryHandler.ITEMS.register(  name + "_pickaxe_head", ()-> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "pickaxe", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
                 DataPackRegistry.itemModelDataHashMap.put(name + "_pickaxe_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/pickaxe_head")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + name + "_pickaxe_head", LangData.translateUpperCase(name + "_pickaxe_head"));
                 //--//
-                hammerHead = RegistryHandler.ITEMS.register(  name + "_hammer_head", ()-> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
+                hammerHead = RegistryHandler.ITEMS.register(  name + "_hammer_head", ()-> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "hammer", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
                 DataPackRegistry.itemModelDataHashMap.put(name + "_hammer_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/hammer_head")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + name + "_hammer_head", LangData.translateUpperCase(name + "_hammer_head"));
@@ -471,7 +471,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dull_chisel_head")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + "dull_" + name + "_chisel_head", LangData.translateUpperCase("dull_" + name + "_chisel_head"));
                 //--//
-                chiselHead = RegistryHandler.ITEMS.register(  name + "_chisel_head", ()-> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
+                chiselHead = RegistryHandler.ITEMS.register(  name + "_chisel_head", ()-> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "chisel", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
                 DataPackRegistry.itemModelDataHashMap.put(name + "_chisel_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/chisel_head")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + name + "_chisel_head", LangData.translateUpperCase(name + "_chisel_head"));

@@ -5,6 +5,7 @@ import mightydanp.industrialtech.api.common.handler.itemstack.ITToolItemInventor
 import mightydanp.industrialtech.api.common.items.*;
 import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.api.common.material.tool.ITTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -21,6 +22,7 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -78,7 +80,37 @@ public class ITTool {
         if(event.getItemStack().getItem() == Items.STICK){
             //Minecraft.getInstance().setScreen(new SyncScreen(materialServer));
         }
-        //handToolCrafting(pickaxe, event, 1, pickaxeToolsNeeded);
+
+        Item offHandItem = event.getPlayer().getOffhandItem().getItem();
+        Item mainHandItem = event.getPlayer().getMainHandItem().getItem();
+
+
+
+        if(mainHandItem instanceof ToolHeadItem toolHead) {
+            List<ITTool> tool = ITTools.tools.stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
+
+            if (tool.size() > 0) {
+                ITToolItem toolItem = (ITToolItem)tool.get(0).toolItem.get();
+                handToolCrafting(toolItem, event, 1, toolItem.toolsNeeded);
+            }
+        }
+
+        if(offHandItem instanceof ToolHeadItem toolHead){
+            List<ITTool> tool = ITTools.tools.stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
+
+            if (tool.size() > 0) {
+                ITToolItem toolItem = (ITToolItem)tool.get(0).toolItem.get();
+                handToolCrafting(toolItem, event, 1, toolItem.toolsNeeded);
+            }
+        }
+
+        if(mainHandItem instanceof ITToolItem tool){
+            handToolCrafting(tool, event, 1, tool.toolsNeeded);
+        }
+
+        if(offHandItem instanceof ITToolItem tool){
+            handToolCrafting(tool, event, 1, tool.toolsNeeded);
+        }
     }
 
     public static void handToolCrafting(ITToolItem toolItemIn, PlayerInteractEvent.RightClickItem event, int toolNeededDamage, Map<String, Integer> toolNeededIn) {
@@ -93,7 +125,7 @@ public class ITTool {
         List<String> secondItemsThatCanBeUsed = compareAndAddToNewArray(-2, toolNeededIn);
 
 
-        if (toolItemIn.getPartsToWork() == 3 || toolItemIn.getPartsToWork() == 2) {
+        if (toolItemIn.getParts() == 3 || toolItemIn.getParts() == 2) {
             Item toolParts0 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.parts.keySet()).get(0)));
             Item toolParts1 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.parts.keySet()).get(1)));
 
@@ -127,7 +159,7 @@ public class ITTool {
                     toolItemIn.setEfficiency(toolItem, toolHeadItem.efficiency);
                     toolItemIn.setToolLevel(toolItem, toolHeadItem.getItToolType());
 
-                    if (toolItemIn.getPartsToWork() == 2) {
+                    if (toolItemIn.getParts() == 2) {
                         toolItemIn.setAttackSpeed(toolItem, toolHandleItem.weight + toolHeadItem.weight);
                     }
 
@@ -137,7 +169,7 @@ public class ITTool {
             }
         }
 
-        if (toolItemIn.getPartsToWork() == 3){
+        if (toolItemIn.getParts() == 3){
             ItemStack mainHandNew = playerEntity.getMainHandItem();
             ItemStack offHandNew = playerEntity.getOffhandItem();
 
@@ -191,7 +223,7 @@ public class ITTool {
     public static boolean inventoryToolCheck(Player playerIn, List<String> toolNeededIn){
         List<Item> toolNeededList = convertToItem(toolNeededIn);
 
-        for(int i = 9; i <= 45; i++){
+        for(int i = 0; i <= 35; i++){
 
             ItemStack toolNeeded = playerIn.getInventory().getItem(i);
             if(toolNeededList.contains(toolNeeded.getItem())){
@@ -199,19 +231,19 @@ public class ITTool {
                     ITToolItem toolNeededItem = (ITToolItem)playerIn.getInventory().getItem(i).getItem();
                     ITToolItemInventoryHelper itemStackHandler = toolNeededItem.inventory;
 
-                    if((toolNeededItem.partsToWork == 1 || toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHead() != null){
+                    if((toolNeededItem.getParts() == 1 || toolNeededItem.getParts() == 2 || toolNeededItem.getParts() == 3) & itemStackHandler.getToolHead() != null){
                         if(itemStackHandler.getToolHead().getDamageValue() < itemStackHandler.getToolHead().getMaxDamage()) {
                             toolNeededList.remove(toolNeeded.getItem());
                         }
                     }
 
-                    if((toolNeededItem.partsToWork == 2 || toolNeededItem.partsToWork == 3) & itemStackHandler.getToolHandle() != null){
+                    if((toolNeededItem.getParts() == 2 || toolNeededItem.getParts() == 3) & itemStackHandler.getToolHandle() != null){
                         if(itemStackHandler.getToolHandle().getDamageValue() < itemStackHandler.getToolHandle().getDamageValue()){
                             toolNeededList.remove(toolNeeded.getItem());
                         }
                     }
 
-                    if(toolNeededItem.partsToWork == 3 & itemStackHandler.getToolBinding() != null){
+                    if(toolNeededItem.getParts() == 3 & itemStackHandler.getToolBinding() != null){
                         if(itemStackHandler.getToolBinding().getDamageValue() < itemStackHandler.getToolBinding().getDamageValue()){
                             toolNeededList.remove(toolNeeded.getItem());
                         }
