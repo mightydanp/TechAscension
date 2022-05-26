@@ -35,8 +35,8 @@ public class KnifeToolItem extends ITToolItem {
         super("knife", new ArrayList<>(EFFECTIVE_ON),  new Item.Properties().tab(ModItemGroups.tool_tab));
         toolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
 
-        parts.put("headKnife", 1);
-        parts.put("handleWedge", 2);
+        parts.put("knife_head", 1);
+        parts.put("wedge_handle", 2);
         parts.put("wedge", 3);
 
         disassembleTools.add(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")));

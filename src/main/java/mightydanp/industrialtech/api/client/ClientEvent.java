@@ -1,11 +1,8 @@
 package mightydanp.industrialtech.api.client;
 
-import mightydanp.industrialtech.api.client.inventory.container.ITToolItemContainerScreen;
-import mightydanp.industrialtech.api.client.rendering.models.HoleBakedModel;
 import mightydanp.industrialtech.api.client.settings.keybindings.KeyBindings;
 import mightydanp.industrialtech.api.common.blocks.ITBlocks;
 import mightydanp.industrialtech.api.common.handler.KeyBindingHandler;
-import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.tileentities.TileEntities;
 import mightydanp.industrialtech.client.rendering.models.CampFireBakedModel;
@@ -18,7 +15,6 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;

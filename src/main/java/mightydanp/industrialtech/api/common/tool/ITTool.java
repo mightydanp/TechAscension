@@ -124,7 +124,6 @@ public class ITTool {
         List<String> secondItemsNeeded = compareAndAddToNewArray(2, toolNeededIn);
         List<String> secondItemsThatCanBeUsed = compareAndAddToNewArray(-2, toolNeededIn);
 
-
         if (toolItemIn.getParts() == 3 || toolItemIn.getParts() == 2) {
             Item toolParts0 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.parts.keySet()).get(0)));
             Item toolParts1 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.parts.keySet()).get(1)));

@@ -10,8 +10,11 @@ import mightydanp.industrialtech.api.common.handler.EventHandler;
 import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.inventory.container.Containers;
 import mightydanp.industrialtech.api.common.items.ITItems;
-import mightydanp.industrialtech.api.common.jsonconfig.datapack.DataPackRegistry;
+import mightydanp.industrialtech.api.common.resources.asset.AssetPackRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.main.data.MainJsonConfigSingleFile;
+import mightydanp.industrialtech.api.common.resources.asset.ITAssetHolder;
+import mightydanp.industrialtech.api.common.resources.data.ITDataHolder;
+import mightydanp.industrialtech.api.common.resources.ResourcePackEventHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
 import mightydanp.industrialtech.api.common.libs.Ref;
 import mightydanp.industrialtech.api.common.tileentities.TileEntities;
@@ -26,16 +29,13 @@ import mightydanp.industrialtech.common.tileentities.ModBlockEntity;
 import mightydanp.industrialtech.common.tool.ModTools;
 import mightydanp.industrialtech.common.trees.ModTrees;
 import mightydanp.industrialtech.data.config.DataConfig;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +51,9 @@ public class IndustrialTech {
     public static MainJsonConfigSingleFile mainJsonConfig = new MainJsonConfigSingleFile();
     public static ConfigSync configSync = new ConfigSync();
 
-    public static DataPackRegistry dataPackRegistry = new DataPackRegistry();
+    public static AssetPackRegistry assetPackRegistry = new AssetPackRegistry();
+    public static ITAssetHolder assetHolder = new ITAssetHolder();
+    public static ITDataHolder dataHolder = new ITDataHolder();
 
     public IndustrialTech(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus(), forge = MinecraftForge.EVENT_BUS;
@@ -81,9 +83,9 @@ public class IndustrialTech {
         TileEntities.init();
         ModBlockEntity.init();
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(JsonConfigClient::init);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(CommonEvent::init);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModCommonEvent::init);
+        bus.addListener(JsonConfigClient::init);
+        bus.addListener(CommonEvent::init);
+        bus.addListener(ModCommonEvent::init);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientEvent::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientEvent::init);
@@ -93,5 +95,8 @@ public class IndustrialTech {
         MinecraftForge.EVENT_BUS.register(ModRecipes.class);
         MinecraftForge.EVENT_BUS.register(EventHandler.class);
         MinecraftForge.EVENT_BUS.register(ITTool.class);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AssetPackRegistry::init);
+        bus.addListener(ResourcePackEventHandler::addResourcePack);
+        MinecraftForge.EVENT_BUS.register(ResourcePackEventHandler.class);
     }
 }

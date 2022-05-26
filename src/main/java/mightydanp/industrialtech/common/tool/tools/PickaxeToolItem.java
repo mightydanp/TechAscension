@@ -21,8 +21,8 @@ public class PickaxeToolItem extends ITToolItem {
 
         toolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
 
-        parts.put("headPickaxe", 1);
-        parts.put("handleWedge", 2);
+        parts.put("pickaxe_head", 1);
+        parts.put("wedge_handle", 2);
         parts.put("wedge", 3);
 
         disassembleTools.add(String.valueOf(new ResourceLocation(Ref.mod_id, "chisel")));
