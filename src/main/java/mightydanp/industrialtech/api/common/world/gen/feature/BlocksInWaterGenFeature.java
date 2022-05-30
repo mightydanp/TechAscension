@@ -77,6 +77,7 @@ public class BlocksInWaterGenFeature extends Feature<BlocksInWaterGenFeatureConf
             }
 
         }
+
         return canSpawn;
     }
 

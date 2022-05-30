@@ -22,8 +22,6 @@ public class ModItems {
     public static RegistryObject<Item> cattail_leaf;
     public static RegistryObject<Item> plant_fiber;
     public static RegistryObject<Item> twine;
-    public static RegistryObject<Item> rock;
-    public static RegistryObject<Item> rock_block;
     public static RegistryObject<Item> campfire_block;
     //public static RegistryObject<Item> unfired_clay_pot;
     //public static RegistryObject<Item> unfired_clay_pan;
@@ -48,7 +46,6 @@ public class ModItems {
     public static void initBlockItems(){
         cattail_bottom_item = RegistryHandler.BLOCK_ITEMS.register(ItemRef.cattail_bottom_name, () -> new BlockItem(ModBlocks.cattail_plant_bottom_block.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
         cattail_top_item = RegistryHandler.BLOCK_ITEMS.register(ItemRef.cattail_top_name, () -> new BlockItem(ModBlocks.cattail_plant_top_block.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
-        rock_block = RegistryHandler.BLOCK_ITEMS.register(ItemRef.rock_block_name, () -> new RockBlockItem(ModBlocks.rock_block.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
         campfire_block = RegistryHandler.BLOCK_ITEMS.register(ItemRef.campfire_block_name, () -> new BlockItem(ModBlocks.campfire_override.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
 
 

@@ -6,6 +6,7 @@ import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.biome.Biome;
 
@@ -23,7 +24,11 @@ public class StoneLayerGeneration {
             BEACH, OCEAN, RIVER, SWAMP
     };
 
-    public static List<BlockState> thinSlabBlocks = new ArrayList<>();
+    public static List<String> thinSlabBlocksBlackListedBlocks = List.of(Blocks.SAND.getRegistryName().toString(), Blocks.RED_SAND.getRegistryName().toString(), Blocks.GRAVEL.getRegistryName().toString(), Blocks.DIRT.getRegistryName().toString(), Blocks.GRASS.getRegistryName().toString(), Blocks.PODZOL.getRegistryName().toString());
+
+    public static List<String> thinSlabBlocks = new ArrayList<>();
+
+    public static List<String> rockBlocks = new ArrayList<>();
 
     public static void init() {
         List<ITMaterial> stoneLayerList = ((MaterialRegistry) IndustrialTech.configSync.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
@@ -31,10 +36,21 @@ public class StoneLayerGeneration {
             for (ITMaterial iStoneLayer : stoneLayerList) {
                 Block replaceableBlock = iStoneLayer.thinSlabBlock.get();
 
-                thinSlabBlocks.add(replaceableBlock.defaultBlockState());
+                thinSlabBlocks.add(String.valueOf(replaceableBlock.getRegistryName()));
             }
         }
-        StoneLayerGenerationHandler.addThinSlabGenerate("thin_slab", thinSlabBlocks, 2, true, false, List.of(Level.OVERWORLD), List.of(), List.of());
+
+        if(rockBlocks.size() != stoneLayerList.size()){
+            for (ITMaterial iStoneLayer : stoneLayerList) {
+                Block replaceableBlock = iStoneLayer.rockBlock.get();
+
+                rockBlocks.add(String.valueOf(replaceableBlock.getRegistryName()));
+            }
+        }
+
+        StoneLayerGenerationHandler.addStoneLayerTopGenerate("thin_slab", 100, true, true, List.of(Level.OVERWORLD), new ArrayList<>(), new ArrayList<>(), thinSlabBlocks, new ArrayList<>(), new ArrayList<>());
+
+        StoneLayerGenerationHandler.addStoneLayerTopGenerate("rock_block", 100, false, true, List.of(Level.OVERWORLD), new ArrayList<>(), new ArrayList<>(), rockBlocks, new ArrayList<>(), thinSlabBlocksBlackListedBlocks);
     }
 
 

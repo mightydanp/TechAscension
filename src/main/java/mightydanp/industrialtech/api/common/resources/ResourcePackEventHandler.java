@@ -19,12 +19,14 @@ public class ResourcePackEventHandler {
         if (type == PackType.CLIENT_RESOURCES) {
             event.addRepositorySource((packConsumer, constructor) -> {
                 Pack pack = Pack.create(Ref.mod_id + ":assets", true, ()-> IndustrialTech.assetHolder, constructor, Pack.Position.TOP, PackSource.DEFAULT);
+                packConsumer.accept(pack);
             });
         }
 
         if (type == PackType.SERVER_DATA) {
             event.addRepositorySource((packConsumer, constructor) -> {
                 Pack pack = Pack.create(Ref.mod_id + ":data", true, ()-> IndustrialTech.dataHolder, constructor, Pack.Position.TOP, PackSource.DEFAULT);
+                packConsumer.accept(pack);
             });
         }
     }

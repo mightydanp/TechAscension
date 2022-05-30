@@ -52,7 +52,7 @@ public class OreGenerationHandler {
 
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight), VerticalAnchor.absolute(config.maxHeight)));
-        list.add(CountPlacement.of(config.rarity));
+        //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
         ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).register(config);
@@ -75,7 +75,7 @@ public class OreGenerationHandler {
 
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight), VerticalAnchor.absolute(config.maxHeight)));
-        list.add(CountPlacement.of(config.rarity));
+        //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, oreVeinFeature, list.toArray(new PlacementModifier[0]));
         ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).register(config);
@@ -86,7 +86,7 @@ public class OreGenerationHandler {
         Holder<ConfiguredFeature<SmallOreVeinGenFeatureConfig, ?>> smallOreFeature = register(config.name, new ConfiguredFeature<>(small_ore.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight), VerticalAnchor.absolute(config.maxHeight)));
-        list.add(CountPlacement.of(config.rarity));
+        //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, smallOreFeature, list.toArray(new PlacementModifier[0]));
         ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).register(config);
@@ -118,7 +118,7 @@ public class OreGenerationHandler {
 
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight), VerticalAnchor.absolute(config.maxHeight)));
-        list.add(CountPlacement.of(config.rarity));
+        //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, smallOreFeature, list.toArray(new PlacementModifier[0]));
         ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).register(config);

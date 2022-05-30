@@ -42,7 +42,7 @@ public class PlantGenerationHandler {
 
         Holder<ConfiguredFeature<BlocksInWaterGenFeatureConfig, ?>> featureHolder = register(config.name, new ConfiguredFeature<>(blockInWater.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
-        list.add(CountPlacement.of(config.rarity));
+        //list.add(CountPlacement.of(config.rarity));
 
 
         //Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
@@ -76,7 +76,7 @@ public class PlantGenerationHandler {
 
         Holder<ConfiguredFeature<BlocksInWaterGenFeatureConfig, ?>> featureHolder = register(config.name, new ConfiguredFeature<>(blockInWater.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
-        list.add(CountPlacement.of(config.rarity));
+        //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
         ((BlocksInWaterRegistry)IndustrialTech.configSync.blocksInWater.getFirst()).register(config);
@@ -86,7 +86,7 @@ public class PlantGenerationHandler {
     public static void addRegistryRandomSurfaceGenerate(RandomSurfaceGenFeatureConfig config){
         Holder<ConfiguredFeature<RandomSurfaceGenFeatureConfig, ?>> featureHolder = register(config.name, new ConfiguredFeature<>(randomSurface.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
-        list.add(CountPlacement.of(config.rarity));
+        //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
         ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).register(config);
@@ -113,7 +113,7 @@ public class PlantGenerationHandler {
 
         Holder<ConfiguredFeature<RandomSurfaceGenFeatureConfig, ?>> oreVeinFeature = register(config.name, new ConfiguredFeature<>(randomSurface.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
-        list.add(CountPlacement.of(config.rarity));
+        //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, oreVeinFeature, list.toArray(new PlacementModifier[0]));
         ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).register(config);

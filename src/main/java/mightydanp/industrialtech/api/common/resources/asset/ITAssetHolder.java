@@ -21,7 +21,7 @@ public class ITAssetHolder implements PackResources {
 
     public Map<ResourceLocation, Supplier<InputStream>> ASSET_HOLDER = new HashMap<>();
 
-    private static final int PACK_VERSION = 0;
+    private static final int PACK_VERSION = 8;
 
     public void addToResources(ResourceLocation location, JsonObject jsonObject){
         if (!ASSET_HOLDER.containsKey(location)) {

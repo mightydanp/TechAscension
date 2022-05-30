@@ -21,14 +21,14 @@ public class ITDataHolder implements PackResources {
 
     public Map<ResourceLocation, Supplier<InputStream>> DATA_HOLDER = new HashMap<>();
 
-    private static final int PACK_VERSION = 0;
+    private static final int PACK_VERSION = 9;
 
     public void addToResources(ResourceLocation location, JsonObject jsonObject){
         if (!DATA_HOLDER.containsKey(location)) {
             InputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
             DATA_HOLDER.put(location, ()-> inputStream);
         }else{
-            IndustrialTech.LOGGER.warn("[" + location + "] already exists in assets.");
+            IndustrialTech.LOGGER.warn("[" + location + "] already exists in data.");
         }
     }
 
@@ -36,7 +36,7 @@ public class ITDataHolder implements PackResources {
         if (DATA_HOLDER.containsKey(location)) {
             DATA_HOLDER.remove(location);
         }else{
-            IndustrialTech.LOGGER.warn("[" + location + "] does not already exists in assets.");
+            IndustrialTech.LOGGER.warn("[" + location + "] does not already exists in data.");
         }
     }
 

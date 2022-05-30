@@ -1,6 +1,5 @@
 package mightydanp.industrialtech.api.common.datagen;
 
-import mightydanp.industrialtech.api.common.handler.RegistryHandler;
 import mightydanp.industrialtech.api.common.material.ITMaterial;
 import mightydanp.industrialtech.api.common.tool.ITTool;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
@@ -71,7 +70,7 @@ public class GenItemModel extends ItemModelProvider {
 
             for (IToolPart flag : ((ITMaterial)material).toolParts) {
                 if (flag == DefaultToolPart.TOOL_HEAD) {
-                    coloredToolPart(((ITMaterial)material).dullPickaxe.get(), ((ITMaterial)material));
+                    coloredToolPart(((ITMaterial)material).dullPickaxeHead.get(), ((ITMaterial)material));
                     coloredToolPart(((ITMaterial)material).pickaxeHead.get(), ((ITMaterial)material));
                     coloredToolPart(((ITMaterial)material).hammerHead.get(), ((ITMaterial)material));
                     coloredToolPart(((ITMaterial)material).dullChiselHead.get(), ((ITMaterial)material));

@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
@@ -34,9 +35,9 @@ public class ThinSlabBlock extends Block implements LiquidBlockContainer {
     public String stoneLayerBlock;
 
     public ThinSlabBlock(BlockBehaviour.Properties properties, String stoneLayerBlockIn) {
-        super(properties);
+        super(properties.noCollission().strength(0.0f));
         stoneLayerBlock = stoneLayerBlockIn;
-        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, Boolean.valueOf(false)));
+        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false));
     }
 
     @Override

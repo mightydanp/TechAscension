@@ -31,6 +31,7 @@ public class ModBlockLootTable extends GenLootTables {
         LootTable.Builder tableBuilder = LootTable.lootTable();
         LootPool.Builder poolBuilder = LootPool.lootPool();
 
+        /*
         blockTable(ModBlocks.rock_block.get(), tableBuilder.withPool(
                 poolBuilder.setRolls(ConstantValue.exactly(1.0F))
                         .add(AlternativesEntry.alternatives().otherwise(LootItem.lootTableItem(ModBlocks.rock_block.get())
@@ -41,6 +42,8 @@ public class ModBlockLootTable extends GenLootTables {
                         ))
                         .add(LootItem.lootTableItem(ModItems.rock_block.get()))
         ));
+
+         */
     }
 
 }

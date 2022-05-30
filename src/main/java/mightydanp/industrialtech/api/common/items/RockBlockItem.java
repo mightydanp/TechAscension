@@ -1,5 +1,9 @@
 package mightydanp.industrialtech.api.common.items;
 
+import mightydanp.industrialtech.api.common.blocks.OreBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
@@ -17,26 +21,57 @@ import net.minecraft.world.item.Item.Properties;
  * Created by MightyDanp on 3/6/2021.
  */
 public class RockBlockItem extends BlockItem {
+    public String stoneLayerBlock;
+    public BlockPos pickUpLocation;
+    public Block oreUnderneath;
+    public String rgbOreUnderneath;
+    public boolean hasBeenIdentified;
+    public Integer meltingPoint;
+    public Integer boilingPoint;
 
-    public RockBlockItem(Block blockIn, Properties builder) {
+    public RockBlockItem(Block blockIn, String stoneLayerBlockIn, Properties builder) {
         super(blockIn, builder);
+        stoneLayerBlock = stoneLayerBlockIn;
+    }
+
+    public void setPickUp(BlockPos pickUpLocationIn, Block oreUnderneathIn, String rgbOreUnderneathIn){
+        pickUpLocation = pickUpLocationIn;
+        oreUnderneath = oreUnderneathIn;
+        rgbOreUnderneath = rgbOreUnderneathIn;
+    }
+
+    public void setHasBeenIdentified(boolean hasBeenIdentified) {
+        this.hasBeenIdentified = hasBeenIdentified;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+        if (pickUpLocation != null) {
+            tooltip.add(Component.nullToEmpty(pickUpLocation.toString()));
+        }
+
+
+        if (hasBeenIdentified) {
+            if (oreUnderneath != null) {
+                if(oreUnderneath instanceof OreBlock) {
+                    OreBlock ore = (OreBlock)oreUnderneath;
+                    tooltip.add(Component.nullToEmpty("This rock contains " + " §5" + ore.name + " §5" + "inside of it"  + " §5"));
+                }
+            }
+
+            if (meltingPoint != null) {
+                tooltip.add(Component.nullToEmpty("Melting Point of" + " §5" + meltingPoint));
+            }
+
+            if (boilingPoint != null) {
+                tooltip.add(Component.nullToEmpty("Boiling Point of" + " §5" + boilingPoint));
+            }
+        }
     }
 
     @Override
     protected boolean placeBlock(BlockPlaceContext context, BlockState state) {
         return false;
-    }
-
-    @Override
-    public int getMaxDamage(ItemStack stack) {
-        return 1;
-    }
-
-    @Override
-    public void inventoryTick(ItemStack itemStackIn, Level p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
-        super.inventoryTick(itemStackIn, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
-        if(itemStackIn.getDamageValue() == 0){
-            itemStackIn.shrink(1);
-        }
     }
 }

@@ -13,6 +13,7 @@ import mightydanp.industrialtech.api.common.items.ITItems;
 import mightydanp.industrialtech.api.common.resources.asset.AssetPackRegistry;
 import mightydanp.industrialtech.api.common.jsonconfig.main.data.MainJsonConfigSingleFile;
 import mightydanp.industrialtech.api.common.resources.asset.ITAssetHolder;
+import mightydanp.industrialtech.api.common.resources.data.DataPackRegistry;
 import mightydanp.industrialtech.api.common.resources.data.ITDataHolder;
 import mightydanp.industrialtech.api.common.resources.ResourcePackEventHandler;
 import mightydanp.industrialtech.api.common.jsonconfig.sync.ConfigSync;
@@ -51,7 +52,6 @@ public class IndustrialTech {
     public static MainJsonConfigSingleFile mainJsonConfig = new MainJsonConfigSingleFile();
     public static ConfigSync configSync = new ConfigSync();
 
-    public static AssetPackRegistry assetPackRegistry = new AssetPackRegistry();
     public static ITAssetHolder assetHolder = new ITAssetHolder();
     public static ITDataHolder dataHolder = new ITDataHolder();
 
@@ -96,6 +96,7 @@ public class IndustrialTech {
         MinecraftForge.EVENT_BUS.register(EventHandler.class);
         MinecraftForge.EVENT_BUS.register(ITTool.class);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AssetPackRegistry::init);
+        DataPackRegistry.init();
         bus.addListener(ResourcePackEventHandler::addResourcePack);
         MinecraftForge.EVENT_BUS.register(ResourcePackEventHandler.class);
     }
