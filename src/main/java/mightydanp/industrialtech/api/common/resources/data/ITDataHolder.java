@@ -21,7 +21,7 @@ public class ITDataHolder implements PackResources {
 
     public Map<ResourceLocation, Supplier<InputStream>> DATA_HOLDER = new HashMap<>();
 
-    private static final int PACK_VERSION = 9;
+    private static final int PACK_VERSION = 8;
 
     public void addToResources(ResourceLocation location, JsonObject jsonObject){
         if (!DATA_HOLDER.containsKey(location)) {
@@ -42,32 +42,38 @@ public class ITDataHolder implements PackResources {
 
     @Nullable
     @Override
-    public InputStream getRootResource(@NotNull String location) throws IOException {
-        throw new IOException("Could not find resource in generated resources: " + location);
+    public InputStream getRootResource(String location) throws IOException {
+        if(!location.contains("/") && !location.contains("\\")) {
+            Supplier<InputStream> supplier = DATA_HOLDER.get(location);
+            return supplier.get();
+        } else {
+            throw new IllegalArgumentException("File name can't be a path");
+        }
     }
 
     @Override
-    public @NotNull InputStream getResource(@NotNull PackType packType, @NotNull ResourceLocation location) throws IOException {
-        if (packType == PackType.CLIENT_RESOURCES) {
+    public InputStream getResource(PackType packType, ResourceLocation location) throws IOException {
+        if (packType == PackType.SERVER_DATA) {
             if (DATA_HOLDER.containsKey(location)) {
-                InputStream resource = DATA_HOLDER.get(location).get();
-                if (resource != null) {
-                    return resource;
+                InputStream stream = DATA_HOLDER.get(location).get();
+                if (stream != null) {
+                    return stream;
                 } else {
-                    throw new IOException("Resource is null: " + location);
+                    throw new IOException("Data is null: " + location);
                 }
             }
         }
-        throw new IOException("Could not find resource in generated resources: " + location);
+        throw new IOException("Could not find resource in generated data: " + location);
     }
 
+
     @Override
-    public @NotNull Collection<ResourceLocation> getResources(@NotNull PackType packType, @NotNull String namespace, @NotNull String directory, int depth, @NotNull Predicate<String> predicate) {
+    public Collection<ResourceLocation> getResources(PackType packType, String namespace, String directory, int depth, Predicate<String> predicate) {
         ArrayList<ResourceLocation> locations = new ArrayList<>();
-        if (packType == PackType.CLIENT_RESOURCES) {
-            for (ResourceLocation resource : DATA_HOLDER.keySet()) {
-                if (resource.toString().startsWith(directory) && resource.getNamespace().equals(namespace) && predicate.test(resource.getPath())) {
-                    locations.add(resource);
+        if (packType == PackType.SERVER_DATA) {
+            for (ResourceLocation key : DATA_HOLDER.keySet()) {
+                if (key.toString().startsWith(directory) && key.getNamespace().equals(namespace) && predicate.test(key.getPath()) && DATA_HOLDER.get(key).get() != null) {
+                    locations.add(key);
                 }
             }
         }
@@ -76,7 +82,7 @@ public class ITDataHolder implements PackResources {
 
     @Override
     public boolean hasResource(@NotNull PackType packType, @NotNull ResourceLocation location) {
-        if (packType == PackType.CLIENT_RESOURCES) {
+        if (packType == PackType.SERVER_DATA) {
             if (DATA_HOLDER.containsKey(location)) {
                 return DATA_HOLDER.get(location).get() != null;
             }
@@ -87,7 +93,7 @@ public class ITDataHolder implements PackResources {
     @Override
     public @NotNull Set<String> getNamespaces(@NotNull PackType packType) {
         Set<String> namespaces = new HashSet<>();
-        if (packType == PackType.CLIENT_RESOURCES) {
+        if (packType == PackType.SERVER_DATA) {
             for (ResourceLocation resource : DATA_HOLDER.keySet()) {
                 namespaces.add(resource.getNamespace());
             }
