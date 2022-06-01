@@ -2,7 +2,9 @@ package mightydanp.industrialtech.api.common.resources.data;
 
 import mightydanp.industrialtech.api.common.resources.data.data.TagData;
 import mightydanp.industrialtech.common.IndustrialTech;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
@@ -15,62 +17,62 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DataPackRegistry {
-    private static Map<String, TagData<Block>> blockTagDataMap = new HashMap<>();
-    private static Map<String, TagData<Block>> blockMinableTagDataMap = new HashMap<>();
-    private static Map<String, TagData<EntityType<?>>> entityTypeTagDataMap = new HashMap<>();
-    private static Map<String, TagData<Fluid>> fluidTagDataMap = new HashMap<>();
-    private static Map<String, TagData<GameEvent>> gameEventTagDataMap = new HashMap<>();
-    private static Map<String, TagData<Item>> itemTagDataMap = new HashMap<>();
-    private static Map<String, TagData<Biome>> hasStructureDataMap = new HashMap<>();
-    private static Map<String, TagData<Biome>> biomeDataMap = new HashMap<>();
-    private static Map<String, TagData<ConfiguredStructureFeature<?, ?>>> configuredStructureFeatureDataMap = new HashMap<>();
+    private static Map<ResourceLocation, TagData<Block>> blockTagDataMap = new HashMap<>();
+    private static Map<ResourceLocation, TagData<Block>> blockMinableTagDataMap = new HashMap<>();
+    private static Map<ResourceLocation, TagData<EntityType<?>>> entityTypeTagDataMap = new HashMap<>();
+    private static Map<ResourceLocation, TagData<Fluid>> fluidTagDataMap = new HashMap<>();
+    private static Map<ResourceLocation, TagData<GameEvent>> gameEventTagDataMap = new HashMap<>();
+    private static Map<ResourceLocation, TagData<Item>> itemTagDataMap = new HashMap<>();
+    private static Map<ResourceLocation, TagData<Biome>> hasStructureDataMap = new HashMap<>();
+    private static Map<ResourceLocation, TagData<Biome>> biomeDataMap = new HashMap<>();
+    private static Map<ResourceLocation, TagData<ConfiguredStructureFeature<?, ?>>> configuredStructureFeatureDataMap = new HashMap<>();
 
     public static void init() {
-        blockTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(b.getVanilla() ? "" : "forge", "tags/blocks" + (b.getParentFolder() == null ? "" : b.getParentFolder()) + "/" +  s + ".json"), b.createJson()));
-        blockMinableTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(b.getVanilla() ? "" : "forge", "tags/blocks/minable/" +  s + ".json"), b.createJson()));
-        entityTypeTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(b.getVanilla() ? "" : "forge", "tags/entity_type/" +  s + ".json"), b.createJson()));
-        fluidTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(b.getVanilla() ? "" : "forge", "tags/fluids/" +  s + ".json"), b.createJson()));
-        gameEventTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(b.getVanilla() ? "" : "forge", "tags/game_events/" +  s + ".json"), b.createJson()));
-        itemTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(b.getVanilla() ? "" : "forge", "tags/items" + (b.getParentFolder() == null ? "" : b.getParentFolder()) + "/" +  s + ".json"), b.createJson()));
-        hasStructureDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(b.getVanilla() ? "" : "forge", "tags/worldgen/biome/has_structure/" +  s + ".json"), b.createJson()));
-        biomeDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(b.getVanilla() ? "" : "forge", "tags/worldgen/biome/" +  s + ".json"), b.createJson()));
-        configuredStructureFeatureDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(b.getVanilla() ? "" : "forge", "tags/worldgen/configured_structure_feature/" +  s + ".json"), b.createJson()));
+        blockTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/blocks" + (b.getParentFolder() == null ? "" : b.getParentFolder()) + "/" +  s.getPath() + ".json"), b.createJson()));
+        blockMinableTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/blocks/minable/" +  s.getPath() + ".json"), b.createJson()));
+        entityTypeTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/entity_type/" +  s.getPath() + ".json"), b.createJson()));
+        fluidTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/fluids/" +  s.getPath() + ".json"), b.createJson()));
+        gameEventTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/game_events/" +  s.getPath() + ".json"), b.createJson()));
+        itemTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/items" + (b.getParentFolder() == null ? "" : b.getParentFolder()) + "/" +  s.getPath() + ".json"), b.createJson()));
+        hasStructureDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/worldgen/biome/has_structure/" +  s.getPath() + ".json"), b.createJson()));
+        biomeDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/worldgen/biome/" +  s.getPath() + ".json"), b.createJson()));
+        configuredStructureFeatureDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/worldgen/configured_structure_feature/" +  s.getPath() + ".json"), b.createJson()));
     }
 
-    public static TagData<Block> getBlockTagData(String name) {
-        return blockTagDataMap.getOrDefault(name, new TagData<>(name));
+    public static TagData<Block> getBlockTagData(ResourceLocation name) {
+        return blockTagDataMap.getOrDefault(name, new TagData<>(name, Registry.BLOCK_REGISTRY));
     }
 
-    public static TagData<Block> getBlockMinableTagData(String name) {
-        return blockMinableTagDataMap.getOrDefault(name, new TagData<>(name));
+    public static TagData<Block> getBlockMinableTagData(ResourceLocation name) {
+        return blockMinableTagDataMap.getOrDefault(name, new TagData<>(name, Registry.BLOCK_REGISTRY));
     }
 
-    public static TagData<EntityType<?>> getEntityTypeTagData(String name) {
-        return entityTypeTagDataMap.getOrDefault(name, new TagData<>(name));
+    public static TagData<EntityType<?>> getEntityTypeTagData(ResourceLocation name) {
+        return entityTypeTagDataMap.getOrDefault(name, new TagData<>(name, Registry.ENTITY_TYPE_REGISTRY));
     }
 
-    public static TagData<Fluid> getFluidTagData(String name) {
-        return fluidTagDataMap.getOrDefault(name, new TagData<>(name));
+    public static TagData<Fluid> getFluidTagData(ResourceLocation name) {
+        return fluidTagDataMap.getOrDefault(name, new TagData<>(name, Registry.FLUID_REGISTRY));
     }
 
-    public static TagData<GameEvent> getGameEventTagData(String name) {
-        return gameEventTagDataMap.getOrDefault(name, new TagData<>(name));
+    public static TagData<GameEvent> getGameEventTagData(ResourceLocation name) {
+        return gameEventTagDataMap.getOrDefault(name, new TagData<>(name, Registry.GAME_EVENT_REGISTRY));
     }
 
-    public static TagData<Item> getItemTagData(String name) {
-        return itemTagDataMap.getOrDefault(name, new TagData<>(name));
+    public static TagData<Item> getItemTagData(ResourceLocation name) {
+        return itemTagDataMap.getOrDefault(name, new TagData<>(name, Registry.ITEM_REGISTRY));
     }
 
-    public static TagData<Biome> getHasStructureData(String name) {
-        return hasStructureDataMap.getOrDefault(name, new TagData<>(name));
+    public static TagData<Biome> getHasStructureData(ResourceLocation name) {
+        return hasStructureDataMap.getOrDefault(name, new TagData<>(name, Registry.BIOME_REGISTRY));
     }
 
-    public static TagData<Biome> getBiomeData(String name) {
-        return biomeDataMap.getOrDefault(name, new TagData<>(name));
+    public static TagData<Biome> getBiomeData(ResourceLocation name) {
+        return biomeDataMap.getOrDefault(name, new TagData<>(name, Registry.BIOME_REGISTRY));
     }
 
-    public static TagData<ConfiguredStructureFeature<?, ?>> getConfiguredStructureFeatureData(String name) {
-        return configuredStructureFeatureDataMap.getOrDefault(name, new TagData<>(name));
+    public static TagData<ConfiguredStructureFeature<?, ?>> getConfiguredStructureFeatureData(ResourceLocation name) {
+        return configuredStructureFeatureDataMap.getOrDefault(name, new TagData<>(name, Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY));
     }
 
     public static void saveBlockTagData(TagData<Block> data) {

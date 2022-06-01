@@ -2,28 +2,34 @@ package mightydanp.industrialtech.api.common.resources.data.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import mightydanp.industrialtech.api.common.resources.asset.data.BlockModelData;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
 import java.util.*;
 
-public class TagData<T> {
-    private final String tagName;
+public class TagData<A> {
+    private final ResourceLocation tagName;
+    private TagKey<A> tagKey;
     private String parentFolder;
-    private Boolean isVanilla;
     private Boolean replace;
     private Set<ResourceLocation> values = new HashSet<>();
 
-    public TagData(String tagName){
+    public TagData(ResourceLocation tagName, ResourceKey<? extends Registry<A>> ResourceKey){
         this.tagName = tagName;
+        tagKey = TagKey.create(ResourceKey, tagName);
     }
 
-    public String getTagName() {
+    public ResourceLocation getTagName() {
         return tagName;
     }
 
-    public TagData<T> setParentFolder(String parentFolder) {
+    public TagKey<A> getTagKey() {
+        return tagKey;
+    }
+
+    public TagData<A> setParentFolder(String parentFolder) {
         this.parentFolder = parentFolder;
         return this;
     }
@@ -32,28 +38,17 @@ public class TagData<T> {
         return parentFolder;
     }
 
-
-
-    public TagData<T> isVanilla(Boolean vanilla) {
-        this.isVanilla = vanilla;
-        return this;
-    }
-
-    public Boolean getVanilla() {
-        return isVanilla;
-    }
-
-    public TagData<T> setReplace(Boolean replace) {
+    public TagData<A> setReplace(Boolean replace) {
         this.replace = replace;
         return this;
     }
 
-    public TagData<T> addValue(ResourceLocation value) {
+    public TagData<A> addValue(ResourceLocation value) {
         values.add(value);
         return this;
     }
 
-    public TagData<T> addAllValues(Set<ResourceLocation> value) {
+    public TagData<A> addAllValues(Set<ResourceLocation> value) {
         values.addAll(value);
         return this;
     }

@@ -8,6 +8,7 @@ import mightydanp.industrialtech.api.common.crafting.recipe.Recipes;
 import mightydanp.industrialtech.api.common.items.ITToolItem;
 import mightydanp.industrialtech.api.common.items.ModItemGroups;
 import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialtech.api.common.resources.data.DataPackRegistry;
 import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
 import mightydanp.industrialtech.common.materials.ModMaterials;
 import net.minecraft.tags.ItemTags;
@@ -55,9 +56,10 @@ public class KnifeToolItem extends ITToolItem {
         Direction clickedFace = itemUseContext.getClickedFace();
         BlockState clickedBlockState = world.getBlockState(blockPos);
 
-        TagKey<Item> LOGS = ItemTags.create(new ResourceLocation("forge", "gems"));
+        TagKey<Item> LOGS = DataPackRegistry.getItemTagData(new ResourceLocation("forge", "gems")).getTagKey();
+        TagKey<Item> LOGS1 = DataPackRegistry.getItemTagData(new ResourceLocation("forge", "gems/almandine")).getTagKey();
 
-        boolean itemStack = new ItemStack(ModMaterials.almandine.gem.get()).is(LOGS);
+        ModMaterials.almandine.gem.get();
 
         Container iinventory = new SimpleContainer(new ItemStack(clickedBlockState.getBlock()));
         List<HoleRecipe> recipe = world.getRecipeManager().getRecipesFor(Recipes.holeType, iinventory, world);
