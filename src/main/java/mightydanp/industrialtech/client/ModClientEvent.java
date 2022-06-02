@@ -1,10 +1,10 @@
 package mightydanp.industrialtech.client;
 
-import mightydanp.industrialtech.api.client.rendering.models.HoleBakedModel;
-import mightydanp.industrialtech.api.common.ISidedReference;
+import mightydanp.industrialcore.client.rendering.models.HoleBakedModel;
+import mightydanp.industrialcore.common.ISidedReference;
 
-import mightydanp.industrialtech.api.common.blocks.ITBlocks;
-import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialcore.common.blocks.ITBlocks;
+import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialtech.client.settings.KeyBindings.ModKeyBindings;
 import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.blocks.ModBlocks;

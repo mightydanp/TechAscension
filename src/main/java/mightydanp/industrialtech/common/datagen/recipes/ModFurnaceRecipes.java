@@ -1,7 +1,7 @@
 package mightydanp.industrialtech.common.datagen.recipes;
 
-import mightydanp.industrialtech.api.common.datagen.recipes.builder.CustomCookingRecipeBuilder;
-import mightydanp.industrialtech.api.common.datagen.recipes.GenFurnaceRecipes;
+import mightydanp.industrialcore.common.datagen.recipes.builder.CustomCookingRecipeBuilder;
+import mightydanp.industrialcore.common.datagen.recipes.GenFurnaceRecipes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.resources.ResourceLocation;

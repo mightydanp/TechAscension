@@ -1,9 +1,9 @@
 package mightydanp.industrialtech.common.tool.tools;
 
 import com.google.common.collect.ImmutableSet;
-import mightydanp.industrialtech.api.common.items.ITToolItem;
-import mightydanp.industrialtech.api.common.items.ModItemGroups;
-import mightydanp.industrialtech.api.common.libs.Ref;
+import mightydanp.industrialcore.common.items.ITToolItem;
+import mightydanp.industrialcore.common.items.ModItemGroups;
+import mightydanp.industrialcore.common.libs.Ref;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.Item;
 import net.minecraft.resources.ResourceLocation;

@@ -1,9 +1,8 @@
 package mightydanp.industrialtech.common.items;
 
-import mightydanp.industrialtech.api.common.handler.RegistryHandler;
-import mightydanp.industrialtech.api.common.items.BasicItem;
-import mightydanp.industrialtech.api.common.items.ModItemGroups;
-import mightydanp.industrialtech.api.common.items.RockBlockItem;
+import mightydanp.industrialcore.common.handler.RegistryHandler;
+import mightydanp.industrialcore.common.items.BasicItem;
+import mightydanp.industrialcore.common.items.ModItemGroups;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import mightydanp.industrialtech.common.libs.ItemRef;
 import net.minecraft.world.item.BlockItem;

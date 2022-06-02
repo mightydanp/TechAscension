@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.common.generation;
 
-import mightydanp.industrialtech.api.common.handler.generation.PlantGenerationHandler;
+import mightydanp.industrialcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;

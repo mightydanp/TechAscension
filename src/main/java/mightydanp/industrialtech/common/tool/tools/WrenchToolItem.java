@@ -1,9 +1,8 @@
 package mightydanp.industrialtech.common.tool.tools;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.items.ITToolItem;
-import mightydanp.industrialtech.api.common.items.ModItemGroups;
+import mightydanp.industrialcore.common.items.ITToolItem;
+import mightydanp.industrialcore.common.items.ModItemGroups;
 
 import java.util.*;
 

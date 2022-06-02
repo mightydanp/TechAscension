@@ -1,8 +1,8 @@
 package mightydanp.industrialtech.common.tileentities;
 
-import mightydanp.industrialtech.api.common.blocks.ITBlocks;
-import mightydanp.industrialtech.api.common.tileentities.HoleTileEntity;
-import mightydanp.industrialtech.api.common.tileentities.TileEntities;
+import mightydanp.industrialcore.common.blocks.ITBlocks;
+import mightydanp.industrialcore.common.tileentities.HoleTileEntity;
+import mightydanp.industrialcore.common.tileentities.TileEntities;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.RegistryObject;

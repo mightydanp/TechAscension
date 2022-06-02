@@ -123,6 +123,8 @@ repositories {
     maven { url 'https://dvs1.progwml6.com/files/maven' }
 }
 
+boolean hasIndustrialCore = findProject(':industrialcore') != null
+
 sourceSets {
     main {
         java {

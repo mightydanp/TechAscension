@@ -1,11 +1,10 @@
 package mightydanp.industrialtech.common.tool;
 
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
-import mightydanp.industrialtech.api.common.jsonconfig.tool.type.ToolTypeRegistry;
-import mightydanp.industrialtech.api.common.tool.ITTool;
-import mightydanp.industrialtech.api.common.items.*;
-import mightydanp.industrialtech.api.common.material.tool.ITTools;
+import mightydanp.industrialcore.common.jsonconfig.tool.type.IToolType;
+import mightydanp.industrialcore.common.jsonconfig.tool.type.ToolTypeRegistry;
+import mightydanp.industrialcore.common.tool.ITTool;
+import mightydanp.industrialcore.common.material.tool.ITTools;
 import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.tool.tools.ChiselToolItem;
 import mightydanp.industrialtech.common.tool.tools.HammerToolItem;

@@ -1,24 +1,25 @@
 package mightydanp.industrialtech.common.materials;
 
-import com.mojang.datafixers.util.Pair;;
-import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
-import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialServer;
-import mightydanp.industrialtech.api.common.jsonconfig.tool.part.IToolPart;
-import mightydanp.industrialtech.api.common.jsonconfig.tool.type.IToolType;
-import mightydanp.industrialtech.api.common.libs.Ref;
-import mightydanp.industrialtech.api.common.material.ITMaterial;
-import mightydanp.industrialtech.api.common.material.ITMaterials;
-import mightydanp.industrialtech.api.common.jsonconfig.material.ore.DefaultOreType;
+import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialcore.common.jsonconfig.icons.ITextureIcon;
+import mightydanp.industrialcore.common.jsonconfig.icons.TextureIconRegistry;
+import mightydanp.industrialcore.common.jsonconfig.material.data.MaterialRegistry;
+import mightydanp.industrialcore.common.jsonconfig.material.data.MaterialServer;
+import mightydanp.industrialcore.common.jsonconfig.tool.part.IToolPart;
+import mightydanp.industrialcore.common.libs.Ref;
+import mightydanp.industrialcore.common.material.ITMaterial;
+import mightydanp.industrialcore.common.material.ITMaterials;
+import mightydanp.industrialcore.common.jsonconfig.material.ore.DefaultOreType;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.world.level.block.Blocks;
-
-import static mightydanp.industrialtech.api.common.jsonconfig.icons.DefaultTextureIcon.*;
-import static mightydanp.industrialtech.api.common.jsonconfig.tool.part.DefaultToolPart.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static mightydanp.industrialcore.common.jsonconfig.icons.DefaultTextureIcon.*;
+import static mightydanp.industrialcore.common.jsonconfig.tool.part.DefaultToolPart.*;
 
 /**
  * Created by MightyDanp on 9/26/2020.

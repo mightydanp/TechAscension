@@ -1,13 +1,12 @@
 package mightydanp.industrialtech.common.generation;
 
-import mightydanp.industrialtech.api.common.handler.generation.StoneLayerGenerationHandler;
-import mightydanp.industrialtech.api.common.jsonconfig.material.data.MaterialRegistry;
-import mightydanp.industrialtech.api.common.material.ITMaterial;
+import mightydanp.industrialcore.common.handler.generation.StoneLayerGenerationHandler;
+import mightydanp.industrialcore.common.jsonconfig.material.data.MaterialRegistry;
+import mightydanp.industrialcore.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.biome.Biome;
 
 import java.util.ArrayList;

@@ -1,16 +1,13 @@
 package mightydanp.industrialtech.common.crafting.recipe;
 
-import mightydanp.industrialtech.api.common.handler.RegistryHandler;
-import mightydanp.industrialtech.api.common.libs.Ref;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import mightydanp.industrialcore.common.handler.RegistryHandler;
+import mightydanp.industrialcore.common.libs.Ref;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 /**

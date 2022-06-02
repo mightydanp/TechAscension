@@ -1,6 +1,5 @@
 package mightydanp.industrialtech.client.config;
 
-import mightydanp.industrialtech.api.common.libs.Ref;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 /**

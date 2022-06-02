@@ -1,14 +1,12 @@
 package mightydanp.industrialtech.common.items;
 
-import mightydanp.industrialtech.api.common.items.ModItemGroups;
+import mightydanp.industrialcore.common.items.ModItemGroups;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-
-import net.minecraft.world.item.Item.Properties;
 
 /**
  * Created by MightyDanp on 7/3/2021.

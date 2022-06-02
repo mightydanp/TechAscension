@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.common.trees;
 
-import mightydanp.industrialtech.api.common.handler.TreeHandler;
+import mightydanp.industrialcore.common.handler.TreeHandler;
 
 import java.util.ArrayList;
 import java.util.List;

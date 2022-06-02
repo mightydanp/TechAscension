@@ -1,6 +1,6 @@
 package mightydanp.industrialtech.client.settings.KeyBindings;
 
-import mightydanp.industrialtech.api.common.handler.KeyBindingHandler;
+import mightydanp.industrialcore.common.handler.KeyBindingHandler;
 
 /**
  * Created by MightyDanp on 5/12/2021.

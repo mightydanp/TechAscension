@@ -1,8 +1,6 @@
 package mightydanp.industrialtech.common.blocks;
 
-import mightydanp.industrialtech.api.common.blocks.HoleBlock;
-import mightydanp.industrialtech.api.common.blocks.RockBlock;
-import mightydanp.industrialtech.api.common.handler.RegistryHandler;
+import mightydanp.industrialcore.common.handler.RegistryHandler;
 import mightydanp.industrialtech.common.libs.BlockRef;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.client.renderer.RenderType;

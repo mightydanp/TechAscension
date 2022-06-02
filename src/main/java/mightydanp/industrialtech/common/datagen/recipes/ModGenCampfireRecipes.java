@@ -1,7 +1,7 @@
 package mightydanp.industrialtech.common.datagen.recipes;
 
-import mightydanp.industrialtech.api.common.datagen.recipes.builder.CustomCookingRecipeBuilder;
-import mightydanp.industrialtech.api.common.datagen.JsonDataProvider;
+import mightydanp.industrialcore.common.datagen.recipes.builder.CustomCookingRecipeBuilder;
+import mightydanp.industrialcore.common.datagen.JsonDataProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;

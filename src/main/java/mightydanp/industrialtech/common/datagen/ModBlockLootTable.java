@@ -1,23 +1,10 @@
 package mightydanp.industrialtech.common.datagen;
 
-import io.netty.util.Constant;
-import mightydanp.industrialtech.api.common.datagen.GenLootTables;
-import mightydanp.industrialtech.common.blocks.ModBlocks;
-import mightydanp.industrialtech.common.items.ModItems;
-import net.minecraft.advancements.critereon.EnchantmentPredicate;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.MinMaxBounds;
+import mightydanp.industrialcore.common.datagen.GenLootTables;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.storage.loot.predicates.MatchTool;
-import net.minecraft.world.level.storage.loot.predicates.BonusLevelTableCondition;
 
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 /**
  * Created by MightyDanp on 3/6/2021.
