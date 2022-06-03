@@ -72,7 +72,11 @@ public class ITDataHolder implements PackResources {
         ArrayList<ResourceLocation> locations = new ArrayList<>();
         if (packType == PackType.SERVER_DATA) {
             for (ResourceLocation key : DATA_HOLDER.keySet()) {
-                if (key.toString().startsWith(directory) && key.getNamespace().equals(namespace) && predicate.test(key.getPath()) && DATA_HOLDER.get(key).get() != null) {
+                if(directory.equals("tags/blocks")){
+
+                }
+
+                if (key.getPath().startsWith(directory) && key.getNamespace().equals(namespace) && predicate.test(key.getPath()) && DATA_HOLDER.get(key).get() != null) {
                     locations.add(key);
                 }
             }
@@ -84,6 +88,9 @@ public class ITDataHolder implements PackResources {
     public boolean hasResource(@NotNull PackType packType, @NotNull ResourceLocation location) {
         if (packType == PackType.SERVER_DATA) {
             if (DATA_HOLDER.containsKey(location)) {
+                if(location.getPath().equals("tags/items/gems/almandine")){
+                    return DATA_HOLDER.get(location).get() != null;
+                }
                 return DATA_HOLDER.get(location).get() != null;
             }
         }

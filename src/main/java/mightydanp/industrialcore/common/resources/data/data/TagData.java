@@ -7,6 +7,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.*;
 
@@ -17,9 +19,18 @@ public class TagData<A> {
     private Boolean replace;
     private Set<ResourceLocation> values = new HashSet<>();
 
-    public TagData(ResourceLocation tagName, ResourceKey<? extends Registry<A>> ResourceKey){
+    public TagData(ResourceLocation tagName, ResourceKey<? extends Registry<A>> ResourceKey, IForgeRegistry<? extends IForgeRegistryEntry<A>> forgeRegistry){
         this.tagName = tagName;
+
+        if(forgeRegistry != null && forgeRegistry.tags() != null) {
+            forgeRegistry.tags().createOptionalTagKey(tagName, Set.of());
+
+            forgeRegistry.tags();
+        }
+
         tagKey = TagKey.create(ResourceKey, tagName);
+
+
     }
 
     public ResourceLocation getTagName() {

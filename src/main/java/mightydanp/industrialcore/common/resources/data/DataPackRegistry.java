@@ -36,31 +36,31 @@ public class DataPackRegistry {
     }
 
     public static TagData<Block> getBlockTagData(ResourceLocation name) {
-        return blockTagDataMap.getOrDefault(name, new TagData<>(name, Registry.BLOCK_REGISTRY));
+        return blockTagDataMap.getOrDefault(name, new TagData<>(name, Registry.BLOCK_REGISTRY, ForgeRegistries.BLOCKS));
     }
 
     public static TagData<EntityType<?>> getEntityTypeTagData(ResourceLocation name) {
-        return entityTypeTagDataMap.getOrDefault(name, new TagData<>(name, Registry.ENTITY_TYPE_REGISTRY));
+        return entityTypeTagDataMap.getOrDefault(name, new TagData<>(name, Registry.ENTITY_TYPE_REGISTRY, null));
     }
 
     public static TagData<Fluid> getFluidTagData(ResourceLocation name) {
-        return fluidTagDataMap.getOrDefault(name, new TagData<>(name, Registry.FLUID_REGISTRY));
+        return fluidTagDataMap.getOrDefault(name, new TagData<>(name, Registry.FLUID_REGISTRY, ForgeRegistries.FLUIDS));
     }
 
     public static TagData<GameEvent> getGameEventTagData(ResourceLocation name) {
-        return gameEventTagDataMap.getOrDefault(name, new TagData<>(name, Registry.GAME_EVENT_REGISTRY));
+        return gameEventTagDataMap.getOrDefault(name, new TagData<>(name, Registry.GAME_EVENT_REGISTRY, null));
     }
 
     public static TagData<Item> getItemTagData(ResourceLocation name) {
-        return itemTagDataMap.getOrDefault(name, new TagData<>(name, Registry.ITEM_REGISTRY));
+        return itemTagDataMap.getOrDefault(name, new TagData<>(name, Registry.ITEM_REGISTRY, ForgeRegistries.ITEMS));
     }
 
     public static TagData<Biome> getBiomeData(ResourceLocation name) {
-        return biomeDataMap.getOrDefault(name, new TagData<>(name, Registry.BIOME_REGISTRY));
+        return biomeDataMap.getOrDefault(name, new TagData<>(name, Registry.BIOME_REGISTRY, ForgeRegistries.BIOMES));
     }
 
     public static TagData<ConfiguredStructureFeature<?, ?>> getConfiguredStructureFeatureData(ResourceLocation name) {
-        return configuredStructureFeatureDataMap.getOrDefault(name, new TagData<>(name, Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY));
+        return configuredStructureFeatureDataMap.getOrDefault(name, new TagData<>(name, Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY, null));
     }
 
     public static void saveBlockTagData(TagData<Block> data) {
