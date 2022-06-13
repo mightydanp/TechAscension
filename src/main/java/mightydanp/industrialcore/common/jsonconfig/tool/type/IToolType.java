@@ -15,6 +15,6 @@ public interface IToolType {
     String getName();
     Pair<String, String> getFixes();
     default TagKey<Block> getToolTypeTag(){
-        return BlockTags.create(new ResourceLocation("tool/" + getName()));
+        return BlockTags.create(new ResourceLocation("forge", "tool/" + getName()));
     };
 }

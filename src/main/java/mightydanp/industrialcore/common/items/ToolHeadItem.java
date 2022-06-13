@@ -49,7 +49,7 @@ public class ToolHeadItem extends Item {
         attackDamage = attackDamageIn;
         weight = weightIn;
 
-        itToolTypeIn.forEach(((name, toolLeve) -> itToolType.put((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(name), toolLeve)));
+        itToolTypeIn.forEach(((name, toolLevel) -> itToolType.put((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(name), toolLevel)));
 
         properties.stacksTo(1);
         maxDamage = durabilityIn;

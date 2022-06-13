@@ -21,12 +21,11 @@ import mightydanp.industrialcore.common.resources.asset.data.BlockStateData;
 import mightydanp.industrialcore.common.resources.asset.data.ItemModelData;
 import mightydanp.industrialcore.common.resources.asset.data.LangData;
 import mightydanp.industrialcore.common.resources.data.DataPackRegistry;
-import mightydanp.industrialcore.common.items.*;
-import mightydanp.industrialcore.common.blocks.*;
 import mightydanp.industrialcore.common.holder.MCMaterialHolder;
-import mightydanp.industrialcore.common.items.*;
 import mightydanp.industrialcore.common.jsonconfig.flag.IMaterialFlag;
+import mightydanp.industrialcore.common.resources.data.data.LootTableData;
 import mightydanp.industrialtech.common.IndustrialTech;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
@@ -37,11 +36,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static mightydanp.industrialcore.common.jsonconfig.flag.DefaultMaterialFlag.*;
 import static mightydanp.industrialcore.common.jsonconfig.flag.DefaultMaterialFlag.INGOT;
@@ -64,7 +65,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public String stoneLayerBlock = null;
     public String stoneLayerTextureLocation = null;
 
-    public Integer miningLevel = null;
+    public Integer harvestLevel = null;
 
     public Integer meltingPoint = null;
     public Integer boilingPoint = null;
@@ -81,7 +82,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public Map<String, Integer> toolTypes;
     public List<IToolPart> toolParts = new ArrayList<>();
 
-    public  List<IMaterialFlag> materialFlags = new ArrayList<>();
+    public List<IMaterialFlag> materialFlags = new ArrayList<>();
     public List<RegistryObject<Block>> oreList = new ArrayList<>();
     public List<RegistryObject<Block>> smallOreList = new ArrayList<>();
     public List<RegistryObject<Block>> denseOreList = new ArrayList<>();
@@ -95,7 +96,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public List<RegistryObject<Item>> thinSlabItemList = new ArrayList<>();
 
 
-    public RegistryObject<Item> ingot, gem, chippedGem, flawedGem, flawlessGem, legendaryGem, crushedOre, purifiedOre, centrifugedOre, dust, smallDust, tinyDust;
+    public RegistryObject<Item> ingot, gem, chippedGem, flawedGem, flawlessGem, legendaryGem, rawOre, crushedOre, purifiedOre, centrifugedOre, dust, smallDust, tinyDust;
     public RegistryObject<FlowingFluid> fluid, fluid_flowing;
     public RegistryObject<Block> fluidBlock;
 
@@ -108,20 +109,18 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public RegistryObject<Item> wedge, wedgeHandle;
 
 
-
-
     public ITMaterial(String materialNameIn, int colorIn, Pair<String, ITextureIcon> textureIconLocationIn) {
         name = materialNameIn;
         color = colorIn;
         textureIcon = textureIconLocationIn;
     }
 
-    public ITMaterial setElementalLocalization(String elementIn){
+    public ITMaterial setElementalLocalization(String elementIn) {
         symbol = elementIn;
         return this;
     }
 
-    public ITMaterial setTemperatureProperties(int meltingPointIn, int boilingPointIn){
+    public ITMaterial setTemperatureProperties(int meltingPointIn, int boilingPointIn) {
         meltingPoint = meltingPointIn;
         boilingPoint = boilingPointIn;
         return this;
@@ -132,7 +131,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         stoneLayerBlock = stoneLayerBlockIn;
         stoneLayerTextureLocation = stoneLayerTextureLocationIn;
 
-        if(isStoneLayerIn) {
+        if (isStoneLayerIn) {
             materialFlags.add(STONE_LAYER);
         }
 
@@ -140,51 +139,51 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     }
 
     public ITMaterial setBlockProperties(int miningLevelIn) {
-        miningLevel = miningLevelIn;
+        harvestLevel = miningLevelIn;
         return this;
     }
 
-    public ITMaterial setOreType(IOreType oreTypeIn){
+    public ITMaterial setOreType(IOreType oreTypeIn) {
         oreType = oreTypeIn;
 
-        if(oreTypeIn == DefaultOreType.ORE) {
+        if (oreTypeIn == DefaultOreType.ORE) {
             materialFlags.add(ORE);
         }
 
-        if(oreTypeIn == DefaultOreType.GEM) {
+        if (oreTypeIn == DefaultOreType.GEM) {
             materialFlags.add(GEM);
         }
 
-        if(oreTypeIn == DefaultOreType.CRYSTAL) {
+        if (oreTypeIn == DefaultOreType.CRYSTAL) {
 
         }
         return this;
     }
 
-    public ITMaterial setDenseOreDensity(int densityIn){
+    public ITMaterial setDenseOreDensity(int densityIn) {
         denseOreDensity = densityIn;
         return this;
     }
 
-    public ITMaterial setFluidProperties(IFluidState stateIn, float accelerationIn, Integer densityIn, Integer luminosityIn, Integer viscosityIn){
+    public ITMaterial setFluidProperties(IFluidState stateIn, float accelerationIn, Integer densityIn, Integer luminosityIn, Integer viscosityIn) {
         fluidState = stateIn;
         fluidAcceleration = accelerationIn;
-        if(densityIn != null) fluidDensity = densityIn;
-        if(luminosityIn != null) fluidLuminosity = luminosityIn;
-        if(viscosityIn != null) fluidViscosity = viscosityIn;
+        if (densityIn != null) fluidDensity = densityIn;
+        if (luminosityIn != null) fluidLuminosity = luminosityIn;
+        if (viscosityIn != null) fluidViscosity = viscosityIn;
 
-        if(stateIn == DefaultFluidState.FLUID){
+        if (stateIn == DefaultFluidState.FLUID) {
             materialFlags.add(FLUID);
         }
 
-        if(stateIn == DefaultFluidState.GAS){
+        if (stateIn == DefaultFluidState.GAS) {
             materialFlags.add(GAS);
         }
 
         return this;
     }
 
-    public ITMaterial setToolProperties(int attackSpeedIn, int durabilityIn, float attackDamageIn, float weightIn, Map<String, Integer> toolTypesIn, List<IToolPart> toolPartIn){
+    public ITMaterial setToolProperties(int attackSpeedIn, int durabilityIn, float attackDamageIn, float weightIn, Map<String, Integer> toolTypesIn, List<IToolPart> toolPartIn) {
         attackSpeed = attackSpeedIn;
         durability = durabilityIn;
         attackDamage = attackDamageIn;
@@ -195,21 +194,307 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     }
 
 
-
     public ITMaterial save() {
-        LangData enLang = AssetPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
         List<ITMaterial> stoneLayerList = ((MaterialRegistry) IndustrialTech.configSync.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
 
+        //--
 
-        for(IMaterialFlag flag : materialFlags){
-            if(flag == ORE || flag == GEM || flag == STONE_LAYER){
-                if(flag == STONE_LAYER){
-                    String stoneLayerBlockName = stoneLayerBlock.equals("")? String.valueOf(layerBlock.get().getRegistryName()) : stoneLayerBlock;
+        for (IToolPart flag : toolParts) {
+            if (flag == DefaultToolPart.TOOL_HEAD) {
+//--//--//--//--//--//--//--//--//
+                dullPickaxeHead = RegistryHandler.ITEMS.register("dull_" + name + "_pickaxe_head", () -> new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
+//--//--//--//--//--//--//--//--//
+                pickaxeHead = RegistryHandler.ITEMS.register(name + "_pickaxe_head", () -> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "pickaxe", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
+//--//--//--//--//--//--//--//--//
+                hammerHead = RegistryHandler.ITEMS.register(name + "_hammer_head", () -> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "hammer", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
+//--//--//--//--//--//--//--//--//
+                dullChiselHead = RegistryHandler.ITEMS.register("dull_" + name + "_chisel_head", () -> new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
+//--//--//--//--//--//--//--//--//
+                chiselHead = RegistryHandler.ITEMS.register(name + "_chisel_head", () -> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "chisel", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
+//--//--//--//--//--//--//--//--//
+            }
+
+            if (flag == DefaultToolPart.TOOL_WEDGE) {
+//--//--//--//--//--//--//--//--//
+                wedge = RegistryHandler.ITEMS.register(name + "_wedge", () -> new ToolBindingItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, durability, weight));
+//--//--//--//--//--//--//--//--//
+            }
+
+            if (flag == DefaultToolPart.TOOL_WEDGE_HANDLE) {
+//--//--//--//--//--//--//--//--//
+                wedgeHandle = RegistryHandler.ITEMS.register(name + "_wedge_handle", () -> new ToolHandleItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, durability, weight));
+//--//--//--//--//--//--//--//--//
+            }
+        }
+
+        //--
+
+        for (IMaterialFlag flag : materialFlags) {
+            if (flag == ORE || flag == GEM || flag == STONE_LAYER) {
+                if (flag == STONE_LAYER) {
+                    String stoneLayerBlockName = stoneLayerBlock.equals("") ? String.valueOf(layerBlock.get().getRegistryName()) : stoneLayerBlock;
                     String stoneLayerModId = stoneLayerTextureLocation.split(":")[0].equals("minecraft") ? "" : stoneLayerTextureLocation.split(":")[0];
 
                     String stoneLayerBlock = stoneLayerTextureLocation.split(":")[1];
                     //String resourceID = useMinecraftResource ? "" : Ref.mod_id;
-                    AssetPackRegistry.blockModelDataMap.put(name + "_ore", new BlockModelData().setParent(new ResourceLocation( Ref.mod_id,"block/ore/state/ore"))
+//--//--//--//--//--//--//--//--//
+                    rockBlock = RegistryHandler.BLOCKS.register(name + "_rock", () -> new RockBlock(stoneLayerBlockName, BlockBehaviour.Properties.of(MCMaterialHolder.rock)));
+                    //--
+                    rockItemBlock = RegistryHandler.ITEMS.register(name + "_rock", () -> new RockBlockItem(rockBlock.get(), stoneLayerBlockName, new Item.Properties().stacksTo(64).tab(ModItemGroups.stone_layer_tab)));
+
+//--//--//--//--//--//--//--//--//
+                    thinSlabBlock = RegistryHandler.BLOCKS.register("thin_" + name + "_slab", () -> new ThinSlabBlock(BlockBehaviour.Properties.of(MCMaterialHolder.rock), stoneLayerBlockName));
+                    //--
+                    thinSlabItemBlock = RegistryHandler.ITEMS.register("thin_" + name + "_slab", () -> new ThinSlabItemBlock(thinSlabBlock.get(), new Item.Properties().stacksTo(1).tab(ModItemGroups.stone_layer_tab)));
+//--//--//--//--//--//--//--//--//
+                        /*
+                        Block leg_block = RegistryHandler.BLOCKS.register(name + "_leg", new LegBlock(AbstractBlock.Properties.of(Material.STONE), new ResourceLocation("textures/" + stoneLayer.getBlock())));
+                        Item leg_item_block = RegistryHandler.ITEMS.register( name + "_leg", new LegItemBlock(leg_block, new Item.Properties().stacksTo(1)));
+                         */
+                }
+
+                //-- Item --\\
+
+                if (flag == ORE || flag == GEM) {
+//--//--//--//--//--//--//--//--//
+                    rawOre = RegistryHandler.ITEMS.register("raw_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
+                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+//--//--//--//--//--//--//--//--//
+                    crushedOre = RegistryHandler.ITEMS.register("crushed_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
+                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+//--//--//--//--//--//--//--//--//
+                    purifiedOre = RegistryHandler.ITEMS.register("purified_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
+                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+//--//--//--//--//--//--//--//--//
+                    centrifugedOre = RegistryHandler.ITEMS.register("centrifuged_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
+                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+//--//--//--//--//--//--//--//--//
+                }
+
+                if (flag == GEM) {
+//--//--//--//--//--//--//--//--//
+                    gem = RegistryHandler.ITEMS.register(name + "_gem", () -> new GemItem(new Item.Properties()
+                            .tab(ModItemGroups.gem_tab), symbol));
+//--//--//--//--//--//--//--//--//
+                    chippedGem = RegistryHandler.ITEMS.register("chipped_" + name + "_gem", () -> new GemItem(new Item.Properties()
+                            .tab(ModItemGroups.gem_tab), symbol));
+//--//--//--//--//--//--//--//--//
+                    flawedGem = RegistryHandler.ITEMS.register("flawed_" + name + "_gem", () -> new GemItem(new Item.Properties()
+                            .tab(ModItemGroups.gem_tab), symbol));
+//--//--//--//--//--//--//--//--//
+                    flawlessGem = RegistryHandler.ITEMS.register("flawless_" + name + "_gem", () -> new GemItem(new Item.Properties()
+                            .tab(ModItemGroups.gem_tab), symbol));
+//--//--//--//--//--//--//--//--//
+                    legendaryGem = RegistryHandler.ITEMS.register("legendary_" + name + "_gem", () -> new GemItem(new Item.Properties()
+                            .tab(ModItemGroups.gem_tab), symbol));
+//--//--//--//--//--//--//--//--//
+                }
+
+//--//--//--//--//--//--//--//--//
+                dust = RegistryHandler.ITEMS.register("" + name + "_dust", () -> new OreProductsItem(new Item.Properties()
+                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+//--//--//--//--//--//--//--//--//
+                smallDust = RegistryHandler.ITEMS.register("small_" + name + "_dust", () -> new OreProductsItem(new Item.Properties()
+                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+//--//--//--//--//--//--//--//--//
+                tinyDust = RegistryHandler.ITEMS.register("tiny_" + name + "_dust", () -> new OreProductsItem(new Item.Properties()
+                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+//--//--//--//--//--//--//--//--//
+
+                //-- Blocks with Items -- \\
+                for (ITMaterial stoneLayer : stoneLayerList) {
+                    String stoneLayerModId = stoneLayer.stoneLayerTextureLocation.split(":")[0].equals("minecraft") ? "" : stoneLayer.stoneLayerTextureLocation.split(":")[0];
+                    String stoneLayerBlock = stoneLayer.stoneLayerTextureLocation.split(":")[1];
+                    //String resourceID = stoneLayerModId.equals("resourceID") ? "" : Ref.mod_id;
+
+                    if (flag == ORE || flag == GEM) {
+                        String stoneLayerBlockName = stoneLayer.stoneLayerBlock.equals("") ? String.valueOf(layerBlock.get().getRegistryName()) : stoneLayer.stoneLayerBlock;
+//--//--//--//--//--//--//--//--//
+                        RegistryObject<Block> ore = RegistryHandler.BLOCKS.register(stoneLayer.name + "_" + name + "_ore", () -> new OreBlock(name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), stoneLayerBlockName));
+                        oreList.add(ore);
+                        //--
+                        RegistryObject<Item> oreItemR = RegistryHandler.ITEMS.register(stoneLayer.name + "_" + name + "_ore", () ->
+                                new BlockOreItem(ore, new Item.Properties().tab(ModItemGroups.ore_tab)
+                                        , boilingPoint, meltingPoint, symbol));
+                        oreItemList.add(oreItemR);
+//--//--//--//--//--//--//--//--//
+                        RegistryObject<Block> smallOreBlock = RegistryHandler.BLOCKS.register("small_" + stoneLayer.name + "_" + name + "_ore", () ->
+                                new SmallOreBlock("small_" + name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), stoneLayerBlockName));
+                        smallOreList.add(smallOreBlock);
+                        //--
+                        RegistryObject<Item> smallOreItemR = RegistryHandler.ITEMS.register("small_" + stoneLayer.name + "_" + name + "_ore", () ->
+                                new BlockOreItem(smallOreBlock, new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, symbol));
+                        smallOreItemList.add(smallOreItemR);
+//--//--//--//--//--//--//--//--//
+                        RegistryObject<Block> denseOreBlock = RegistryHandler.BLOCKS.register("dense_" + stoneLayer.name + "_" + name + "_ore", () ->
+                                new DenseOreBlock("dense_" + name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), denseOreDensity, stoneLayerBlockName));
+                        denseOreList.add(denseOreBlock);
+                        //--
+                        RegistryObject<Item> denseOreItemR = RegistryHandler.ITEMS.register("dense_" + stoneLayer.name + "_" + name + "_ore", () ->
+                                new BlockOreItem(denseOreBlock, new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, symbol));
+                        denseOreItemList.add(denseOreItemR);
+//--//--//--//--//--//--//--//--//
+                    }
+                }
+            }
+
+            if (flag == FLUID || flag == GAS) {
+                FluidAttributes.Builder attributes;
+
+                if (flag == FLUID) {
+                    attributes = FluidAttributes.builder(new ResourceLocation("fluid/" + name), new ResourceLocation("fluid/" + name + "_flowing")).temperature(meltingPoint).color(color);
+                    if (fluidDensity != null) attributes.density(fluidDensity);
+                    if (fluidLuminosity != null) attributes.luminosity(fluidLuminosity);
+                    if (fluidViscosity != null) attributes.viscosity(fluidViscosity);
+                    ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(() -> fluid.get(), () -> fluid_flowing.get(), attributes);
+                    fluid = RegistryHandler.FLUIDS.register(name + "_still", () -> new ITFluid(properties, true, color));
+                    fluid_flowing = RegistryHandler.FLUIDS.register(name + "_flowing", () -> new ITFluid(properties, false, color));
+
+                    fluidBlock = RegistryHandler.BLOCKS.register(name, () -> new ITFluidBlock(() -> fluid.get(), fluidAcceleration, color));
+                }
+
+                if (flag == GAS) {
+                    attributes = FluidAttributes.builder(new ResourceLocation("fluid/" + name), new ResourceLocation("fluid/" + name)).temperature(boilingPoint).color(color).gaseous();
+                    if (fluidDensity != null) attributes.density(fluidDensity);
+                    if (fluidLuminosity != null) attributes.luminosity(fluidLuminosity);
+                    if (fluidViscosity != null) attributes.viscosity(fluidViscosity);
+                    ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(() -> fluid.get(), () -> fluid_flowing.get(), attributes);
+                    fluid = RegistryHandler.FLUIDS.register(name + "_still", () -> new ITFluid(properties, true, color));
+                    fluid_flowing = RegistryHandler.FLUIDS.register(name + "_flowing", () -> new ITFluid(properties, false, color));
+
+                    fluidBlock = RegistryHandler.BLOCKS.register(name, () -> new ITFluidBlock(() -> fluid.get(), fluidAcceleration, color));
+                }
+            }
+
+            if (flag == INGOT) {
+//--//--//--//--//--//--//--//--//
+                ingot = RegistryHandler.ITEMS.register(name + "_" + INGOT.name(), () -> new IngotItem(new Item.Properties().tab(ModItemGroups.item_tab), boilingPoint, meltingPoint, symbol));
+//--//--//--//--//--//--//--//--//
+            }
+        }
+
+        return this;
+    }
+
+    public void saveResources() {
+        LangData enLang = AssetPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
+        List<ITMaterial> stoneLayerList = ((MaterialRegistry) IndustrialTech.configSync.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
+
+        //--
+
+        for (IToolPart flag : toolParts) {
+            if (flag == DefaultToolPart.TOOL_HEAD) {
+//--//--//--//--//--//--//--//--//
+                //--Item--\\
+                //--Resources
+                AssetPackRegistry.itemModelDataHashMap.put("dull_" + name + "_pickaxe_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
+                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dull_pickaxe_head")));
+                enLang.addTranslation("item." + Ref.mod_id + "." + "dull_" + name + "_pickaxe_head", LangData.translateUpperCase("dull_" + name + "_pickaxe_head"));
+                //TagHandler.addItemToTag("dull_pickaxe_head", new ResourceLocation(Ref.mod_id, "dull_" + name + "_pickaxe_head"));
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dull_pickaxe_heads/" + name)).add(dullPickaxeHead.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dull_pickaxe_heads")).add(dullPickaxeHead.get()));
+                //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                //--Item--\\
+                //--Resources
+                AssetPackRegistry.itemModelDataHashMap.put(name + "_pickaxe_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
+                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/pickaxe_head")));
+                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_pickaxe_head", LangData.translateUpperCase(name + "_pickaxe_head"));
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "pickaxe_heads/" + name)).add(pickaxeHead.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "pickaxe_heads")).add(pickaxeHead.get()));
+                //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                //--Item--\\
+                //--Resources
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "hammer_heads/" + name)).add(hammerHead.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "hammer_heads")).add(hammerHead.get()));
+                AssetPackRegistry.itemModelDataHashMap.put(name + "_hammer_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
+                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/hammer_head")));
+                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_hammer_head", LangData.translateUpperCase(name + "_hammer_head"));
+                //--Tags
+
+                //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                //--Item--\\
+                //--Resources
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dull_chisel_heads/" + name)).add(dullChiselHead.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dull_chisel_heads")).add(dullChiselHead.get()));
+                AssetPackRegistry.itemModelDataHashMap.put("dull_" + name + "_chisel_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
+                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dull_chisel_head")));
+                enLang.addTranslation("item." + Ref.mod_id + "." + "dull_" + name + "_chisel_head", LangData.translateUpperCase("dull_" + name + "_chisel_head"));
+                //--Tags
+
+                //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                //--Item--\\
+                //--Resources
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "chisel_heads/" + name)).add(chiselHead.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "chisel_heads")).add(chiselHead.get()));
+                AssetPackRegistry.itemModelDataHashMap.put(name + "_chisel_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
+                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/chisel_head")));
+                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_chisel_head", LangData.translateUpperCase(name + "_chisel_head"));
+                //--Tags
+
+                //--LootTable
+
+//--//--//--//--//--//--//--//--//
+            }
+
+            if (flag == DefaultToolPart.TOOL_WEDGE) {
+//--//--//--//--//--//--//--//--//
+                //--Item--\\
+                //--Resources
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "wedges/" + name)).add(wedge.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "wedges")).add(wedge.get()));
+                AssetPackRegistry.itemModelDataHashMap.put(name + "_wedge", new ItemModelData().setParent(new ResourceLocation("item/generated")).setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/wedge")));
+                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_wedge", LangData.translateUpperCase(name + "_wedge"));
+                //--Tags
+
+                //--LootTable
+
+//--//--//--//--//--//--//--//--//
+            }
+
+            if (flag == DefaultToolPart.TOOL_WEDGE_HANDLE) {
+//--//--//--//--//--//--//--//--//
+                //--Item--\\
+                //--Resources
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "wedge_handles/" + name)).add(wedgeHandle.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "wedge_handles")).add(wedgeHandle.get()));
+                AssetPackRegistry.itemModelDataHashMap.put(name + "_wedge_handle", new ItemModelData().setParent(new ResourceLocation("item/generated")).setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/wedge_handle")));
+                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_wedge_handle", LangData.translateUpperCase(name + "_wedge_handle"));
+                //--Tags
+
+                //--LootTable
+
+//--//--//--//--//--//--//--//--//
+            }
+        }
+
+        //--
+
+        for (IMaterialFlag flag : materialFlags) {
+            if (flag == ORE || flag == GEM || flag == STONE_LAYER) {
+                if (flag == STONE_LAYER) {
+                    Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(BlockTags.NEEDS_STONE_TOOL).stream().forEach(block ->
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "tool_level/" + 1)).add(block)));
+                    Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(BlockTags.NEEDS_STONE_TOOL).stream().forEach(block ->
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "tool_level/" + 1)).add(block)));
+                    ;
+
+
+                    String stoneLayerBlockName = stoneLayerBlock.equals("") ? String.valueOf(layerBlock.get().getRegistryName()) : stoneLayerBlock;
+                    String stoneLayerModId = stoneLayerTextureLocation.split(":")[0].equals("minecraft") ? "" : stoneLayerTextureLocation.split(":")[0];
+
+                    String stoneLayerBlock = stoneLayerTextureLocation.split(":")[1];
+                    //String resourceID = useMinecraftResource ? "" : Ref.mod_id;
+                    AssetPackRegistry.blockModelDataMap.put(name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/ore"))
                             .setParentFolder("/ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                     AssetPackRegistry.blockModelDataMap.put("small_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/small_ore"))
                             .setParentFolder("/small_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
@@ -217,352 +502,351 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                             .setParentFolder("/dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                     AssetPackRegistry.blockModelDataMap.put("dense_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/dense_ore"))
                             .setParentFolder("/dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
-                    //--//
-                    rockBlock = RegistryHandler.BLOCKS.register(name + "_rock", ()-> new RockBlock(stoneLayerBlockName, BlockBehaviour.Properties.of(MCMaterialHolder.rock)));
-                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "rocks/" + name)).addValue(rockBlock.getId()));
-                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge","rocks")).addValue(rockBlock.getId()));
-                    //
+//--//--//--//--//--//--//--//--//
+
+                    //--Block--\\
+                    //--Resources
                     AssetPackRegistry.blockStateDataMap.put(name + "_rock", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/stone_layer/rock/" + name + "_rock")));
-                    AssetPackRegistry.blockModelDataMap.put(name + "_rock", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id,"block/stone_layer/state/rock"))
-                            .setParentFolder("/stone_layer/rock").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
-                                    //.setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
+                    AssetPackRegistry.blockModelDataMap.put(name + "_rock", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/rock"))
+                                    .setParentFolder("/stone_layer/rock").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
+                            //.setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
                             //.setTexturesLocation("texture", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
                     );
-                    enLang.addTranslation("block." + Ref.mod_id + "." +  name + "_rock", LangData.translateUpperCase(name + "_rock"));
-                    //--
-                    rockItemBlock = RegistryHandler.ITEMS.register(name + "_rock", ()-> new RockBlockItem(rockBlock.get(), stoneLayerBlockName, new Item.Properties().stacksTo(64).tab(ModItemGroups.stone_layer_tab)));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","rocks/" + name)).addValue(rockItemBlock.getId()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","rocks")).addValue(rockItemBlock.getId()));
-                    //
-                    AssetPackRegistry.itemModelDataHashMap.put(name + "_rock", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id,"item/material_icons/" + textureIcon.getSecond().getName() + "/rock")));
+                    enLang.addTranslation("block." + Ref.mod_id + "." + name + "_rock", LangData.translateUpperCase(name + "_rock"));
+                    //--Tags
+                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "rocks/" + name)).add(rockBlock.get()));
+                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "rocks")).add(rockBlock.get()));
+                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(rockBlock.get()));
+                    if (harvestLevel != null) {
+                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "harvest_level/" + harvestLevel)).add(rockBlock.get()));
+                    }
+                    //--LootTables
+                    DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, name + "_rock")).setLootTable(LootTableData.standardDropTable(rockBlock.get())));
+
+                    //--Item--\\
+                    //--Resources
+                    AssetPackRegistry.itemModelDataHashMap.put(name + "_rock", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/rock")));
                     AssetPackRegistry.itemModelDataHashMap.put(name + ":rock", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock_overlay"))
                     );
                     enLang.addTranslation("item." + Ref.mod_id + "." + name + "_rock", LangData.translateUpperCase(name + "_rock"));
-                    //--//
-                    thinSlabBlock = RegistryHandler.BLOCKS.register("thin_" + name + "_slab", ()-> new ThinSlabBlock(BlockBehaviour.Properties.of(MCMaterialHolder.rock), stoneLayerBlockName));
-                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge","thin_slabs/" + name)).addValue(rockBlock.getId()));
-                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge","thin_slabs")).addValue(rockBlock.getId()));
-                    //
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "rocks/" + name)).add(rockItemBlock.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "rocks")).add(rockItemBlock.get()));
+                    //--LootTable
+
+//--//--//--//--//--//--//--//--//
+
+                    //--Block--\\
+                    //--Resources
                     AssetPackRegistry.blockStateDataMap.put("thin_" + name + "_slab", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/stone_layer/thin_slab/" + "thin_" + name + "_slab")));
                     AssetPackRegistry.blockModelDataMap.put("thin_" + name + "_slab", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/thin_slab"))
                             .setParentFolder("/stone_layer/thin_slab").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
                             .setTexturesLocation("texture", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                     enLang.addTranslation("block." + Ref.mod_id + ".thin_" + name + "_slab", LangData.translateUpperCase("thin_" + name + "_slab"));
-                    //--
-                    thinSlabItemBlock = RegistryHandler.ITEMS.register("thin_" + name + "_slab", ()-> new ThinSlabItemBlock(thinSlabBlock.get(), new Item.Properties().stacksTo(1).tab(ModItemGroups.stone_layer_tab)));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","thin_slabs/" + name)).addValue(rockItemBlock.getId()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","thin_slabs")).addValue(rockItemBlock.getId()));
-                    //
+                    //--Tags
+                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "thin_slabs/" + name)).add(rockBlock.get()));
+                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "thin_slabs")).add(rockBlock.get()));
+                    //--LootTables
+
+                    //--Item--\\
+                    //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("thin_" + name + "_slab", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/thin_slab/thin_" + name + "_slab")));
                     enLang.addTranslation("item." + Ref.mod_id + ".thin_" + name + "_slab", LangData.translateUpperCase("thin_" + name + "_slab"));
-                    //--//
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "thin_slabs/" + name)).add(rockItemBlock.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "thin_slabs")).add(rockItemBlock.get()));
+                    //--LootTable
+                    DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, "thin_" + name + "_slab")).setLootTable(LootTableData.standardDropTable(thinSlabBlock.get())));
+//--//--//--//--//--//--//--//--//
                         /*
                         Block leg_block = RegistryHandler.BLOCKS.register(name + "_leg", new LegBlock(AbstractBlock.Properties.of(Material.STONE), new ResourceLocation("textures/" + stoneLayer.getBlock())));
                         Item leg_item_block = RegistryHandler.ITEMS.register( name + "_leg", new LegItemBlock(leg_block, new Item.Properties().stacksTo(1)));
                          */
                 }
 
+                //-- Item --\\
 
-                for(ITMaterial  stoneLayer : stoneLayerList){
-                    String stoneLayerModId = stoneLayer.stoneLayerTextureLocation.split(":")[0].equals("minecraft") ? "" : stoneLayer.stoneLayerTextureLocation.split(":")[0];
-                    String stoneLayerBlock = stoneLayer.stoneLayerTextureLocation.split(":")[1];
-                    //String resourceID = stoneLayerModId.equals("resourceID") ? "" : Ref.mod_id;
+                if (flag == ORE || flag == GEM) {
+//--//--//--//--//--//--//--//--//
+                    //-- Item --\\
+                    //--Resources
 
+                    AssetPackRegistry.itemModelDataHashMap.put("raw_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/raw_ore")));
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":raw_ore", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                            .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore"))
+                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore_overlay")));
+                    enLang.addTranslation("item." + Ref.mod_id + "." + "raw_" + name + "_ore", LangData.translateUpperCase("raw_" + name + "_ore"));
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "raw_ores/" + name)).add(rawOre.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "raw_ores")).add(rawOre.get()));
+                    //--LootTable
 
-
-                    if(flag == ORE || flag == GEM) {
-                        String stoneLayerBlockName = stoneLayer.stoneLayerBlock.equals("")? String.valueOf(layerBlock.get().getRegistryName()) : stoneLayer.stoneLayerBlock;
-                        //--//
-                        RegistryObject<Block> ore = RegistryHandler.BLOCKS.register( stoneLayer.name + "_" + name + "_ore", ()-> new OreBlock(name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), stoneLayerBlockName));
-                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge","ores/" + name)).addValue(ore.getId()));
-                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge","ores")).addValue(ore.getId()));
-                        oreList.add(ore);
-                        //
-                        AssetPackRegistry.blockStateDataMap.put(stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("block." + Ref.mod_id + "." + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase(stoneLayer.name + "_" + name + "_ore"));
-                        //--
-                        RegistryObject<Item> oreItemR = RegistryHandler.ITEMS.register( stoneLayer.name + "_" + name + "_ore",  ()->
-                                new BlockOreItem(ore, new Item.Properties().tab(ModItemGroups.ore_tab)
-                                , boilingPoint, meltingPoint, symbol));
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","ores/" + name)).addValue(oreItemR.getId()));
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","ores")).addValue(oreItemR.getId()));
-                        oreItemList.add(oreItemR);
-                        //
-                        AssetPackRegistry.itemModelDataHashMap.put(stoneLayer.name + "_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("item." + Ref.mod_id + "." + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase(stoneLayer.name + "_" + name + "_ore"));
-                        //--//
-                        RegistryObject<Block> smallOreBlockR = RegistryHandler.BLOCKS.register( "small_" + stoneLayer.name + "_" + name + "_ore", ()->
-                                new SmallOreBlock("small_" + name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), stoneLayerBlockName));
-                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge","small_ores/" + stoneLayer.name + "_" + name)).addValue(smallOreBlockR.getId()));
-                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge","small_ores")).addValue(smallOreBlockR.getId()));
-                        smallOreList.add(smallOreBlockR);
-                        //
-                        AssetPackRegistry.blockStateDataMap.put("small_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("block." + Ref.mod_id + "." + "small_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("small_" + stoneLayer.name + "_" + name + "_ore"));
-                        //--
-                        RegistryObject<Item> smallOreItemR = RegistryHandler.ITEMS.register( "small_" + stoneLayer.name + "_" + name + "_ore", ()->
-                                new BlockOreItem(smallOreBlockR, new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, symbol));
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","small_ores/" + stoneLayer.name + "_" + name)).addValue(smallOreBlockR.getId()));
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","small_ores")).addValue(smallOreBlockR.getId()));
-                        smallOreItemList.add(smallOreItemR);
-                        //
-                        AssetPackRegistry.itemModelDataHashMap.put("small_" + stoneLayer.name + "_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("item." + Ref.mod_id + "." + "small_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("small_" + stoneLayer.name + "_" + name + "_ore"));
-                        //--//
-                        RegistryObject<Block> denseOreBlockR = RegistryHandler.BLOCKS.register( "dense_" + stoneLayer.name + "_" + name + "_ore", ()->
-                                new DenseOreBlock("dense_" + name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), denseOreDensity, stoneLayerBlockName));
-                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge","dense_ores/" + stoneLayer.name + "_" + name)).addValue(denseOreBlockR.getId()));
-                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge","dense_ores")).addValue(denseOreBlockR.getId()));
-                        denseOreList.add(denseOreBlockR);
-                        //
-                        AssetPackRegistry.blockStateDataMap.put("dense_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/dense_ore/" + "dense_" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("block." + Ref.mod_id + "." + "dense_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("dense_" + stoneLayer.name + "_" + name + "_ore"));
-                        //--
-                        RegistryObject<Item> denseOreItemR = RegistryHandler.ITEMS.register( "dense_" + stoneLayer.name + "_" + name + "_ore", ()->
-                                new BlockOreItem(denseOreBlockR, new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, symbol));
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","dense_ores/" + stoneLayer.name + "_" + name)).addValue(denseOreItemR.getId()));
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","dense_ores")).addValue(denseOreItemR.getId()));
-                        denseOreItemList.add(denseOreItemR);
-                        //
-                        AssetPackRegistry.itemModelDataHashMap.put("dense_" + stoneLayer.name + "_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/dense_ore/" + "dense_" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("item." + Ref.mod_id + "." + "dense_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("dense_" + stoneLayer.name + "_" + name + "_ore"));
-                        //--//
-                    }
-                }
-
-                if(flag == ORE || flag == GEM){
-                    //--//
-                    crushedOre = RegistryHandler.ITEMS.register("crushed_" + name + "_ore", ()-> new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","crushed_ores/" + name)).addValue(crushedOre.getId()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","crushed_ores")).addValue(crushedOre.getId()));
+//--//--//--//--//--//--//--//--//
+                    //-- Item --\\
+                    //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("crushed_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/crushed_ore")));
                     AssetPackRegistry.itemModelDataHashMap.put(name + ":crushed_ore", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
-                            .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" +  textureIcon.getSecond().getName().toLowerCase() + "/crushed_ore"))
-                            .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/crushed_ore_overlay")));
+                            .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/crushed_ore"))
+                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/crushed_ore_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "crushed_" + name + "_ore", LangData.translateUpperCase("crushed_" + name + "_ore"));
-                    //--//
-                    purifiedOre = RegistryHandler.ITEMS.register("purified_" + name + "_ore", ()-> new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","purified_ores/" + name)).addValue(purifiedOre.getId()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","purified_ores")).addValue(purifiedOre.getId()));
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "crushed_ores/" + name)).add(crushedOre.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "crushed_ores")).add(crushedOre.get()));
+                    //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                    //-- Item --\\
+                    //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("purified_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/purified_ore")));
                     AssetPackRegistry.itemModelDataHashMap.put(name + ":purified_ore", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/purified_ore"))
-                            .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/purified_ore_overlay")));
+                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/purified_ore_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "purified_" + name + "_ore", LangData.translateUpperCase("purified_" + name + "_ore"));
-                    //--//
-                    centrifugedOre = RegistryHandler.ITEMS.register("centrifuged_" + name + "_ore", ()-> new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","centrifuged_ores/" + name)).addValue(centrifugedOre.getId()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","centrifuged_ores")).addValue(centrifugedOre.getId()));
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "purified_ores/" + name)).add(purifiedOre.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "purified_ores")).add(purifiedOre.get()));
+                    //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                    // -- Item --\\
+                    //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("centrifuged_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/centrifuged_ore")));
                     AssetPackRegistry.itemModelDataHashMap.put(name + ":centrifuged_ore", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/centrifuged_ore"))
-                            .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/centrifuged_ore_overlay")));
+                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/centrifuged_ore_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "centrifuged_" + name + "_ore", LangData.translateUpperCase("centrifuged_" + name + "_ore"));
-                    //--//
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "centrifuged_ores/" + name)).add(centrifugedOre.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "centrifuged_ores")).add(centrifugedOre.get()));
+                    //--LootTable
+
+//--//--//--//--//--//--//--//--//
                 }
 
-                if(flag == GEM){
-                    //--//
-                    gem = RegistryHandler.ITEMS.register(name + "_gem", ()-> new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","gems/" + name)).addValue(gem.getId()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","gems")).addValue(gem.getId()));
+                if (flag == GEM) {
+//--//--//--//--//--//--//--//--//
+                    // -- Item --\\
+                    //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put(name + "_gem", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/gem")));
                     AssetPackRegistry.itemModelDataHashMap.put(name + ":gem", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/gem"))
-                            .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/gem_overlay")));
+                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/gem_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + name + "_gem", LangData.translateUpperCase(name + "_gem"));
-                    //--//
-                    chippedGem = RegistryHandler.ITEMS.register("chipped_" + name + "_gem", ()-> new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","chipped_gems/" + name)).addValue(chippedGem.getId()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","chipped_gems")).addValue(chippedGem.getId()));
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "gems/" + name)).add(gem.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "gems")).add(gem.get()));
+                    //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                    // -- Item --\\
+                    //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("chipped_" + name + "_gem", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/chipped_gem")));
                     AssetPackRegistry.itemModelDataHashMap.put(name + ":chipped_gem", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/chipped_gem"))
-                            .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/chipped_gem_overlay")));
+                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/chipped_gem_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "chipped_" + name + "_gem", LangData.translateUpperCase("chipped_" + name + "_gem"));
-                    //--//
-                    flawedGem = RegistryHandler.ITEMS.register("flawed_" + name + "_gem", ()-> new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","flawed_gems/" + name)).addValue(flawedGem.getId()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","flawed_gems")).addValue(flawedGem.getId()));
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "chipped_gems/" + name)).add(chippedGem.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "chipped_gems")).add(chippedGem.get()));
+                    //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                    // -- Item --\\
+                    //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("flawed_" + name + "_gem", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/flawed_gem")));
                     AssetPackRegistry.itemModelDataHashMap.put(name + ":flawed_gem", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawed_gem"))
-                            .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawed_gem_overlay")));
+                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawed_gem_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "flawed_" + name + "_gem", LangData.translateUpperCase("flawed_" + name + "_gem"));
-                    //--//
-                    flawlessGem = RegistryHandler.ITEMS.register(  "flawless_" + name + "_gem", ()-> new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","flawless_gems/" + name)).addValue(flawlessGem.getId()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","flawless_gems")).addValue(flawlessGem.getId()));
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "flawed_gems/" + name)).add(flawedGem.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "flawed_gems")).add(flawedGem.get()));
+                    //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                    // -- Item --\\
+                    //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("flawless_" + name + "_gem", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/flawless_gem")));
                     AssetPackRegistry.itemModelDataHashMap.put(name + ":flawless_gem", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawless_gem"))
-                            .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawless_gem_overlay")));
+                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawless_gem_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "flawless_" + name + "_gem", LangData.translateUpperCase("flawless_" + name + "_gem"));
-                    //--//
-                    legendaryGem = RegistryHandler.ITEMS.register("legendary_" + name + "_gem", ()-> new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","legendary_gems/" + name)).addValue(legendaryGem.getId()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","legendary_gems")).addValue(legendaryGem.getId()));
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "flawless_gems/" + name)).add(flawlessGem.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "flawless_gems")).add(flawlessGem.get()));
+                    //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                    // -- Item --\\
+                    //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("legendary_" + name + "_gem", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/legendary_gem")));
                     AssetPackRegistry.itemModelDataHashMap.put(name + ":legendary_gem", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/legendary_gem"))
-                            .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/legendary_gem_overlay")));
+                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/legendary_gem_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "legendary_" + name + "_gem", LangData.translateUpperCase("legendary_" + name + "_gem"));
-                    //--//
-                }
+                    //--Tags
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "legendary_gems/" + name)).add(legendaryGem.get()));
+                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "legendary_gems")).add(legendaryGem.get()));
+                    //--LootTable
 
-                //--//
-                dust = RegistryHandler.ITEMS.register("" + name + "_dust", ()->  new OreProductsItem(new Item.Properties()
-                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","dusts/" + name)).addValue(dust.getId()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","dusts")).addValue(dust.getId()));
+//--//--//--//--//--//--//--//--//
+                }
+//--//--//--//--//--//--//--//--//
+                // -- Item --\\
+                //--Resources
                 AssetPackRegistry.itemModelDataHashMap.put(name + "_dust", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dust")));
                 AssetPackRegistry.itemModelDataHashMap.put(name + ":dust", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName()).setParent(new ResourceLocation("item/generated"))
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dust"))
-                        .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dust_overlay")));
+                        .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dust_overlay")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + name + "_dust", LangData.translateUpperCase(name + "_dust"));
-                //--//
-                smallDust = RegistryHandler.ITEMS.register("small_" + name + "_dust", ()-> new OreProductsItem(new Item.Properties()
-                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","small_dusts/" + name)).addValue(smallDust.getId()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","small_dusts")).addValue(smallDust.getId()));
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dusts/" + name)).add(dust.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dusts")).add(dust.get()));
+                //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                // -- Item --\\
+                //--Resources
                 AssetPackRegistry.itemModelDataHashMap.put("small_" + name + "_dust", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/small_dust")));
                 AssetPackRegistry.itemModelDataHashMap.put(name + ":small_dust", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName()).setParent(new ResourceLocation("item/generated"))
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/small_dust"))
-                        .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/small_dust_overlay")));
+                        .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/small_dust_overlay")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + "small_" + name + "_dust", LangData.translateUpperCase("small_" + name + "_dust"));
-                //--//
-                tinyDust = RegistryHandler.ITEMS.register("tiny_" + name + "_dust", ()-> new OreProductsItem(new Item.Properties()
-                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","tiny_dusts/" + name)).addValue(tinyDust.getId()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","tiny_dusts")).addValue(tinyDust.getId()));
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_dusts/" + name)).add(smallDust.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_dusts")).add(smallDust.get()));
+                //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                // -- Item --\\
+                //--Resources
                 AssetPackRegistry.itemModelDataHashMap.put("tiny_" + name + "_dust", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/tiny_dust")));
                 AssetPackRegistry.itemModelDataHashMap.put(name + ":tiny_dust", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName()).setParent(new ResourceLocation("item/generated"))
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/tiny_dust"))
-                        .setTexturesLocation("layer1",  new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/tiny_dust_overlay")));
+                        .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/tiny_dust_overlay")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + "tiny_" + name + "_dust", LangData.translateUpperCase("tiny_" + name + "_dust"));
-                //--//
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "tiny_dusts/" + name)).add(tinyDust.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "tiny_dusts")).add(tinyDust.get()));
+                //--LootTable
+
+//--//--//--//--//--//--//--//--//
+
+                for (ITMaterial stoneLayer : stoneLayerList) {
+                    if (flag == ORE || flag == GEM) {
+//--//--//--//--//--//--//--//--//
+                        // -- Block --\\
+                        //--Resources
+                        AssetPackRegistry.blockStateDataMap.put(stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore")));
+                        enLang.addTranslation("block." + Ref.mod_id + "." + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase(stoneLayer.name + "_" + name + "_ore"));
+                        //--Tags
+                        oreList.forEach(object -> {
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "ores/" + name)).add(object.get()));
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "ores")).add(object.get()));
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(object.get()));
+                        });
+                        //--LootTable
+
+                        // -- Item --\\
+                        AssetPackRegistry.itemModelDataHashMap.put(stoneLayer.name + "_" + name + "_ore", new ItemModelData()
+                                .setParent(new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore")));
+                        enLang.addTranslation("item." + Ref.mod_id + "." + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase(stoneLayer.name + "_" + name + "_ore"));
+                        //--Tags
+                        oreItemList.forEach(object -> {
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "ores/" + name)).add(object.get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "ores")).add(object.get()));
+                        });
+                        //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                        // -- Block --\\
+                        //--Resources
+                        AssetPackRegistry.blockStateDataMap.put("small_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
+                        enLang.addTranslation("block." + Ref.mod_id + "." + "small_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("small_" + stoneLayer.name + "_" + name + "_ore"));
+                        //--Tags
+                        smallOreList.forEach(object -> {
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "small_ores/" + stoneLayer.name + "_" + name)).add(object.get()));
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "small_ores")).add(object.get()));
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(object.get()));
+                        });
+                        //--LootTable
+
+                        // -- Item --\\
+                        //--Resources
+                        AssetPackRegistry.itemModelDataHashMap.put("small_" + stoneLayer.name + "_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
+                        enLang.addTranslation("item." + Ref.mod_id + "." + "small_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("small_" + stoneLayer.name + "_" + name + "_ore"));
+                        //--Tags
+                        smallOreItemList.forEach(object -> {
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_ores/" + stoneLayer.name + "_" + name)).add(object.get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_ores")).add(object.get()));
+                        });
+                        //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                        // -- Block --\\
+                        //--Resources
+                        AssetPackRegistry.blockStateDataMap.put("dense_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/dense_ore/" + "dense_" + stoneLayer.name + "_ore")));
+                        enLang.addTranslation("block." + Ref.mod_id + "." + "dense_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("dense_" + stoneLayer.name + "_" + name + "_ore"));
+                        //--Tags
+                        denseOreList.forEach(object -> {
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "dense_ores/" + stoneLayer.name + "_" + name)).add(object.get()));
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "dense_ores")).add(object.get()));
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(object.get()));
+                        });
+                        //--LootTable
+
+                        // -- Item --\\
+                        //--Resources
+                        AssetPackRegistry.itemModelDataHashMap.put("dense_" + stoneLayer.name + "_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/dense_ore/" + "dense_" + stoneLayer.name + "_ore")));
+                        enLang.addTranslation("item." + Ref.mod_id + "." + "dense_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("dense_" + stoneLayer.name + "_" + name + "_ore"));
+                        //--Tags
+                        denseOreItemList.forEach(object -> {
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores/" + stoneLayer.name + "_" + name)).add(object.get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores")).add(object.get()));
+                        });
+                        //--LootTable
+
+//--//--//--//--//--//--//--//--//
+                    }
+                }
             }
 
-            if(flag == FLUID || flag == GAS) {
-                FluidAttributes.Builder attributes;
+            if (flag == FLUID || flag == GAS) {
 
                 if (flag == FLUID) {
-                    attributes = FluidAttributes.builder(new ResourceLocation( "fluid/" + name), new ResourceLocation( "fluid/" + name + "_flowing")).temperature(meltingPoint).color(color);
-                    if(fluidDensity != null) attributes.density(fluidDensity);
-                    if(fluidLuminosity != null)attributes.luminosity(fluidLuminosity);
-                    if(fluidViscosity != null) attributes.viscosity(fluidViscosity);
-                    ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(() -> fluid.get(), () -> fluid_flowing.get(), attributes);
-                    fluid = RegistryHandler.FLUIDS.register( name + "_still", ()-> new ITFluid(properties, true, color));
-                    fluid_flowing = RegistryHandler.FLUIDS.register( name + "_flowing", ()-> new ITFluid(properties, false, color));
 
-                    fluidBlock = RegistryHandler.BLOCKS.register( name, ()-> new ITFluidBlock(()-> fluid.get(), fluidAcceleration, color));
                 }
 
                 if (flag == GAS) {
-                    attributes = FluidAttributes.builder(new ResourceLocation( "fluid/" + name), new ResourceLocation( "fluid/" + name)).temperature(boilingPoint).color(color).gaseous();
-                    if(fluidDensity != null) attributes.density(fluidDensity);
-                    if(fluidLuminosity != null)attributes.luminosity(fluidLuminosity);
-                    if(fluidViscosity != null) attributes.viscosity(fluidViscosity);
-                    ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(() -> fluid.get(), () -> fluid_flowing.get(), attributes);
-                    fluid = RegistryHandler.FLUIDS.register( name + "_still", ()-> new ITFluid(properties, true, color));
-                    fluid_flowing = RegistryHandler.FLUIDS.register( name + "_flowing", ()-> new ITFluid(properties, false, color));
 
-                    fluidBlock = RegistryHandler.BLOCKS.register( name, ()-> new ITFluidBlock(()-> fluid.get(), fluidAcceleration, color));
                 }
             }
 
-            if(flag == INGOT){
-                //--//
-                ingot = RegistryHandler.ITEMS.register( name + "_" + INGOT.name(), ()->  new IngotItem(new Item.Properties().tab(ModItemGroups.item_tab), boilingPoint, meltingPoint, symbol));
+            if (flag == INGOT) {
+//--//--//--//--//--//--//--//--//
+                // -- Item --\\
+                //--Resources
                 AssetPackRegistry.itemModelDataHashMap.put(name + "_" + INGOT.name(), new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "/material_icons/" + textureIcon.getSecond().getName() + "/ingot")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + name + "_" + INGOT.name(), LangData.translateUpperCase(name + "_" + INGOT.name()));
-                //--//
-            }
-        }
+                //--Tags
 
-        for(IToolPart flag : toolParts){
-            if(flag == DefaultToolPart.TOOL_HEAD){
-                //--//
-                dullPickaxeHead = RegistryHandler.ITEMS.register( "dull_" + name + "_pickaxe_head", ()-> new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","dull_pickaxe_heads/" + name)).addValue(dullPickaxeHead.getId()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","dull_pickaxe_heads")).addValue(dullPickaxeHead.getId()));
-                AssetPackRegistry.itemModelDataHashMap.put("dull_" + name + "_pickaxe_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dull_pickaxe_head")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + "dull_" + name + "_pickaxe_head", LangData.translateUpperCase("dull_" + name + "_pickaxe_head"));
-                //TagHandler.addItemToTag("dull_pickaxe_head", new ResourceLocation(Ref.mod_id, "dull_" + name + "_pickaxe_head"));
-                //--//
-                pickaxeHead = RegistryHandler.ITEMS.register(  name + "_pickaxe_head", ()-> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "pickaxe", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","pickaxe_heads/" + name)).addValue(pickaxeHead.getId()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","pickaxe_heads")).addValue(pickaxeHead.getId()));
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_pickaxe_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/pickaxe_head")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_pickaxe_head", LangData.translateUpperCase(name + "_pickaxe_head"));
-                //--//
-                hammerHead = RegistryHandler.ITEMS.register(  name + "_hammer_head", ()-> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "hammer", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","hammer_heads/" + name)).addValue(hammerHead.getId()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","hammer_heads")).addValue(hammerHead.getId()));
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_hammer_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/hammer_head")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_hammer_head", LangData.translateUpperCase(name + "_hammer_head"));
-                //--//
-                dullChiselHead = RegistryHandler.ITEMS.register( "dull_" + name + "_chisel_head", ()-> new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","dull_chisel_heads/" + name)).addValue(dullChiselHead.getId()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","dull_chisel_heads")).addValue(dullChiselHead.getId()));
-                AssetPackRegistry.itemModelDataHashMap.put("dull_" + name + "_chisel_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dull_chisel_head")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + "dull_" + name + "_chisel_head", LangData.translateUpperCase("dull_" + name + "_chisel_head"));
-                //--//
-                chiselHead = RegistryHandler.ITEMS.register(  name + "_chisel_head", ()-> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "chisel", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","chisel_heads/" + name)).addValue(chiselHead.getId()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","chisel_heads")).addValue(chiselHead.getId()));
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_chisel_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/chisel_head")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_chisel_head", LangData.translateUpperCase(name + "_chisel_head"));
-                //--//
-            }
+                //--LootTable
 
-            if(flag == DefaultToolPart.TOOL_WEDGE){
-                //--//
-                wedge = RegistryHandler.ITEMS.register(  name + "_wedge", ()->  new ToolBindingItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, durability, weight));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","wedges/" + name)).addValue(wedge.getId()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","wedges")).addValue(wedge.getId()));
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_wedge", new ItemModelData().setParent(new ResourceLocation("item/generated")).setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/wedge")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_wedge", LangData.translateUpperCase(name + "_wedge"));
-                //--//
-            }
-
-            if(flag == DefaultToolPart.TOOL_WEDGE_HANDLE){
-                //--//
-                wedgeHandle = RegistryHandler.ITEMS.register(  name + "_wedge_handle", ()-> new ToolHandleItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, durability, weight));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","wedge_handles/" + name)).addValue(wedgeHandle.getId()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge","wedge_handles")).addValue(wedgeHandle.getId()));
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_wedge_handle", new ItemModelData().setParent(new ResourceLocation("item/generated")).setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/wedge_handle")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_wedge_handle", LangData.translateUpperCase(name + "_wedge_handle"));
-                //--//
+//--//--//--//--//--//--//--//--//
             }
         }
 
         AssetPackRegistry.langDataMap.put("en_us", enLang);
-
-        return this;
     }
 
-    public void clientRenderLayerInit(){
-        if(rockBlock != null) {
+    public void clientRenderLayerInit() {
+        if (rockBlock != null) {
             ItemBlockRenderTypes.setRenderLayer(rockBlock.get(), RenderType.cutout());
         }
 
-        if(thinSlabBlock != null) {
+        if (thinSlabBlock != null) {
             ItemBlockRenderTypes.setRenderLayer(thinSlabBlock.get(), RenderType.cutout());
         }
     }
@@ -578,12 +862,12 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
             setupABlockColor(block.get());
         }
 
-        if(rockBlock != null) {
+        if (rockBlock != null) {
             setupABlockColor(rockBlock.get());
         }
     }
 
-    public void setupABlockColor(Block block){
+    public void setupABlockColor(Block block) {
         ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout());
         Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
             if (tintIndex != 0)
@@ -592,8 +876,8 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         }, block);
     }
 
-    public void registerColorForItem(){
-        if(rockItemBlock != null) {
+    public void registerColorForItem() {
+        if (rockItemBlock != null) {
             registerAItemColor(rockItemBlock.get(), 0);
             registerAItemColor(rockItemBlock.get(), 1);
         }
@@ -621,71 +905,75 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
             }, item.get());
         }
 
-        if(dust != null) {
+        if (rawOre != null) {
+            registerAItemColor(rawOre.get(), 1);
+        }
+
+        if (dust != null) {
             registerAItemColor(dust.get(), 0);
         }
 
-        if(smallDust != null) {
+        if (smallDust != null) {
             registerAItemColor(smallDust.get(), 0);
         }
 
-        if(tinyDust != null) {
+        if (tinyDust != null) {
             registerAItemColor(tinyDust.get(), 0);
         }
-        if(ingot != null) {
+        if (ingot != null) {
             registerAItemColor(ingot.get(), 0);
         }
-        if(gem != null) {
+        if (gem != null) {
             registerAItemColor(gem.get(), 0);
         }
-        if(chippedGem != null) {
+        if (chippedGem != null) {
             registerAItemColor(chippedGem.get(), 0);
         }
-        if(flawedGem != null) {
+        if (flawedGem != null) {
             registerAItemColor(flawedGem.get(), 0);
         }
-        if(flawlessGem != null) {
+        if (flawlessGem != null) {
             registerAItemColor(flawlessGem.get(), 0);
         }
-        if(legendaryGem != null) {
+        if (legendaryGem != null) {
             registerAItemColor(legendaryGem.get(), 0);
         }
-        if(crushedOre != null) {
+        if (crushedOre != null) {
             registerAItemColor(crushedOre.get(), 0);
         }
-        if(purifiedOre != null) {
+        if (purifiedOre != null) {
             registerAItemColor(purifiedOre.get(), 0);
         }
-        if(centrifugedOre != null) {
+        if (centrifugedOre != null) {
             registerAItemColor(centrifugedOre.get(), 0);
         }
-        if(dullPickaxeHead != null) {
+        if (dullPickaxeHead != null) {
             registerAItemColor(dullPickaxeHead.get(), 0);
         }
-        if(pickaxeHead != null) {
+        if (pickaxeHead != null) {
             registerAItemColor(pickaxeHead.get(), 0);
         }
-        if(hammerHead != null) {
+        if (hammerHead != null) {
             registerAItemColor(hammerHead.get(), 0);
         }
-        if(wedge != null) {
+        if (wedge != null) {
             registerAItemColor(wedge.get(), 0);
         }
-        if(wedgeHandle != null) {
+        if (wedgeHandle != null) {
             registerAItemColor(wedgeHandle.get(), 0);
         }
-        if(dullChiselHead != null) {
+        if (dullChiselHead != null) {
             registerAItemColor(dullChiselHead.get(), 0);
         }
-        if(chiselHead != null) {
+        if (chiselHead != null) {
             registerAItemColor(chiselHead.get(), 0);
         }
     }
 
-    public void registerAItemColor(Item item, int layerNumberIn){
-        if(item != null) {
+    public void registerAItemColor(Item item, int layerNumberIn) {
+        if (item != null) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
-                if (tintIndex == layerNumberIn)
+                if (tintIndex <= layerNumberIn)
                     return color;
                 else
                     return 0xFFFFFFFF;

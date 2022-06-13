@@ -8,10 +8,7 @@ import mightydanp.industrialcore.common.crafting.recipe.Recipes;
 import mightydanp.industrialcore.common.items.ITToolItem;
 import mightydanp.industrialcore.common.items.ModItemGroups;
 import mightydanp.industrialcore.common.libs.Ref;
-import mightydanp.industrialcore.common.resources.data.DataPackRegistry;
 import mightydanp.industrialcore.common.tileentities.HoleTileEntity;
-import mightydanp.industrialtech.common.materials.ModMaterials;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.player.Player;
@@ -32,18 +29,8 @@ import java.util.*;
  * Created by MightyDanp on 10/9/2021.
  */
 public class KnifeToolItem extends ITToolItem {
-    private static final Set<String> EFFECTIVE_ON = ImmutableSet.of(String.valueOf(Blocks.SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.BLACK_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.BLUE_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.BROWN_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.CYAN_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.GRAY_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.GREEN_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.LIGHT_BLUE_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.LIGHT_GRAY_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.LIME_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.MAGENTA_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.ORANGE_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.PINK_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.PURPLE_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.RED_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.WHITE_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.YELLOW_SHULKER_BOX.getRegistryName()), String.valueOf(Blocks.PISTON.getRegistryName()), String.valueOf(Blocks.STICKY_PISTON.getRegistryName()), String.valueOf(Blocks.PISTON_HEAD));
-
     public KnifeToolItem() {
-        super("knife", new ArrayList<>(EFFECTIVE_ON),  new Item.Properties().tab(ModItemGroups.tool_tab));
-        toolsNeeded.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
-
-        parts.put("knife_head", 1);
-        parts.put("wedge_handle", 2);
-        parts.put("wedge", 3);
-
-        disassembleTools.add(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")));
-        disassembleTools.add(String.valueOf(new ResourceLocation(Ref.mod_id, "chisel")));
+        super(new Item.Properties());
     }
 
     @Override
@@ -53,11 +40,6 @@ public class KnifeToolItem extends ITToolItem {
         BlockPos blockPos = itemUseContext.getClickedPos();
         Direction clickedFace = itemUseContext.getClickedFace();
         BlockState clickedBlockState = world.getBlockState(blockPos);
-
-        TagKey<Item> LOGS = DataPackRegistry.getItemTagData(new ResourceLocation("forge", "gems")).getTagKey();
-        TagKey<Item> LOGS1 = DataPackRegistry.getItemTagData(new ResourceLocation("forge", "gems/almandine")).getTagKey();
-
-        ModMaterials.almandine.gem.get();
 
         Container iinventory = new SimpleContainer(new ItemStack(clickedBlockState.getBlock()));
         List<HoleRecipe> recipe = world.getRecipeManager().getRecipesFor(Recipes.holeType, iinventory, world);
@@ -85,8 +67,7 @@ public class KnifeToolItem extends ITToolItem {
 
 
                 if (clickedFace != Direction.UP && clickedFace != Direction.DOWN) {
-                    if (itemUseContext.getItemInHand().getItem() instanceof ITToolItem) {
-                        ITToolItem mainHandTool = (ITToolItem) itemUseContext.getItemInHand().getItem();
+                    if (itemUseContext.getItemInHand().getItem() instanceof ITToolItem mainHandTool) {
                         mainHandTool.damageToolParts(itemUseContext.getItemInHand(), playerEntity, world, harvestToolDamage);
                     }else{
                         if(itemUseContext.getItemInHand().isDamageableItem()){

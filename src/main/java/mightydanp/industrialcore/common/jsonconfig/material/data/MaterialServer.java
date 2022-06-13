@@ -228,8 +228,8 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
             buffer.writeUtf("");
         }
 
-        if(material.miningLevel != null){
-            buffer.writeInt(material.miningLevel);
+        if(material.harvestLevel != null){
+            buffer.writeInt(material.harvestLevel);
         } else {
             buffer.writeInt(-1);
         }

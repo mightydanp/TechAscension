@@ -5,7 +5,10 @@ import mightydanp.industrialcore.common.crafting.recipe.HoleRecipe;
 import mightydanp.industrialcore.common.crafting.recipe.Recipes;
 import mightydanp.industrialcore.common.items.ITToolItem;
 import mightydanp.industrialcore.common.tileentities.HoleTileEntity;
+import mightydanp.industrialtech.common.tileentities.ModBlockEntity;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -147,7 +150,11 @@ public class HoleBlock extends BaseEntityBlock {
         return new HoleTileEntity(blockPos, blockState);
     }
 
-
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> type) {
+        return type == ModBlockEntity.hole_block_entity.get() ? HoleTileEntity::tick : null;
+    }
 
     public BlockState rotate(BlockState p_185499_1_, Rotation p_185499_2_) {
         return p_185499_1_.setValue(FACING, p_185499_2_.rotate(p_185499_1_.getValue(FACING)));

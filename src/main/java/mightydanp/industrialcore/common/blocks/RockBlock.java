@@ -17,7 +17,7 @@ public class RockBlock extends Block {
             Block.box(3.0D, 0.0D, 3.0D, 13.0D, 1.0D, 13.0D)};
 
     public RockBlock(String stoneLayerBlockIn, Properties properties) {
-        super(properties.noCollission().strength(0.0f));
+        super(properties.noCollission());
         stoneLayerBlock = stoneLayerBlockIn;
     }
 

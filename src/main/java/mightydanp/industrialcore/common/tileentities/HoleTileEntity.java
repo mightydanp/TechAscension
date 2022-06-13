@@ -3,8 +3,10 @@ package mightydanp.industrialcore.common.tileentities;
 import mightydanp.industrialcore.common.blocks.HoleBlock;
 import mightydanp.industrialcore.common.crafting.recipe.HoleRecipe;
 import mightydanp.industrialcore.common.crafting.recipe.Recipes;
+import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.tileentities.ModBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
@@ -36,7 +38,7 @@ import java.util.*;
 /**
  * Created by MightyDanp on 10/10/2021.
  */
-public class HoleTileEntity extends BlockEntity implements MenuProvider, BlockEntityTicker<HoleTileEntity> {
+public class HoleTileEntity extends BlockEntity implements MenuProvider {
 
     public static int numberOfLogSlots = 1;
     public static int numberOfOutputSlots = 1;
@@ -47,7 +49,7 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider, BlockEn
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(numberOfSlots, ItemStack.EMPTY);
     private FluidStack outputFluid = new FluidStack(Fluids.EMPTY, 0);
 
-    private HoleRecipe recipe;
+    public HoleRecipe recipe;
 
     public BlockState desiredBlockState;
 
@@ -97,48 +99,47 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider, BlockEn
         this.outputFluid = outputTank;
     }
 
-    @Override
-    public void tick(Level level, BlockPos blockPos, BlockState blockState, HoleTileEntity holeTileEntityIn){
-        HoleBlock holeBlock = (HoleBlock) blockState.getBlock();
-        if (this.level != null){
-            if(recipe == null){
-                Optional<HoleRecipe> validRecipe = getValidRecipe(new ItemStack(getDesiredBlockSlot().getItem()));
+    public static <T extends BlockEntity> void tick(Level level, BlockPos blockPos, BlockState blockState, T blockEntity) {
+        if (level != null && blockEntity instanceof HoleTileEntity holeTileEntity){
+            if(holeTileEntity.recipe == null){
+                Optional<HoleRecipe> validRecipe = holeTileEntity.getValidRecipe(new ItemStack(holeTileEntity.getDesiredBlockSlot().getItem()));
                 if(validRecipe.isPresent()){
-                    recipe = validRecipe.get();
-                    minTicksForHoleToFill = recipe.getMinTicks();
-                    maxTicksForHoleToFill = recipe.getMaxTicks();
-                    minResult = recipe.getMinResult();
-                    maxResult = recipe.getMaxResult();
-                    holeColor = recipe.getHoleColor();
-                    resinColor = recipe.getResinColor();
-                    ingredientItemDamage = recipe.getIngredientItemDamage();
+                    holeTileEntity.recipe = validRecipe.get();
+                    holeTileEntity.minTicksForHoleToFill = holeTileEntity.recipe.getMinTicks();
+                    holeTileEntity.maxTicksForHoleToFill = holeTileEntity.recipe.getMaxTicks();
+                    holeTileEntity.minResult = holeTileEntity.recipe.getMinResult();
+                    holeTileEntity.maxResult = holeTileEntity.recipe.getMaxResult();
+                    holeTileEntity.holeColor = holeTileEntity.recipe.getHoleColor();
+                    holeTileEntity.resinColor = holeTileEntity.recipe.getResinColor();
+                    holeTileEntity.ingredientItemDamage = holeTileEntity.recipe.getIngredientItemDamage();
                 }
-            }else {
-                progress++;
-                    if (progress >= minTicksForHoleToFill) {
-                        int randomTickNumber = random.nextInt((maxTicksForHoleToFill + 1 - minTicksForHoleToFill) + minTicksForHoleToFill);
+            }else{
+                holeTileEntity.progress++;
+                    if (holeTileEntity.progress >= holeTileEntity.minTicksForHoleToFill) {
+                        int randomTickNumber = holeTileEntity.random.nextInt((holeTileEntity.maxTicksForHoleToFill + 1 - holeTileEntity.minTicksForHoleToFill) + holeTileEntity.minTicksForHoleToFill);
                         if (0 == randomTickNumber) {
-                            ItemStack output = recipe.getResultItem();
-                            FluidStack outputFluid = new FluidStack(recipe.getResultFluid(), 0);
-                            this.level.setBlockAndUpdate(getBlockPos(), getBlockState().setValue(HoleBlock.RESIN, true));
+                            ItemStack output = holeTileEntity.recipe.getResultItem();
+                            FluidStack outputFluid = new FluidStack(holeTileEntity.recipe.getResultFluid(), 0);
+                            level.setBlockAndUpdate(holeTileEntity.getBlockPos(), holeTileEntity.getBlockState().setValue(HoleBlock.RESIN, true));
 
-                            progress = 0;
+                            holeTileEntity.progress = 0;
 
-                            int randomResultNumber = random.nextInt(maxResult + 1 - minResult) + minResult;
+                            int randomResultNumber = holeTileEntity.random.nextInt(holeTileEntity.maxResult + 1 - holeTileEntity.minResult) + holeTileEntity.minResult;
 
-                            if(!output.isEmpty()) {
-                                if (getOutputSlot().isEmpty()) {
-                                    setOutputSlot(new ItemStack(output.getItem(), randomResultNumber));
+                            if(output.getItem() != Items.AIR) {
+                                if (holeTileEntity.getOutputSlot().isEmpty()) {
+                                    holeTileEntity.setOutputSlot(new ItemStack(output.getItem(), randomResultNumber));
                                 } else {
-                                    getOutputSlot().setCount(getOutputSlot().getCount() + randomResultNumber);
+                                    holeTileEntity.getOutputSlot().setCount(holeTileEntity.getOutputSlot().getCount() + randomResultNumber);
                                 }
+
                             }
 
-                            if(!outputFluid.isEmpty()) {
-                                if (getOutputFluid().isEmpty()) {
-                                    setOutputFluid(outputFluid);
+                            if(holeTileEntity.recipe.getResultFluid() != Fluids.EMPTY) {
+                                if (holeTileEntity.getOutputFluid().isEmpty()) {
+                                    holeTileEntity.setOutputFluid(outputFluid);
                                 } else {
-                                    getOutputFluid().grow(outputFluid.getAmount());
+                                    holeTileEntity.getOutputFluid().grow(outputFluid.getAmount());
                                 }
                             }
                         }
@@ -167,39 +168,46 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider, BlockEn
         return null;
     }
 
+
+
     @Override
     public void load(CompoundTag nbt) {
         loadMetadataAndItems(nbt);
+        super.load(nbt);
     }
 
     private CompoundTag loadMetadataAndItems(CompoundTag nbt) {
-        super.load(nbt);
-        Direction directionNew = Direction.byName(nbt.getString("direction"));
+        if(nbt != null) {
+            desiredBlockState = NbtUtils.readBlockState(nbt.getCompound("desired_block_state"));
+            getModelData().setData(desiredBlock, desiredBlockState);
+            progress = nbt.getInt("progress");
+            finishedProgress = nbt.getInt("finished_progress");
+            minTicksForHoleToFill = nbt.getInt("min_ticks");
+            maxTicksForHoleToFill = nbt.getInt("max_ticks");
+            minResult = nbt.getInt("min_result");
+            maxResult = nbt.getInt("max_result");
+            holeColor = nbt.getInt("hole_color");
+            resinColor = nbt.getInt("resin_color");
+            ingredientItemDamage = nbt.getInt("harvest_tool_damage");
 
-        desiredBlockState = NbtUtils.readBlockState(nbt.getCompound("desired_block_state"));
-        progress = nbt.getInt("progress");
-        finishedProgress = nbt.getInt("finished_progress");
-        minTicksForHoleToFill = nbt.getInt("min_ticks");
-        maxTicksForHoleToFill = nbt.getInt("max_ticks");
-        minResult = nbt.getInt("min_result");
-        maxResult = nbt.getInt("max_result");
-        holeColor = nbt.getInt("hole_color");
-        resinColor = nbt.getInt("resin_color");
-        ingredientItemDamage = nbt.getInt("harvest_tool_damage");
+            ContainerHelper.loadAllItems(nbt, this.inventory);
+            CompoundTag outputFluidCompound = nbt.getCompound("output_fluid");
 
-        ContainerHelper.loadAllItems(nbt, this.inventory);
-        CompoundTag outputFluidCompound = nbt.getCompound("output_fluid");
+            outputFluid = FluidStack.loadFluidStackFromNBT(outputFluidCompound);
+            return nbt;
+        }else{
+            nbt = new CompoundTag();
+            super.load(nbt);
+            return nbt;
+        }
 
-        outputFluid = FluidStack.loadFluidStackFromNBT(outputFluidCompound);
-
-        return nbt;
     }
 
 
 
     @Override
     public void saveAdditional(CompoundTag tag){
-        this.saveMetadataAndItems(tag);
+        saveMetadataAndItems(tag);
     }
 
     private void saveMetadataAndItems(CompoundTag tag) {
@@ -220,13 +228,24 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider, BlockEn
         tag.put("output_tank", outputTankCompound);
     }
 
+
+    @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag compoundtag = new CompoundTag();
+        this.saveAdditional(compoundtag);
+        return compoundtag;
+    }
+
+    @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        load(pkt.getTag());
+        if(pkt.getTag() != null) {
+            load(pkt.getTag());
+        }
     }
 
     private void markUpdated() {
@@ -240,5 +259,10 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider, BlockEn
         return new ModelDataMap.Builder()
                 .withInitial(desiredBlock, desiredBlockState)
                 .build();
+    }
+
+    @Override
+    public void requestModelDataUpdate() {
+        super.requestModelDataUpdate();
     }
 }

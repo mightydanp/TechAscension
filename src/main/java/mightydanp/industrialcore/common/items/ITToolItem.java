@@ -45,19 +45,41 @@ import net.minecraft.world.InteractionResultHolder;
  */
 public class ITToolItem extends Item {
     public String name;
-    private final List<String> effectiveBlocks;
-    private final Item.Properties properties;
+    public List<String> effectiveBlocks = new ArrayList<>();
     public boolean preformAction;
-    public Map<String, Integer> toolsNeeded = new HashMap<>();
+    public Map<String, Integer> assembleItems = new HashMap<>();
     public Map<String, Integer> parts = new HashMap<>();
-    public List<String> disassembleTools = new ArrayList<>();
+    public List<String> disassembleItems = new ArrayList<>();
     public ITToolItemInventoryHelper inventory = new ITToolItemInventoryHelper();
 
-    public ITToolItem(String nameIn, List<String> effectiveBlocksIn, Properties propertiesIn) {
-        super(propertiesIn.stacksTo(1));
-        name = nameIn;
-        effectiveBlocks = effectiveBlocksIn;
-        properties = propertiesIn;
+    public ITToolItem(Properties propertiesIn) {
+        super(propertiesIn.tab(ModItemGroups.tool_tab).stacksTo(1));
+    }
+
+    public ITToolItem setName(String name) {
+        this.name = name;
+
+        return this;
+    }
+
+    public ITToolItem setEffectiveBlocks(Set<String> effectiveBlocksIn) {
+        effectiveBlocks.addAll(effectiveBlocksIn);
+        return this;
+    }
+
+    public ITToolItem setAssembleItems(Map<String, Integer> assembleItemsIn) {
+        assembleItems.putAll(assembleItemsIn);
+        return this;
+    }
+
+    public ITToolItem setParts(Map<String, Integer> partsIn) {
+        parts.putAll(partsIn);
+        return this;
+    }
+
+    public ITToolItem setDisassembleItems(List<String> disassembleItemsIn) {
+        disassembleItems.addAll(disassembleItemsIn);
+        return this;
     }
 
     @Override
@@ -83,12 +105,12 @@ public class ITToolItem extends Item {
 
         tooltip.add(Component.nullToEmpty(""));
 
-        if (nbt.contains("tool_levels") && nbt.contains("it_tool_types")) {
-            Map<IToolType, TagKey<Block>> toolTypeList = getToolLevelsList(itemStackIn);
+        if (nbt.contains("harvest_levels") && nbt.contains("it_tool_types")) {
+            Map<IToolType, Integer> toolTypeList = getToolLevelsList(itemStackIn);
             for (int i = 0; i < toolTypeList.size(); i++) {
                 String toolTypeName = toolTypeList.keySet().stream().toList().get(i).getName();
-                TagKey<Block> toolTypeLevel = toolTypeList.values().stream().toList().get(i);
-                tooltip.add(Component.nullToEmpty("\u00A7f" + toolTypeName + " level:" + "\u00A7f" + " " + "\u00A7a" + toolTypeLevel.location().getPath() + "\u00A7a"));
+                int toolTypeLevel = toolTypeList.values().stream().toList().get(i);
+                tooltip.add(Component.nullToEmpty("\u00A7f" + toolTypeName + " level:" + "\u00A7f" + " " + "\u00A7a" + toolTypeLevel + "\u00A7a"));
             }
         }
 
@@ -118,12 +140,18 @@ public class ITToolItem extends Item {
     }
 
     @Override
+    public boolean isCorrectToolForDrops(BlockState p_41450_) {
+        return super.isCorrectToolForDrops(p_41450_);
+    }
+
+    @Override
     public float getDestroySpeed(ItemStack itemStackIn, BlockState state) {
         if (canWork(itemStackIn)) {
             if (state.requiresCorrectToolForDrops()) {
                 return getEfficiency(itemStackIn);
             } else {
                 return 1F;
+                
             }
         }
         return 1F;
@@ -143,12 +171,12 @@ public class ITToolItem extends Item {
         }
 
         if (!canWork(mainHandItemStack)){
-            disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 2, disassembleTools);
+            disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 2, disassembleItems);
             playerEntityIn.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
 
         if (!canWork(offHandItemStack)){
-            disassembleTool(playerEntityIn.getOffhandItem(), playerEntityIn, worldIn, 2, disassembleTools);
+            disassembleTool(playerEntityIn.getOffhandItem(), playerEntityIn, worldIn, 2, disassembleItems);
             playerEntityIn.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
         }
 
@@ -188,16 +216,18 @@ public class ITToolItem extends Item {
         }));
 
         nbt.putString("it_tool_types", String.valueOf(itToolTypeString));
-        nbt.putIntArray("tool_levels", harvestArray);
+        nbt.putIntArray("harvest_levels", harvestArray);
     }
 
-    public Map<IToolType, TagKey<Block>> getToolLevelsList(ItemStack itemStackIn) {
+    public Map<IToolType, Integer> getToolLevelsList(ItemStack itemStackIn) {
         CompoundTag nbt = itemStackIn.getOrCreateTag();
-        Map<IToolType, TagKey<Block>> toolTypes = new HashMap<>();
-        int[] intArray = nbt.getIntArray("tool_levels");
+        Map<IToolType, Integer> toolTypes = new HashMap<>();
+        int[] intArray = nbt.getIntArray("harvest_levels");
         String[] stringArray = nbt.getString("it_tool_types").split(", ");
+
         for (int i = 0; i < intArray.length; i++) {
-            toolTypes.putIfAbsent((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(stringArray[i]), BlockTags.create(new ResourceLocation("tool_level/" + intArray[i])));
+            toolTypes.putIfAbsent((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(stringArray[i]), intArray[i]);
+            //toolTypes.putIfAbsent((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(stringArray[i]), BlockTags.create(new ResourceLocation("harvest_levels/" + intArray[i])));
         }
         return toolTypes;
     }
@@ -206,27 +236,32 @@ public class ITToolItem extends Item {
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
         AtomicBoolean isCorrect = new AtomicBoolean(true);
 
-        getToolLevelsList(stack).forEach((iToolType, toolLevel) -> {
-            if (state.is(iToolType.getToolTypeTag())) {
-                int level = Integer.parseInt(toolLevel.location().getPath().split("/")[1]);
+        if(state.requiresCorrectToolForDrops()) {
+            getToolLevelsList(stack).forEach((iToolType, toolLevel) -> {
+                if (state.is(iToolType.getToolTypeTag())) {
 
-                for(int i = 0; i <= level; i++){
-                    if(!state.is(BlockTags.create(new ResourceLocation("tool_level/" + i)))){
-                        isCorrect.set(false);
+                    for (int i = 0; i <= toolLevel; i++) {
+                        if (!state.is(BlockTags.create(new ResourceLocation("forge", "tool_level/" + i)))) {
+                            isCorrect.set(false);
+                        }
                     }
+                } else {
+                    isCorrect.set(false);
                 }
-            }});
-
-        if(!isCorrect.get()){
-            List<Block> blocks = new ArrayList<>();
-
-            effectiveBlocks.forEach(string -> {
-                Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(string));
-
-                blocks.add(block);
             });
 
-            return blocks.contains(state.getBlock());
+            if (!isCorrect.get()) {
+                List<Block> blocks = new ArrayList<>();
+
+                effectiveBlocks.forEach(string -> {
+                    Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(string));
+                    blocks.add(block);
+                });
+
+                return blocks.contains(state.getBlock());
+            }
+        }else{
+            isCorrect.set(true);
         }
 
         return isCorrect.get();

@@ -152,8 +152,8 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
 
         JsonObject blockProperties = new JsonObject();
         {
-            if (materialIn.miningLevel != null) {
-                blockProperties.addProperty("mining_level", materialIn.miningLevel);
+            if (materialIn.harvestLevel != null) {
+                blockProperties.addProperty("mining_level", materialIn.harvestLevel);
             }
 
             if (blockProperties.size() > 0) {

@@ -8,7 +8,6 @@ import mightydanp.industrialcore.common.items.ToolHandleItem;
 import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.material.tool.ITTools;
 import mightydanp.industrialcore.common.items.ToolHeadItem;
-import mightydanp.industrialcore.common.items.*;
 import mightydanp.industrialcore.common.jsonconfig.tool.type.IToolType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -23,32 +22,37 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.*;
 
 /**
  * Created by MightyDanp on 3/8/2021.
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class ITTool {
-    public IToolType toolType = null;
 
     public String toolName;
 
     public int hitDamage;
 
+    public Set<String> effectiveBlocks;
+
+    public Map<String, Integer> assembleItems;
+    public Map<String, Integer> parts;
+    public List<String> disassembleItems;
+
     public RegistryObject<Item> toolItem;
 
 
-    public ITTool(String nameIn, int hitDamageIn, IToolType toolTypeIn, Supplier<ITToolItem> toolIn) {
-        toolItem = RegistryHandler.ITEMS.register(nameIn, toolIn);
+    public ITTool(String nameIn, int hitDamageIn, Set<String> effectiveBlocksIn, Map<String, Integer> assembleItemsIn, Map<String, Integer> partsIn, List<String> disassembleItemsIn, RegistryObject<Item> toolItemIn) {
         toolName = nameIn;
         hitDamage = hitDamageIn;
-        toolType = toolTypeIn;
 
+        effectiveBlocks = effectiveBlocksIn;
+
+        assembleItems = assembleItemsIn;
+        parts = partsIn;
+        disassembleItems = disassembleItemsIn;
+        toolItem = toolItemIn;
     }
 
     public void registerColorForItem() {
@@ -95,7 +99,7 @@ public class ITTool {
 
             if (tool.size() > 0) {
                 ITToolItem toolItem = (ITToolItem)tool.get(0).toolItem.get();
-                handToolCrafting(toolItem, event, 1, toolItem.toolsNeeded);
+                handToolCrafting(toolItem, event, 1, toolItem.assembleItems);
             }
         }
 
@@ -104,16 +108,16 @@ public class ITTool {
 
             if (tool.size() > 0) {
                 ITToolItem toolItem = (ITToolItem)tool.get(0).toolItem.get();
-                handToolCrafting(toolItem, event, 1, toolItem.toolsNeeded);
+                handToolCrafting(toolItem, event, 1, toolItem.assembleItems);
             }
         }
 
         if(mainHandItem instanceof ITToolItem tool){
-            handToolCrafting(tool, event, 1, tool.toolsNeeded);
+            handToolCrafting(tool, event, 1, tool.assembleItems);
         }
 
         if(offHandItem instanceof ITToolItem tool){
-            handToolCrafting(tool, event, 1, tool.toolsNeeded);
+            handToolCrafting(tool, event, 1, tool.assembleItems);
         }
     }
 

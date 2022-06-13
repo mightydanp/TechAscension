@@ -1,90 +1,66 @@
 package mightydanp.industrialcore.common.resources.data.data;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.*;
 
 public class TagData<A> {
-    private final ResourceLocation tagName;
+    private ResourceLocation name;
+    private Tag.Builder builder = new Tag.Builder();
     private TagKey<A> tagKey;
-    private String parentFolder;
-    private Boolean replace;
     private Set<ResourceLocation> values = new HashSet<>();
+    private Registry<A> registry;
 
-    public TagData(ResourceLocation tagName, ResourceKey<? extends Registry<A>> ResourceKey, IForgeRegistry<? extends IForgeRegistryEntry<A>> forgeRegistry){
-        this.tagName = tagName;
-
-        if(forgeRegistry != null && forgeRegistry.tags() != null) {
-            forgeRegistry.tags().createOptionalTagKey(tagName, Set.of());
-
-            forgeRegistry.tags();
-        }
-
-        tagKey = TagKey.create(ResourceKey, tagName);
-
-
+    public TagData(ResourceLocation name, ResourceKey<? extends Registry<A>> ResourceKey, Registry<A> registry){
+        this.name = name;
+        tagKey = TagKey.create(ResourceKey, name);
+        this.registry = registry;
     }
 
-    public ResourceLocation getTagName() {
-        return tagName;
+    public ResourceLocation getName() {
+        return name;
+    }
+
+    public TagData<A> replace(boolean replace){
+        builder.replace(replace);
+        return this;
+    }
+
+    public TagData<A> add(A object) {
+        builder.addElement(registry.getKey(object), name.getNamespace());
+        return this;
+    }
+
+    public TagData<A> addAll(A... objects) {
+        Arrays.stream(objects).forEach(object -> builder.addElement(registry.getKey(object), name.getNamespace()));
+        return this;
+    }
+
+    public TagData<A> remove(A object) {
+        builder.removeElement(registry.getKey(object), name.getNamespace());
+        return this;
+    }
+
+    public TagData<A> removeAll(A... objects) {
+        Arrays.stream(objects).forEach(object -> builder.removeElement(registry.getKey(object), name.getNamespace()));
+        return this;
     }
 
     public TagKey<A> getTagKey() {
         return tagKey;
     }
 
-    public TagData<A> setParentFolder(String parentFolder) {
-        this.parentFolder = parentFolder;
-        return this;
-    }
-
-    public String getParentFolder() {
-        return parentFolder;
-    }
-
-    public TagData<A> setReplace(Boolean replace) {
-        this.replace = replace;
-        return this;
-    }
-
-    public TagData<A> addValue(ResourceLocation value) {
-        values.add(value);
-        return this;
-    }
-
-    public TagData<A> addAllValues(Set<ResourceLocation> value) {
-        values.addAll(value);
+    public TagData<A> addExisting(){
+        registry.getTag(tagKey).ifPresent(holders -> holders.forEach(aHolder -> add(aHolder.value())));
         return this;
     }
 
     public JsonObject createJson(){
-        JsonObject jsonObject = new JsonObject();
-        if(replace != null){
-            jsonObject.addProperty("replace", replace);
-        }
-
-        if(values.size() > 0){
-            JsonArray values = new JsonArray();{
-
-                this.values.forEach(resourceLocation-> {
-                    values.add(resourceLocation.toString());
-                });
-            }
-            jsonObject.add("values", values);
-
-        }
-
-        return jsonObject;
+        return builder.serializeToJson();
     }
-
-
-
 }

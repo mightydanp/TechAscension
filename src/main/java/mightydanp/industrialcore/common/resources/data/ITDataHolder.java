@@ -19,14 +19,13 @@ import java.util.function.Supplier;
 
 public class ITDataHolder implements PackResources {
 
-    public Map<ResourceLocation, Supplier<InputStream>> DATA_HOLDER = new HashMap<>();
+    public Map<ResourceLocation, JsonObject> DATA_HOLDER = new HashMap<>();
 
     private static final int PACK_VERSION = 8;
 
     public void addToResources(ResourceLocation location, JsonObject jsonObject){
         if (!DATA_HOLDER.containsKey(location)) {
-            InputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
-            DATA_HOLDER.put(location, ()-> inputStream);
+            DATA_HOLDER.put(location, jsonObject);
         }else{
             IndustrialTech.LOGGER.warn("[" + location + "] already exists in data.");
         }
@@ -44,8 +43,9 @@ public class ITDataHolder implements PackResources {
     @Override
     public InputStream getRootResource(String location) throws IOException {
         if(!location.contains("/") && !location.contains("\\")) {
-            Supplier<InputStream> supplier = DATA_HOLDER.get(location);
-            return supplier.get();
+            JsonObject supplier = DATA_HOLDER.get(location);
+
+            return new ByteArrayInputStream(supplier.toString().getBytes());
         } else {
             throw new IllegalArgumentException("File name can't be a path");
         }
@@ -55,11 +55,11 @@ public class ITDataHolder implements PackResources {
     public InputStream getResource(PackType packType, ResourceLocation location) throws IOException {
         if (packType == PackType.SERVER_DATA) {
             if (DATA_HOLDER.containsKey(location)) {
-                InputStream stream = DATA_HOLDER.get(location).get();
-                if (stream != null) {
-                    return stream;
+                JsonObject stream = DATA_HOLDER.get(location);
+                if (stream != null && DATA_HOLDER.get(location).size() > 0) {
+                    return new ByteArrayInputStream(stream.toString().getBytes());
                 } else {
-                    throw new IOException("Data is null: " + location);
+                    throw new IOException("Data is null or empty: " + location);
                 }
             }
         }
@@ -71,13 +71,9 @@ public class ITDataHolder implements PackResources {
     public Collection<ResourceLocation> getResources(PackType packType, String namespace, String directory, int depth, Predicate<String> predicate) {
         ArrayList<ResourceLocation> locations = new ArrayList<>();
         if (packType == PackType.SERVER_DATA) {
-            for (ResourceLocation key : DATA_HOLDER.keySet()) {
-                if(directory.equals("tags/blocks")){
-
-                }
-
-                if (key.getPath().startsWith(directory) && key.getNamespace().equals(namespace) && predicate.test(key.getPath()) && DATA_HOLDER.get(key).get() != null) {
-                    locations.add(key);
+            for (ResourceLocation location : DATA_HOLDER.keySet()) {
+                if (location.getPath().startsWith(directory) && location.getNamespace().equals(namespace) && predicate.test(location.getPath()) && DATA_HOLDER.get(location) != null && DATA_HOLDER.get(location).size() > 0) {
+                    locations.add(location);
                 }
             }
         }
@@ -88,10 +84,7 @@ public class ITDataHolder implements PackResources {
     public boolean hasResource(@NotNull PackType packType, @NotNull ResourceLocation location) {
         if (packType == PackType.SERVER_DATA) {
             if (DATA_HOLDER.containsKey(location)) {
-                if(location.getPath().equals("tags/items/gems/almandine")){
-                    return DATA_HOLDER.get(location).get() != null;
-                }
-                return DATA_HOLDER.get(location).get() != null;
+                return DATA_HOLDER.get(location) != null && DATA_HOLDER.get(location).size() > 0;
             }
         }
         return false;

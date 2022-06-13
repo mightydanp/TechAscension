@@ -10,6 +10,7 @@ import mightydanp.industrialcore.common.handler.EventHandler;
 import mightydanp.industrialcore.common.handler.RegistryHandler;
 import mightydanp.industrialcore.common.inventory.container.Containers;
 import mightydanp.industrialcore.common.items.ITItems;
+import mightydanp.industrialcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialcore.common.resources.asset.AssetPackRegistry;
 import mightydanp.industrialcore.common.jsonconfig.main.data.MainJsonConfigSingleFile;
 import mightydanp.industrialcore.common.resources.asset.ITAssetHolder;
@@ -72,9 +73,11 @@ public class IndustrialTech {
 
         ModMaterials.commonInit();
 
+
         configSync.init();
-        ITTools.init();
+
         ModTools.init();
+        ITTools.init();
         ITItems.init();
         ModItems.init();
         ITBlocks.init();
@@ -83,8 +86,8 @@ public class IndustrialTech {
         ModItems.initBlockItems();
         ModTrees.commonInit();
         Containers.init();
-        TileEntities.init();
         ModBlockEntity.init();
+        TileEntities.init();
 
         bus.addListener(JsonConfigClient::init);
         bus.addListener(CommonEvent::init);
@@ -98,9 +101,7 @@ public class IndustrialTech {
         MinecraftForge.EVENT_BUS.register(ModRecipes.class);
         MinecraftForge.EVENT_BUS.register(EventHandler.class);
         MinecraftForge.EVENT_BUS.register(ITTool.class);
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AssetPackRegistry::init);
-        DataPackRegistry.init();
+
         bus.addListener(ResourcePackEventHandler::addResourcePack);
-        MinecraftForge.EVENT_BUS.register(ResourcePackEventHandler.class);
     }
 }
