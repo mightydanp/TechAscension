@@ -7,6 +7,7 @@ import mightydanp.industrialcore.common.resources.asset.data.ItemModelData;
 import mightydanp.industrialcore.common.tool.ITTool;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,5 +20,11 @@ public class ITTools {
 
     public static void init(){
 
+    }
+
+    public static void clientInit(){
+        for(ITTool material : tools) {
+            material.registerColorForItem();
+        }
     }
 }

@@ -77,8 +77,8 @@ public class ConfigSync {
     public int toolPartID = 4;
     public int toolTypeID = 5;
     public int stoneLayerID = 6;
-    public int materialID = 7;
-    public int toolID = 8;
+    public int toolID = 7;
+    public int materialID = 8;
     public int oreVeinID = 9;
     public int smallOreID = 10;
     public int blocksInWaterID = 11;
@@ -92,8 +92,8 @@ public class ConfigSync {
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolPart = configs.getOrDefault(toolPartID, new Pair<>(new ToolPartRegistry(),  new ToolPartServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolType = configs.getOrDefault(toolTypeID, new Pair<>(new ToolTypeRegistry(),  new ToolTypeServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  stoneLayer = configs.getOrDefault(stoneLayerID, new Pair<>(new StoneLayerRegistry(),  new StoneLayerServer()));
-    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  material = configs.getOrDefault(materialID, new Pair<>(new MaterialRegistry(),  new MaterialServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  tool = configs.getOrDefault(toolID, new Pair<>(new ToolRegistry(),  new ToolServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  material = configs.getOrDefault(materialID, new Pair<>(new MaterialRegistry(),  new MaterialServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreVein = configs.getOrDefault(oreVeinID, new Pair<>(new OreVeinRegistry(),  new OreVeinServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  smallOre = configs.getOrDefault(smallOreID, new Pair<>(new SmallOreVeinRegistry(),  new SmallOreVeinServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  blocksInWater = configs.getOrDefault(blocksInWaterID, new Pair<>(new BlocksInWaterRegistry(),  new BlocksInWaterServer()));
@@ -111,8 +111,8 @@ public class ConfigSync {
         configs.put(toolPartID, toolPart);
         configs.put(toolTypeID, toolType);
         configs.put(stoneLayerID, stoneLayer);
-        configs.put(materialID, material);
         configs.put(toolID, tool);
+        configs.put(materialID, material);
         configs.put(oreVeinID, oreVein);
         configs.put(smallOreID, smallOre);
         configs.put(blocksInWaterID, blocksInWater);

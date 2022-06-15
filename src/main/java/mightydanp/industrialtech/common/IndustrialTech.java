@@ -72,9 +72,10 @@ public class IndustrialTech {
         modLoadingContext.registerConfig(ModConfig.Type.CLIENT, DataConfig.CLIENT_SPEC);
         modLoadingContext.registerConfig(ModConfig.Type.COMMON, DataConfig.COMMON_SPEC);
 
-        ModMaterials.commonInit();
         ModTools.init();
         ITTools.init();
+
+        ModMaterials.commonInit();
 
         configSync.init();
         

@@ -21,9 +21,4 @@ public class ModCommonEvent {
         PlantGeneration.init();
         StoneLayerGeneration.init();
     }
-
-    @SubscribeEvent
-    public static void onItemRightClickEvent(final PlayerInteractEvent.RightClickItem event) {
-        ModTools.handCraftingInit(event);
-    }
 }

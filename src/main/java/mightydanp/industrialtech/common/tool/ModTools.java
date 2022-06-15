@@ -72,16 +72,4 @@ public class ModTools extends ITTools {
                 knifeTool = RegistryHandler.ITEMS.register(knifeName, ()-> new KnifeToolItem().setName(knifeName).setEffectiveBlocks(knifeEffectiveOn).setAssembleItems(knifeAssembleItems).setParts(knifeParts) .setDisassembleItems(knifeDisassembleItems))
         ));
     }
-
-    public static void handCraftingInit(PlayerInteractEvent.RightClickItem event){
-        for(ITTool tool : tools) {//redo crashes on rightclick anything
-            //ITTool.handToolCrafting((ITToolItem)tool.toolItem.get(), event, tool.hitDamage, ((ITToolItem)tool.toolItem.get()).toolsNeeded);
-        }
-    }
-
-    public static void clientInit(){
-        for(ITTool material : tools) {
-            material.registerColorForItem();
-        }
-    }
 }

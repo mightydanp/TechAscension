@@ -2,8 +2,10 @@ package mightydanp.industrialcore.common.resources;
 
 import mightydanp.industrialcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialcore.common.libs.Ref;
+import mightydanp.industrialcore.common.material.tool.ITTools;
 import mightydanp.industrialcore.common.resources.asset.AssetPackRegistry;
 import mightydanp.industrialcore.common.resources.data.DataPackRegistry;
+import mightydanp.industrialcore.common.tool.ITTool;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
@@ -19,6 +21,7 @@ public class ResourcePackEventHandler {
 
     @SubscribeEvent
     public static void addResourcePack(AddPackFindersEvent event){
+        ITTools.tools.forEach(ITTool::initResources);
         ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).registryMap.forEach((modID, material) -> material.saveResources());
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AssetPackRegistry::init);

@@ -37,8 +37,7 @@ public class ToolServer extends JsonConfigServer<ITool> {
 
         List<ITool> list = message.getConfig(IndustrialTech.configSync.toolID).stream()
                 .filter(ITool.class::isInstance)
-                .map(ITool.class::cast)
-                .collect(toList());
+                .map(ITool.class::cast).toList();
         
         if(list.size() != getServerMap().size()){
             sync.set(false);

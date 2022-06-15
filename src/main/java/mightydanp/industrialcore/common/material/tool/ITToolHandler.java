@@ -7,6 +7,7 @@ import mightydanp.industrialcore.common.items.ToolHandleItem;
 import mightydanp.industrialcore.common.items.ToolHeadItem;
 import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.tool.ITTool;
+import mightydanp.industrialtech.common.tool.ModTools;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -25,6 +26,12 @@ import java.util.Objects;
 
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class ITToolHandler {
+    @SubscribeEvent
+    public static void handCraftingInit(final PlayerInteractEvent.RightClickItem event) {
+        for(ITTool tool : ITTools.tools) {//redo crashes on rightclick anything
+            //ITTool.handToolCrafting((ITToolItem)tool.toolItem.get(), event, tool.hitDamage, ((ITToolItem)tool.toolItem.get()).toolsNeeded);
+        }
+    }
 
     @SubscribeEvent
     public static void onItemRightClickEvent(final PlayerInteractEvent.RightClickItem event) {
