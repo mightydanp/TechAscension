@@ -55,7 +55,6 @@ public class ModTools extends ITTools {
     public static List<String> knifeDisassembleItems = List.of(new ResourceLocation(Ref.mod_id, "hammer").toString(), new ResourceLocation(Ref.mod_id, "chisel").toString());
 
     public static void init(){
-        //todo check to see if really needed. Head parts give toolType.
 
         tools.add(chisel = new ITTool(chiselName, 1, chiselEffectiveOn, chiselAssembleItems, chiselParts, chiselDisassembleItems,
                 chiselTool = RegistryHandler.ITEMS.register(chiselName, ()-> new ChiselToolItem().setName(chiselName).setEffectiveBlocks(chiselEffectiveOn).setAssembleItems(chiselAssembleItems).setParts(chiselParts) .setDisassembleItems(chiselDisassembleItems))

@@ -24,6 +24,8 @@ import mightydanp.industrialcore.common.jsonconfig.stonelayer.StoneLayerRegistry
 import mightydanp.industrialcore.common.jsonconfig.stonelayer.StoneLayerServer;
 import mightydanp.industrialcore.common.jsonconfig.sync.gui.screen.SyncScreen;
 import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.tool.ToolRegistry;
+import mightydanp.industrialcore.common.jsonconfig.tool.ToolServer;
 import mightydanp.industrialcore.common.jsonconfig.tool.part.ToolPartRegistry;
 import mightydanp.industrialcore.common.jsonconfig.tool.part.ToolPartServer;
 import mightydanp.industrialcore.common.jsonconfig.tool.type.ToolTypeRegistry;
@@ -76,10 +78,11 @@ public class ConfigSync {
     public int toolTypeID = 5;
     public int stoneLayerID = 6;
     public int materialID = 7;
-    public int oreVeinID = 8;
-    public int smallOreID = 9;
-    public int blocksInWaterID = 10;
-    public int randomSurfaceID = 11;
+    public int toolID = 8;
+    public int oreVeinID = 9;
+    public int smallOreID = 10;
+    public int blocksInWaterID = 11;
+    public int randomSurfaceID = 12;
 
 
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> materialFlag = configs.getOrDefault(materialFlagID, new Pair<>(new MaterialFlagRegistry(),  new MaterialFlagServer()));
@@ -90,6 +93,7 @@ public class ConfigSync {
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolType = configs.getOrDefault(toolTypeID, new Pair<>(new ToolTypeRegistry(),  new ToolTypeServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  stoneLayer = configs.getOrDefault(stoneLayerID, new Pair<>(new StoneLayerRegistry(),  new StoneLayerServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  material = configs.getOrDefault(materialID, new Pair<>(new MaterialRegistry(),  new MaterialServer()));
+    public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  tool = configs.getOrDefault(toolID, new Pair<>(new ToolRegistry(),  new ToolServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreVein = configs.getOrDefault(oreVeinID, new Pair<>(new OreVeinRegistry(),  new OreVeinServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  smallOre = configs.getOrDefault(smallOreID, new Pair<>(new SmallOreVeinRegistry(),  new SmallOreVeinServer()));
     public Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  blocksInWater = configs.getOrDefault(blocksInWaterID, new Pair<>(new BlocksInWaterRegistry(),  new BlocksInWaterServer()));
@@ -108,6 +112,7 @@ public class ConfigSync {
         configs.put(toolTypeID, toolType);
         configs.put(stoneLayerID, stoneLayer);
         configs.put(materialID, material);
+        configs.put(toolID, tool);
         configs.put(oreVeinID, oreVein);
         configs.put(smallOreID, smallOre);
         configs.put(blocksInWaterID, blocksInWater);
@@ -231,7 +236,6 @@ public class ConfigSync {
                                     e.printStackTrace();
                                 }
                             }
-
 
                             IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
                             IndustrialTech.mainJsonConfig.reloadMainConfigJson();

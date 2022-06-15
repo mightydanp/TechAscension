@@ -39,10 +39,7 @@ import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static mightydanp.industrialcore.common.jsonconfig.flag.DefaultMaterialFlag.*;
 import static mightydanp.industrialcore.common.jsonconfig.flag.DefaultMaterialFlag.INGOT;
@@ -51,6 +48,12 @@ import static mightydanp.industrialcore.common.jsonconfig.flag.DefaultMaterialFl
  * Created by MightyDanp on 12/1/2021.
  */
 public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry<ITMaterial> {
+    public static Map<String, IMaterial> extraSave = new HashMap<>();
+    public static Map<String, IMaterial> extraSaveResources = new HashMap<>();
+
+    public Map<String, RegistryObject<Block>> extraSaveBlocks = new HashMap<>();
+    public Map<String, RegistryObject<Item>> extraSaveItems = new HashMap<>();
+
     public final String name;
     public final int color;
 
@@ -371,6 +374,8 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 ingot = RegistryHandler.ITEMS.register(name + "_" + INGOT.name(), () -> new IngotItem(new Item.Properties().tab(ModItemGroups.item_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
             }
+
+            extraSave.forEach((string, iMaterial) -> iMaterial.save(this, stoneLayerList, toolParts, materialFlags));
         }
 
         return this;
@@ -486,7 +491,6 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                             DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "tool_level/" + 1)).add(block)));
                     Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(BlockTags.NEEDS_STONE_TOOL).stream().forEach(block ->
                             DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "tool_level/" + 1)).add(block)));
-                    ;
 
 
                     String stoneLayerBlockName = stoneLayerBlock.equals("") ? String.valueOf(layerBlock.get().getRegistryName()) : stoneLayerBlock;
@@ -837,6 +841,8 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 //--//--//--//--//--//--//--//--//
             }
         }
+
+        extraSaveResources.forEach((string, iMaterial) -> iMaterial.saveResources(this, stoneLayerList, toolParts, materialFlags));
 
         AssetPackRegistry.langDataMap.put("en_us", enLang);
     }
