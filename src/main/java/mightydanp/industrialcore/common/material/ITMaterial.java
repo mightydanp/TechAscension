@@ -855,6 +855,8 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         if (thinSlabBlock != null) {
             ItemBlockRenderTypes.setRenderLayer(thinSlabBlock.get(), RenderType.cutout());
         }
+
+        extraSave.forEach((string, iMaterial) -> iMaterial.clientRenderLayerInit(this, toolParts, materialFlags));
     }
 
     public void registerColorForBlock() {
@@ -871,6 +873,8 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         if (rockBlock != null) {
             setupABlockColor(rockBlock.get());
         }
+
+        extraSave.forEach((string, iMaterial) -> iMaterial.registerColorForBlock(this, toolParts, materialFlags));
     }
 
     public void setupABlockColor(Block block) {
@@ -974,6 +978,8 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         if (chiselHead != null) {
             registerAItemColor(chiselHead.get(), 0);
         }
+
+        extraSave.forEach((string, iMaterial) -> iMaterial.registerColorForItem(this, toolParts, materialFlags));
     }
 
     public void registerAItemColor(Item item, int layerNumberIn) {

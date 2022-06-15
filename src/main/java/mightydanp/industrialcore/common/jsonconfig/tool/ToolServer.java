@@ -25,37 +25,37 @@ import static java.util.stream.Collectors.toList;
  */
 public class ToolServer extends JsonConfigServer<ITool> {
 
-    public Map<String, ITool> getServerMapFromList(List<ITool> toolsIn) {
-        Map<String, ITool> toolsList = new LinkedHashMap<>();
-        toolsIn.forEach(tool -> toolsList.put(tool.getName(), tool));
+    public Map<String, ITool> getServerMapFromList(List<ITool> textureIconsIn) {
+        Map<String, ITool> textureIconsList = new LinkedHashMap<>();
+        textureIconsIn.forEach(textureIcon -> textureIconsList.put(textureIcon.getName(), textureIcon));
 
-        return toolsList;
+        return textureIconsList;
     }
 
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<ITool> list = message.getConfig(IndustrialTech.configSync.toolID).stream()
+        List<ITool> list = message.getConfig(IndustrialTech.configSync.textureIconID).stream()
                 .filter(ITool.class::isInstance)
                 .map(ITool.class::cast)
                 .collect(toList());
         
         if(list.size() != getServerMap().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("tool", sync.get());
+            IndustrialTech.configSync.syncedJson.put("texture_icon", sync.get());
             return false;
         }
 
-        getServerMap().forEach((name, tool) -> {
+        getServerMap().forEach((name, textureIcon) -> {
             sync.set(list.stream().anyMatch(o -> o.getName().equals(name)));
 
             if(sync.get()) {
                 Optional<ITool> optional = list.stream().filter(o -> o.getName().equals(name)).findFirst();
 
                 if(optional.isPresent()) {
-                    ITool serverTool = optional.get();
-                    JsonObject jsonMaterial = ((ToolRegistry)IndustrialTech.configSync.tool.getFirst()).toJsonObject(tool);
-                    JsonObject materialJson = ((ToolRegistry)IndustrialTech.configSync.tool.getFirst()).toJsonObject(serverTool);
+                    ITool serverTextureIcon = optional.get();
+                    JsonObject jsonMaterial = ((ToolRegistry)IndustrialTech.configSync.textureIcon.getFirst()).toJsonObject(textureIcon);
+                    JsonObject materialJson = ((ToolRegistry)IndustrialTech.configSync.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -64,47 +64,47 @@ public class ToolServer extends JsonConfigServer<ITool> {
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("tool", sync.get());
+        IndustrialTech.configSync.syncedJson.put("texture_icon", sync.get());
 
         return sync.get();
     }
 
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, ITool> clientTools = new HashMap<>();
+        Map<String, ITool> clientTextureIcons = new HashMap<>();
 
         ConfigSync configSync = IndustrialTech.configSync;
 
-        Path configs = Paths.get(singlePlayerConfigs + "/tool");
+        Path configs = Paths.get(singlePlayerConfigs + "/texture_icon");
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                configSync.syncedJson.put("tool", sync.get());
+                configSync.syncedJson.put("texture_icon", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            configSync.syncedJson.put("tool", sync.get());
+            configSync.syncedJson.put("texture_icon", sync.get());
             return false;
         }
 
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = IndustrialTech.configSync.tool.getFirst().getJsonObject(file.getName());
-                ITool tool = ((ToolRegistry)IndustrialTech.configSync.tool.getFirst()).getFromJsonObject(jsonObject);
-                clientTools.put(tool.getName(), tool);
+                JsonObject jsonObject = IndustrialTech.configSync.textureIcon.getFirst().getJsonObject(file.getName());
+                ITool textureIcon = ((ToolRegistry)IndustrialTech.configSync.textureIcon.getFirst()).getFromJsonObject(jsonObject);
+                clientTextureIcons.put(textureIcon.getName(), textureIcon);
             }
 
-            getServerMap().values().forEach(serverTool -> {
-                sync.set(clientTools.containsKey(serverTool.getName()));
+            getServerMap().values().forEach(serverTextureIcon -> {
+                sync.set(clientTextureIcons.containsKey(serverTextureIcon.getName()));
 
                 if(sync.get()) {
-                    ITool clientTool = getServerMap().get(serverTool.getName());
-                    JsonObject jsonMaterial = ((ToolRegistry)IndustrialTech.configSync.tool.getFirst()).toJsonObject(serverTool);
-                    JsonObject materialJson = ((ToolRegistry)IndustrialTech.configSync.tool.getFirst()).toJsonObject(clientTool);
+                    ITool clientTextureIcon = getServerMap().get(serverTextureIcon.getName());
+                    JsonObject jsonMaterial = ((ToolRegistry)IndustrialTech.configSync.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
+                    JsonObject materialJson = ((ToolRegistry)IndustrialTech.configSync.textureIcon.getFirst()).toJsonObject(clientTextureIcon);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -112,14 +112,14 @@ public class ToolServer extends JsonConfigServer<ITool> {
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("tool", sync.get());
+        IndustrialTech.configSync.syncedJson.put("texture_icon", sync.get());
 
         return sync.get();
     }
 
     public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/tool");
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/texture_icon");
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -127,10 +127,10 @@ public class ToolServer extends JsonConfigServer<ITool> {
             }
         }
 
-        for (ITool tool : getServerMap().values()) {
-            String name = tool.getName();
+        for (ITool textureIcon : getServerMap().values()) {
+            String name = textureIcon.getName();
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((ToolRegistry)IndustrialTech.configSync.tool.getFirst()).toJsonObject(tool);
+            JsonObject jsonObject = ((ToolRegistry)IndustrialTech.configSync.textureIcon.getFirst()).toJsonObject(textureIcon);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -144,16 +144,16 @@ public class ToolServer extends JsonConfigServer<ITool> {
 
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/tool");
-        Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/tool");
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/texture_icon");
+        Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/texture_icon");
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.tool.getFirst().getJsonObject(file.getName());
-                    ITool tool = ((ToolRegistry)IndustrialTech.configSync.tool.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = IndustrialTech.configSync.textureIcon.getFirst().getJsonObject(file.getName());
+                    ITool textureIcon = ((ToolRegistry)IndustrialTech.configSync.textureIcon.getFirst()).getFromJsonObject(jsonObject);
 
-                    String name = tool.getName();
+                    String name = textureIcon.getName();
 
                     Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
                     if (!Files.exists(materialFile)) {
@@ -171,35 +171,35 @@ public class ToolServer extends JsonConfigServer<ITool> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<ITool> list = message.getConfig(IndustrialTech.configSync.toolID).stream()
+        List<ITool> list = message.getConfig(IndustrialTech.configSync.textureIconID).stream()
                 .filter(ITool.class::isInstance)
                 .map(ITool.class::cast)
                 .collect(toList());
 
-        Map<String, ITool> tools = list.stream()
+        Map<String, ITool> textureIcons = list.stream()
                 .collect(Collectors.toMap(ITool::getName, s -> s));
 
         serverMap.clear();
-        serverMap.putAll(tools);
+        serverMap.putAll(textureIcons);
 
-        IndustrialTech.LOGGER.info("Loaded {} tools from the server", tools.size());
+        IndustrialTech.LOGGER.info("Loaded {} texture icons from the server", textureIcons.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, ITool tool) {//friendlybotbuff
-        buffer.writeUtf(tool.getName());
+    public void singleToBuffer(FriendlyByteBuf buffer, ITool textureIcon) {//friendlybotbuff
+        buffer.writeUtf(textureIcon.getName());
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<ITool> list = message.getConfig(IndustrialTech.configSync.toolID).stream()
+        List<ITool> list = message.getConfig(IndustrialTech.configSync.textureIconID).stream()
                 .filter(ITool.class::isInstance)
                 .map(ITool.class::cast)
                 .collect(toList());
 
         buffer.writeVarInt(list.size());
 
-        list.forEach((tool) -> singleToBuffer(buffer, tool));
+        list.forEach((textureIcon) -> singleToBuffer(buffer, textureIcon));
     }
 
     @Override
@@ -217,17 +217,17 @@ public class ToolServer extends JsonConfigServer<ITool> {
 
     @Override
     public List<ITool> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<ITool> tools = new ArrayList<>();
+        List<ITool> textureIcons = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            ITool tool = singleFromBuffer(buffer);
+            ITool textureIcon = singleFromBuffer(buffer);
 
-            tools.add(tool);
+            textureIcons.add(textureIcon);
         }
 
-        return tools;
+        return textureIcons;
     }
 
 }

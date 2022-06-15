@@ -77,7 +77,7 @@ public class IndustrialTech {
         ITTools.init();
 
         configSync.init();
-
+        
         ITItems.init();
         ModItems.init();
         ITBlocks.init();

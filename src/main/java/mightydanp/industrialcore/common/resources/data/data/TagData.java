@@ -10,11 +10,11 @@ import net.minecraft.tags.TagKey;
 import java.util.*;
 
 public class TagData<A> {
-    private ResourceLocation name;
+    private final ResourceLocation name;
     private Tag.Builder builder = new Tag.Builder();
-    private TagKey<A> tagKey;
+    private final TagKey<A> tagKey;
     private Set<ResourceLocation> values = new HashSet<>();
-    private Registry<A> registry;
+    private final Registry<A> registry;
 
     public TagData(ResourceLocation name, ResourceKey<? extends Registry<A>> ResourceKey, Registry<A> registry){
         this.name = name;
