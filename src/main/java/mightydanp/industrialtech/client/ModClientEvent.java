@@ -36,7 +36,6 @@ public class ModClientEvent implements ISidedReference {
     public static void init(FMLClientSetupEvent event) {
         ModBlocks.setRenderType();
         ModMaterials.clientInit();
-        ModTools.clientInit();
         ModTrees.clientInit();
         ModBlockEntity.clientInit();
         ModKeyBindings.init();

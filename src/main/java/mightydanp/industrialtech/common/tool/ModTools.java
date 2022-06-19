@@ -3,20 +3,20 @@ package mightydanp.industrialtech.common.tool;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialcore.common.handler.RegistryHandler;
-import mightydanp.industrialcore.common.jsonconfig.tool.type.IToolType;
-import mightydanp.industrialcore.common.jsonconfig.tool.type.ToolTypeRegistry;
 import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.tool.ITTool;
 import mightydanp.industrialcore.common.material.tool.ITTools;
-import mightydanp.industrialtech.common.IndustrialTech;
-import mightydanp.industrialtech.common.tool.tools.ChiselToolItem;
+import mightydanp.industrialcore.common.tool.part.*;
+import mightydanp.industrialtech.common.tool.part.ITBindingItem;
+import mightydanp.industrialtech.common.tool.part.ITDullHeadItem;
+import mightydanp.industrialtech.common.tool.part.ITHandleItem;
+import mightydanp.industrialtech.common.tool.part.ITHeadItem;
 import mightydanp.industrialtech.common.tool.tools.HammerToolItem;
 import mightydanp.industrialtech.common.tool.tools.KnifeToolItem;
 import mightydanp.industrialtech.common.tool.tools.PickaxeToolItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
@@ -55,21 +55,41 @@ public class ModTools extends ITTools {
     public static List<String> knifeDisassembleItems = List.of(new ResourceLocation(Ref.mod_id, "hammer").toString(), new ResourceLocation(Ref.mod_id, "chisel").toString());
 
     public static void init(){
-
-        tools.add(chisel = new ITTool(chiselName, 1, chiselEffectiveOn, chiselAssembleItems, chiselParts, chiselDisassembleItems,
-                chiselTool = RegistryHandler.ITEMS.register(chiselName, ()-> new ChiselToolItem().setName(chiselName).setEffectiveBlocks(chiselEffectiveOn).setAssembleItems(chiselAssembleItems).setParts(chiselParts) .setDisassembleItems(chiselDisassembleItems))
+        tools.add(chisel = new ITTool(chiselName, 1, List.of(), chiselEffectiveOn, chiselAssembleItems, chiselParts, chiselDisassembleItems,
+                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), ITHandleItem.class),
+                null,
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), ITHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), ITBindingItem.class),
+                chiselTool = RegistryHandler.ITEMS.register(chiselName, ()-> new HammerToolItem().setName(chiselName).setEffectiveBlocks(chiselEffectiveOn).setAssembleItems(chiselAssembleItems).setParts(chiselParts) .setDisassembleItems(chiselDisassembleItems))
         ));
 
-        tools.add(hammer = new ITTool(hammerName, 1, hammerEffectiveOn, hammerAssembleItems, hammerParts, hammerDisassembleItems,
+        tools.add(hammer = new ITTool(hammerName, 1, List.of(), hammerEffectiveOn, hammerAssembleItems, hammerParts, hammerDisassembleItems,
+                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), ITHandleItem.class),
+                null,
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), ITHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), ITBindingItem.class),
                 hammerTool = RegistryHandler.ITEMS.register(hammerName, ()-> new HammerToolItem().setName(hammerName).setEffectiveBlocks(hammerEffectiveOn).setAssembleItems(hammerAssembleItems).setParts(hammerParts) .setDisassembleItems(hammerDisassembleItems))
         ));
 
-        tools.add(pickaxe = new ITTool(pickaxeName, 1, pickaxeEffectiveOn, pickaxeAssembleItems, pickaxeParts, pickaxeDisassembleItems,
+        tools.add(pickaxe = new ITTool(pickaxeName, 1, List.of(), pickaxeEffectiveOn, pickaxeAssembleItems, pickaxeParts, pickaxeDisassembleItems,
+                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), ITHandleItem.class),
+                new PartHolders.dullHeadPartHolder(new Pair<>("dull_", "_head"), ITDullHeadItem.class),
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), ITHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), ITBindingItem.class),
                 pickaxeTool = RegistryHandler.ITEMS.register(pickaxeName, ()-> new PickaxeToolItem().setName(pickaxeName).setEffectiveBlocks(pickaxeEffectiveOn).setAssembleItems(pickaxeAssembleItems).setParts(pickaxeParts) .setDisassembleItems(pickaxeDisassembleItems))
         ));
 
-        tools.add(knife = new ITTool(knifeName, 1, knifeEffectiveOn, knifeAssembleItems, knifeParts, knifeDisassembleItems,
+        tools.add(knife = new ITTool(knifeName, 1, List.of(), knifeEffectiveOn, knifeAssembleItems, knifeParts, knifeDisassembleItems,
+                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), ITHandleItem.class),
+                new PartHolders.dullHeadPartHolder(new Pair<>("dull_", "_head"), ITDullHeadItem.class),
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), ITHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), ITBindingItem.class),
                 knifeTool = RegistryHandler.ITEMS.register(knifeName, ()-> new KnifeToolItem().setName(knifeName).setEffectiveBlocks(knifeEffectiveOn).setAssembleItems(knifeAssembleItems).setParts(knifeParts) .setDisassembleItems(knifeDisassembleItems))
         ));
     }
+
+    record handlePartHolder(Pair<String, String> prefixAndSuffix, Class<? extends HandleItem> part){}
+    record dullHeadPartHolder(Pair<String, String> prefixAndSuffix, Class<? extends DullHeadItem> part){}
+    record headPartHolder(Pair<String, String> prefixAndSuffix, Class<? extends HeadItem> part){}
+    record bindingPartHolder(Pair<String, String> prefixAndSuffix, Class<? extends BindingItem> part){}
 }

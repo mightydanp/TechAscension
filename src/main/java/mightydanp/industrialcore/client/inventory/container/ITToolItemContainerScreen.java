@@ -4,9 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mightydanp.industrialcore.common.inventory.container.ITToolItemContainer;
 import mightydanp.industrialcore.common.items.ITToolItem;
-import mightydanp.industrialcore.common.items.ToolBindingItem;
-import mightydanp.industrialcore.common.items.ToolHandleItem;
-import mightydanp.industrialcore.common.items.ToolHeadItem;
+import mightydanp.industrialcore.common.tool.part.BindingItem;
 import mightydanp.industrialcore.common.libs.Ref;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.entity.player.Inventory;
@@ -63,22 +61,22 @@ public class ITToolItemContainerScreen extends AbstractContainerScreen<ITToolIte
 
         ITToolItem toolItem = (ITToolItem)heldItem.getItem();
         if(!toolHeadItemStack.isEmpty()){
-            toolItem.setEfficiency(heldItem, ((ToolHeadItem)HeadItem).efficiency);
-            toolItem.setAttackDamage(heldItem, ((ToolHeadItem)HeadItem).attackDamage);
-            toolItem.setToolLevel(heldItem, ((ToolHeadItem)HeadItem).itToolType);
-            toolItem.setHeadColor(heldItem, ((ToolHeadItem)HeadItem).color);
+            toolItem.setEfficiency(heldItem, ((mightydanp.industrialcore.common.tool.part.HeadItem)HeadItem).efficiency);
+            toolItem.setAttackDamage(heldItem, ((mightydanp.industrialcore.common.tool.part.HeadItem)HeadItem).attackDamage);
+            toolItem.setToolLevel(heldItem, ((mightydanp.industrialcore.common.tool.part.HeadItem)HeadItem).itToolType);
+            toolItem.setHeadColor(heldItem, ((mightydanp.industrialcore.common.tool.part.HeadItem)HeadItem).color);
         }
 
         if(!bindingItemStack.isEmpty()){
-            toolItem.setBindingColor(heldItem, ((ToolBindingItem)bindingItem).color);
+            toolItem.setBindingColor(heldItem, ((BindingItem)bindingItem).color);
         }
 
         if(!toolHandleItemStack.isEmpty()){
-            toolItem.setHandleColor(heldItem, ((ToolHandleItem)HandleItem).color);
+            toolItem.setHandleColor(heldItem, ((mightydanp.industrialcore.common.tool.part.HandleItem)HandleItem).color);
         }
 
         if(!toolHeadItemStack.isEmpty() && !bindingItemStack.isEmpty() && !toolHandleItemStack.isEmpty()){
-            toolItem.setAttackSpeed(heldItem, ((ToolHeadItem)HeadItem).weight + ((ToolBindingItem)bindingItem).weight + ((ToolHandleItem)HandleItem).weight);
+            toolItem.setAttackSpeed(heldItem, ((mightydanp.industrialcore.common.tool.part.HeadItem)HeadItem).weight + ((BindingItem)bindingItem).weight + ((mightydanp.industrialcore.common.tool.part.HandleItem)HandleItem).weight);
         }
 
         super.onClose();

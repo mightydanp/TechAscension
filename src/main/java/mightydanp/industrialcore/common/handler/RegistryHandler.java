@@ -47,4 +47,8 @@ public class RegistryHandler extends RegisterHelper{
         RECIPE_SERIALIZER.register(IEventBus);
 
     }
+
+    public void register(){
+
+    }
 }

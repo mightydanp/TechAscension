@@ -35,7 +35,7 @@ public class GenItemModel extends ItemModelProvider {
     }
 
     @Override
-    protected void registerModels() {
+    protected void registerModels() {/*
         IndustrialTech.configSync.material.getFirst().registryMap.values().forEach(material -> {
             for (IMaterialFlag flag : ((ITMaterial)material).materialFlags) {
                 if (flag == DefaultMaterialFlag.ORE) {
@@ -87,7 +87,6 @@ public class GenItemModel extends ItemModelProvider {
             }
     });
 
-        /*
         for(StoneLayerHandler layer : ModStoneLayers.stoneLayerList ){
             for(StoneLayerFlagsEnum flag : layer.flags){
                 if(flag == StoneLayerFlagsEnum.leg) {
@@ -99,7 +98,7 @@ public class GenItemModel extends ItemModelProvider {
             }
         }
 
-         */
+
 
         for(ITTool tool : ModTools.tools){
             coloredTool(tool.toolItem.get(), ((ITToolItem)tool.toolItem.get()).getParts());
@@ -107,6 +106,7 @@ public class GenItemModel extends ItemModelProvider {
 
         singleTextureItem(ModItems.plant_fiber.get());
         singleTextureItem(ModItems.twine.get());
+        */
     }
 
 /*

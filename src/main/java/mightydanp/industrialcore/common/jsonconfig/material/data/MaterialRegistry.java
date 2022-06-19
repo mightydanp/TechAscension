@@ -223,6 +223,31 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
                     properties.addProperty("weight", materialIn.weight);
                 }
 
+                if (materialIn.efficiency != null) {
+                    properties.addProperty("efficiency", materialIn.efficiency);
+                }
+
+                if (materialIn.toolLevel != null) {
+                    properties.addProperty("tool_level", materialIn.toolLevel);
+                }
+
+                JsonArray toolParts = new JsonArray();
+                if(materialIn.toolParts != null){
+                    for (Pair<String, String> toolPart : materialIn.toolParts) {
+                        JsonObject toolPartProperties = new JsonObject();
+                        toolPartProperties.addProperty("tool_part_prefix", toolPart.getFirst());
+                        toolPartProperties.addProperty("tool_part_suffix", toolPart.getSecond());
+
+                        if (toolPartProperties.size() > 0) {
+                            toolParts.add(toolPartProperties);
+                        }
+                    }
+
+                    if (toolParts.size() > 0) {
+                        jsonObject.add("tool_parts", toolParts);
+                    }
+                }
+
                 if (properties.size() > 0) {
                     toolProperties.add(properties);
                 }
@@ -233,40 +258,6 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
             }
         }
 
-        JsonArray toolTypesArray = new JsonArray();
-        if(materialIn.toolTypes != null){
-            materialIn.toolTypes.forEach(((iToolType, integer) -> {
-                JsonObject toolTypeProperties = new JsonObject();
-
-                toolTypeProperties.addProperty("tool_type", ((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(iToolType)).getName());
-                toolTypeProperties.addProperty("tool_level", integer);
-
-                if (toolTypeProperties.size() > 0) {
-                    toolTypesArray.add(toolTypeProperties);
-                }
-            }));
-            if (toolTypesArray.size() > 0) {
-                jsonObject.add("tool_types", toolTypesArray);
-
-            }
-        }
-
-        JsonArray toolParts = new JsonArray();
-        if(materialIn.toolParts != null){
-            for (IToolPart toolPart : materialIn.toolParts) {
-                JsonObject toolPartProperties = new JsonObject();
-                toolPartProperties.addProperty("tool_part_prefix", toolPart.getFixes().getFirst());
-                toolPartProperties.addProperty("tool_part_suffix", toolPart.getFixes().getSecond());
-
-                if (toolPartProperties.size() > 0) {
-                    toolParts.add(toolPartProperties);
-                }
-            }
-
-            if (toolParts.size() > 0) {
-                jsonObject.add("tool_parts", toolParts);
-            }
-        }
         return jsonObject;
     }
 
@@ -342,48 +333,37 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
             }
         }
 
-        if(jsonObject.has("tool_properties") && jsonObject.has("tool_types") && jsonObject.has("tool_parts")) {
+        if(jsonObject.has("tool_properties") && jsonObject.has("tool_parts") && jsonObject.has("tool_parts")) {
             JsonArray toolProperties = jsonObject.get("tool_properties").getAsJsonArray();
 
             if(toolProperties.size()> 0) {
                 JsonObject Properties = toolProperties.get(0).getAsJsonObject();
-                JsonArray toolTypesArray = jsonObject.get("tool_types").getAsJsonArray();
-                JsonArray toolParts = jsonObject.get("tool_parts").getAsJsonArray();
+                JsonArray toolPartsArray = jsonObject.get("tool_parts").getAsJsonArray();
 
                 {
-                    if (Properties.has("attack_speed") && Properties.has("durability") && Properties.has("attack_damage") && Properties.has("weight") && jsonObject.has("tool_types") && jsonObject.has("tool_parts")) {
+                    if (Properties.has("attack_speed") && Properties.has("durability") && Properties.has("attack_damage") && Properties.has("weight")  && jsonObject.has("efficiency")  && jsonObject.has("tool_level") && jsonObject.has("tool_parts")) {
                         int attackSpeedJson = Properties.get("attack_speed").getAsInt();
                         int durabilityJson = Properties.get("durability").getAsInt();
                         float attackDamageJson = Properties.get("attack_damage").getAsFloat();
                         float weightJson = Properties.get("weight").getAsFloat();
-                        Map<String, Integer> toolTypesJsonList = new HashMap<>();
-                        List<IToolPart> toolPartJsonList = new ArrayList<>();
+                        float efficiencyJson = Properties.get("efficiency").getAsFloat();
+                        int toolLevelJson = Properties.get("tool_level").getAsInt();
 
-                        for (int i = 0; i < toolTypesArray.size(); i++) {
-                            JsonObject toolTypeProperties = toolTypesArray.get(i).getAsJsonObject();
-                            if (toolTypeProperties.has("tool_type") && toolTypeProperties.has("tool_level")) {
+                        List<Pair<String, String>> toolPartsJsonList = new ArrayList<>();
 
-                                String toolTypeJson = toolTypeProperties.get("tool_type").getAsString();
-                                int toolLevelJson = toolTypeProperties.get("tool_level").getAsInt();
-
-
-                                toolTypesJsonList.put(toolTypeJson, toolLevelJson);
-                            }
-                        }
-
-                        for (int i = 0; i < toolParts.size(); i++) {
-                            JsonObject toolPartProperties = toolParts.get(i).getAsJsonObject();
+                        for (int i = 0; i < toolPartsArray.size(); i++) {
+                            JsonObject toolPartProperties = toolPartsArray.get(i).getAsJsonObject();
                             if (toolPartProperties.has("tool_part_prefix") && toolPartProperties.has("tool_part_suffix")) {
                                 String toolPartPrefix = toolPartProperties.get("tool_part_prefix").getAsString();
                                 String toolPartSuffix = toolPartProperties.get("tool_part_suffix").getAsString();
 
-                                IToolPart toolPartJson =  ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).getByName(fixesToName(new Pair<>(toolPartPrefix, toolPartSuffix)));
+                                Pair<String, String> toolPartJson = new Pair<>(toolPartPrefix, toolPartSuffix);
 
-                                toolPartJsonList.add(toolPartJson);
+                                toolPartsJsonList.add(toolPartJson);
                             }
                         }
 
-                        material.setToolProperties(attackSpeedJson, durabilityJson, attackDamageJson, weightJson, toolTypesJsonList, toolPartJsonList);
+                        material.setToolProperties(attackSpeedJson, durabilityJson, attackDamageJson, weightJson, efficiencyJson, toolLevelJson, toolPartsJsonList);
                     }
                 }
             }

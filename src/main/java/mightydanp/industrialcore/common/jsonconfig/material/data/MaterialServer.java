@@ -300,21 +300,22 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
             buffer.writeFloat(-1);
         }
 
-        if(material.toolTypes != null && material.toolTypes.size() > 0){
-            buffer.writeInt(material.toolTypes.size());
-
-            material.toolTypes.forEach(((iToolType, integer) -> {
-                buffer.writeUtf(iToolType);
-                buffer.writeInt(integer);
-            }));
+        if(material.efficiency != null){
+            buffer.writeFloat(material.efficiency);
         } else {
-            buffer.writeInt(0);
+            buffer.writeFloat(-1);
+        }
+
+        if(material.toolLevel != null){
+            buffer.writeInt(material.toolLevel);
+        } else {
+            buffer.writeInt(-1);
         }
 
         if(material.toolParts != null && material.toolParts.size() > 0){
             buffer.writeInt(material.toolParts.size());
-            for (IToolPart toolPart : material.toolParts) {
-                buffer.writeUtf(fixesToName(toolPart.getPrefix(), toolPart.getSuffix()));
+            for (Pair<String, String> toolPart : material.toolParts) {
+                buffer.writeUtf(fixesToName(toolPart.getFirst(), toolPart.getSecond()));
             }
         } else {
             buffer.writeInt(0);
@@ -325,8 +326,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<ITMaterial> list = message.getConfig(IndustrialTech.configSync.materialID).stream()
                 .filter(ITMaterial.class::isInstance)
-                .map(ITMaterial.class::cast)
-                .collect(toList());
+                .map(ITMaterial.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -394,17 +394,8 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         int durability = buffer.readInt();
         float attackDamage  = buffer.readFloat();
         float weight  = buffer.readFloat();
-
-        Map<String, Integer> toolTypes = new HashMap<>();
-        int toolTypesSize = buffer.readInt();
-
-        if(toolTypesSize > 0) {
-            for (int i = 0; i < toolTypesSize; i++) {
-                String toolType = buffer.readUtf();
-                Integer level = buffer.readInt();
-                toolTypes.put(toolType, level);
-            }
-        }
+        float efficiency  = buffer.readFloat();
+        int toolLevel = buffer.readInt();
 
         List<IToolPart> toolParts = new ArrayList<>();
         int toolPartsSize = buffer.readInt();
@@ -414,10 +405,6 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
                 String toolPart = buffer.readUtf();
                 toolParts.add( ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).getByName(toolPart));
             }
-        }
-
-        if(attackSpeed != -1 && durability != -1 && attackDamage != -1 && weight != -1 && toolTypes.size() != 0 && toolPartsSize != 0){
-            material.setToolProperties(attackSpeed, durability, attackDamage, weight, toolTypes, toolParts);
         }
 
         return material;

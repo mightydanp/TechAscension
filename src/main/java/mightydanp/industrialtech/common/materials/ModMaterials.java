@@ -44,7 +44,7 @@ public class ModMaterials extends ITMaterials {
     public static ITMaterial andesite, diorite, end_stone, granite, netherrack, stone;
     public static ITMaterial alexandrite, almandine;
 
-    public static Map<String, Integer> flintToolTypes, stoneToolTypes;
+    public static List<Pair<String,String>> flintToolTypes, stoneToolTypes;
     public static List<IToolPart> flintToolParts;
 
     public static ITMaterial flint;
@@ -69,16 +69,9 @@ public class ModMaterials extends ITMaterials {
         materialRegistry.register(alexandrite = new ITMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL)).setOreType(DefaultOreType.ORE).setDenseOreDensity(8));
         materialRegistry.register(almandine = new ITMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH)).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));
 
-        flintToolTypes = new HashMap<>();
-        flintToolTypes.put("pickaxe", 0);
+        flintToolTypes = List.of(new Pair<>("", "_handle"), new Pair<>("", "_head"), new Pair<>("", "_binding"));
 
-        flintToolParts = new ArrayList<>() {{
-            add(TOOL_HEAD);
-            add(TOOL_WEDGE);
-            add(TOOL_WEDGE_HANDLE);
-        }};
-
-        materialRegistry.register(flint = new ITMaterial("flint", 0x002040, new Pair<>(Ref.mod_id, CUBE)).setToolProperties( 20, 10, 20F, 1F, flintToolTypes, flintToolParts));
+        materialRegistry.register(flint = new ITMaterial("flint", 0x002040, new Pair<>(Ref.mod_id, CUBE)).setToolProperties( 20, 10, 20F, 1F, 1F, 1, flintToolTypes));
 
         IndustrialTech.configSync.configs.put(7, new Pair<>(materialRegistry, materialServer));
         //materials.add(iron = new MaterialHandler("iron", 0, 51, 153, "").addOreProperties(8, false).save());

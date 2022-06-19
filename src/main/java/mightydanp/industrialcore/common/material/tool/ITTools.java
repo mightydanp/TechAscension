@@ -21,10 +21,4 @@ public class ITTools {
     public static void init(){
 
     }
-
-    public static void clientInit(){
-        for(ITTool material : tools) {
-            material.registerColorForItem();
-        }
-    }
 }

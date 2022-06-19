@@ -21,7 +21,6 @@ public class ResourcePackEventHandler {
 
     @SubscribeEvent
     public static void addResourcePack(AddPackFindersEvent event){
-        ITTools.tools.forEach(ITTool::initResources);
         ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).registryMap.forEach((modID, material) -> material.saveResources());
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AssetPackRegistry::init);

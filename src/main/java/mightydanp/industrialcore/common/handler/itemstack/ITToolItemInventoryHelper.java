@@ -1,8 +1,8 @@
 package mightydanp.industrialcore.common.handler.itemstack;
 
-import mightydanp.industrialcore.common.items.ToolBindingItem;
-import mightydanp.industrialcore.common.items.ToolHandleItem;
-import mightydanp.industrialcore.common.items.ToolHeadItem;
+import mightydanp.industrialcore.common.tool.part.BindingItem;
+import mightydanp.industrialcore.common.tool.part.HandleItem;
+import mightydanp.industrialcore.common.tool.part.HeadItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 
@@ -23,42 +23,42 @@ public class ITToolItemInventoryHelper extends NonNullList<ItemStack>{
 
     public ItemStack getToolHandle() {
         ItemStack itemStack = get(0);
-        if(itemStack.getItem() instanceof ToolHandleItem){
+        if(itemStack.getItem() instanceof HandleItem){
             return itemStack;
         }
         return null;
     }
 
     public void setToolHandle(ItemStack itemStackIn) {
-        if(itemStackIn.getItem() instanceof ToolHandleItem){
+        if(itemStackIn.getItem() instanceof HandleItem){
             set(0, itemStackIn);
         }
     }
 
     public ItemStack getToolHead() {
         ItemStack itemStack = get(1);
-        if(itemStack.getItem() instanceof ToolHeadItem){
+        if(itemStack.getItem() instanceof HeadItem){
             return itemStack;
         }
         return null;
     }
 
     public void setToolHead(ItemStack itemStackIn) {
-        if(itemStackIn.getItem() instanceof ToolHeadItem){
+        if(itemStackIn.getItem() instanceof HeadItem){
             set(1, itemStackIn);
         }
     }
 
     public ItemStack getToolBinding() {
         ItemStack itemStack = get(2);
-        if(itemStack.getItem() instanceof ToolBindingItem){
+        if(itemStack.getItem() instanceof BindingItem){
             return itemStack;
         }
         return null;
     }
 
     public void setToolBinding(ItemStack itemStackIn) {
-        if(itemStackIn.getItem() instanceof ToolBindingItem){
+        if(itemStackIn.getItem() instanceof BindingItem){
             set(2, itemStackIn);
         }
     }

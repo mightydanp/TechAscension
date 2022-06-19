@@ -82,8 +82,9 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public Integer attackSpeed = null;
     public Float attackDamage = null;
     public Float weight = null;
-    public Map<String, Integer> toolTypes;
-    public List<IToolPart> toolParts = new ArrayList<>();
+    public Integer toolLevel = null;
+    public Float efficiency = null;
+    public List<Pair<String, String>> toolParts = new ArrayList<>();
 
     public List<IMaterialFlag> materialFlags = new ArrayList<>();
     public List<RegistryObject<Block>> oreList = new ArrayList<>();
@@ -106,10 +107,6 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public RegistryObject<Block> layerBlock, rockBlock, thinSlabBlock;
 
     public RegistryObject<Item> layerItemBlock, rockItemBlock, thinSlabItemBlock;
-
-    public RegistryObject<Item> bucket, dullAxeHead, dullBuzzSawHead, dullChiselHead, dullHoeHead, dullPickaxeHead, dullArrowHead, dullSawHead, dullSwordHead;
-    public RegistryObject<Item> drillHead, axeHead, buzzSawHead, chiselHead, fileHead, hammerHead, hoeHead, pickaxeHead, arrowHead, sawHead, shovelHead, swordHead, screwdriverHead;
-    public RegistryObject<Item> wedge, wedgeHandle;
 
 
     public ITMaterial(String materialNameIn, int colorIn, Pair<String, ITextureIcon> textureIconLocationIn) {
@@ -186,52 +183,21 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         return this;
     }
 
-    public ITMaterial setToolProperties(int attackSpeedIn, int durabilityIn, float attackDamageIn, float weightIn, Map<String, Integer> toolTypesIn, List<IToolPart> toolPartIn) {
+    public ITMaterial setToolProperties(int attackSpeedIn, int durabilityIn, float attackDamageIn, float weightIn, float efficiencyIn, Integer toolLevelIn, List<Pair<String, String>> toolPartsIn) {
         attackSpeed = attackSpeedIn;
         durability = durabilityIn;
         attackDamage = attackDamageIn;
         weight = weightIn;
-        toolTypes = toolTypesIn;
-        toolParts = toolPartIn;
+        efficiency = efficiencyIn;
+        toolLevel = toolLevelIn;
+        toolParts = toolPartsIn;
         return this;
     }
 
 
     public ITMaterial save() {
         List<ITMaterial> stoneLayerList = ((MaterialRegistry) IndustrialTech.configSync.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
-
         //--
-
-        for (IToolPart flag : toolParts) {
-            if (flag == DefaultToolPart.TOOL_HEAD) {
-//--//--//--//--//--//--//--//--//
-                dullPickaxeHead = RegistryHandler.ITEMS.register("dull_" + name + "_pickaxe_head", () -> new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
-//--//--//--//--//--//--//--//--//
-                pickaxeHead = RegistryHandler.ITEMS.register(name + "_pickaxe_head", () -> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "pickaxe", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
-//--//--//--//--//--//--//--//--//
-                hammerHead = RegistryHandler.ITEMS.register(name + "_hammer_head", () -> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "hammer", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
-//--//--//--//--//--//--//--//--//
-                dullChiselHead = RegistryHandler.ITEMS.register("dull_" + name + "_chisel_head", () -> new DullToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab)));
-//--//--//--//--//--//--//--//--//
-                chiselHead = RegistryHandler.ITEMS.register(name + "_chisel_head", () -> new ToolHeadItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), "chisel", name, symbol, color, textureIcon, boilingPoint, meltingPoint, attackSpeed, durability, attackDamage, weight, toolTypes));
-//--//--//--//--//--//--//--//--//
-            }
-
-            if (flag == DefaultToolPart.TOOL_WEDGE) {
-//--//--//--//--//--//--//--//--//
-                wedge = RegistryHandler.ITEMS.register(name + "_wedge", () -> new ToolBindingItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, durability, weight));
-//--//--//--//--//--//--//--//--//
-            }
-
-            if (flag == DefaultToolPart.TOOL_WEDGE_HANDLE) {
-//--//--//--//--//--//--//--//--//
-                wedgeHandle = RegistryHandler.ITEMS.register(name + "_wedge_handle", () -> new ToolHandleItem(new Item.Properties().tab(ModItemGroups.tool_parts_tab), name, symbol, color, textureIcon, boilingPoint, meltingPoint, durability, weight));
-//--//--//--//--//--//--//--//--//
-            }
-        }
-
-        //--
-
         for (IMaterialFlag flag : materialFlags) {
             if (flag == ORE || flag == GEM || flag == STONE_LAYER) {
                 if (flag == STONE_LAYER) {
@@ -375,7 +341,13 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 //--//--//--//--//--//--//--//--//
             }
 
-            extraSave.forEach((string, iMaterial) -> iMaterial.save(this, stoneLayerList, toolParts, materialFlags));
+            extraSave.forEach((string, iMaterial) -> {
+                try {
+                    iMaterial.save(this, stoneLayerList, toolParts, materialFlags);
+                } catch (InstantiationException | NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            });
         }
 
         return this;
@@ -384,104 +356,6 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public void saveResources() {
         LangData enLang = AssetPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
         List<ITMaterial> stoneLayerList = ((MaterialRegistry) IndustrialTech.configSync.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
-
-        //--
-
-        for (IToolPart flag : toolParts) {
-            if (flag == DefaultToolPart.TOOL_HEAD) {
-//--//--//--//--//--//--//--//--//
-                //--Item--\\
-                //--Resources
-                AssetPackRegistry.itemModelDataHashMap.put("dull_" + name + "_pickaxe_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dull_pickaxe_head")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + "dull_" + name + "_pickaxe_head", LangData.translateUpperCase("dull_" + name + "_pickaxe_head"));
-                //TagHandler.addItemToTag("dull_pickaxe_head", new ResourceLocation(Ref.mod_id, "dull_" + name + "_pickaxe_head"));
-                //--Tags
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dull_pickaxe_heads/" + name)).add(dullPickaxeHead.get()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dull_pickaxe_heads")).add(dullPickaxeHead.get()));
-                //--LootTable
-
-//--//--//--//--//--//--//--//--//
-                //--Item--\\
-                //--Resources
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_pickaxe_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/pickaxe_head")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_pickaxe_head", LangData.translateUpperCase(name + "_pickaxe_head"));
-                //--Tags
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "pickaxe_heads/" + name)).add(pickaxeHead.get()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "pickaxe_heads")).add(pickaxeHead.get()));
-                //--LootTable
-
-//--//--//--//--//--//--//--//--//
-                //--Item--\\
-                //--Resources
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "hammer_heads/" + name)).add(hammerHead.get()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "hammer_heads")).add(hammerHead.get()));
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_hammer_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/hammer_head")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_hammer_head", LangData.translateUpperCase(name + "_hammer_head"));
-                //--Tags
-
-                //--LootTable
-
-//--//--//--//--//--//--//--//--//
-                //--Item--\\
-                //--Resources
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dull_chisel_heads/" + name)).add(dullChiselHead.get()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dull_chisel_heads")).add(dullChiselHead.get()));
-                AssetPackRegistry.itemModelDataHashMap.put("dull_" + name + "_chisel_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dull_chisel_head")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + "dull_" + name + "_chisel_head", LangData.translateUpperCase("dull_" + name + "_chisel_head"));
-                //--Tags
-
-                //--LootTable
-
-//--//--//--//--//--//--//--//--//
-                //--Item--\\
-                //--Resources
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "chisel_heads/" + name)).add(chiselHead.get()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "chisel_heads")).add(chiselHead.get()));
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_chisel_head", new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/chisel_head")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_chisel_head", LangData.translateUpperCase(name + "_chisel_head"));
-                //--Tags
-
-                //--LootTable
-
-//--//--//--//--//--//--//--//--//
-            }
-
-            if (flag == DefaultToolPart.TOOL_WEDGE) {
-//--//--//--//--//--//--//--//--//
-                //--Item--\\
-                //--Resources
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "wedges/" + name)).add(wedge.get()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "wedges")).add(wedge.get()));
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_wedge", new ItemModelData().setParent(new ResourceLocation("item/generated")).setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/wedge")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_wedge", LangData.translateUpperCase(name + "_wedge"));
-                //--Tags
-
-                //--LootTable
-
-//--//--//--//--//--//--//--//--//
-            }
-
-            if (flag == DefaultToolPart.TOOL_WEDGE_HANDLE) {
-//--//--//--//--//--//--//--//--//
-                //--Item--\\
-                //--Resources
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "wedge_handles/" + name)).add(wedgeHandle.get()));
-                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "wedge_handles")).add(wedgeHandle.get()));
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_wedge_handle", new ItemModelData().setParent(new ResourceLocation("item/generated")).setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/wedge_handle")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_wedge_handle", LangData.translateUpperCase(name + "_wedge_handle"));
-                //--Tags
-
-                //--LootTable
-
-//--//--//--//--//--//--//--//--//
-            }
-        }
-
         //--
 
         for (IMaterialFlag flag : materialFlags) {
@@ -856,7 +730,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
             ItemBlockRenderTypes.setRenderLayer(thinSlabBlock.get(), RenderType.cutout());
         }
 
-        extraSave.forEach((string, iMaterial) -> iMaterial.clientRenderLayerInit(this, toolParts, materialFlags));
+        extraSave.forEach((string, iMaterial) -> iMaterial.clientRenderLayerInit(this));
     }
 
     public void registerColorForBlock() {
@@ -874,7 +748,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
             setupABlockColor(rockBlock.get());
         }
 
-        extraSave.forEach((string, iMaterial) -> iMaterial.registerColorForBlock(this, toolParts, materialFlags));
+        extraSave.forEach((string, iMaterial) -> iMaterial.registerColorForBlock(this));
     }
 
     public void setupABlockColor(Block block) {
@@ -957,29 +831,8 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         if (centrifugedOre != null) {
             registerAItemColor(centrifugedOre.get(), 0);
         }
-        if (dullPickaxeHead != null) {
-            registerAItemColor(dullPickaxeHead.get(), 0);
-        }
-        if (pickaxeHead != null) {
-            registerAItemColor(pickaxeHead.get(), 0);
-        }
-        if (hammerHead != null) {
-            registerAItemColor(hammerHead.get(), 0);
-        }
-        if (wedge != null) {
-            registerAItemColor(wedge.get(), 0);
-        }
-        if (wedgeHandle != null) {
-            registerAItemColor(wedgeHandle.get(), 0);
-        }
-        if (dullChiselHead != null) {
-            registerAItemColor(dullChiselHead.get(), 0);
-        }
-        if (chiselHead != null) {
-            registerAItemColor(chiselHead.get(), 0);
-        }
 
-        extraSave.forEach((string, iMaterial) -> iMaterial.registerColorForItem(this, toolParts, materialFlags));
+        extraSave.forEach((string, iMaterial) -> iMaterial.registerColorForItem(this));
     }
 
     public void registerAItemColor(Item item, int layerNumberIn) {

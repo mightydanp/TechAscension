@@ -1,13 +1,12 @@
 package mightydanp.industrialcore.common.material.tool;
 
 import mightydanp.industrialcore.common.handler.itemstack.ITToolItemInventoryHelper;
+import mightydanp.industrialcore.common.tool.part.HandleItem;
 import mightydanp.industrialcore.common.items.ITToolItem;
-import mightydanp.industrialcore.common.items.ToolBindingItem;
-import mightydanp.industrialcore.common.items.ToolHandleItem;
-import mightydanp.industrialcore.common.items.ToolHeadItem;
+import mightydanp.industrialcore.common.tool.part.BindingItem;
+import mightydanp.industrialcore.common.tool.part.HeadItem;
 import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.tool.ITTool;
-import mightydanp.industrialtech.common.tool.ModTools;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -44,7 +43,7 @@ public class ITToolHandler {
 
 
 
-        if(mainHandItem instanceof ToolHeadItem toolHead) {
+        if(mainHandItem instanceof HeadItem toolHead) {
             List<ITTool> tool = ITTools.tools.stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
 
             if (tool.size() > 0) {
@@ -53,7 +52,7 @@ public class ITToolHandler {
             }
         }
 
-        if(offHandItem instanceof ToolHeadItem toolHead){
+        if(offHandItem instanceof HeadItem toolHead){
             List<ITTool> tool = ITTools.tools.stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
 
             if (tool.size() > 0) {
@@ -100,21 +99,21 @@ public class ITToolHandler {
                         toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, firstItemsThatCanBeUsed);
                     }
 
-                    itemStackHandler.setToolHead(mainHandCheck.getItem() instanceof ToolHeadItem ? mainHandCheck : offHandCheck);
-                    itemStackHandler.setToolHandle(mainHandCheck.getItem() instanceof ToolHandleItem ? mainHandCheck : offHandCheck);
+                    itemStackHandler.setToolHead(mainHandCheck.getItem() instanceof HeadItem ? mainHandCheck : offHandCheck);
+                    itemStackHandler.setToolHandle(mainHandCheck.getItem() instanceof HandleItem ? mainHandCheck : offHandCheck);
 
                     ItemStack handleItemStack = itemStackHandler.getToolHandle();
                     ItemStack headItemStack = itemStackHandler.getToolHead();
 
-                    ToolHandleItem toolHandleItem = (ToolHandleItem) handleItemStack.getItem();
-                    ToolHeadItem toolHeadItem = (ToolHeadItem) headItemStack.getItem();
+                    HandleItem toolHandleItem = (HandleItem) handleItemStack.getItem();
+                    HeadItem toolHeadItem = (HeadItem) headItemStack.getItem();
 
                     toolItemIn.setHandleColor(toolItem, toolHandleItem.color);
                     toolItemIn.setHeadColor(toolItem, toolHeadItem.color);
 
                     toolItemIn.setAttackDamage(toolItem, toolHeadItem.attackDamage);
                     toolItemIn.setEfficiency(toolItem, toolHeadItem.efficiency);
-                    toolItemIn.setToolLevel(toolItem, toolHeadItem.getItToolType());
+                    toolItemIn.setToolLevel(toolItem, toolHeadItem.itToolType);
 
                     if (toolItemIn.getParts() == 2) {
                         toolItemIn.setAttackSpeed(toolItem, toolHandleItem.weight + toolHeadItem.weight);
@@ -156,19 +155,19 @@ public class ITToolHandler {
                         itemStackHandlerNew = itToolItem.inventory;
                     }
 
-                    itemStackHandlerNew.setToolBinding(mainHandCheck.getItem() instanceof ToolBindingItem ? mainHandCheck : offHandCheck);
+                    itemStackHandlerNew.setToolBinding(mainHandCheck.getItem() instanceof BindingItem ? mainHandCheck : offHandCheck);
                     ItemStack handleItemStack = itemStackHandlerNew.getToolHandle();
                     ItemStack headItemStack = itemStackHandlerNew.getToolHead();
                     ItemStack bindingItemStack = itemStackHandlerNew.getToolBinding();
-                    ToolHandleItem handleItem = (ToolHandleItem) handleItemStack.getItem();
-                    ToolHeadItem headItem = (ToolHeadItem) headItemStack.getItem();
-                    ToolBindingItem bindingItem = (ToolBindingItem) bindingItemStack.getItem();
+                    HandleItem handleItem = (HandleItem) handleItemStack.getItem();
+                    HeadItem headItem = (HeadItem) headItemStack.getItem();
+                    BindingItem bindingItem = (BindingItem) bindingItemStack.getItem();
 
                     newToolItem.setBindingColor(newToolItemStack, bindingItem.color);
                     newToolItem.setAttackDamage(newToolItemStack, headItem.attackDamage);
                     newToolItem.setEfficiency(newToolItemStack, headItem.efficiency);
                     newToolItem.setAttackSpeed(newToolItemStack, handleItem.weight + headItem.weight + bindingItem.weight);
-                    newToolItem.setToolLevel(newToolItemStack, headItem.getItToolType());
+                    newToolItem.setToolLevel(newToolItemStack, headItem.itToolType);
 
                     playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, newToolItemStack);
                     playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof ITToolItem ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND, ItemStack.EMPTY);
