@@ -191,6 +191,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         efficiency = efficiencyIn;
         toolLevel = toolLevelIn;
         toolParts = toolPartsIn;
+        materialFlags.add(TOOL);
         return this;
     }
 

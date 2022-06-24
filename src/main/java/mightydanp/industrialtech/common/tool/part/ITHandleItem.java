@@ -4,10 +4,9 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialcore.common.tool.part.HandleItem;
 
 public class ITHandleItem extends HandleItem {
-    public Pair<String, String> prefixAndSuffix;
+    public Pair<String, String> prefixAndSuffix = new Pair<>("", "_handle");
 
-    public ITHandleItem(Pair<String, String> prefixAndSuffix) {
-        super(new Properties(), prefixAndSuffix);
-        this.prefixAndSuffix = prefixAndSuffix;
+    public ITHandleItem() {
+        super(new Properties(), new Pair<>("", "_handle"));
     }
 }

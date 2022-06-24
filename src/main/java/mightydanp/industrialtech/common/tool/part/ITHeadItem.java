@@ -4,10 +4,9 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialcore.common.tool.part.HeadItem;
 
 public class ITHeadItem extends HeadItem {
-    public Pair<String, String> prefixAndSuffix;
+    public Pair<String, String> prefixAndSuffix = new Pair<>("", "_head");
 
-    public ITHeadItem(Pair<String, String> prefixAndSuffix) {
-        super(new Properties(), prefixAndSuffix);
-        this.prefixAndSuffix = prefixAndSuffix;
+    public ITHeadItem() {
+        super(new Properties(), new Pair<>("", "_head"));
     }
 }
