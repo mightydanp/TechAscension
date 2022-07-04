@@ -172,8 +172,7 @@ public class ToolServer extends JsonConfigServer<ITool> {
     public void loadFromServer(SyncMessage message) {
         List<ITool> list = message.getConfig(IndustrialTech.configSync.toolID).stream()
                 .filter(ITool.class::isInstance)
-                .map(ITool.class::cast)
-                .collect(toList());
+                .map(ITool.class::cast).toList();
 
         Map<String, ITool> tools = list.stream()
                 .collect(Collectors.toMap(ITool::getName, s -> s));
@@ -193,8 +192,7 @@ public class ToolServer extends JsonConfigServer<ITool> {
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
         List<ITool> list = message.getConfig(IndustrialTech.configSync.toolID).stream()
                 .filter(ITool.class::isInstance)
-                .map(ITool.class::cast)
-                .collect(toList());
+                .map(ITool.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 

@@ -56,40 +56,35 @@ public class ModTools extends ITTools {
 
     public static void init(){
         tools.add(chisel = new ITTool(chiselName, 1, List.of(), chiselEffectiveOn, chiselAssembleItems, chiselParts, chiselDisassembleItems,
-                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), ITHandleItem.class),
+                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), true, ITHandleItem.class),
                 null,
-                new PartHolders.headPartHolder(new Pair<>("", "_head"), ITHeadItem.class),
-                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), ITBindingItem.class),
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, ITHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), true, ITBindingItem.class),
                 chiselTool = RegistryHandler.ITEMS.register(chiselName, ()-> new HammerToolItem().setName(chiselName).setEffectiveBlocks(chiselEffectiveOn).setAssembleItems(chiselAssembleItems).setParts(chiselParts) .setDisassembleItems(chiselDisassembleItems))
         ));
 
         tools.add(hammer = new ITTool(hammerName, 1, List.of(), hammerEffectiveOn, hammerAssembleItems, hammerParts, hammerDisassembleItems,
-                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), ITHandleItem.class),
+                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), true, ITHandleItem.class),
                 null,
-                new PartHolders.headPartHolder(new Pair<>("", "_head"), ITHeadItem.class),
-                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), ITBindingItem.class),
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, ITHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), true, ITBindingItem.class),
                 hammerTool = RegistryHandler.ITEMS.register(hammerName, ()-> new HammerToolItem().setName(hammerName).setEffectiveBlocks(hammerEffectiveOn).setAssembleItems(hammerAssembleItems).setParts(hammerParts) .setDisassembleItems(hammerDisassembleItems))
         ));
 
         tools.add(pickaxe = new ITTool(pickaxeName, 1, List.of(), pickaxeEffectiveOn, pickaxeAssembleItems, pickaxeParts, pickaxeDisassembleItems,
-                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), ITHandleItem.class),
-                new PartHolders.dullHeadPartHolder(new Pair<>("dull_", "_head"), ITDullHeadItem.class),
-                new PartHolders.headPartHolder(new Pair<>("", "_head"), ITHeadItem.class),
-                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), ITBindingItem.class),
+                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), true, ITHandleItem.class),
+                new PartHolders.dullHeadPartHolder(new Pair<>("dull_", "_head"), true, ITDullHeadItem.class),
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, ITHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), true, ITBindingItem.class),
                 pickaxeTool = RegistryHandler.ITEMS.register(pickaxeName, ()-> new PickaxeToolItem().setName(pickaxeName).setEffectiveBlocks(pickaxeEffectiveOn).setAssembleItems(pickaxeAssembleItems).setParts(pickaxeParts) .setDisassembleItems(pickaxeDisassembleItems))
         ));
 
         tools.add(knife = new ITTool(knifeName, 1, List.of(), knifeEffectiveOn, knifeAssembleItems, knifeParts, knifeDisassembleItems,
-                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), ITHandleItem.class),
-                new PartHolders.dullHeadPartHolder(new Pair<>("dull_", "_head"), ITDullHeadItem.class),
-                new PartHolders.headPartHolder(new Pair<>("", "_head"), ITHeadItem.class),
-                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), ITBindingItem.class),
+                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), true, ITHandleItem.class),
+                new PartHolders.dullHeadPartHolder(new Pair<>("dull_", "_head"), true, ITDullHeadItem.class),
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, ITHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), true, ITBindingItem.class),
                 knifeTool = RegistryHandler.ITEMS.register(knifeName, ()-> new KnifeToolItem().setName(knifeName).setEffectiveBlocks(knifeEffectiveOn).setAssembleItems(knifeAssembleItems).setParts(knifeParts) .setDisassembleItems(knifeDisassembleItems))
         ));
     }
-
-    record handlePartHolder(Pair<String, String> prefixAndSuffix, Class<? extends HandleItem> part){}
-    record dullHeadPartHolder(Pair<String, String> prefixAndSuffix, Class<? extends DullHeadItem> part){}
-    record headPartHolder(Pair<String, String> prefixAndSuffix, Class<? extends HeadItem> part){}
-    record bindingPartHolder(Pair<String, String> prefixAndSuffix, Class<? extends BindingItem> part){}
 }
