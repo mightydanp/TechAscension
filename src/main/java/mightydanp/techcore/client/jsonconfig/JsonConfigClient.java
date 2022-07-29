@@ -1,0 +1,17 @@
+package mightydanp.techcore.client.jsonconfig;
+
+import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.techcore.common.libs.Ref;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+
+/**
+ * Created by MightyDanp on 1/16/2022.
+ */
+@Mod.EventBusSubscriber(modid = Ref.mod_id, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class JsonConfigClient {
+    public static void init(FMLClientSetupEvent event){
+        ConfigSync.initClient();
+    }
+}

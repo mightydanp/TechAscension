@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "mightydanp.industrialtech.mixin",
+  "package": "mightydanp.techascension.mixin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "industrialtech.mixin-refmap.json",
   "mixins": [
