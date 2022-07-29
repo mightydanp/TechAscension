@@ -3,7 +3,7 @@ package mightydanp.techcore.common.jsonconfig.tool.type;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.CrashReport;
 
@@ -20,7 +20,7 @@ public class ToolTypeRegistry extends JsonConfigMultiFile<IToolType> {
     @Override
     public void initiate() {
         setJsonFolderName("tool_type");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation());
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
         for (DefaultToolType toolType : DefaultToolType.values()) {
@@ -94,7 +94,7 @@ public class ToolTypeRegistry extends JsonConfigMultiFile<IToolType> {
                         registryMap.put(fixesToName(toolType.getFixes()), toolType);
 
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to tool type list because a tool type already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to tool type list because a tool type already exist!!", file.getAbsolutePath());
                     }
                 }
             }

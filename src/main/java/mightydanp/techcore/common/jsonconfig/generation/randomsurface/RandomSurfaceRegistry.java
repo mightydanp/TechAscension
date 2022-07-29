@@ -2,10 +2,10 @@ package mightydanp.techcore.common.jsonconfig.generation.randomsurface;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -19,7 +19,7 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
     public void initiate() {
 
         setJsonFolderName("random_surface");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation() + "/generation/");
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
         loadExistJson();
         super.initiate();
@@ -57,12 +57,12 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
                         registryMap.put(randomSurface.name, randomSurface);
                         PlantGenerationHandler.addRegistryRandomSurfaceGenerate(randomSurface);
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to random surface list because a random surface already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to random surface list because a random surface already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("random surface json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("random surface json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

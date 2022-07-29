@@ -2,11 +2,11 @@ package mightydanp.techapi.common.jsonconfig.sync;
 
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.sync.gui.screen.SyncScreen;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.NetworkHandler;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
@@ -149,15 +149,15 @@ public class ConfigSync {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
         if(event.getScreen() != null) {
-            IndustrialTech.LOGGER.debug(event.getScreen());
-            IndustrialTech.LOGGER.debug(event.getScreen().getTitle().getString());
+            TechAscension.LOGGER.debug(event.getScreen());
+            TechAscension.LOGGER.debug(event.getScreen().getTitle().getString());
 
             if (server != null) {
                 if (server.isSingleplayer() && Minecraft.getInstance().getSingleplayerServer() != null) {
                         IntegratedServer integratedServer = Minecraft.getInstance().getSingleplayerServer();
 
                     if (event.getScreen() instanceof ProgressScreen) {
-                        if (!(new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id).exists()) && !IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id)) {
+                        if (!(new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id).exists()) && !TechAscension.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id)) {
                             for(int i = 0; i < configs.size(); i++){
                                 Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = configs.get(i);
                                 try {
@@ -167,16 +167,16 @@ public class ConfigSync {
                                 }
                             }
 
-                            IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
-                            IndustrialTech.mainJsonConfig.reloadConfigJson();
+                            TechAscension.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
+                            TechAscension.mainJsonConfig.reloadConfigJson();
                         }
                     }
 
                     if (event.getScreen() instanceof LevelLoadingScreen) {
                         if((new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id).exists())) {
-                            if (!IndustrialTech.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id)) {
-                                IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
-                                IndustrialTech.mainJsonConfig.reloadConfigJson();
+                            if (!TechAscension.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id)) {
+                                TechAscension.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
+                                TechAscension.mainJsonConfig.reloadConfigJson();
                                 Minecraft.getInstance().close();
                             }
                         }

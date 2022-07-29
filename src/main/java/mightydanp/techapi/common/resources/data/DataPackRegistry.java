@@ -2,7 +2,7 @@ package mightydanp.techapi.common.resources.data;
 
 import mightydanp.techapi.common.resources.data.data.LootTableData;
 import mightydanp.techapi.common.resources.data.data.TagData;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.core.Registry;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -32,17 +32,17 @@ public class DataPackRegistry {
 
     public static void init() {
         int c;
-        blockTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/blocks/" +  s.getPath() + ".json"), b.createJson()));
-        entityTypeTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/entity_type/" +  s.getPath() + ".json"), b.createJson()));
-        fluidTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/fluids/" +  s.getPath() + ".json"), b.createJson()));
-        gameEventTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/game_events/" +  s.getPath() + ".json"), b.createJson()));
-        itemTagDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/items/" + s.getPath() + ".json"), b.createJson()));
-        biomeDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/worldgen/biome/" +  s.getPath() + ".json"), b.createJson()));
-        configuredStructureFeatureDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/worldgen/configured_structure_feature/" +  s.getPath() + ".json"), b.createJson()));
-        blockLootTableDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/blocks/" +  s.getPath() + ".json"), b.createJson()));
-        chestLootTableDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/chests/" +  s.getPath() + ".json"), b.createJson()));
-        entityLootTableDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/entities/" +  s.getPath() + ".json"), b.createJson()));
-        gameplayLootTableDataMap.forEach((s, b) -> IndustrialTech.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/gameplay/" +  s.getPath() + ".json"), b.createJson()));
+        blockTagDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/blocks/" +  s.getPath() + ".json"), b.createJson()));
+        entityTypeTagDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/entity_type/" +  s.getPath() + ".json"), b.createJson()));
+        fluidTagDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/fluids/" +  s.getPath() + ".json"), b.createJson()));
+        gameEventTagDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/game_events/" +  s.getPath() + ".json"), b.createJson()));
+        itemTagDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/items/" + s.getPath() + ".json"), b.createJson()));
+        biomeDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/worldgen/biome/" +  s.getPath() + ".json"), b.createJson()));
+        configuredStructureFeatureDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "tags/worldgen/configured_structure_feature/" +  s.getPath() + ".json"), b.createJson()));
+        blockLootTableDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/blocks/" +  s.getPath() + ".json"), b.createJson()));
+        chestLootTableDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/chests/" +  s.getPath() + ".json"), b.createJson()));
+        entityLootTableDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/entities/" +  s.getPath() + ".json"), b.createJson()));
+        gameplayLootTableDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/gameplay/" +  s.getPath() + ".json"), b.createJson()));
         int i;
     }
 

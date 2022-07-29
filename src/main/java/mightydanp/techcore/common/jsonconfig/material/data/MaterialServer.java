@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateRegistry;
 import mightydanp.techcore.common.jsonconfig.fluidstate.IFluidState;
@@ -14,7 +15,6 @@ import mightydanp.techcore.common.jsonconfig.material.ore.IOreType;
 import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeRegistry;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.material.ITMaterial;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -143,7 +143,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/material");
-        Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/material");
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/material");
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
@@ -177,7 +177,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         serverMap.clear();
         serverMap.putAll(materials);
 
-        IndustrialTech.LOGGER.info("Loaded {} materials from the server", materials.size());
+        TechAscension.LOGGER.info("Loaded {} materials from the server", materials.size());
     }
 
     @Override

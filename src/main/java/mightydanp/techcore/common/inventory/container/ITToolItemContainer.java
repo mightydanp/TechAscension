@@ -1,9 +1,9 @@
 package mightydanp.techcore.common.inventory.container;
 
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.itemstack.ITToolItemInventoryHelper;
 import mightydanp.techcore.common.libs.ContainerRef;
 import mightydanp.techcore.common.items.ITToolItem;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -79,7 +79,7 @@ public class ITToolItemContainer extends AbstractContainerMenu {
 
             return new ITToolItemContainer(windowID, playerInventory, itToolItemItemStackHandlerIn, ItemStack.EMPTY);
         } catch (IllegalArgumentException iae) {
-            IndustrialTech.LOGGER.warn(iae);
+            TechAscension.LOGGER.warn(iae);
         }
         return null;
     }

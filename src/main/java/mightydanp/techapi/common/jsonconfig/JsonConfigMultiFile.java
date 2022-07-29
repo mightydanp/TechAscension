@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -86,7 +86,7 @@ public class JsonConfigMultiFile<T> {
                     bufferedwriter.write(s);
                 }
             } catch (IOException ioexception) {
-                IndustrialTech.LOGGER.error(name + " cannot be deleted /or created [{}]", file.getFileName().toString().replace(".json", ""), ioexception);
+                TechAscension.LOGGER.error(name + " cannot be deleted /or created [{}]", file.getFileName().toString().replace(".json", ""), ioexception);
             }
         }
     }
@@ -119,7 +119,7 @@ public class JsonConfigMultiFile<T> {
                 return new JsonObject();
             }
         } catch (IOException ioexception) {
-            IndustrialTech.LOGGER.error("Couldn't read json {}", file.getFileName().toString().replace(".json", ""), ioexception);
+            TechAscension.LOGGER.error("Couldn't read json {}", file.getFileName().toString().replace(".json", ""), ioexception);
         }
         return jsonObject;
     }

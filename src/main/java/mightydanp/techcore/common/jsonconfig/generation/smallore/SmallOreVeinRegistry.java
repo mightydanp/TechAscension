@@ -6,7 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.techcore.common.handler.generation.OreGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -19,7 +19,7 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
     @Override
     public void initiate() {
         setJsonFolderName("small_ore");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation() + "/generation/");
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
         loadExistJson();
         super.initiate();
@@ -56,12 +56,12 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
                         registryMap.put(smallOreVein.name, smallOreVein);
                         OreGenerationHandler.addRegistrySmallOreVeinGeneration(smallOreVein);
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to small ore vein list because a small ore vein already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to small ore vein list because a small ore vein already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("small ore vein json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("small ore vein json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

@@ -5,9 +5,9 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -147,7 +147,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/material_flag");
-        Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/material_flag");
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/material_flag");
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
@@ -183,7 +183,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
         getServerMap().clear();
         getServerMap().putAll(materialFlags);
 
-        IndustrialTech.LOGGER.info("Loaded {} material flags from the server", materialFlags.size());
+        TechAscension.LOGGER.info("Loaded {} material flags from the server", materialFlags.size());
     }
 
     @Override

@@ -5,7 +5,7 @@ import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -30,14 +30,14 @@ public class ResourcePackEventHandler {
 
         if (type == PackType.CLIENT_RESOURCES) {
             event.addRepositorySource((packConsumer, constructor) -> {
-                Pack pack = Pack.create(Ref.mod_id + ":assets", true, ()-> IndustrialTech.assetHolder, constructor, Pack.Position.TOP, PackSource.DEFAULT);
+                Pack pack = Pack.create(Ref.mod_id + ":assets", true, ()-> TechAscension.assetHolder, constructor, Pack.Position.TOP, PackSource.DEFAULT);
                 packConsumer.accept(pack);
             });
         }
 
         if (type == PackType.SERVER_DATA) {
             event.addRepositorySource((packConsumer, constructor) -> {
-                Pack pack = Pack.create(Ref.mod_id + ":data", true, ()-> IndustrialTech.dataHolder, constructor, Pack.Position.TOP, PackSource.DEFAULT);
+                Pack pack = Pack.create(Ref.mod_id + ":data", true, ()-> TechAscension.dataHolder, constructor, Pack.Position.TOP, PackSource.DEFAULT);
                 packConsumer.accept(pack);
             });
         }

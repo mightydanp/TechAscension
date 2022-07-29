@@ -1,12 +1,12 @@
 package mightydanp.techcore.client;
 
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.client.settings.keybindings.KeyBindings;
 import mightydanp.techcore.common.blocks.ITBlocks;
 import mightydanp.techcore.common.handler.KeyBindingHandler;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.tileentities.TileEntities;
 import mightydanp.techcore.server.client.rendering.models.CampFireBakedModel;
-import mightydanp.techascension.common.IndustrialTech;
 import mightydanp.techascension.common.blocks.ModBlocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.block.BlockModelShaper;
@@ -44,9 +44,9 @@ public class ClientEvent {
             ModelResourceLocation variantMRL = BlockModelShaper.stateToModelLocation(blockState);
             BakedModel existingModel = event.getModelRegistry().get(variantMRL);
             if (existingModel == null) {
-                IndustrialTech.LOGGER.warn("Did not find the expected vanilla baked model(s) for HoleModel in registry");
+                TechAscension.LOGGER.warn("Did not find the expected vanilla baked model(s) for HoleModel in registry");
             } else if (existingModel instanceof CampFireBakedModel) {
-                IndustrialTech.LOGGER.warn("Tried to replace HoleModel twice");
+                TechAscension.LOGGER.warn("Tried to replace HoleModel twice");
             } else {
                 CampFireBakedModel customModel = new CampFireBakedModel(existingModel);
                 event.getModelRegistry().put(variantMRL, customModel);

@@ -1,6 +1,7 @@
 package mightydanp.techcore.common.tool;
 
 import com.mojang.datafixers.util.Pair;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.items.*;
 import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
@@ -13,7 +14,6 @@ import mightydanp.techapi.common.resources.asset.data.ItemModelData;
 import mightydanp.techapi.common.resources.asset.data.LangData;
 import mightydanp.techapi.common.resources.data.DataPackRegistry;
 import mightydanp.techcore.common.tool.part.*;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.Item;
 import net.minecraft.resources.ResourceLocation;
@@ -120,7 +120,7 @@ public class ITTool {
                                 Map<String, Integer> toolTypesList = new HashMap<>();
 
                                 if (toolParts == null || toolParts.size() == 0) {
-                                    IndustrialTech.LOGGER.warn("What the fuck is this shit? You didn't set a type for your tool, you tool! ~Bear989");
+                                    TechAscension.LOGGER.warn("What the fuck is this shit? You didn't set a type for your tool, you tool! ~Bear989");
                                 } else {
                                     toolParts.forEach((s) -> toolTypesList.put(s, material.toolLevel));
                                 }

@@ -1,8 +1,8 @@
 package mightydanp.techapi.common.resources.asset;
 
 import com.google.gson.JsonObject;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -28,7 +28,7 @@ public class ITAssetHolder implements PackResources {
             InputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
             ASSET_HOLDER.put(location, ()-> inputStream);
         }else{
-            IndustrialTech.LOGGER.warn("[" + location + "] already exists in assets.");
+            TechAscension.LOGGER.warn("[" + location + "] already exists in assets.");
         }
     }
 
@@ -36,7 +36,7 @@ public class ITAssetHolder implements PackResources {
         if (ASSET_HOLDER.containsKey(location)) {
             ASSET_HOLDER.remove(location);
         }else{
-            IndustrialTech.LOGGER.warn("[" + location + "] does not already exists in assets.");
+            TechAscension.LOGGER.warn("[" + location + "] does not already exists in assets.");
         }
     }
 

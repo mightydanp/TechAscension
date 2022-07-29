@@ -6,7 +6,7 @@ import mightydanp.techcore.common.ISidedReference;
 import mightydanp.techcore.common.blocks.ITBlocks;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.server.client.settings.KeyBindings.ModKeyBindings;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techascension.common.blocks.ModBlocks;
 import mightydanp.techascension.common.materials.ModMaterials;
 import mightydanp.techascension.common.tileentities.ModBlockEntity;
@@ -51,9 +51,9 @@ public class ModClientEvent implements ISidedReference {
             ModelResourceLocation variantMRL = BlockModelShaper.stateToModelLocation(blockState);
             BakedModel existingModel = event.getModelRegistry().get(variantMRL);
             if (existingModel == null) {
-                IndustrialTech.LOGGER.warn("Did not find the expected vanilla baked model(s) for HoleModel in registry");
+                TechAscension.LOGGER.warn("Did not find the expected vanilla baked model(s) for HoleModel in registry");
             } else if (existingModel instanceof HoleBakedModel) {
-                IndustrialTech.LOGGER.warn("Tried to replace HoleModel twice");
+                TechAscension.LOGGER.warn("Tried to replace HoleModel twice");
             } else {
                 HoleBakedModel customModel = new HoleBakedModel(existingModel);
                 event.getModelRegistry().put(variantMRL, customModel);

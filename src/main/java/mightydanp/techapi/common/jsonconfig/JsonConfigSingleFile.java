@@ -1,8 +1,8 @@
 package mightydanp.techapi.common.jsonconfig;
 
 import com.google.gson.*;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techascension.common.IndustrialTech;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -81,7 +81,7 @@ public class JsonConfigSingleFile {
                 config.put(category, jsonConfig);
             });
         }else{
-            IndustrialTech.LOGGER.fatal(jsonFilename + " json config doesn't exist at (" + getJsonFileLocation().toFile() + ").");
+            TechAscension.LOGGER.fatal(jsonFilename + " json config doesn't exist at (" + getJsonFileLocation().toFile() + ").");
             //Minecraft.crash(new CrashReport("main json config doesn't exist at (" + jsonFileLocation.toFile().getAbsolutePath() + ").", new Throwable()));
         }
     }
@@ -105,7 +105,7 @@ public class JsonConfigSingleFile {
                     bufferedwriter.write(s);
                 }
             } catch (IOException ioexception) {
-                IndustrialTech.LOGGER.error(jsonFilename + " cannot be deleted /or created [{}]", getJsonFileLocation().getFileName().toString().replace(".json", ""), ioexception);
+                TechAscension.LOGGER.error(jsonFilename + " cannot be deleted /or created [{}]", getJsonFileLocation().getFileName().toString().replace(".json", ""), ioexception);
             }
         }
     }
@@ -132,7 +132,7 @@ public class JsonConfigSingleFile {
                 return new JsonObject();
             }
         } catch (IOException ioexception) {
-            IndustrialTech.LOGGER.error("Couldn't read json {}", jsonFileLocation + jsonFilename, ioexception);
+            TechAscension.LOGGER.error("Couldn't read json {}", jsonFileLocation + jsonFilename, ioexception);
         }
         return jsonObject;
     }

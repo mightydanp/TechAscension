@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateRegistry;
 import mightydanp.techcore.common.jsonconfig.fluidstate.IFluidState;
@@ -12,7 +13,6 @@ import mightydanp.techcore.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.techcore.common.jsonconfig.material.ore.IOreType;
 import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeRegistry;
 import mightydanp.techcore.common.material.ITMaterial;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -30,14 +30,14 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
         if(!registryMap.containsKey(materialIn.name)){
             registryMap.put(materialIn.name, materialIn);
         }else{
-            IndustrialTech.LOGGER.warn("material (" + materialIn.name + ") was not added because it has already been added!");
+            TechAscension.LOGGER.warn("material (" + materialIn.name + ") was not added because it has already been added!");
         }
     }
 
     @Override
     public void initiate() {
         setJsonFolderName("material");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation());
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
         loadExistJson();
@@ -87,12 +87,12 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
 
                         registryMap.put(material.name, material);
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to material list because a material already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to material list because a material already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("material json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("material json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

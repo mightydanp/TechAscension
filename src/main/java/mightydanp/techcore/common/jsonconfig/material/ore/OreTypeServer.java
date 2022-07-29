@@ -2,11 +2,11 @@ package mightydanp.techcore.common.jsonconfig.material.ore;
 
 import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -146,7 +146,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/ore_type");
-        Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/ore_type");
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/ore_type");
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
@@ -182,7 +182,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
         serverMap.clear();
         serverMap.putAll(oreTypes);
 
-        IndustrialTech.LOGGER.info("Loaded {} ore types from the server", oreTypes.size());
+        TechAscension.LOGGER.info("Loaded {} ore types from the server", oreTypes.size());
     }
 
     @Override

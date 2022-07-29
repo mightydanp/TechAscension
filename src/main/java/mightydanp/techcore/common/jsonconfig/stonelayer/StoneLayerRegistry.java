@@ -2,7 +2,7 @@ package mightydanp.techcore.common.jsonconfig.stonelayer;
 
 import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 import net.minecraft.resources.ResourceLocation;
 
@@ -20,7 +20,7 @@ public class StoneLayerRegistry extends JsonConfigMultiFile<IStoneLayer> {
     @Override
     public void initiate() {
         setJsonFolderName("stone_layer");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation());
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
         for (DefaultStoneLayer stoneLayer : DefaultStoneLayer.values()) {
@@ -81,12 +81,12 @@ public class StoneLayerRegistry extends JsonConfigMultiFile<IStoneLayer> {
                         registryMap.put(String.valueOf(convertToResourceLocation(stoneLayer)), stoneLayer);
 
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to stone Layer list because a stone layer already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to stone Layer list because a stone layer already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("stone layer json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("stone layer json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

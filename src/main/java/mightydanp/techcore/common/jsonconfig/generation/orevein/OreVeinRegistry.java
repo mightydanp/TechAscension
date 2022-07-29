@@ -3,10 +3,10 @@ package mightydanp.techcore.common.jsonconfig.generation.orevein;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.OreGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeatureConfig;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -19,7 +19,7 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig
     @Override
     public void initiate() {
         setJsonFolderName("ore_vein");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation() + "/generation/");
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
         loadExistJson();
         super.initiate();
@@ -57,12 +57,12 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig
                         registryMap.put(OreVein.name, OreVein);
                         OreGenerationHandler.addRegistryOreGeneration(OreVein);
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to ore vein list because a ore vein already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to ore vein list because a ore vein already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("ore vein json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("ore vein json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

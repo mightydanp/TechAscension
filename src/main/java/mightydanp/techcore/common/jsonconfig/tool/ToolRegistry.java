@@ -2,7 +2,7 @@ package mightydanp.techcore.common.jsonconfig.tool;
 
 import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -20,7 +20,7 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
     @Override
     public void initiate() {
         setJsonFolderName("tool");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation());
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
         loadExistJson();
@@ -75,12 +75,12 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
                         registryMap.put(tool.getName(), tool);
 
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to tool list because a tool already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to tool list because a tool already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("tool json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("tool json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

@@ -6,7 +6,7 @@ import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -141,7 +141,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/texture_icon");
-        Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/texture_icon");
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/texture_icon");
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
@@ -177,7 +177,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
         serverMap.clear();
         serverMap.putAll(textureIcons);
 
-        IndustrialTech.LOGGER.info("Loaded {} texture icons from the server", textureIcons.size());
+        TechAscension.LOGGER.info("Loaded {} texture icons from the server", textureIcons.size());
     }
 
     @Override

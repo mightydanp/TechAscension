@@ -2,7 +2,7 @@ package mightydanp.techcore.common.jsonconfig.icons;
 
 import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -18,7 +18,7 @@ public class TextureIconRegistry extends JsonConfigMultiFile<ITextureIcon> {
     @Override
     public void initiate() {
         setJsonFolderName("texture_icon");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation());
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
         for (DefaultTextureIcon textureIcon : DefaultTextureIcon.values()) {
@@ -79,12 +79,12 @@ public class TextureIconRegistry extends JsonConfigMultiFile<ITextureIcon> {
                         registryMap.put(textureIcon.getName(), textureIcon);
 
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to texture icon list because a texture icon already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to texture icon list because a texture icon already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("texture icon json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("texture icon json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

@@ -2,7 +2,7 @@ package mightydanp.techcore.common.jsonconfig.fluidstate;
 
 import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -17,7 +17,7 @@ public class FluidStateRegistry extends JsonConfigMultiFile<IFluidState> {
     @Override
     public void initiate() {
         setJsonFolderName("fluid_state");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation());
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
         for (DefaultFluidState fluidState : DefaultFluidState.values()) {
@@ -77,12 +77,12 @@ public class FluidStateRegistry extends JsonConfigMultiFile<IFluidState> {
                         registryMap.put(fluidState.getName(), fluidState);
 
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to fluid state list because a fluid state already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to fluid state list because a fluid state already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("fluid state json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("fluid state json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -147,7 +147,7 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/fluid_state");
-        Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/fluid_state");
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/fluid_state");
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
@@ -183,7 +183,7 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
         serverMap.clear();
         serverMap.putAll(fluidStates);
 
-        IndustrialTech.LOGGER.info("Loaded {} fluid states from the server", fluidStates.size());
+        TechAscension.LOGGER.info("Loaded {} fluid states from the server", fluidStates.size());
     }
 
     @Override

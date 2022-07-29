@@ -1,9 +1,9 @@
 package mightydanp.techcore.common.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.blocks.ThinSlabBlock;
 import mightydanp.techcore.common.blocks.RockBlock;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -125,7 +125,7 @@ public class StoneLayerTopSurfaceGenFeature extends Feature<StoneLayerTopSurface
                 if (thinSlabBlockList.size() > 0) {
                     List<ThinSlabBlock> acceptedState = thinSlabBlockList.stream().filter(thinSlabBlock -> {
                         if (Arrays.stream(thinSlabBlock.stoneLayerBlock.split(":")).toList().size() == 1) {
-                            IndustrialTech.LOGGER.fatal("[ " + thinSlabBlock.stoneLayerBlock + " ]. Will crash your game now!");
+                            TechAscension.LOGGER.fatal("[ " + thinSlabBlock.stoneLayerBlock + " ]. Will crash your game now!");
                             return false;
                         }
 
@@ -155,7 +155,7 @@ public class StoneLayerTopSurfaceGenFeature extends Feature<StoneLayerTopSurface
                 if (rockBlockList.size() > 0) {
                     List<RockBlock> acceptedState = rockBlockList.stream().filter(rockBlock -> {
                         if (Arrays.stream(rockBlock.stoneLayerBlock.split(":")).toList().size() == 1) {
-                            IndustrialTech.LOGGER.fatal("[ " + rockBlock.stoneLayerBlock + " ]. Will crash your game now!");
+                            TechAscension.LOGGER.fatal("[ " + rockBlock.stoneLayerBlock + " ]. Will crash your game now!");
                             return false;
                         }
 

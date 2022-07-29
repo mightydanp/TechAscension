@@ -3,7 +3,7 @@ package mightydanp.techcore.common.jsonconfig.tool.part;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -18,7 +18,7 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
     @Override
     public void initiate() {
         setJsonFolderName("tool_part");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation());
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
         for (DefaultToolPart toolPart : DefaultToolPart.values()) {
@@ -86,12 +86,12 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
                         registryMap.put(fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix())), toolPart);
 
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to tool part list because a tool part already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to tool part list because a tool part already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("tool part json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("tool part json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

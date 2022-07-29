@@ -3,11 +3,11 @@ package mightydanp.techcore.common.jsonconfig.tool.part;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -147,7 +147,7 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/tool_part");
-        Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/tool_part");
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/tool_part");
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
@@ -183,7 +183,7 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
         serverMap.clear();
         serverMap.putAll(toolParts);
 
-        IndustrialTech.LOGGER.info("Loaded {} tool parts from the server", toolParts.size());
+        TechAscension.LOGGER.info("Loaded {} tool parts from the server", toolParts.size());
     }
 
     @Override

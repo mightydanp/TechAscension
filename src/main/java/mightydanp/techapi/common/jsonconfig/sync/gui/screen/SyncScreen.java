@@ -10,7 +10,7 @@ import mightydanp.techcore.common.libs.ITButtonRef;
 import mightydanp.techcore.common.libs.ITScreenRef;
 import mightydanp.techcore.common.libs.ITScreenTextRef;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -55,12 +55,12 @@ public class SyncScreen extends Screen {
                         }
                     }
 
-                    IndustrialTech.mainJsonConfig.setFolderLocation("config/" + Ref.mod_id + "/server");
-                    IndustrialTech.mainJsonConfig.reloadConfigJson();
+                    TechAscension.mainJsonConfig.setFolderLocation("config/" + Ref.mod_id + "/server");
+                    TechAscension.mainJsonConfig.reloadConfigJson();
 
                 }else{
-                    IndustrialTech.mainJsonConfig.setFolderLocation("saves/" + ConfigSync.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id);
-                    IndustrialTech.mainJsonConfig.reloadConfigJson();
+                    TechAscension.mainJsonConfig.setFolderLocation("saves/" + ConfigSync.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id);
+                    TechAscension.mainJsonConfig.reloadConfigJson();
                 }
                 this.minecraft.stop();
             }));

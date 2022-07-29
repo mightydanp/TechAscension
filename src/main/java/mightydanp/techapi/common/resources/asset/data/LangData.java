@@ -1,7 +1,7 @@
 package mightydanp.techapi.common.resources.asset.data;
 
 import com.google.gson.JsonObject;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 
 public class LangData {
     public String language;
@@ -13,7 +13,7 @@ public class LangData {
             translations.addProperty(localizationIn, translationIn);
             return true;
         } else {
-            IndustrialTech.LOGGER.warn("Cannot add translation, [" + translationIn + "], because the localization, [" + localizationIn + "], already exist for " + language);
+            TechAscension.LOGGER.warn("Cannot add translation, [" + translationIn + "], because the localization, [" + localizationIn + "], already exist for " + language);
             return false;
         }
     }

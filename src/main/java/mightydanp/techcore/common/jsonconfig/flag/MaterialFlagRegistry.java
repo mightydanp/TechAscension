@@ -3,7 +3,7 @@ package mightydanp.techcore.common.jsonconfig.flag;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -19,7 +19,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
     @Override
     public void initiate() {
         setJsonFolderName("material_flag");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation());
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
         for (DefaultMaterialFlag materialFlag : DefaultMaterialFlag.values()) {
@@ -45,7 +45,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
         Optional<IMaterialFlag> materialFlag = registryMap.values().stream().filter(o -> fixesToName(new Pair<>(o.getPrefix(), o.getSuffix())).equals(fixesToName(fixesIn))).findFirst();
 
         if(!materialFlag.isPresent()) {
-            IndustrialTech.LOGGER.warn("(" + fixesToName(fixesIn) + "), does not exist as a material flag.");
+            TechAscension.LOGGER.warn("(" + fixesToName(fixesIn) + "), does not exist as a material flag.");
         }
 
         return materialFlag.orElse(null);
@@ -55,7 +55,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
         Optional<IMaterialFlag> materialFlag = registryMap.values().stream().filter(o -> fixesToName(new Pair<>(o.getPrefix(), o.getSuffix())).equals(name)).findFirst();
 
         if(!materialFlag.isPresent()) {
-            IndustrialTech.LOGGER.warn("(" + name + "), does not exist as a material flag.");
+            TechAscension.LOGGER.warn("(" + name + "), does not exist as a material flag.");
         }
 
         return materialFlag.orElse(null);
@@ -98,12 +98,12 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
                         registryMap.put(materialFlagName, materialFlag);
 
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to material flag list because a material flag already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to material flag list because a material flag already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("material flag json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("material flag json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

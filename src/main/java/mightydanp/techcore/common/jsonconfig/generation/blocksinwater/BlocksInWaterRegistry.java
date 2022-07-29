@@ -2,10 +2,10 @@ package mightydanp.techcore.common.jsonconfig.generation.blocksinwater;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -18,7 +18,7 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     @Override
     public void initiate() {
         setJsonFolderName("blocks_in_water");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation() + "/generation/");
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
         loadExistJson();
         super.initiate();
@@ -61,12 +61,12 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
                         registryMap.put(blocksInWater.name, blocksInWater);
                         PlantGenerationHandler.addRegistryBlockInWaterGenerate(blocksInWater);
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to blocks in water list because a blocks in water already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to blocks in water list because a blocks in water already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("blocks in water json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("blocks in water json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

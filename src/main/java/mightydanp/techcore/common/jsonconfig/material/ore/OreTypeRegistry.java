@@ -2,7 +2,7 @@ package mightydanp.techcore.common.jsonconfig.material.ore;
 
 import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -18,7 +18,7 @@ public class OreTypeRegistry extends JsonConfigMultiFile<IOreType> {
     @Override
     public void initiate() {
         setJsonFolderName("ore_type");
-        setJsonFolderLocation(IndustrialTech.mainJsonConfig.getFolderLocation());
+        setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
         for (DefaultOreType oreType : DefaultOreType.values()) {
@@ -75,12 +75,12 @@ public class OreTypeRegistry extends JsonConfigMultiFile<IOreType> {
                         registryMap.put(oreType.getName(), oreType);
 
                     } else {
-                        IndustrialTech.LOGGER.fatal("[{}] could not be added to ore type list because a ore type already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to ore type list because a ore type already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            IndustrialTech.LOGGER.warn(new CrashReport("ore type json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("ore type json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 

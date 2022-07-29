@@ -5,9 +5,9 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -147,7 +147,7 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/tool_type");
-        Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation()  + "/tool_type");
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/tool_type");
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
@@ -183,7 +183,7 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
         serverMap.clear();
         serverMap.putAll(toolTypes);
 
-        IndustrialTech.LOGGER.info("Loaded {} tool types from the server", toolTypes.size());
+        TechAscension.LOGGER.info("Loaded {} tool types from the server", toolTypes.size());
     }
 
     @Override

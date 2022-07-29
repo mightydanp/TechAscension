@@ -4,10 +4,10 @@ import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
-import mightydanp.techascension.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -144,7 +144,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/blocks_in_water");
-        Path configFolder = Paths.get(IndustrialTech.mainJsonConfig.getFolderLocation() + "/generation"  + "/blocks_in_water");
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation() + "/generation"  + "/blocks_in_water");
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
@@ -180,7 +180,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         serverMap.clear();
         serverMap.putAll(BlocksInWaters);
 
-        IndustrialTech.LOGGER.info("Loaded {} blocks in waters from the server", BlocksInWaters.size());
+        TechAscension.LOGGER.info("Loaded {} blocks in waters from the server", BlocksInWaters.size());
     }
 
     @Override

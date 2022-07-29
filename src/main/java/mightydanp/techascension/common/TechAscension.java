@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  * Created by MightyDanp on 9/26/2020.
  */
 @Mod(Ref.mod_id)
-public class IndustrialTech {
+public class TechAscension {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final ISidedReference SIDED_SYSTEM = DistExecutor.safeRunForDist(() -> ModClientEvent::new, () -> DedicatedServerReference::new);
 
@@ -51,7 +51,7 @@ public class IndustrialTech {
     public static ITAssetHolder assetHolder = new ITAssetHolder();
     public static ITDataHolder dataHolder = new ITDataHolder();
 
-    public IndustrialTech(){
+    public TechAscension(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus(), forge = MinecraftForge.EVENT_BUS;
         bus.register(this);
         SIDED_SYSTEM.setup(bus, forge);

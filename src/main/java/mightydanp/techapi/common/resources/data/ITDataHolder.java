@@ -2,7 +2,7 @@ package mightydanp.techapi.common.resources.data;
 
 import com.google.gson.JsonObject;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techascension.common.IndustrialTech;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -26,7 +26,7 @@ public class ITDataHolder implements PackResources {
         if (!DATA_HOLDER.containsKey(location)) {
             DATA_HOLDER.put(location, jsonObject);
         }else{
-            IndustrialTech.LOGGER.warn("[" + location + "] already exists in data.");
+            TechAscension.LOGGER.warn("[" + location + "] already exists in data.");
         }
     }
 
@@ -34,7 +34,7 @@ public class ITDataHolder implements PackResources {
         if (DATA_HOLDER.containsKey(location)) {
             DATA_HOLDER.remove(location);
         }else{
-            IndustrialTech.LOGGER.warn("[" + location + "] does not already exists in data.");
+            TechAscension.LOGGER.warn("[" + location + "] does not already exists in data.");
         }
     }
 
