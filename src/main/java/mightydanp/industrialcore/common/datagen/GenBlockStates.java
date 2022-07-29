@@ -26,7 +26,7 @@ public class GenBlockStates extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        IndustrialTech.configSync.material.getFirst().registryMap.values().forEach(material -> materialHandlerHelper((ITMaterial) material));
+        //IndustrialTech.configSync.material.getFirst().registryMap.values().forEach(material -> materialHandlerHelper((ITMaterial) material));
     }
 
     private void materialHandlerHelper(ITMaterial material) {

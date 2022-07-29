@@ -2,9 +2,10 @@ package mightydanp.industrialcore.common.jsonconfig.generation.orevein;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialcore.common.jsonconfig.sync.ConfigSync;
-import mightydanp.industrialcore.common.jsonconfig.sync.JsonConfigServer;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialapi.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
@@ -34,13 +35,13 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<OreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.oreVeinID).stream()
+        List<OreVeinGenFeatureConfig> list = message.getConfig(ICJsonConfigs.oreVeinID).stream()
                 .filter(OreVeinGenFeatureConfig.class::isInstance)
                 .map(OreVeinGenFeatureConfig.class::cast).toList();
 
         if(list.size() != getServerMap().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("ore_vein", sync.get());
+            ConfigSync.syncedJson.put("ore_vein", sync.get());
             return false;
         }
 
@@ -52,8 +53,8 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
 
                 if(optional.isPresent()) {
                     OreVeinGenFeatureConfig serverOreVein = optional.get();
-                    JsonObject jsonMaterial = ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).toJsonObject(OreVein);
-                    JsonObject materialJson = ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).toJsonObject(serverOreVein);
+                    JsonObject jsonMaterial = ((OreVeinRegistry)ICJsonConfigs.oreVein.getFirst()).toJsonObject(OreVein);
+                    JsonObject materialJson = ((OreVeinRegistry)ICJsonConfigs.oreVein.getFirst()).toJsonObject(serverOreVein);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -62,7 +63,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("ore_vein", sync.get());
+        ConfigSync.syncedJson.put("ore_vein", sync.get());
 
         return sync.get();
     }
@@ -72,28 +73,26 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, OreVeinGenFeatureConfig> clientOreVeins = new HashMap<>();
 
-        ConfigSync configSync = IndustrialTech.configSync;
-
         Path configs = Paths.get(singlePlayerConfigs + "/ore_vein");
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                configSync.syncedJson.put("ore_vein", sync.get());
+                ConfigSync.syncedJson.put("ore_vein", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            configSync.syncedJson.put("ore_vein", sync.get());
+            ConfigSync.syncedJson.put("ore_vein", sync.get());
             return false;
         }
 
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = IndustrialTech.configSync.oreVein.getFirst().getJsonObject(file.getName());
-                OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = ICJsonConfigs.oreVein.getFirst().getJsonObject(file.getName());
+                OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry)ICJsonConfigs.oreVein.getFirst()).getFromJsonObject(jsonObject);
                 clientOreVeins.put(oreVein.name, oreVein);
             }
 
@@ -102,8 +101,8 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
 
                 if(sync.get()) {
                     OreVeinGenFeatureConfig clientOreVein = getServerMap().get(serverOreVein.name);
-                    JsonObject jsonMaterial = ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).toJsonObject(serverOreVein);
-                    JsonObject materialJson = ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).toJsonObject(clientOreVein);
+                    JsonObject jsonMaterial = ((OreVeinRegistry)ICJsonConfigs.oreVein.getFirst()).toJsonObject(serverOreVein);
+                    JsonObject materialJson = ((OreVeinRegistry)ICJsonConfigs.oreVein.getFirst()).toJsonObject(clientOreVein);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -111,7 +110,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("ore_vein", sync.get());
+        ConfigSync.syncedJson.put("ore_vein", sync.get());
 
         return sync.get();
     }
@@ -130,7 +129,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
         for (OreVeinGenFeatureConfig oreVein : getServerMap().values()) {
             String name = oreVein.name;
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).toJsonObject(oreVein);
+            JsonObject jsonObject = ((OreVeinRegistry)ICJsonConfigs.oreVein.getFirst()).toJsonObject(oreVein);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -151,8 +150,8 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.oreVein.getFirst().getJsonObject(file.getName());
-                    OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = ICJsonConfigs.oreVein.getFirst().getJsonObject(file.getName());
+                    OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry)ICJsonConfigs.oreVein.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = oreVein.name;
 
@@ -172,7 +171,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<OreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.oreVeinID).stream()
+        List<OreVeinGenFeatureConfig> list = message.getConfig(ICJsonConfigs.oreVeinID).stream()
                 .filter(OreVeinGenFeatureConfig.class::isInstance)
                 .map(OreVeinGenFeatureConfig.class::cast).toList();
 
@@ -213,7 +212,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<OreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.oreVeinID).stream()
+        List<OreVeinGenFeatureConfig> list = message.getConfig(ICJsonConfigs.oreVeinID).stream()
                 .filter(OreVeinGenFeatureConfig.class::isInstance)
                 .map(OreVeinGenFeatureConfig.class::cast).toList();
 

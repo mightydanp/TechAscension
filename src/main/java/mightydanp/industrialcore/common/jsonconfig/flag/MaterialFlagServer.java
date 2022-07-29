@@ -2,10 +2,11 @@ package mightydanp.industrialcore.common.jsonconfig.flag;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialapi.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.libs.Ref;
-import mightydanp.industrialcore.common.jsonconfig.sync.ConfigSync;
-import mightydanp.industrialcore.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -18,8 +19,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Created by MightyDanp on 1/23/2022.
@@ -37,14 +36,13 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<IMaterialFlag> list = message.getConfig(IndustrialTech.configSync.materialFlagID).stream()
+        List<IMaterialFlag> list = message.getConfig(ICJsonConfigs.materialFlagID).stream()
                 .filter(IMaterialFlag.class::isInstance)
-                .map(IMaterialFlag.class::cast)
-                .collect(toList());
+                .map(IMaterialFlag.class::cast).toList();
 
         if(list.size() != getServerMap().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("material_flag", sync.get());
+            ConfigSync.syncedJson.put("material_flag", sync.get());
             return false;
         }
 
@@ -56,8 +54,8 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
                 if(optional.isPresent()) {
                     IMaterialFlag serverMaterialFlag = optional.get();
-                    JsonObject jsonMaterial = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).toJsonObject(materialFlag);
-                    JsonObject materialJson = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
+                    JsonObject jsonMaterial = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).toJsonObject(materialFlag);
+                    JsonObject materialJson = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -66,7 +64,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("material_flag", sync.get());
+        ConfigSync.syncedJson.put("material_flag", sync.get());
 
         return sync.get();
     }
@@ -76,28 +74,26 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, IMaterialFlag> clientMaterialFlags = new HashMap<>();
 
-        ConfigSync configSync = IndustrialTech.configSync;
-
         Path configs = Paths.get(singlePlayerConfigs + "/material_flag");
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                configSync.syncedJson.put("material_flag", sync.get());
+                ConfigSync.syncedJson.put("material_flag", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            configSync.syncedJson.put("material_flag", sync.get());
+            ConfigSync.syncedJson.put("material_flag", sync.get());
             return false;
         }
 
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = IndustrialTech.configSync.materialFlag.getFirst().getJsonObject(file.getName());
-                IMaterialFlag materialFlag = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = ICJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
+                IMaterialFlag materialFlag = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).getFromJsonObject(jsonObject);
                 clientMaterialFlags.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag);
             }
 
@@ -106,8 +102,8 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
                 if(sync.get()) {
                     IMaterialFlag clientMaterialFlag = getServerMap().get(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix()));
-                    JsonObject jsonMaterial = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
-                    JsonObject materialJson = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).toJsonObject(clientMaterialFlag);
+                    JsonObject jsonMaterial = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
+                    JsonObject materialJson = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).toJsonObject(clientMaterialFlag);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -115,7 +111,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("material_flag", sync.get());
+        ConfigSync.syncedJson.put("material_flag", sync.get());
 
         return sync.get();
     }
@@ -135,7 +131,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
         for (IMaterialFlag materialFlag : getServerMap().values()) {
             String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).toJsonObject(materialFlag);
+            JsonObject jsonObject = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).toJsonObject(materialFlag);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -156,8 +152,8 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.materialFlag.getFirst().getJsonObject(file.getName());
-                    IMaterialFlag materialFlag = ((MaterialFlagRegistry)IndustrialTech.configSync.materialFlag.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = ICJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
+                    IMaterialFlag materialFlag = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
 
@@ -177,10 +173,9 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IMaterialFlag> list = message.getConfig(IndustrialTech.configSync.materialFlagID).stream()
+        List<IMaterialFlag> list = message.getConfig(ICJsonConfigs.materialFlagID).stream()
                 .filter(IMaterialFlag.class::isInstance)
-                .map(IMaterialFlag.class::cast)
-                .collect(toList());
+                .map(IMaterialFlag.class::cast).toList();
 
         Map<String, IMaterialFlag> materialFlags = list.stream()
                 .collect(Collectors.toMap(s -> fixesToName(s.getPrefix(), s.getSuffix()), s -> s));
@@ -192,7 +187,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, IMaterialFlag materialFlag) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, IMaterialFlag materialFlag) {
         buffer.writeUtf(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()));
         buffer.writeUtf(materialFlag.getPrefix());
         buffer.writeUtf(materialFlag.getSuffix());
@@ -200,10 +195,9 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IMaterialFlag> list = message.getConfig(IndustrialTech.configSync.materialFlagID).stream()
+        List<IMaterialFlag> list = message.getConfig(ICJsonConfigs.materialFlagID).stream()
                 .filter(IMaterialFlag.class::isInstance)
-                .map(IMaterialFlag.class::cast)
-                .collect(toList());
+                .map(IMaterialFlag.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 

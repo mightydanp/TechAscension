@@ -3,7 +3,7 @@ package mightydanp.industrialcore.common.jsonconfig.generation.blocksinwater;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import mightydanp.industrialcore.common.handler.generation.PlantGenerationHandler;
-import mightydanp.industrialcore.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialcore.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.CrashReport;

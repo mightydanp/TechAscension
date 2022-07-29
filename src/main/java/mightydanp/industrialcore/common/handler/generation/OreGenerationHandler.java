@@ -3,6 +3,7 @@ package mightydanp.industrialcore.common.handler.generation;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialcore.common.handler.RegistryHandler;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.jsonconfig.generation.orevein.OreVeinRegistry;
 import mightydanp.industrialcore.common.jsonconfig.generation.smallore.SmallOreVeinRegistry;
 import mightydanp.industrialcore.common.libs.Ref;
@@ -52,7 +53,7 @@ public class OreGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
-        ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).register(config);
+        ((OreVeinRegistry) ICJsonConfigs.oreVein.getFirst()).register(config);
         oreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
     }
 
@@ -75,7 +76,7 @@ public class OreGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, oreVeinFeature, list.toArray(new PlacementModifier[0]));
-        ((OreVeinRegistry)IndustrialTech.configSync.oreVein.getFirst()).register(config);
+        ((OreVeinRegistry)ICJsonConfigs.oreVein.getFirst()).register(config);
         oreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
     }
 
@@ -86,7 +87,7 @@ public class OreGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, smallOreFeature, list.toArray(new PlacementModifier[0]));
-        ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).register(config);
+        ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).register(config);
         smallOreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
     }
 
@@ -118,7 +119,7 @@ public class OreGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, smallOreFeature, list.toArray(new PlacementModifier[0]));
-        ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).register(config);
+        ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).register(config);
         smallOreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
     }
 

@@ -1,7 +1,7 @@
 package mightydanp.industrialcore.common.handler;
 
 import com.google.common.base.Preconditions;
-import mightydanp.industrialcore.common.jsonconfig.sync.gui.screen.SyncScreen;
+import mightydanp.industrialapi.common.jsonconfig.sync.gui.screen.SyncScreen;
 import mightydanp.industrialcore.common.libs.RefScreenIDs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

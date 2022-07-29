@@ -1,16 +1,12 @@
 package mightydanp.industrialtech.common.tool.tools;
 
-import com.google.common.collect.ImmutableSet;
 import mightydanp.industrialcore.common.blocks.HoleBlock;
 import mightydanp.industrialcore.common.blocks.ITBlocks;
 import mightydanp.industrialcore.common.crafting.recipe.HoleRecipe;
 import mightydanp.industrialcore.common.crafting.recipe.Recipes;
 import mightydanp.industrialcore.common.items.ITToolItem;
-import mightydanp.industrialcore.common.items.ModItemGroups;
-import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.tileentities.HoleTileEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -19,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 

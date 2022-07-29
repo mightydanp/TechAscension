@@ -1,10 +1,11 @@
 package mightydanp.industrialcore.common.jsonconfig.fluidstate;
 
 import com.google.gson.JsonObject;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialapi.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.libs.Ref;
-import mightydanp.industrialcore.common.jsonconfig.sync.ConfigSync;
-import mightydanp.industrialcore.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -17,8 +18,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Created by MightyDanp on 1/25/2022.
@@ -35,17 +34,16 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
 
     @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
-        List<IFluidState> list = message.getConfig(IndustrialTech.configSync.fluidStateID).stream()
+        List<IFluidState> list = message.getConfig(ICJsonConfigs.fluidStateID).stream()
                 .filter(IFluidState.class::isInstance)
-                .map(IFluidState.class::cast)
-                .collect(toList());
+                .map(IFluidState.class::cast).toList();
 
         AtomicBoolean sync = new AtomicBoolean(true);
 
 
         if(list.size() != getServerMap().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("fluid_state", sync.get());
+            ConfigSync.syncedJson.put("fluid_state", sync.get());
             return false;
         }
 
@@ -57,8 +55,8 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
 
                 if(optional.isPresent()) {
                     IFluidState serverFluidState = optional.get();
-                    JsonObject jsonMaterial = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).toJsonObject(fluidState);
-                    JsonObject materialJson = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).toJsonObject(serverFluidState);
+                    JsonObject jsonMaterial = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).toJsonObject(fluidState);
+                    JsonObject materialJson = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).toJsonObject(serverFluidState);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -67,7 +65,7 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("fluid_state", sync.get());
+        ConfigSync.syncedJson.put("fluid_state", sync.get());
 
         return sync.get();
     }
@@ -77,28 +75,26 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, IFluidState> clientFluidStates = new HashMap<>();
 
-        ConfigSync configSync = IndustrialTech.configSync;
-
         Path configs = Paths.get(singlePlayerConfigs + "/fluid_state");
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                configSync.syncedJson.put("fluid_state", sync.get());
+                ConfigSync.syncedJson.put("fluid_state", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            configSync.syncedJson.put("fluid_state", sync.get());
+            ConfigSync.syncedJson.put("fluid_state", sync.get());
             return false;
         }
 
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).getJsonObject(file.getName());
-                IFluidState fluidState = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = ICJsonConfigs.fluidState.getFirst().getJsonObject(file.getName());
+                IFluidState fluidState = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).getFromJsonObject(jsonObject);
                 clientFluidStates.put(fluidState.getName(), fluidState);
             }
 
@@ -107,8 +103,8 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
 
                 if(sync.get()) {
                     IFluidState clientFluidState = getServerMap().get(serverFluidState.getName());
-                    JsonObject jsonMaterial = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).toJsonObject(serverFluidState);
-                    JsonObject materialJson = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).toJsonObject(clientFluidState);
+                    JsonObject jsonMaterial = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).toJsonObject(serverFluidState);
+                    JsonObject materialJson = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).toJsonObject(clientFluidState);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -116,7 +112,7 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("fluid_state", sync.get());
+        ConfigSync.syncedJson.put("fluid_state", sync.get());
 
         return sync.get();
     }
@@ -135,7 +131,7 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
         for (IFluidState fluidState : getServerMap().values()) {
             String name = fluidState.getName();
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).toJsonObject(fluidState);
+            JsonObject jsonObject = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).toJsonObject(fluidState);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -156,8 +152,8 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.fluidState.getFirst().getJsonObject(file.getName());
-                    IFluidState fluidState = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = ICJsonConfigs.fluidState.getFirst().getJsonObject(file.getName());
+                    IFluidState fluidState = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = fluidState.getName();
 
@@ -177,10 +173,9 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IFluidState> list = message.getConfig(IndustrialTech.configSync.fluidStateID).stream()
+        List<IFluidState> list = message.getConfig(ICJsonConfigs.fluidStateID).stream()
                 .filter(IFluidState.class::isInstance)
-                .map(IFluidState.class::cast)
-                .collect(toList());
+                .map(IFluidState.class::cast).toList();
 
         Map<String, IFluidState> fluidStates = list.stream()
                 .collect(Collectors.toMap(IFluidState::getName, s -> s));
@@ -192,16 +187,15 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, IFluidState fluidState) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, IFluidState fluidState) {
         buffer.writeUtf(fluidState.getName());
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IFluidState> list = message.getConfig(IndustrialTech.configSync.fluidStateID).stream()
+        List<IFluidState> list = message.getConfig(ICJsonConfigs.fluidStateID).stream()
                 .filter(IFluidState.class::isInstance)
-                .map(IFluidState.class::cast)
-                .collect(toList());
+                .map(IFluidState.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 

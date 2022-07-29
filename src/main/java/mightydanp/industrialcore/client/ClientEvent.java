@@ -5,7 +5,7 @@ import mightydanp.industrialcore.common.blocks.ITBlocks;
 import mightydanp.industrialcore.common.handler.KeyBindingHandler;
 import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.tileentities.TileEntities;
-import mightydanp.industrialtech.client.rendering.models.CampFireBakedModel;
+import mightydanp.industrialcore.server.client.rendering.models.CampFireBakedModel;
 import mightydanp.industrialtech.common.IndustrialTech;
 import mightydanp.industrialtech.common.blocks.ModBlocks;
 import net.minecraft.world.level.block.state.BlockState;

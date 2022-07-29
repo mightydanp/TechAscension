@@ -1,8 +1,7 @@
 package mightydanp.industrialtech.common.materials;
 
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialcore.common.jsonconfig.icons.ITextureIcon;
-import mightydanp.industrialcore.common.jsonconfig.icons.TextureIconRegistry;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialcore.common.jsonconfig.material.data.MaterialServer;
 import mightydanp.industrialcore.common.jsonconfig.tool.part.IToolPart;
@@ -13,13 +12,9 @@ import mightydanp.industrialcore.common.jsonconfig.material.ore.DefaultOreType;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.world.level.block.Blocks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static mightydanp.industrialcore.common.jsonconfig.icons.DefaultTextureIcon.*;
-import static mightydanp.industrialcore.common.jsonconfig.tool.part.DefaultToolPart.*;
 
 /**
  * Created by MightyDanp on 9/26/2020.
@@ -53,7 +48,7 @@ public class ModMaterials extends ITMaterials {
 
 
     public static void commonInit() {
-        Pair<?, ?> materialPair = IndustrialTech.configSync.material;
+        Pair<?, ?> materialPair = ICJsonConfigs.material;
         MaterialRegistry materialRegistry = ((MaterialRegistry)materialPair.getFirst());
         MaterialServer materialServer = ((MaterialServer)materialPair.getSecond());
 
@@ -73,7 +68,7 @@ public class ModMaterials extends ITMaterials {
 
         materialRegistry.register(flint = new ITMaterial("flint", 0x002040, new Pair<>(Ref.mod_id, CUBE)).setToolProperties( 20, 10, 20F, 1F, 1F, 1, flintToolTypes));
 
-        IndustrialTech.configSync.configs.put(7, new Pair<>(materialRegistry, materialServer));
+        ICJsonConfigs.configs.put(7, new Pair<>(materialRegistry, materialServer));
         //materials.add(iron = new MaterialHandler("iron", 0, 51, 153, "").addOreProperties(8, false).save());
     //Materials that have ORES
         /*

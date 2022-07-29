@@ -3,6 +3,7 @@ package mightydanp.industrialcore.common.world.gen.feature;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import mightydanp.industrialcore.common.blocks.SmallOreBlock;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.world.level.block.Block;
@@ -104,7 +105,7 @@ public class SmallOreVeinGenFeature extends Feature<SmallOreVeinGenFeatureConfig
         List<Pair<Block, Integer>> veinBlocksAndChancesThatCanReplace = new ArrayList<>();
 
         for (Pair<String, Integer> veinBlocksAndChance : veinBlocksAndChances) {
-            ITMaterial material = (ITMaterial) IndustrialTech.configSync.material.getFirst().registryMap.get(veinBlocksAndChance.getFirst());
+            ITMaterial material = (ITMaterial) ICJsonConfigs.material.getFirst().registryMap.get(veinBlocksAndChance.getFirst());
             int rarity = veinBlocksAndChance.getSecond();
 
             if (material != null) {

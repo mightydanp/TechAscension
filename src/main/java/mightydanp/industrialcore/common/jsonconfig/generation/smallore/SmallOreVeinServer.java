@@ -2,9 +2,10 @@ package mightydanp.industrialcore.common.jsonconfig.generation.smallore;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialcore.common.jsonconfig.sync.ConfigSync;
-import mightydanp.industrialcore.common.jsonconfig.sync.JsonConfigServer;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialapi.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
@@ -35,13 +36,13 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.smallOreID).stream()
+        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(ICJsonConfigs.smallOreID).stream()
                 .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
                 .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
 
         if(list.size() != getServerMap().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("ore_vein", sync.get());
+            ConfigSync.syncedJson.put("ore_vein", sync.get());
             return false;
         }
 
@@ -53,8 +54,8 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
                 if(optional.isPresent()) {
                     SmallOreVeinGenFeatureConfig serverSmallOreVein = optional.get();
-                    JsonObject jsonMaterial = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).toJsonObject(smallOreVein);
-                    JsonObject materialJson = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
+                    JsonObject jsonMaterial = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).toJsonObject(smallOreVein);
+                    JsonObject materialJson = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -63,7 +64,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("ore_vein", sync.get());
+        ConfigSync.syncedJson.put("ore_vein", sync.get());
 
         return sync.get();
     }
@@ -73,28 +74,26 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, SmallOreVeinGenFeatureConfig> clientSmallOreVeins = new HashMap<>();
 
-        ConfigSync configSync = IndustrialTech.configSync;
-
         Path configs = Paths.get(singlePlayerConfigs + "/ore_vein");
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                configSync.syncedJson.put("ore_vein", sync.get());
+                ConfigSync.syncedJson.put("ore_vein", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            configSync.syncedJson.put("ore_vein", sync.get());
+            ConfigSync.syncedJson.put("ore_vein", sync.get());
             return false;
         }
 
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = IndustrialTech.configSync.smallOre.getFirst().getJsonObject(file.getName());
-                SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = ICJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
+                SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).getFromJsonObject(jsonObject);
                 clientSmallOreVeins.put(oreVein.name, oreVein);
             }
 
@@ -103,8 +102,8 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
                 if(sync.get()) {
                     SmallOreVeinGenFeatureConfig clientSmallOreVein = getServerMap().get(serverSmallOreVein.name);
-                    JsonObject jsonMaterial = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
-                    JsonObject materialJson = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).toJsonObject(clientSmallOreVein);
+                    JsonObject jsonMaterial = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
+                    JsonObject materialJson = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).toJsonObject(clientSmallOreVein);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -112,7 +111,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("ore_vein", sync.get());
+        ConfigSync.syncedJson.put("ore_vein", sync.get());
 
         return sync.get();
     }
@@ -131,7 +130,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
         for (SmallOreVeinGenFeatureConfig oreVein : getServerMap().values()) {
             String name = oreVein.name;
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).toJsonObject(oreVein);
+            JsonObject jsonObject = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).toJsonObject(oreVein);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -152,8 +151,8 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.smallOre.getFirst().getJsonObject(file.getName());
-                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry)IndustrialTech.configSync.smallOre.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = ICJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
+                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = oreVein.name;
 
@@ -173,7 +172,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.smallOreID).stream()
+        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(ICJsonConfigs.smallOreID).stream()
                 .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
                 .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
 
@@ -211,7 +210,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.smallOreID).stream()
+        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(ICJsonConfigs.smallOreID).stream()
                 .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
                 .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
 

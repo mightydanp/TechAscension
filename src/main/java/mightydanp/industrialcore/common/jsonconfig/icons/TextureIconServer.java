@@ -1,10 +1,11 @@
 package mightydanp.industrialcore.common.jsonconfig.icons;
 
 import com.google.gson.JsonObject;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.libs.Ref;
-import mightydanp.industrialcore.common.jsonconfig.sync.ConfigSync;
-import mightydanp.industrialcore.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.industrialapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -35,14 +36,13 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<ITextureIcon> list = message.getConfig(IndustrialTech.configSync.textureIconID).stream()
+        List<ITextureIcon> list = message.getConfig(ICJsonConfigs.textureIconID).stream()
                 .filter(ITextureIcon.class::isInstance)
-                .map(ITextureIcon.class::cast)
-                .collect(toList());
+                .map(ITextureIcon.class::cast).toList();
         
         if(list.size() != getServerMap().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("texture_icon", sync.get());
+            ConfigSync.syncedJson.put("texture_icon", sync.get());
             return false;
         }
 
@@ -54,8 +54,8 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
                 if(optional.isPresent()) {
                     ITextureIcon serverTextureIcon = optional.get();
-                    JsonObject jsonMaterial = ((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).toJsonObject(textureIcon);
-                    JsonObject materialJson = ((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
+                    JsonObject jsonMaterial = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).toJsonObject(textureIcon);
+                    JsonObject materialJson = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -64,7 +64,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("texture_icon", sync.get());
+        ConfigSync.syncedJson.put("texture_icon", sync.get());
 
         return sync.get();
     }
@@ -73,28 +73,26 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, ITextureIcon> clientTextureIcons = new HashMap<>();
 
-        ConfigSync configSync = IndustrialTech.configSync;
-
         Path configs = Paths.get(singlePlayerConfigs + "/texture_icon");
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                configSync.syncedJson.put("texture_icon", sync.get());
+                ConfigSync.syncedJson.put("texture_icon", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            configSync.syncedJson.put("texture_icon", sync.get());
+            ConfigSync.syncedJson.put("texture_icon", sync.get());
             return false;
         }
 
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = IndustrialTech.configSync.textureIcon.getFirst().getJsonObject(file.getName());
-                ITextureIcon textureIcon = ((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = ICJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
+                ITextureIcon textureIcon = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).getFromJsonObject(jsonObject);
                 clientTextureIcons.put(textureIcon.getName(), textureIcon);
             }
 
@@ -103,8 +101,8 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
                 if(sync.get()) {
                     ITextureIcon clientTextureIcon = getServerMap().get(serverTextureIcon.getName());
-                    JsonObject jsonMaterial = ((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
-                    JsonObject materialJson = ((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).toJsonObject(clientTextureIcon);
+                    JsonObject jsonMaterial = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
+                    JsonObject materialJson = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).toJsonObject(clientTextureIcon);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -112,7 +110,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("texture_icon", sync.get());
+        ConfigSync.syncedJson.put("texture_icon", sync.get());
 
         return sync.get();
     }
@@ -130,7 +128,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
         for (ITextureIcon textureIcon : getServerMap().values()) {
             String name = textureIcon.getName();
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).toJsonObject(textureIcon);
+            JsonObject jsonObject = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).toJsonObject(textureIcon);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -150,8 +148,8 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.textureIcon.getFirst().getJsonObject(file.getName());
-                    ITextureIcon textureIcon = ((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = ICJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
+                    ITextureIcon textureIcon = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = textureIcon.getName();
 
@@ -171,10 +169,9 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<ITextureIcon> list = message.getConfig(IndustrialTech.configSync.textureIconID).stream()
+        List<ITextureIcon> list = message.getConfig(ICJsonConfigs.textureIconID).stream()
                 .filter(ITextureIcon.class::isInstance)
-                .map(ITextureIcon.class::cast)
-                .collect(toList());
+                .map(ITextureIcon.class::cast).toList();
 
         Map<String, ITextureIcon> textureIcons = list.stream()
                 .collect(Collectors.toMap(ITextureIcon::getName, s -> s));
@@ -186,16 +183,15 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, ITextureIcon textureIcon) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, ITextureIcon textureIcon) {
         buffer.writeUtf(textureIcon.getName());
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<ITextureIcon> list = message.getConfig(IndustrialTech.configSync.textureIconID).stream()
+        List<ITextureIcon> list = message.getConfig(ICJsonConfigs.textureIconID).stream()
                 .filter(ITextureIcon.class::isInstance)
-                .map(ITextureIcon.class::cast)
-                .collect(toList());
+                .map(ITextureIcon.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 

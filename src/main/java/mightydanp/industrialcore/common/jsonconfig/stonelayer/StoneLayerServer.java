@@ -1,10 +1,11 @@
 package mightydanp.industrialcore.common.jsonconfig.stonelayer;
 
 import com.google.gson.JsonObject;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialapi.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.libs.Ref;
-import mightydanp.industrialcore.common.jsonconfig.sync.ConfigSync;
-import mightydanp.industrialcore.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -17,8 +18,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Created by MightyDanp on 1/26/2022.
@@ -37,14 +36,13 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<IStoneLayer> list = message.getConfig(IndustrialTech.configSync.stoneLayerID).stream()
+        List<IStoneLayer> list = message.getConfig(ICJsonConfigs.stoneLayerID).stream()
                 .filter(IStoneLayer.class::isInstance)
-                .map(IStoneLayer.class::cast)
-                .collect(toList());
+                .map(IStoneLayer.class::cast).toList();
         
         if(list.size() != getServerMap().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("stone_layer", sync.get());
+            ConfigSync.syncedJson.put("stone_layer", sync.get());
             return false;
         }
 
@@ -56,8 +54,8 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
 
                 if(optional.isPresent()) {
                     IStoneLayer serverStoneLayer = optional.get();
-                    JsonObject jsonMaterial = ((StoneLayerRegistry)IndustrialTech.configSync.stoneLayer.getFirst()).toJsonObject(stoneLayer);
-                    JsonObject materialJson =((StoneLayerRegistry)IndustrialTech.configSync.stoneLayer.getFirst()).toJsonObject(serverStoneLayer);
+                    JsonObject jsonMaterial = ((StoneLayerRegistry)ICJsonConfigs.stoneLayer.getFirst()).toJsonObject(stoneLayer);
+                    JsonObject materialJson =((StoneLayerRegistry)ICJsonConfigs.stoneLayer.getFirst()).toJsonObject(serverStoneLayer);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -66,7 +64,7 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("stone_layer", sync.get());
+        ConfigSync.syncedJson.put("stone_layer", sync.get());
 
         return sync.get();
     }
@@ -76,28 +74,26 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, IStoneLayer> clientStoneLayers = new HashMap<>();
 
-        ConfigSync configSync = IndustrialTech.configSync;
-
         Path configs = Paths.get(singlePlayerConfigs + "/stone_layer");
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                configSync.syncedJson.put("stone_layer", sync.get());
+                ConfigSync.syncedJson.put("stone_layer", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            configSync.syncedJson.put("stone_layer", sync.get());
+            ConfigSync.syncedJson.put("stone_layer", sync.get());
             return false;
         }
 
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = IndustrialTech.configSync.stoneLayer.getFirst().getJsonObject(file.getName());
-                IStoneLayer stoneLayer = ((StoneLayerRegistry)IndustrialTech.configSync.stoneLayer.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = ICJsonConfigs.stoneLayer.getFirst().getJsonObject(file.getName());
+                IStoneLayer stoneLayer = ((StoneLayerRegistry)ICJsonConfigs.stoneLayer.getFirst()).getFromJsonObject(jsonObject);
                 clientStoneLayers.put(stoneLayer.getBlock().split(":")[1], stoneLayer);
             }
 
@@ -106,8 +102,8 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
 
                 if(sync.get()) {
                     IStoneLayer clientStoneLayer = getServerMap().get(serverStoneLayer.getBlock().split(":")[1]);
-                    JsonObject jsonMaterial = ((StoneLayerRegistry)IndustrialTech.configSync.stoneLayer.getFirst()).toJsonObject(serverStoneLayer);
-                    JsonObject materialJson = ((StoneLayerRegistry)IndustrialTech.configSync.stoneLayer.getFirst()).toJsonObject(clientStoneLayer);
+                    JsonObject jsonMaterial = ((StoneLayerRegistry)ICJsonConfigs.stoneLayer.getFirst()).toJsonObject(serverStoneLayer);
+                    JsonObject materialJson = ((StoneLayerRegistry)ICJsonConfigs.stoneLayer.getFirst()).toJsonObject(clientStoneLayer);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -115,7 +111,7 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("stone_layer", sync.get());
+        ConfigSync.syncedJson.put("stone_layer", sync.get());
 
         return sync.get();
     }
@@ -134,7 +130,7 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
         for (IStoneLayer stoneLayer : getServerMap().values()) {
             String name = stoneLayer.getBlock().split(":")[1];
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((StoneLayerRegistry)IndustrialTech.configSync.stoneLayer.getFirst()).toJsonObject(stoneLayer);
+            JsonObject jsonObject = ((StoneLayerRegistry)ICJsonConfigs.stoneLayer.getFirst()).toJsonObject(stoneLayer);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -155,8 +151,8 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.stoneLayer.getFirst().getJsonObject(file.getName());
-                    IStoneLayer stoneLayer = ((StoneLayerRegistry)IndustrialTech.configSync.stoneLayer.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = ICJsonConfigs.stoneLayer.getFirst().getJsonObject(file.getName());
+                    IStoneLayer stoneLayer = ((StoneLayerRegistry)ICJsonConfigs.stoneLayer.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = stoneLayer.getBlock().split(":")[1];
 
@@ -176,10 +172,9 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IStoneLayer> list = message.getConfig(IndustrialTech.configSync.stoneLayerID).stream()
+        List<IStoneLayer> list = message.getConfig(ICJsonConfigs.stoneLayerID).stream()
                 .filter(IStoneLayer.class::isInstance)
-                .map(IStoneLayer.class::cast)
-                .collect(toList());
+                .map(IStoneLayer.class::cast).toList();
 
         Map<String, IStoneLayer> stoneLayers = list.stream()
                 .collect(Collectors.toMap(s -> s.getBlock().split(":")[1], s -> s));
@@ -197,10 +192,9 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IStoneLayer> list = message.getConfig(IndustrialTech.configSync.stoneLayerID).stream()
+        List<IStoneLayer> list = message.getConfig(ICJsonConfigs.stoneLayerID).stream()
                 .filter(IStoneLayer.class::isInstance)
-                .map(IStoneLayer.class::cast)
-                .collect(toList());
+                .map(IStoneLayer.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 

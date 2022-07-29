@@ -1,15 +1,6 @@
 package mightydanp.industrialcore.common.datagen;
 
 import mightydanp.industrialcore.common.material.ITMaterial;
-import mightydanp.industrialcore.common.tool.ITTool;
-import mightydanp.industrialcore.common.items.ITToolItem;
-import mightydanp.industrialcore.common.jsonconfig.flag.DefaultMaterialFlag;
-import mightydanp.industrialcore.common.jsonconfig.flag.IMaterialFlag;
-import mightydanp.industrialcore.common.jsonconfig.tool.part.DefaultToolPart;
-import mightydanp.industrialcore.common.jsonconfig.tool.part.IToolPart;
-import mightydanp.industrialtech.common.IndustrialTech;
-import mightydanp.industrialtech.common.items.ModItems;
-import mightydanp.industrialtech.common.tool.ModTools;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
@@ -19,7 +10,6 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.*;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Arrays;
 import java.util.List;

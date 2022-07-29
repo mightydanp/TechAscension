@@ -1,7 +1,7 @@
 package mightydanp.industrialcore.common.handler;
 
 import mightydanp.industrialcore.common.libs.Ref;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.industrialcore.common.network.message.OpenClientScreenMessage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;

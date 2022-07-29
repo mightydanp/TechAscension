@@ -2,16 +2,16 @@ package mightydanp.industrialcore.common.jsonconfig.material.data;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
+import mightydanp.industrialapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialapi.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.jsonconfig.fluidstate.FluidStateRegistry;
 import mightydanp.industrialcore.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialcore.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialcore.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.industrialcore.common.jsonconfig.material.ore.IOreType;
 import mightydanp.industrialcore.common.jsonconfig.material.ore.OreTypeRegistry;
-import mightydanp.industrialcore.common.jsonconfig.sync.JsonConfigServer;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
-import mightydanp.industrialcore.common.jsonconfig.tool.part.IToolPart;
-import mightydanp.industrialcore.common.jsonconfig.tool.part.ToolPartRegistry;
 import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
@@ -27,8 +27,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * Created by MightyDanp on 1/3/2022.
  */
@@ -38,18 +36,17 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<ITMaterial> list = message.getConfig(IndustrialTech.configSync.materialID).stream()
+        List<ITMaterial> list = message.getConfig(ICJsonConfigs.materialID).stream()
                 .filter(ITMaterial.class::isInstance)
-                .map(ITMaterial.class::cast)
-                .collect(toList());
+                .map(ITMaterial.class::cast).toList();
         
-        if(list.size() != ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getAllValues().size()){
+        if(list.size() != ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getAllValues().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("material", sync.get());
+            ConfigSync.syncedJson.put("material", sync.get());
             return false;
         }
 
-        ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getAllValues().forEach(itMaterial -> {
+        ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getAllValues().forEach(itMaterial -> {
             sync.set(list.stream().anyMatch(o -> o.name.equals(itMaterial.name)));
 
             if(sync.get()) {
@@ -57,8 +54,8 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
                 if(optional.isPresent()) {
                     ITMaterial material = optional.get();
-                    JsonObject jsonMaterial = ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getJsonObject(itMaterial);
-                    JsonObject materialJson = ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getJsonObject(material);
+                    JsonObject jsonMaterial = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(itMaterial);
+                    JsonObject materialJson = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(material);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -67,7 +64,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("material", sync.get());
+        ConfigSync.syncedJson.put("material", sync.get());
 
         return sync.get();
     }
@@ -76,7 +73,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        Map<String, ITMaterial> materials = ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getRegistryMapFromList(((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getAllValues());
+        Map<String, ITMaterial> materials = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getRegistryMapFromList(((MaterialRegistry)ICJsonConfigs.material.getFirst()).getAllValues());
         Map<String, ITMaterial> worldMaterials = new HashMap<>();
 
         Path materialConfigs = Paths.get(singlePlayerConfigs + "/material");
@@ -84,18 +81,18 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         if(materialConfigs.toFile().listFiles() != null){
             if(materials.size() != materialConfigs.toFile().listFiles().length){
                 sync.set(false);
-                IndustrialTech.configSync.syncedJson.put("material", sync.get());
+                ConfigSync.syncedJson.put("material", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("material", sync.get());
+            ConfigSync.syncedJson.put("material", sync.get());
             return false;
         }
 
         if(materialConfigs.toFile().listFiles() != null){
             for(File file : materialConfigs.toFile().listFiles()){
-                worldMaterials.put(((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getFromJsonObject(((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getJsonObject(file.getName())).name, ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getFromJsonObject(IndustrialTech.configSync.material.getFirst().getJsonObject(file.getName())));
+                worldMaterials.put(((MaterialRegistry)ICJsonConfigs.material.getFirst()).getFromJsonObject(((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(file.getName())).name, ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getFromJsonObject(ICJsonConfigs.material.getFirst().getJsonObject(file.getName())));
             }
 
             materials.values().forEach(itMaterial -> {
@@ -103,8 +100,8 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
                 if(sync.get()) {
                     ITMaterial material = materials.get(itMaterial.name);
-                    JsonObject jsonMaterial = ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getJsonObject(itMaterial);
-                    JsonObject materialJson = ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getJsonObject(material);
+                    JsonObject jsonMaterial = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(itMaterial);
+                    JsonObject materialJson = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(material);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -112,7 +109,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("material", sync.get());
+        ConfigSync.syncedJson.put("material", sync.get());
 
         return sync.get();
     }
@@ -130,7 +127,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
         for (ITMaterial material : serverMap.values()) {
             Path materialFile = Paths.get(serverConfigFolder + "/" + material.name + ".json");
-            JsonObject jsonObject = ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getJsonObject(material);
+            JsonObject jsonObject = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(material);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -151,8 +148,8 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.material.getFirst().getJsonObject(file.getName());
-                    ITMaterial material = ((MaterialRegistry)IndustrialTech.configSync.material.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = ICJsonConfigs.material.getFirst().getJsonObject(file.getName());
+                    ITMaterial material = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getFromJsonObject(jsonObject);
 
                     Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + material.name + ".json");
                     if (!Files.exists(materialFile)) {
@@ -170,10 +167,9 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<ITMaterial> list = message.getConfig(IndustrialTech.configSync.materialID).stream()
+        List<ITMaterial> list = message.getConfig(ICJsonConfigs.materialID).stream()
                 .filter(ITMaterial.class::isInstance)
-                .map(ITMaterial.class::cast)
-                .collect(toList());
+                .map(ITMaterial.class::cast).toList();
 
         Map<String, ITMaterial> materials = list.stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
@@ -185,54 +181,19 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, ITMaterial material) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, ITMaterial material) {
         buffer.writeUtf(material.name);
         buffer.writeInt(material.color);
         String textureIconString = material.textureIcon.getFirst() + ":" + material.textureIcon.getSecond().getName();
 
         buffer.writeUtf(textureIconString);
-
-        if(material.symbol != null){
-            buffer.writeUtf(material.symbol);
-        }else {
-            buffer.writeUtf("");
-        }
-
-        if(material.meltingPoint != null){
-            buffer.writeInt(material.meltingPoint);
-        } else {
-            buffer.writeInt(-1);
-        }
-
-        if(material.boilingPoint != null){
-            buffer.writeInt(material.boilingPoint);
-        } else {
-            buffer.writeInt(-1);
-        }
-
-        if(material.isStoneLayer != null){
-            buffer.writeBoolean(material.isStoneLayer);
-        } else {
-            buffer.writeBoolean(false);
-        }
-
-        if(material.stoneLayerBlock != null){
-            buffer.writeUtf(material.stoneLayerBlock);
-        } else {
-            buffer.writeUtf("");
-        }
-
-        if(material.stoneLayerTextureLocation != null){
-            buffer.writeUtf(material.stoneLayerTextureLocation);
-        } else {
-            buffer.writeUtf("");
-        }
-
-        if(material.harvestLevel != null){
-            buffer.writeInt(material.harvestLevel);
-        } else {
-            buffer.writeInt(-1);
-        }
+        buffer.writeUtf(Objects.requireNonNullElse(material.symbol, ""));
+        buffer.writeInt(Objects.requireNonNullElse(material.meltingPoint, -1));
+        buffer.writeInt(Objects.requireNonNullElse(material.boilingPoint, -1));
+        buffer.writeBoolean(Objects.requireNonNullElse(material.isStoneLayer, false));
+        buffer.writeUtf(Objects.requireNonNullElse(material.stoneLayerBlock, ""));
+        buffer.writeUtf(Objects.requireNonNullElse(material.stoneLayerTextureLocation, ""));
+        buffer.writeInt(Objects.requireNonNullElse(material.harvestLevel, -1));
 
         if(material.oreType != null){
             buffer.writeUtf(material.oreType.getName());
@@ -240,11 +201,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
             buffer.writeUtf("");
         }
 
-        if(material.denseOreDensity != null){
-            buffer.writeInt(material.denseOreDensity);
-        } else {
-            buffer.writeInt(-1);
-        }
+        buffer.writeInt(Objects.requireNonNullElse(material.denseOreDensity, -1));
 
         if(material.fluidState != null){
             buffer.writeUtf(material.fluidState.getName());
@@ -252,70 +209,22 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
             buffer.writeUtf("");
         }
 
-        if(material.fluidAcceleration != null){
-            buffer.writeFloat(material.fluidAcceleration);
-        } else {
-            buffer.writeFloat(-1);
-        }
-
-        if(material.fluidDensity != null){
-            buffer.writeInt(material.fluidDensity);
-        } else {
-            buffer.writeInt(-1);
-        }
-
-        if(material.fluidLuminosity != null){
-            buffer.writeInt(material.fluidLuminosity);
-        } else {
-            buffer.writeInt(-1);
-        }
-
-        if(material.fluidViscosity != null){
-            buffer.writeInt(material.fluidViscosity);
-        } else {
-            buffer.writeInt(-1);
-        }
-
-        if(material.attackSpeed != null){
-            buffer.writeInt(material.attackSpeed);
-        } else {
-            buffer.writeInt(-1);
-        }
-
-        if(material.durability != null){
-            buffer.writeInt(material.durability);
-        } else {
-            buffer.writeInt(-1);
-        }
-
-        if(material.attackDamage != null){
-            buffer.writeFloat(material.attackDamage);
-        } else {
-            buffer.writeFloat(-1);
-        }
-
-        if(material.weight != null){
-            buffer.writeFloat(material.weight);
-        } else {
-            buffer.writeFloat(-1);
-        }
-
-        if(material.efficiency != null){
-            buffer.writeFloat(material.efficiency);
-        } else {
-            buffer.writeFloat(-1);
-        }
-
-        if(material.toolLevel != null){
-            buffer.writeInt(material.toolLevel);
-        } else {
-            buffer.writeInt(-1);
-        }
+        buffer.writeFloat(Objects.requireNonNullElse(material.fluidAcceleration, -1F));
+        buffer.writeInt(Objects.requireNonNullElse(material.fluidDensity, -1));
+        buffer.writeInt(Objects.requireNonNullElse(material.fluidLuminosity, -1));
+        buffer.writeInt(Objects.requireNonNullElse(material.fluidViscosity, -1));
+        buffer.writeInt(Objects.requireNonNullElse(material.attackSpeed, -1));
+        buffer.writeInt(Objects.requireNonNullElse(material.durability, -1));
+        buffer.writeFloat(Objects.requireNonNullElse(material.attackDamage, -1F));
+        buffer.writeFloat(Objects.requireNonNullElse(material.weight, -1F));
+        buffer.writeFloat(Objects.requireNonNullElse(material.efficiency, -1F));
+        buffer.writeInt(Objects.requireNonNullElse(material.toolLevel, -1));
 
         if(material.toolParts != null && material.toolParts.size() > 0){
             buffer.writeInt(material.toolParts.size());
             for (Pair<String, String> toolPart : material.toolParts) {
-                buffer.writeUtf(fixesToName(toolPart.getFirst(), toolPart.getSecond()));
+                buffer.writeUtf(toolPart.getFirst());
+                buffer.writeUtf(toolPart.getSecond());
             }
         } else {
             buffer.writeInt(0);
@@ -324,7 +233,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<ITMaterial> list = message.getConfig(IndustrialTech.configSync.materialID).stream()
+        List<ITMaterial> list = message.getConfig(ICJsonConfigs.materialID).stream()
                 .filter(ITMaterial.class::isInstance)
                 .map(ITMaterial.class::cast).toList();
 
@@ -338,7 +247,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         String name = buffer.readUtf();
         int color = buffer.readInt();
         String textureIconString = buffer.readUtf();
-        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconString.split(":")[0], ((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).getTextureIconByName(textureIconString.split(":")[1]));
+        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconString.split(":")[0], ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).getTextureIconByName(textureIconString.split(":")[1]));
         ITMaterial material = new ITMaterial(name, color, textureIcon);
 
         String symbol = buffer.readUtf();
@@ -370,7 +279,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         String oreTypeString = buffer.readUtf();
 
         if(!oreTypeString.equals("")){
-            IOreType oreType =  ((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).getByName(oreTypeString);
+            IOreType oreType =  ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).getByName(oreTypeString);
             material.setOreType(oreType);
         }
 
@@ -386,7 +295,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         int fluidViscosity = buffer.readInt();
 
         if(!fluidStateString.equals("") && fluidAcceleration != -1 && fluidDensity != -1 && fluidLuminosity != -1 && fluidViscosity != -1){
-            IFluidState fluidState = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).getFluidStateByName(fluidStateString);
+            IFluidState fluidState = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidStateString);
             material.setFluidProperties(fluidState, fluidAcceleration, fluidDensity, fluidLuminosity, fluidViscosity);
         }
 
@@ -397,14 +306,17 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         float efficiency  = buffer.readFloat();
         int toolLevel = buffer.readInt();
 
-        List<IToolPart> toolParts = new ArrayList<>();
+        List<Pair<String, String>> toolParts = new ArrayList<>();
         int toolPartsSize = buffer.readInt();
 
         if(toolPartsSize > 0) {
             for (int i = 0; i < toolPartsSize; i++) {
-                String toolPart = buffer.readUtf();
-                toolParts.add( ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).getByName(toolPart));
+                String toolPartPrefix = buffer.readUtf();
+                String toolPartSuffix = buffer.readUtf();
+                toolParts.add(new Pair<>(toolPartPrefix, toolPartSuffix));
             }
+
+            material.setToolProperties(attackSpeed, durability, attackDamage, weight, efficiency, toolLevel, toolParts);
         }
 
         return material;

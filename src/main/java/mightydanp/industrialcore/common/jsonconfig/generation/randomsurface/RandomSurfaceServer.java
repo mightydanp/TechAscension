@@ -1,9 +1,10 @@
 package mightydanp.industrialcore.common.jsonconfig.generation.randomsurface;
 
 import com.google.gson.JsonObject;
-import mightydanp.industrialcore.common.jsonconfig.sync.ConfigSync;
-import mightydanp.industrialcore.common.jsonconfig.sync.JsonConfigServer;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialapi.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
@@ -34,13 +35,13 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.randomSurfaceID).stream()
+        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(ICJsonConfigs.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
                 .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
         
         if(list.size() != getServerMap().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("random_surface", sync.get());
+            ConfigSync.syncedJson.put("random_surface", sync.get());
             return false;
         }
 
@@ -52,8 +53,8 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
                 if(optional.isPresent()) {
                     RandomSurfaceGenFeatureConfig serverRandomSurface = optional.get();
-                    JsonObject jsonMaterial = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).toJsonObject(RandomSurface);
-                    JsonObject materialJson = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
+                    JsonObject jsonMaterial = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).toJsonObject(RandomSurface);
+                    JsonObject materialJson = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -62,7 +63,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("random_surface", sync.get());
+        ConfigSync.syncedJson.put("random_surface", sync.get());
 
         return sync.get();
     }
@@ -72,28 +73,26 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, RandomSurfaceGenFeatureConfig> clientRandomSurfaces = new HashMap<>();
 
-        ConfigSync configSync = IndustrialTech.configSync;
-
         Path configs = Paths.get(singlePlayerConfigs + "/random_surface");
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                configSync.syncedJson.put("random_surface", sync.get());
+                ConfigSync.syncedJson.put("random_surface", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            configSync.syncedJson.put("random_surface", sync.get());
+            ConfigSync.syncedJson.put("random_surface", sync.get());
             return false;
         }
 
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = IndustrialTech.configSync.randomSurface.getFirst().getJsonObject(file.getName());
-                RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = ICJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
+                RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).getFromJsonObject(jsonObject);
                 clientRandomSurfaces.put(randomSurface.name, randomSurface);
             }
 
@@ -102,8 +101,8 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
                 if(sync.get()) {
                     RandomSurfaceGenFeatureConfig clientRandomSurface = getServerMap().get(serverRandomSurface.name);
-                    JsonObject jsonMaterial = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
-                    JsonObject materialJson = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).toJsonObject(clientRandomSurface);
+                    JsonObject jsonMaterial = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
+                    JsonObject materialJson = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).toJsonObject(clientRandomSurface);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -111,7 +110,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("random_surface", sync.get());
+        ConfigSync.syncedJson.put("random_surface", sync.get());
 
         return sync.get();
     }
@@ -130,7 +129,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         for (RandomSurfaceGenFeatureConfig randomSurface : getServerMap().values()) {
             String name = randomSurface.name;
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).toJsonObject(randomSurface);
+            JsonObject jsonObject = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).toJsonObject(randomSurface);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -151,8 +150,8 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.randomSurface.getFirst().getJsonObject(file.getName());
-                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry)IndustrialTech.configSync.randomSurface.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = ICJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
+                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = randomSurface.name;
 
@@ -172,7 +171,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.randomSurfaceID).stream()
+        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(ICJsonConfigs.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
                 .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
 
@@ -209,7 +208,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(IndustrialTech.configSync.randomSurfaceID).stream()
+        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(ICJsonConfigs.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
                 .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
 

@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialcore.common.handler.generation.OreGenerationHandler;
-import mightydanp.industrialcore.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialcore.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.CrashReport;

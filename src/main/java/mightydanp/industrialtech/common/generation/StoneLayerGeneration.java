@@ -1,6 +1,7 @@
 package mightydanp.industrialtech.common.generation;
 
 import mightydanp.industrialcore.common.handler.generation.StoneLayerGenerationHandler;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialcore.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
@@ -30,7 +31,7 @@ public class StoneLayerGeneration {
     public static List<String> rockBlocks = new ArrayList<>();
 
     public static void init() {
-        List<ITMaterial> stoneLayerList = ((MaterialRegistry) IndustrialTech.configSync.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
+        List<ITMaterial> stoneLayerList = ((MaterialRegistry) ICJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
         if(thinSlabBlocks.size() != stoneLayerList.size()){
             for (ITMaterial iStoneLayer : stoneLayerList) {
                 Block replaceableBlock = iStoneLayer.thinSlabBlock.get();

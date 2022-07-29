@@ -1,6 +1,7 @@
 package mightydanp.industrialcore.common.tool.part;
 
 import com.mojang.datafixers.util.Pair;;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialcore.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.common.IndustrialTech;
@@ -96,7 +97,7 @@ public class HeadItem extends Item {
     }
 
     public HeadItem setItToolType(Map<String, Integer> itToolTypeIn) {
-        itToolTypeIn.forEach(((name, toolLevel) -> itToolType.put(((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(name)), toolLevel)));
+        itToolTypeIn.forEach(((name, toolLevel) -> itToolType.put(((IToolType) ICJsonConfigs.toolType.getFirst().registryMap.get(name)), toolLevel)));
         return this;
     }
 

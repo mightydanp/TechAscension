@@ -2,7 +2,7 @@ package mightydanp.industrialcore.common.jsonconfig.flag;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialcore.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.CrashReport;
 

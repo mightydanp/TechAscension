@@ -3,10 +3,10 @@ package mightydanp.industrialcore.common.items;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import mightydanp.industrialcore.common.handler.itemstack.ITToolItemInventoryHelper;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -226,8 +226,8 @@ public class ITToolItem extends Item {
         String[] stringArray = nbt.getString("it_tool_types").split(", ");
 
         for (int i = 0; i < intArray.length; i++) {
-            toolTypes.putIfAbsent((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(stringArray[i]), intArray[i]);
-            //toolTypes.putIfAbsent((IToolType)IndustrialTech.configSync.toolType.getFirst().registryMap.get(stringArray[i]), BlockTags.create(new ResourceLocation("harvest_levels/" + intArray[i])));
+            toolTypes.putIfAbsent((IToolType) ICJsonConfigs.toolType.getFirst().registryMap.get(stringArray[i]), intArray[i]);
+            //toolTypes.putIfAbsent((IToolType)ICJsonConfigs.toolType.getFirst().registryMap.get(stringArray[i]), BlockTags.create(new ResourceLocation("harvest_levels/" + intArray[i])));
         }
         return toolTypes;
     }

@@ -3,16 +3,14 @@ package mightydanp.industrialcore.common.jsonconfig.material.data;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialcore.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.jsonconfig.fluidstate.FluidStateRegistry;
 import mightydanp.industrialcore.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialcore.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialcore.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.industrialcore.common.jsonconfig.material.ore.IOreType;
 import mightydanp.industrialcore.common.jsonconfig.material.ore.OreTypeRegistry;
-import mightydanp.industrialcore.common.jsonconfig.tool.part.IToolPart;
-import mightydanp.industrialcore.common.jsonconfig.tool.part.ToolPartRegistry;
-import mightydanp.industrialcore.common.jsonconfig.tool.type.IToolType;
 import mightydanp.industrialcore.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.CrashReport;
@@ -266,7 +264,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
         String nameJson = jsonObject.get("name").getAsString();
         int colorJson = jsonObject.get("color").getAsInt();
         String textureIconJson = jsonObject.get("texture_icon").getAsString();
-        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconJson.split(":")[0], ((TextureIconRegistry)IndustrialTech.configSync.textureIcon.getFirst()).getTextureIconByName(textureIconJson.split(":")[1]));
+        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconJson.split(":")[0], ((TextureIconRegistry) ICJsonConfigs.textureIcon.getFirst()).getTextureIconByName(textureIconJson.split(":")[1]));
         ITMaterial material = new ITMaterial(nameJson, colorJson, textureIcon);
 
         if(jsonObject.has("element_localization")) {
@@ -311,7 +309,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
         if(jsonObject.has("ore_properties")) {
             JsonObject oreProperties = jsonObject.get("ore_properties").getAsJsonObject();{
                 if (oreProperties.has("ore_type") && oreProperties.has("dense_ore_density")) {
-                    IOreType oreTypeJson = ((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).getByName(oreProperties.get("ore_type").getAsString());
+                    IOreType oreTypeJson = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).getByName(oreProperties.get("ore_type").getAsString());
                     int denseOreDensityJson = oreProperties.get("dense_ore_density").getAsInt();
                     material.setOreType(oreTypeJson);
                     material.setDenseOreDensity(denseOreDensityJson);
@@ -322,7 +320,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
         if(jsonObject.has("fluid_properties")) {
             JsonObject fluidProperties = jsonObject.get("fluid_properties").getAsJsonObject();{
                 if (fluidProperties.has("fluid_state") && fluidProperties.has("fluid_acceleration") && fluidProperties.has("fluid_density") && fluidProperties.has("fluid_luminosity") && fluidProperties.has("fluid_viscosity")) {
-                    IFluidState fluidStateJson = ((FluidStateRegistry)IndustrialTech.configSync.fluidState.getFirst()).getFluidStateByName(fluidProperties.get("fluid_state").getAsString());
+                    IFluidState fluidStateJson = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidProperties.get("fluid_state").getAsString());
                     float fluidAccelerationJson = fluidProperties.get("fluid_acceleration").getAsFloat();
                     int fluidDensityJson = fluidProperties.get("fluid_density").getAsInt();
                     int fluidLuminosityJson = fluidProperties.get("fluid_luminosity").getAsInt();

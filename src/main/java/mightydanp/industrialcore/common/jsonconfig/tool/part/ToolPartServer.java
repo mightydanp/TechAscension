@@ -2,10 +2,11 @@ package mightydanp.industrialcore.common.jsonconfig.tool.part;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.libs.Ref;
-import mightydanp.industrialcore.common.jsonconfig.sync.ConfigSync;
-import mightydanp.industrialcore.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.industrialapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -38,14 +39,13 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<IToolPart> list = message.getConfig(IndustrialTech.configSync.toolPartID).stream()
+        List<IToolPart> list = message.getConfig(ICJsonConfigs.toolPartID).stream()
                 .filter(IToolPart.class::isInstance)
-                .map(IToolPart.class::cast)
-                .collect(toList());
+                .map(IToolPart.class::cast).toList();
 
         if(list.size() != getServerMap().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("tool_part", sync.get());
+            ConfigSync.syncedJson.put("tool_part", sync.get());
             return false;
         }
 
@@ -57,8 +57,8 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
 
                 if(optional.isPresent()) {
                     IToolPart serverToolPart = optional.get();
-                    JsonObject jsonMaterial = ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).toJsonObject(toolPart);
-                    JsonObject materialJson = ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).toJsonObject(serverToolPart);
+                    JsonObject jsonMaterial = ((ToolPartRegistry)ICJsonConfigs.toolPart.getFirst()).toJsonObject(toolPart);
+                    JsonObject materialJson = ((ToolPartRegistry)ICJsonConfigs.toolPart.getFirst()).toJsonObject(serverToolPart);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -67,7 +67,7 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("tool_part", sync.get());
+        ConfigSync.syncedJson.put("tool_part", sync.get());
 
         return sync.get();
     }
@@ -77,28 +77,26 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, IToolPart> clientToolParts = new HashMap<>();
 
-        ConfigSync configSync = IndustrialTech.configSync;
-
         Path configs = Paths.get(singlePlayerConfigs + "/tool_part");
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                configSync.syncedJson.put("tool_part", sync.get());
+                ConfigSync.syncedJson.put("tool_part", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            configSync.syncedJson.put("tool_part", sync.get());
+            ConfigSync.syncedJson.put("tool_part", sync.get());
             return false;
         }
 
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = IndustrialTech.configSync.toolPart.getFirst().getJsonObject(file.getName());
-                IToolPart toolPart = ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = ICJsonConfigs.toolPart.getFirst().getJsonObject(file.getName());
+                IToolPart toolPart = ((ToolPartRegistry)ICJsonConfigs.toolPart.getFirst()).getFromJsonObject(jsonObject);
                 clientToolParts.put(fixesToName(toolPart.getPrefix(), toolPart.getSuffix()), toolPart);
             }
 
@@ -107,8 +105,8 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
 
                 if(sync.get()) {
                     IToolPart clientToolPart = getServerMap().get(fixesToName(serverToolPart.getPrefix(), serverToolPart.getSuffix()));
-                    JsonObject jsonMaterial = ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).toJsonObject(serverToolPart);
-                    JsonObject materialJson = ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).toJsonObject(clientToolPart);
+                    JsonObject jsonMaterial = ((ToolPartRegistry)ICJsonConfigs.toolPart.getFirst()).toJsonObject(serverToolPart);
+                    JsonObject materialJson = ((ToolPartRegistry)ICJsonConfigs.toolPart.getFirst()).toJsonObject(clientToolPart);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -116,7 +114,7 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("tool_part", sync.get());
+        ConfigSync.syncedJson.put("tool_part", sync.get());
 
         return sync.get();
     }
@@ -135,7 +133,7 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
         for (IToolPart toolPart : getServerMap().values()) {
             String name = fixesToName(toolPart.getPrefix(), toolPart.getSuffix());
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).toJsonObject(toolPart);
+            JsonObject jsonObject = ((ToolPartRegistry)ICJsonConfigs.toolPart.getFirst()).toJsonObject(toolPart);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -156,8 +154,8 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.toolPart.getFirst().getJsonObject(file.getName());
-                    IToolPart toolPart = ((ToolPartRegistry)IndustrialTech.configSync.toolPart.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = ICJsonConfigs.toolPart.getFirst().getJsonObject(file.getName());
+                    IToolPart toolPart = ((ToolPartRegistry)ICJsonConfigs.toolPart.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = fixesToName(toolPart.getPrefix(), toolPart.getSuffix());
 
@@ -177,10 +175,9 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IToolPart> list = message.getConfig(IndustrialTech.configSync.toolPartID).stream()
+        List<IToolPart> list = message.getConfig(ICJsonConfigs.toolPartID).stream()
                 .filter(IToolPart.class::isInstance)
-                .map(IToolPart.class::cast)
-                .collect(toList());
+                .map(IToolPart.class::cast).toList();
 
         Map<String, IToolPart> toolParts = list.stream()
                 .collect(Collectors.toMap(s -> fixesToName(s.getPrefix(), s.getSuffix()), s -> s));
@@ -192,7 +189,7 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, IToolPart toolPart) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, IToolPart toolPart) {
         buffer.writeUtf(fixesToName(toolPart.getPrefix(), toolPart.getSuffix()));
         buffer.writeUtf(toolPart.getPrefix());
         buffer.writeUtf(toolPart.getSuffix());
@@ -200,10 +197,9 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IToolPart> list = message.getConfig(IndustrialTech.configSync.toolPartID).stream()
+        List<IToolPart> list = message.getConfig(ICJsonConfigs.toolPartID).stream()
                 .filter(IToolPart.class::isInstance)
-                .map(IToolPart.class::cast)
-                .collect(toList());
+                .map(IToolPart.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 

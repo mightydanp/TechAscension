@@ -4,27 +4,25 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.industrialcore.common.blocks.*;
 import mightydanp.industrialcore.common.handler.RegistryHandler;
 import mightydanp.industrialcore.common.items.*;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.jsonconfig.fluidstate.DefaultFluidState;
 import mightydanp.industrialcore.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.industrialcore.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.industrialcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.industrialcore.common.jsonconfig.material.ore.DefaultOreType;
 import mightydanp.industrialcore.common.jsonconfig.material.ore.IOreType;
-import mightydanp.industrialcore.common.jsonconfig.tool.part.DefaultToolPart;
-import mightydanp.industrialcore.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.industrialcore.common.libs.Ref;
 import mightydanp.industrialcore.common.material.fluid.ITFluid;
 import mightydanp.industrialcore.common.material.fluid.ITFluidBlock;
-import mightydanp.industrialcore.common.resources.asset.AssetPackRegistry;
-import mightydanp.industrialcore.common.resources.asset.data.BlockModelData;
-import mightydanp.industrialcore.common.resources.asset.data.BlockStateData;
-import mightydanp.industrialcore.common.resources.asset.data.ItemModelData;
-import mightydanp.industrialcore.common.resources.asset.data.LangData;
-import mightydanp.industrialcore.common.resources.data.DataPackRegistry;
+import mightydanp.industrialapi.common.resources.asset.AssetPackRegistry;
+import mightydanp.industrialapi.common.resources.asset.data.BlockModelData;
+import mightydanp.industrialapi.common.resources.asset.data.BlockStateData;
+import mightydanp.industrialapi.common.resources.asset.data.ItemModelData;
+import mightydanp.industrialapi.common.resources.asset.data.LangData;
+import mightydanp.industrialapi.common.resources.data.DataPackRegistry;
 import mightydanp.industrialcore.common.holder.MCMaterialHolder;
 import mightydanp.industrialcore.common.jsonconfig.flag.IMaterialFlag;
-import mightydanp.industrialcore.common.resources.data.data.LootTableData;
-import mightydanp.industrialtech.common.IndustrialTech;
+import mightydanp.industrialapi.common.resources.data.data.LootTableData;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
@@ -49,7 +47,7 @@ import static mightydanp.industrialcore.common.jsonconfig.flag.DefaultMaterialFl
  */
 public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry<ITMaterial> {
     public static Map<String, IMaterial> extraSave = new HashMap<>();
-    public static Map<String, IMaterial> extraSaveResources = new HashMap<>();
+    public static Map<String, IMaterialResource> extraSaveResources = new HashMap<>();
 
     public Map<String, RegistryObject<Block>> extraSaveBlocks = new HashMap<>();
     public Map<String, RegistryObject<Item>> extraSaveItems = new HashMap<>();
@@ -197,7 +195,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
 
     public ITMaterial save() {
-        List<ITMaterial> stoneLayerList = ((MaterialRegistry) IndustrialTech.configSync.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
+        List<ITMaterial> stoneLayerList = ((MaterialRegistry) ICJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
         //--
         for (IMaterialFlag flag : materialFlags) {
             if (flag == ORE || flag == GEM || flag == STONE_LAYER) {
@@ -356,7 +354,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
     public void saveResources() {
         LangData enLang = AssetPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
-        List<ITMaterial> stoneLayerList = ((MaterialRegistry) IndustrialTech.configSync.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
+        List<ITMaterial> stoneLayerList = ((MaterialRegistry) ICJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
         //--
 
         for (IMaterialFlag flag : materialFlags) {
@@ -374,20 +372,20 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     String stoneLayerBlock = stoneLayerTextureLocation.split(":")[1];
                     //String resourceID = useMinecraftResource ? "" : Ref.mod_id;
                     AssetPackRegistry.blockModelDataMap.put(name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/ore"))
-                            .setParentFolder("/ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                            .setParentFolder("ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                     AssetPackRegistry.blockModelDataMap.put("small_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/small_ore"))
-                            .setParentFolder("/small_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                            .setParentFolder("small_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                     AssetPackRegistry.blockModelDataMap.put("dense_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/dense_ore"))
-                            .setParentFolder("/dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                            .setParentFolder("dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                     AssetPackRegistry.blockModelDataMap.put("dense_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/dense_ore"))
-                            .setParentFolder("/dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                            .setParentFolder("dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
 //--//--//--//--//--//--//--//--//
 
                     //--Block--\\
                     //--Resources
                     AssetPackRegistry.blockStateDataMap.put(name + "_rock", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/stone_layer/rock/" + name + "_rock")));
                     AssetPackRegistry.blockModelDataMap.put(name + "_rock", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/rock"))
-                                    .setParentFolder("/stone_layer/rock").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
+                                    .setParentFolder("stone_layer/rock").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
                             //.setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
                             //.setTexturesLocation("texture", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
                     );
@@ -405,7 +403,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     //--Item--\\
                     //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put(name + "_rock", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/rock")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":rock", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":rock", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock_overlay"))
                     );
@@ -421,7 +419,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     //--Resources
                     AssetPackRegistry.blockStateDataMap.put("thin_" + name + "_slab", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/stone_layer/thin_slab/" + "thin_" + name + "_slab")));
                     AssetPackRegistry.blockModelDataMap.put("thin_" + name + "_slab", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/thin_slab"))
-                            .setParentFolder("/stone_layer/thin_slab").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
+                            .setParentFolder("stone_layer/thin_slab").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
                             .setTexturesLocation("texture", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
                     enLang.addTranslation("block." + Ref.mod_id + ".thin_" + name + "_slab", LangData.translateUpperCase("thin_" + name + "_slab"));
                     //--Tags
@@ -453,7 +451,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     //--Resources
 
                     AssetPackRegistry.itemModelDataHashMap.put("raw_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/raw_ore")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":raw_ore", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":raw_ore", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "raw_" + name + "_ore", LangData.translateUpperCase("raw_" + name + "_ore"));
@@ -466,7 +464,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     //-- Item --\\
                     //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("crushed_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/crushed_ore")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":crushed_ore", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":crushed_ore", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/crushed_ore"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/crushed_ore_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "crushed_" + name + "_ore", LangData.translateUpperCase("crushed_" + name + "_ore"));
@@ -479,7 +477,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     //-- Item --\\
                     //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("purified_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/purified_ore")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":purified_ore", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":purified_ore", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/purified_ore"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/purified_ore_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "purified_" + name + "_ore", LangData.translateUpperCase("purified_" + name + "_ore"));
@@ -492,7 +490,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     // -- Item --\\
                     //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("centrifuged_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/centrifuged_ore")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":centrifuged_ore", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":centrifuged_ore", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/centrifuged_ore"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/centrifuged_ore_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "centrifuged_" + name + "_ore", LangData.translateUpperCase("centrifuged_" + name + "_ore"));
@@ -509,7 +507,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     // -- Item --\\
                     //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put(name + "_gem", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/gem")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":gem", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":gem", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/gem"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/gem_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + name + "_gem", LangData.translateUpperCase(name + "_gem"));
@@ -522,7 +520,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     // -- Item --\\
                     //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("chipped_" + name + "_gem", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/chipped_gem")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":chipped_gem", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":chipped_gem", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/chipped_gem"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/chipped_gem_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "chipped_" + name + "_gem", LangData.translateUpperCase("chipped_" + name + "_gem"));
@@ -535,7 +533,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     // -- Item --\\
                     //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("flawed_" + name + "_gem", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/flawed_gem")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":flawed_gem", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":flawed_gem", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawed_gem"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawed_gem_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "flawed_" + name + "_gem", LangData.translateUpperCase("flawed_" + name + "_gem"));
@@ -548,7 +546,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     // -- Item --\\
                     //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("flawless_" + name + "_gem", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/flawless_gem")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":flawless_gem", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":flawless_gem", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawless_gem"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawless_gem_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "flawless_" + name + "_gem", LangData.translateUpperCase("flawless_" + name + "_gem"));
@@ -561,7 +559,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     // -- Item --\\
                     //--Resources
                     AssetPackRegistry.itemModelDataHashMap.put("legendary_" + name + "_gem", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/legendary_gem")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":legendary_gem", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                    AssetPackRegistry.itemModelDataHashMap.put(name + ":legendary_gem", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
                             .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/legendary_gem"))
                             .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/legendary_gem_overlay")));
                     enLang.addTranslation("item." + Ref.mod_id + "." + "legendary_" + name + "_gem", LangData.translateUpperCase("legendary_" + name + "_gem"));
@@ -576,7 +574,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 // -- Item --\\
                 //--Resources
                 AssetPackRegistry.itemModelDataHashMap.put(name + "_dust", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dust")));
-                AssetPackRegistry.itemModelDataHashMap.put(name + ":dust", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName()).setParent(new ResourceLocation("item/generated"))
+                AssetPackRegistry.itemModelDataHashMap.put(name + ":dust", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName()).setParent(new ResourceLocation("item/generated"))
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dust"))
                         .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dust_overlay")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + name + "_dust", LangData.translateUpperCase(name + "_dust"));
@@ -589,7 +587,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 // -- Item --\\
                 //--Resources
                 AssetPackRegistry.itemModelDataHashMap.put("small_" + name + "_dust", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/small_dust")));
-                AssetPackRegistry.itemModelDataHashMap.put(name + ":small_dust", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName()).setParent(new ResourceLocation("item/generated"))
+                AssetPackRegistry.itemModelDataHashMap.put(name + ":small_dust", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName()).setParent(new ResourceLocation("item/generated"))
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/small_dust"))
                         .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/small_dust_overlay")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + "small_" + name + "_dust", LangData.translateUpperCase("small_" + name + "_dust"));
@@ -602,7 +600,7 @@ public class ITMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 // -- Item --\\
                 //--Resources
                 AssetPackRegistry.itemModelDataHashMap.put("tiny_" + name + "_dust", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/tiny_dust")));
-                AssetPackRegistry.itemModelDataHashMap.put(name + ":tiny_dust", new ItemModelData().setParentFolder("/material_icons/" + textureIcon.getSecond().getName()).setParent(new ResourceLocation("item/generated"))
+                AssetPackRegistry.itemModelDataHashMap.put(name + ":tiny_dust", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName()).setParent(new ResourceLocation("item/generated"))
                         .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/tiny_dust"))
                         .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/tiny_dust_overlay")));
                 enLang.addTranslation("item." + Ref.mod_id + "." + "tiny_" + name + "_dust", LangData.translateUpperCase("tiny_" + name + "_dust"));

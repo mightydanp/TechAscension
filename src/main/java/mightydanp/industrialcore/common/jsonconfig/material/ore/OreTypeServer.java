@@ -1,10 +1,11 @@
 package mightydanp.industrialcore.common.jsonconfig.material.ore;
 
 import com.google.gson.JsonObject;
-import mightydanp.industrialcore.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialapi.common.jsonconfig.sync.network.message.SyncMessage;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.libs.Ref;
-import mightydanp.industrialcore.common.jsonconfig.sync.ConfigSync;
-import mightydanp.industrialcore.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.industrialapi.common.jsonconfig.sync.ConfigSync;
+import mightydanp.industrialapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -37,17 +38,16 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getConfig(IndustrialTech.configSync.oreTypeID).size() != getServerMap().size()){
+        if(message.getConfig(ICJsonConfigs.oreTypeID).size() != getServerMap().size()){
             sync.set(false);
-            IndustrialTech.configSync.syncedJson.put("ore_type", sync.get());
+            ConfigSync.syncedJson.put("ore_type", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, oreType) -> {
-            List<IOreType> list = message.getConfig(IndustrialTech.configSync.oreTypeID).stream()
+            List<IOreType> list = message.getConfig(ICJsonConfigs.oreTypeID).stream()
                     .filter(IOreType.class::isInstance)
-                    .map(IOreType.class::cast)
-                    .collect(toList());
+                    .map(IOreType.class::cast).toList();
 
             sync.set(list.stream().anyMatch(o -> o.getName().equals(name)));
 
@@ -56,8 +56,8 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
                 if(optional.isPresent()) {
                     IOreType serverOreType = optional.get();
-                    JsonObject jsonMaterial = ((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).toJsonObject(oreType);
-                    JsonObject materialJson = ((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).toJsonObject(serverOreType);
+                    JsonObject jsonMaterial = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).toJsonObject(oreType);
+                    JsonObject materialJson = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).toJsonObject(serverOreType);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -66,7 +66,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
         sync.set(false);
 
-        IndustrialTech.configSync.syncedJson.put("ore_type", sync.get());
+        ConfigSync.syncedJson.put("ore_type", sync.get());
 
         return sync.get();
     }
@@ -76,28 +76,26 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, IOreType> clientOreTypes = new HashMap<>();
 
-        ConfigSync configSync = IndustrialTech.configSync;
-
         Path configs = Paths.get(singlePlayerConfigs + "/ore_type");
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                configSync.syncedJson.put("ore_type", sync.get());
+                ConfigSync.syncedJson.put("ore_type", sync.get());
                 return false;
             }
         }else{
             sync.set(false);
-            configSync.syncedJson.put("ore_type", sync.get());
+            ConfigSync.syncedJson.put("ore_type", sync.get());
             return false;
         }
 
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = IndustrialTech.configSync.oreType.getFirst().getJsonObject(file.getName());
-                IOreType oreType = ((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = ICJsonConfigs.oreType.getFirst().getJsonObject(file.getName());
+                IOreType oreType = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).getFromJsonObject(jsonObject);
                 clientOreTypes.put(oreType.getName(), oreType);
             }
 
@@ -106,8 +104,8 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
                 if(sync.get()) {
                     IOreType clientOreType = getServerMap().get(serverOreType.getName());
-                    JsonObject jsonMaterial = ((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).toJsonObject(serverOreType);
-                    JsonObject materialJson = ((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).toJsonObject(clientOreType);
+                    JsonObject jsonMaterial = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).toJsonObject(serverOreType);
+                    JsonObject materialJson = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).toJsonObject(clientOreType);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -115,7 +113,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
             });
         }
 
-        IndustrialTech.configSync.syncedJson.put("ore_type", sync.get());
+        ConfigSync.syncedJson.put("ore_type", sync.get());
 
         return sync.get();
     }
@@ -134,7 +132,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
         for (IOreType oreType : getServerMap().values()) {
             String name = oreType.getName();
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).toJsonObject(oreType);
+            JsonObject jsonObject = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).toJsonObject(oreType);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -155,8 +153,8 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = IndustrialTech.configSync.oreType.getFirst().getJsonObject(file.getName());
-                    IOreType oreType = ((OreTypeRegistry)IndustrialTech.configSync.oreType.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = ICJsonConfigs.oreType.getFirst().getJsonObject(file.getName());
+                    IOreType oreType = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = oreType.getName();
 
@@ -176,10 +174,9 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IOreType> list = message.getConfig(IndustrialTech.configSync.oreTypeID).stream()
+        List<IOreType> list = message.getConfig(ICJsonConfigs.oreTypeID).stream()
                 .filter(IOreType.class::isInstance)
-                .map(IOreType.class::cast)
-                .collect(toList());
+                .map(IOreType.class::cast).toList();
 
         Map<String, IOreType> oreTypes = list.stream()
                 .collect(Collectors.toMap(IOreType::getName, s -> s));
@@ -197,10 +194,9 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IOreType> list = message.getConfig(IndustrialTech.configSync.oreTypeID).stream()
+        List<IOreType> list = message.getConfig(ICJsonConfigs.oreTypeID).stream()
                 .filter(IOreType.class::isInstance)
-                .map(IOreType.class::cast)
-                .collect(toList());
+                .map(IOreType.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 

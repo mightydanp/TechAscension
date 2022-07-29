@@ -2,7 +2,6 @@ package mightydanp.industrialtech.common.tool.tools;
 
 import com.google.common.collect.ImmutableSet;
 import mightydanp.industrialcore.common.items.ITToolItem;
-import mightydanp.industrialcore.common.items.ModItemGroups;
 
 import java.util.*;
 

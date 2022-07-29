@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import mightydanp.industrialcore.common.blocks.DenseOreBlock;
 import mightydanp.industrialcore.common.blocks.SmallOreBlock;
 import mightydanp.industrialcore.common.blocks.OreBlock;
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.material.ITMaterial;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.world.level.block.Block;
@@ -211,7 +212,7 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
 
         for (Pair<String, Integer> veinBlocksAndChance : veinBlocksAndChances) {
 
-            ITMaterial material = (ITMaterial)IndustrialTech.configSync.material.getFirst().registryMap.get(veinBlocksAndChance.getFirst());
+            ITMaterial material = (ITMaterial) ICJsonConfigs.material.getFirst().registryMap.get(veinBlocksAndChance.getFirst());
             int rarity = veinBlocksAndChance.getSecond();
 
             if (material != null) {

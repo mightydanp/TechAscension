@@ -1,7 +1,7 @@
 package mightydanp.industrialcore.common.jsonconfig.material.ore;
 
 import com.google.gson.JsonObject;
-import mightydanp.industrialcore.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.industrialapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.industrialtech.common.IndustrialTech;
 import net.minecraft.CrashReport;
 

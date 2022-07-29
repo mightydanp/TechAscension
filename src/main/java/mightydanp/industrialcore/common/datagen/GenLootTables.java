@@ -2,6 +2,7 @@ package mightydanp.industrialcore.common.datagen;
 
 import com.mojang.datafixers.util.Pair;
 
+import mightydanp.industrialcore.common.jsonconfig.ICJsonConfigs;
 import mightydanp.industrialcore.common.material.ITMaterial;
 import mightydanp.industrialcore.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.industrialcore.common.jsonconfig.flag.IMaterialFlag;
@@ -51,7 +52,7 @@ public class GenLootTables extends LootTableProvider {
     protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
         tables.clear();
 
-        IndustrialTech.configSync.material.getFirst().registryMap.values().forEach(material -> {
+        ICJsonConfigs.material.getFirst().registryMap.values().forEach(material -> {
 
             for (IMaterialFlag flag : ((ITMaterial)material).materialFlags) {
                 if (flag == DefaultMaterialFlag.ORE) {
