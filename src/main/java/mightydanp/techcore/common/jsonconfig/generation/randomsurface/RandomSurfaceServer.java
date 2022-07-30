@@ -5,7 +5,7 @@ import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
 import net.minecraft.network.FriendlyByteBuf;
@@ -35,7 +35,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(ICJsonConfigs.randomSurfaceID).stream()
+        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(TCJsonConfigs.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
                 .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
         
@@ -53,8 +53,8 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
                 if(optional.isPresent()) {
                     RandomSurfaceGenFeatureConfig serverRandomSurface = optional.get();
-                    JsonObject jsonMaterial = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).toJsonObject(RandomSurface);
-                    JsonObject materialJson = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
+                    JsonObject jsonMaterial = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(RandomSurface);
+                    JsonObject materialJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -91,8 +91,8 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = ICJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
-                RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = TCJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
+                RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).getFromJsonObject(jsonObject);
                 clientRandomSurfaces.put(randomSurface.name, randomSurface);
             }
 
@@ -101,8 +101,8 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
                 if(sync.get()) {
                     RandomSurfaceGenFeatureConfig clientRandomSurface = getServerMap().get(serverRandomSurface.name);
-                    JsonObject jsonMaterial = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
-                    JsonObject materialJson = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).toJsonObject(clientRandomSurface);
+                    JsonObject jsonMaterial = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
+                    JsonObject materialJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(clientRandomSurface);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -129,7 +129,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         for (RandomSurfaceGenFeatureConfig randomSurface : getServerMap().values()) {
             String name = randomSurface.name;
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).toJsonObject(randomSurface);
+            JsonObject jsonObject = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(randomSurface);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -150,8 +150,8 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = ICJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
-                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = TCJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
+                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = randomSurface.name;
 
@@ -171,7 +171,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(ICJsonConfigs.randomSurfaceID).stream()
+        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(TCJsonConfigs.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
                 .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
 
@@ -208,7 +208,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(ICJsonConfigs.randomSurfaceID).stream()
+        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(TCJsonConfigs.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
                 .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
 

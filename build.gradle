@@ -17,8 +17,8 @@ apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remappe
 apply plugin: 'org.spongepowered.mixin'
 
 version = '0.0.0.1'
-group = 'mightydanp.industrialtech' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'industrialtech'
+group = 'mightydanp.techascension' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'techascension'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -47,11 +47,11 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-			arg "-mixin.config=industrialtech.mixin.json"
+			arg "-mixin.config=techascension.mixin.json"
 		
 
             mods {
-                industrialtech {
+                techascension {
                     source sourceSets.main
                 }
             }
@@ -66,7 +66,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                industrialtech {
+                techascension {
                     source sourceSets.main
                 }
             }
@@ -91,10 +91,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            property 'forge.enabledGameTestNamespaces', 'industrialtech'
+            property 'forge.enabledGameTestNamespaces', 'techascension'
 
             mods {
-                industrialtech {
+                techascension {
                     source sourceSets.main
                 }
             }
@@ -108,10 +108,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'industrialtech', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'techascension', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                industrialtech {
+                techascension {
                     source sourceSets.main
                 }
             }
@@ -150,27 +150,27 @@ dependencies {
 
 //This is the better way to define the Mixin refmap name, you should use this instead of renaming the file in the jar section (line #69)
 mixin {
-    add sourceSets.main, "industrialtech.mixin-refmap.json"
+    add sourceSets.main, "techascension.mixin-refmap.json"
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([
-                "Specification-Title": "industrialtech",
-                "Specification-Vendor": "industrialtechsareus",
+                "Specification-Title": "techascension",
+                "Specification-Vendor": "techascensionsareus",
                 "Specification-Version": "1", // We are version 1 of ourselves
                 "Implementation-Title": project.name,
                 "Implementation-Version": "${version}",
-                "Implementation-Vendor" :"industrialtechsareus",
+                "Implementation-Vendor" :"techascensionsareus",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 				"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
                 "TweakOrder": 0,
-                "MixinConfigs" : "industrialtech.mixin.json"
+                "MixinConfigs" : "techascension.mixin.json"
         ])
     }
 
-    rename 'mixin.refmap.json', 'industrialtech.mixin-refmap.json'
+    rename 'mixin.refmap.json', 'techascension.mixin-refmap.json'
 }
 
 // Example configuration to allow publishing using the maven-publish task

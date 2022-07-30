@@ -36,7 +36,11 @@ public class JsonConfigSingleFile {
     }
 
     public JsonElement getConfigFromCategory(String category, String config){
-        return this.config.get(category).get(config);
+        if(this.config.getOrDefault(category, new JsonObject()).get(config) != null) {
+            return this.config.getOrDefault(category, new JsonObject()).get(config);
+        } else {
+            return new JsonObject();
+        }
     }
 
     public void setJsonFilename(String jsonFilenameIn) {
@@ -64,34 +68,16 @@ public class JsonConfigSingleFile {
     }
 
     public void buildConfigJson(JsonObject jsonObject){
-        JsonObject compare = new JsonObject();
-        if(jsonObject.size() == 0){
-            reloadConfigJson();
-        }else{
-            reloadConfigFromJson();
-        }
-    }
-
-    public void reloadConfigFromJson(){
         if(getJsonFileLocation().toFile().exists()) {
-            JsonObject jsonObject = getJsonObject();
+            JsonObject jsonObjectNew = getJsonObject();
 
-            jsonObject.keySet().forEach(category -> {
-                JsonObject jsonConfig = jsonObject.getAsJsonObject(category);
+            jsonObjectNew.keySet().forEach(category -> {
+                JsonObject jsonConfig = jsonObjectNew.getAsJsonObject(category);
                 config.put(category, jsonConfig);
             });
-        }else{
-            TechAscension.LOGGER.fatal(jsonFilename + " json config doesn't exist at (" + getJsonFileLocation().toFile() + ").");
-            //Minecraft.crash(new CrashReport("main json config doesn't exist at (" + jsonFileLocation.toFile().getAbsolutePath() + ").", new Throwable()));
+        } else {
+            saveJson(jsonObject);
         }
-    }
-
-    public void reloadConfigJson() {
-        JsonObject jsonObject = getJsonObject();
-
-        config.forEach(jsonObject::add);
-
-        saveJson(jsonObject);
     }
 
     public void saveJson(JsonObject jsonConfig) {

@@ -1,9 +1,9 @@
 {
-  "type": "industrialtech:hole",
+  "type": "techascension:hole",
   "desired_block": "minecraft:oak_log",
   "ingredient_items": [
     {
-      "item": "industrialtech:chisel"
+      "item": "techascension:chisel"
     }
   ],
   "ingredient_item_damage": 0,

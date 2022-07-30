@@ -1,6 +1,6 @@
 package mightydanp.techcore.common.datagen;
 
-import mightydanp.techcore.common.material.ITMaterial;
+import mightydanp.techcore.common.material.TCMaterial;
 import mightydanp.techcore.common.handler.TreeHandler;
 import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.techcore.common.libs.EnumTreeFlags;
@@ -25,10 +25,10 @@ public class GenBlockStates extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        //IndustrialTech.configSync.material.getFirst().registryMap.values().forEach(material -> materialHandlerHelper((ITMaterial) material));
+        //TechAscension.configSync.material.getFirst().registryMap.values().forEach(material -> materialHandlerHelper((ITMaterial) material));
     }
 
-    private void materialHandlerHelper(ITMaterial material) {
+    private void materialHandlerHelper(TCMaterial material) {
         for(IMaterialFlag flag : material.materialFlags){
             if(flag == DefaultMaterialFlag.ORE){
                 for(RegistryObject<Block> blockRegistered : material.oreList) {

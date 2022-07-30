@@ -1,13 +1,13 @@
 package mightydanp.techascension.common.materials;
 
 import com.mojang.datafixers.util.Pair;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialServer;
 import mightydanp.techcore.common.jsonconfig.tool.part.IToolPart;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techcore.common.material.ITMaterial;
-import mightydanp.techcore.common.material.ITMaterials;
+import mightydanp.techcore.common.material.TCMaterial;
+import mightydanp.techcore.common.material.TCMaterials;
 import mightydanp.techcore.common.jsonconfig.material.ore.DefaultOreType;
 import net.minecraft.world.level.block.Blocks;
 
@@ -19,7 +19,7 @@ import static mightydanp.techcore.common.jsonconfig.icons.DefaultTextureIcon.*;
  * Created by MightyDanp on 9/26/2020.
  */
 
-public class ModMaterials extends ITMaterials {
+public class ModMaterials extends TCMaterials {
 
     /*
     public static MaterialHandler alexandrite, almandine, amethyst, andradite, anthracite, apatite, aquamarine, arsenopyrite, azurite, balasruby, barite, bastnasite,
@@ -35,39 +35,39 @@ public class ModMaterials extends ITMaterials {
     public static MaterialHandler flint, stone;
 */
 
-    public static ITMaterial andesite, diorite, end_stone, granite, netherrack, stone;
-    public static ITMaterial alexandrite, almandine;
+    public static TCMaterial andesite, diorite, end_stone, granite, netherrack, stone;
+    public static TCMaterial alexandrite, almandine;
 
     public static List<Pair<String,String>> flintToolTypes, stoneToolTypes;
     public static List<IToolPart> flintToolParts;
 
-    public static ITMaterial flint;
+    public static TCMaterial flint;
 
 
 
 
     public static void commonInit() {
-        Pair<?, ?> materialPair = ICJsonConfigs.material;
+        Pair<?, ?> materialPair = TCJsonConfigs.material;
         MaterialRegistry materialRegistry = ((MaterialRegistry)materialPair.getFirst());
         MaterialServer materialServer = ((MaterialServer)materialPair.getSecond());
 
         //--//stone layers
-        materialRegistry.register(andesite = new ITMaterial("andesite", 0x747878, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.ANDESITE.getRegistryName()), "minecraft:block/andesite"));
+        materialRegistry.register(andesite = new TCMaterial("andesite", 0x747878, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.ANDESITE.getRegistryName()), "minecraft:block/andesite"));
         //MaterialRegistry.registerMaterial(new ITMaterial("basalt", 0x4C4A4A, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, "minecraft:block/basalt"));
-        materialRegistry.register(diorite = new ITMaterial("diorite", 0x9dbfb1, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.DIORITE.getRegistryName()), "minecraft:block/diorite"));
-        materialRegistry.register(end_stone = new ITMaterial("end_stone", 0xb8b09b, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.END_STONE.getRegistryName()), "minecraft:block/end_stone"));
-        materialRegistry.register(granite = new ITMaterial("granite", 0xA26B56, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.GRANITE.getRegistryName()), "minecraft:block/granite"));
-        materialRegistry.register(netherrack = new ITMaterial("netherrack", 0x6F4644, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.NETHERRACK.getRegistryName()), "minecraft:block/netherrack"));
-        materialRegistry.register(stone = new ITMaterial("stone", 0x808080, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.STONE.getRegistryName()), "minecraft:block/stone"));
+        materialRegistry.register(diorite = new TCMaterial("diorite", 0x9dbfb1, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.DIORITE.getRegistryName()), "minecraft:block/diorite"));
+        materialRegistry.register(end_stone = new TCMaterial("end_stone", 0xb8b09b, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.END_STONE.getRegistryName()), "minecraft:block/end_stone"));
+        materialRegistry.register(granite = new TCMaterial("granite", 0xA26B56, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.GRANITE.getRegistryName()), "minecraft:block/granite"));
+        materialRegistry.register(netherrack = new TCMaterial("netherrack", 0x6F4644, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.NETHERRACK.getRegistryName()), "minecraft:block/netherrack"));
+        materialRegistry.register(stone = new TCMaterial("stone", 0x808080, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.STONE.getRegistryName()), "minecraft:block/stone"));
         //--//
-        materialRegistry.register(alexandrite = new ITMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL)).setOreType(DefaultOreType.ORE).setDenseOreDensity(8));
-        materialRegistry.register(almandine = new ITMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH)).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));
+        materialRegistry.register(alexandrite = new TCMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL)).setOreType(DefaultOreType.ORE).setDenseOreDensity(8));
+        materialRegistry.register(almandine = new TCMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH)).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));
 
         flintToolTypes = List.of(new Pair<>("", "_handle"), new Pair<>("", "_head"), new Pair<>("", "_binding"));
 
-        materialRegistry.register(flint = new ITMaterial("flint", 0x002040, new Pair<>(Ref.mod_id, CUBE)).setToolProperties( 20, 10, 20F, 1F, 1F, 1, flintToolTypes));
+        materialRegistry.register(flint = new TCMaterial("flint", 0x002040, new Pair<>(Ref.mod_id, CUBE)).setToolProperties( 20, 10, 20F, 1F, 1F, 1, flintToolTypes));
 
-        ICJsonConfigs.configs.put(7, new Pair<>(materialRegistry, materialServer));
+        TCJsonConfigs.configs.put(7, new Pair<>(materialRegistry, materialServer));
         //materials.add(iron = new MaterialHandler("iron", 0, 51, 153, "").addOreProperties(8, false).save());
     //Materials that have ORES
         /*

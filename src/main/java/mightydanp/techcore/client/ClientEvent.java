@@ -2,7 +2,7 @@ package mightydanp.techcore.client;
 
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.client.settings.keybindings.KeyBindings;
-import mightydanp.techcore.common.blocks.ITBlocks;
+import mightydanp.techcore.common.blocks.TCBlocks;
 import mightydanp.techcore.common.handler.KeyBindingHandler;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.tileentities.TileEntities;
@@ -30,7 +30,7 @@ public class ClientEvent {
         //ScreenManager.register(Containers.itToolItemContainer, ITToolItemContainerScreen::new);////////////////////////////////////
         KeyBindingHandler.clientInit();
         TileEntities.clientInit();
-        ITBlocks.colorBlock();
+        TCBlocks.colorBlock();
     }
 
     @SubscribeEvent

@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "techascension:item/unfired_clay_pan"
+  }
+}

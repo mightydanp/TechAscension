@@ -3,7 +3,7 @@ package mightydanp.techcore.common.handler;
 import mightydanp.techcore.common.items.BlockFuelItem;
 import mightydanp.techcore.common.libs.EnumTreeFlags;
 import mightydanp.techcore.common.blocks.LeaveBlock;
-import mightydanp.techcore.common.items.ITToolItem;
+import mightydanp.techcore.common.items.TCToolItem;
 import mightydanp.techcore.common.items.ModItemGroups;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.block.grower.OakTreeGrower;
@@ -35,7 +35,7 @@ public class TreeHandler {
     public int logBurnTime;
     public int plankBurnTime;
     public int saplingBurnTime;
-    public List<ITToolItem> toolForLogHole;
+    public List<TCToolItem> toolForLogHole;
     public AbstractTreeGrower treeFeature;
 
     public RegistryObject<Block> log_block, plank_block, leave_block, sapling_block, resin_block;
@@ -57,7 +57,7 @@ public class TreeHandler {
         registerFlags(flagsIn);
     }
 
-    public TreeHandler (String treeNameIn, AbstractTreeGrower treeFeatureIn, int colorIn, int leafDecayLengthIn, int leafBurnTimeIn, int logBurnTimeIn, List<ITToolItem> toolForLogHoleIn, int plankBurnTimeIn, int saplingBurnTimeIn, EnumTreeFlags... flagsIn){
+    public TreeHandler (String treeNameIn, AbstractTreeGrower treeFeatureIn, int colorIn, int leafDecayLengthIn, int leafBurnTimeIn, int logBurnTimeIn, List<TCToolItem> toolForLogHoleIn, int plankBurnTimeIn, int saplingBurnTimeIn, EnumTreeFlags... flagsIn){
         treeName = treeNameIn;
         treeFeature = treeFeatureIn;
         color = colorIn;

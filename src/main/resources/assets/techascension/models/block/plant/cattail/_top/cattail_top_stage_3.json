@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "techascension:block/plant/cattail/_top/cattail_top_stage_4"
+  }
+}

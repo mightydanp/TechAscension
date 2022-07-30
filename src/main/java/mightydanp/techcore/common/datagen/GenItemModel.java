@@ -1,6 +1,6 @@
 package mightydanp.techcore.common.datagen;
 
-import mightydanp.techcore.common.material.ITMaterial;
+import mightydanp.techcore.common.material.TCMaterial;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
@@ -26,7 +26,7 @@ public class GenItemModel extends ItemModelProvider {
 
     @Override
     protected void registerModels() {/*
-        IndustrialTech.configSync.material.getFirst().registryMap.values().forEach(material -> {
+        TechAscension.configSync.material.getFirst().registryMap.values().forEach(material -> {
             for (IMaterialFlag flag : ((ITMaterial)material).materialFlags) {
                 if (flag == DefaultMaterialFlag.ORE) {
                 }
@@ -150,7 +150,7 @@ public class GenItemModel extends ItemModelProvider {
         generatedModels.put(denseOreLocation, denseOre);
     }
 
-    public void coloredMaterial(Item item, ITMaterial ITMaterialIn) {
+    public void coloredMaterial(Item item, TCMaterial ITMaterialIn) {
         String modId = item.getRegistryName().toString().split(":")[0];
         String itemName = item.getRegistryName().toString().split(":")[1];
         String materialName = itemName.replaceAll(ITMaterialIn.name + "_", "");
@@ -175,7 +175,7 @@ public class GenItemModel extends ItemModelProvider {
         generatedModels.put(gemLocation, gem);
     }
 
-    public void coloredMaterialPart(Item item, ITMaterial ITMaterialIn) {
+    public void coloredMaterialPart(Item item, TCMaterial ITMaterialIn) {
         String modId = item.getRegistryName().toString().split(":")[0];
         String itemName = item.getRegistryName().toString().split(":")[1];
         String materialName = itemName.replace(ITMaterialIn.name, "");
@@ -245,7 +245,7 @@ public class GenItemModel extends ItemModelProvider {
         generatedModels.put(toolLocation, itemBuilder);
     }
 
-    public void coloredToolPart(Item item, ITMaterial ITMaterialIn) {
+    public void coloredToolPart(Item item, TCMaterial ITMaterialIn) {
         String modId = item.getRegistryName().toString().split(":")[0];
         String itemName = item.getRegistryName().toString().split(":")[1];
         String textureFlag = ITMaterialIn.textureIcon.getSecond().getName();

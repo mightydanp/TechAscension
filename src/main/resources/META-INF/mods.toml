@@ -1,21 +1,21 @@
 modLoader="javafml" #mandatory
 loaderVersion="[34,)"
 license="All rights reserved"
-issueTrackerURL="http://my.issue.tracker/" #optional
+issueTrackerURL="" #optional
 [[mods]]
-modId="industrialtech"
+modId="techascension"
 version="${file.jarVersion}"
-displayName="Industrial Tech"
+displayName="Tech Ascension"
 updateJSONURL="http://myurl.me/"
 displayURL="http://example.com/"
 logoFile="examplemod.png"
-credits="Thanks for this example mod goes to Java"
-authors="Love, Cheese and small house plants"
+credits="null"
+authors="MightyDanp"
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 null
 '''
-[[dependencies.industrialtech]] #optional
+[[dependencies.techascension]] #optional
     # the modid of the dependency
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
@@ -27,7 +27,7 @@ null
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
 # Here's another dependency
-[[dependencies.industrialtech]]
+[[dependencies.techascension]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.18.2]"

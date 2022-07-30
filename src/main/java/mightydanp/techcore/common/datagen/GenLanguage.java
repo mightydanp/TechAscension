@@ -1,7 +1,7 @@
 package mightydanp.techcore.common.datagen;
 
-import mightydanp.techcore.common.libs.ITButtonRef;
-import mightydanp.techcore.common.libs.ITScreenTextRef;
+import mightydanp.techcore.common.libs.TCButtonRef;
+import mightydanp.techcore.common.libs.TCScreenTextRef;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
@@ -27,13 +27,13 @@ public class GenLanguage extends LanguageProvider {
             add(item.getValue(), itemName);
         }
 
-        add(ITButtonRef.returnToServerScreen, ITButtonRef.returnToServerScreenText);
-        add(ITButtonRef.syncClientConfigsWithServers, ITButtonRef.syncClientConfigsWithServersText);
-        add(ITScreenTextRef.syncWarningLine1, ITScreenTextRef.syncWarningLine1Text);
-        add(ITScreenTextRef.syncWarningLine2, ITScreenTextRef.syncWarningLine2Text);
-        add(ITScreenTextRef.syncWarningLine3, ITScreenTextRef.syncWarningLine3Text);
-        add(ITScreenTextRef.clientWorldWarningLine1, ITScreenTextRef.clientWorldWarningLine1Text);
-        add(ITScreenTextRef.clientWorldWarningLine2, ITScreenTextRef.clientWorldWarningLine2Text);
+        add(TCButtonRef.returnToServerScreen, TCButtonRef.returnToServerScreenText);
+        add(TCButtonRef.syncClientConfigsWithServers, TCButtonRef.syncClientConfigsWithServersText);
+        add(TCScreenTextRef.syncWarningLine1, TCScreenTextRef.syncWarningLine1Text);
+        add(TCScreenTextRef.syncWarningLine2, TCScreenTextRef.syncWarningLine2Text);
+        add(TCScreenTextRef.syncWarningLine3, TCScreenTextRef.syncWarningLine3Text);
+        add(TCScreenTextRef.clientWorldWarningLine1, TCScreenTextRef.clientWorldWarningLine1Text);
+        add(TCScreenTextRef.clientWorldWarningLine2, TCScreenTextRef.clientWorldWarningLine2Text);
 
     }
 

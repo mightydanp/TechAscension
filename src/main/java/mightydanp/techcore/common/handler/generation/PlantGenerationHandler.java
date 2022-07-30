@@ -2,7 +2,7 @@ package mightydanp.techcore.common.handler.generation;
 
 import com.google.common.base.Preconditions;
 import mightydanp.techcore.common.handler.RegistryHandler;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.generation.blocksinwater.BlocksInWaterRegistry;
 import mightydanp.techcore.common.jsonconfig.generation.randomsurface.RandomSurfaceRegistry;
 import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeature;
@@ -50,7 +50,7 @@ public class PlantGenerationHandler {
 
         //Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
-        ((BlocksInWaterRegistry) ICJsonConfigs.blocksInWater.getFirst()).register(config);
+        ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).register(config);
         blockInWaterGenerationList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.invalidBiomes, config.invalidBiomes));
         //Registry.register(registry, new ResourceLocation(Ref.mod_id, config.name), topWaterCropFeature);;
     }
@@ -82,7 +82,7 @@ public class PlantGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
-        ((BlocksInWaterRegistry)ICJsonConfigs.blocksInWater.getFirst()).register(config);
+        ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).register(config);
         blockInWaterGenerationList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.invalidBiomes, config.invalidBiomes));
     }
 
@@ -92,7 +92,7 @@ public class PlantGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
-        ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).register(config);
+        ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).register(config);
         randomSurfaceGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
     }
 
@@ -119,7 +119,7 @@ public class PlantGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, oreVeinFeature, list.toArray(new PlacementModifier[0]));
-        ((RandomSurfaceRegistry)ICJsonConfigs.randomSurface.getFirst()).register(config);
+        ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).register(config);
         randomSurfaceGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
     }
 

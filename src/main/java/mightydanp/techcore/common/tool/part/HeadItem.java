@@ -1,7 +1,7 @@
 package mightydanp.techcore.common.tool.part;
 
 import com.mojang.datafixers.util.Pair;;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.techcore.common.jsonconfig.tool.type.IToolType;
 import net.minecraft.world.item.TooltipFlag;
@@ -96,7 +96,7 @@ public class HeadItem extends Item {
     }
 
     public HeadItem setItToolType(Map<String, Integer> itToolTypeIn) {
-        itToolTypeIn.forEach(((name, toolLevel) -> itToolType.put(((IToolType) ICJsonConfigs.toolType.getFirst().registryMap.get(name)), toolLevel)));
+        itToolTypeIn.forEach(((name, toolLevel) -> itToolType.put(((IToolType) TCJsonConfigs.toolType.getFirst().registryMap.get(name)), toolLevel)));
         return this;
     }
 

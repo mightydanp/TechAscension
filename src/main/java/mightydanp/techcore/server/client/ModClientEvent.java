@@ -3,7 +3,7 @@ package mightydanp.techcore.server.client;
 import mightydanp.techcore.client.rendering.models.HoleBakedModel;
 import mightydanp.techcore.common.ISidedReference;
 
-import mightydanp.techcore.common.blocks.ITBlocks;
+import mightydanp.techcore.common.blocks.TCBlocks;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.server.client.settings.KeyBindings.ModKeyBindings;
 import mightydanp.techascension.common.TechAscension;
@@ -47,7 +47,7 @@ public class ModClientEvent implements ISidedReference {
 
     @SubscribeEvent
     public static void onModelBakeEvent(ModelBakeEvent event) {
-        for (BlockState blockState : ITBlocks.hole_block.get().getStateDefinition().getPossibleStates()) {
+        for (BlockState blockState : TCBlocks.hole_block.get().getStateDefinition().getPossibleStates()) {
             ModelResourceLocation variantMRL = BlockModelShaper.stateToModelLocation(blockState);
             BakedModel existingModel = event.getModelRegistry().get(variantMRL);
             if (existingModel == null) {

@@ -1,10 +1,10 @@
 package mightydanp.techascension.common.tool.tools;
 
 import mightydanp.techcore.common.blocks.HoleBlock;
-import mightydanp.techcore.common.blocks.ITBlocks;
+import mightydanp.techcore.common.blocks.TCBlocks;
 import mightydanp.techcore.common.crafting.recipe.HoleRecipe;
 import mightydanp.techcore.common.crafting.recipe.Recipes;
-import mightydanp.techcore.common.items.ITToolItem;
+import mightydanp.techcore.common.items.TCToolItem;
 import mightydanp.techcore.common.tileentities.HoleTileEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * Created by MightyDanp on 10/9/2021.
  */
-public class KnifeToolItem extends ITToolItem {
+public class KnifeToolItem extends TCToolItem {
     public KnifeToolItem() {
         super(new Item.Properties());
     }
@@ -44,7 +44,7 @@ public class KnifeToolItem extends ITToolItem {
 
         if(validRecipe.isPresent()) {
             BlockState newBlockState;
-            newBlockState = ITBlocks.hole_block.get().defaultBlockState();
+            newBlockState = TCBlocks.hole_block.get().defaultBlockState();
             world.setBlockAndUpdate(blockPos, newBlockState);
 
             HoleTileEntity tileEntity = (HoleTileEntity) world.getBlockEntity(blockPos);
@@ -62,7 +62,7 @@ public class KnifeToolItem extends ITToolItem {
 
 
                 if (clickedFace != Direction.UP && clickedFace != Direction.DOWN) {
-                    if (itemUseContext.getItemInHand().getItem() instanceof ITToolItem mainHandTool) {
+                    if (itemUseContext.getItemInHand().getItem() instanceof TCToolItem mainHandTool) {
                         mainHandTool.damageToolParts(itemUseContext.getItemInHand(), playerEntity, world, harvestToolDamage);
                     }else{
                         if(itemUseContext.getItemInHand().isDamageableItem()){

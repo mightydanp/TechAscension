@@ -6,7 +6,7 @@ import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -36,7 +36,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<IMaterialFlag> list = message.getConfig(ICJsonConfigs.materialFlagID).stream()
+        List<IMaterialFlag> list = message.getConfig(TCJsonConfigs.materialFlagID).stream()
                 .filter(IMaterialFlag.class::isInstance)
                 .map(IMaterialFlag.class::cast).toList();
 
@@ -54,8 +54,8 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
                 if(optional.isPresent()) {
                     IMaterialFlag serverMaterialFlag = optional.get();
-                    JsonObject jsonMaterial = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).toJsonObject(materialFlag);
-                    JsonObject materialJson = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
+                    JsonObject jsonMaterial = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(materialFlag);
+                    JsonObject materialJson = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -92,8 +92,8 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = ICJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
-                IMaterialFlag materialFlag = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = TCJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
+                IMaterialFlag materialFlag = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).getFromJsonObject(jsonObject);
                 clientMaterialFlags.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag);
             }
 
@@ -102,8 +102,8 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
                 if(sync.get()) {
                     IMaterialFlag clientMaterialFlag = getServerMap().get(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix()));
-                    JsonObject jsonMaterial = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
-                    JsonObject materialJson = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).toJsonObject(clientMaterialFlag);
+                    JsonObject jsonMaterial = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
+                    JsonObject materialJson = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(clientMaterialFlag);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -131,7 +131,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
         for (IMaterialFlag materialFlag : getServerMap().values()) {
             String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).toJsonObject(materialFlag);
+            JsonObject jsonObject = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(materialFlag);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -152,8 +152,8 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = ICJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
-                    IMaterialFlag materialFlag = ((MaterialFlagRegistry)ICJsonConfigs.materialFlag.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = TCJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
+                    IMaterialFlag materialFlag = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
 
@@ -173,7 +173,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IMaterialFlag> list = message.getConfig(ICJsonConfigs.materialFlagID).stream()
+        List<IMaterialFlag> list = message.getConfig(TCJsonConfigs.materialFlagID).stream()
                 .filter(IMaterialFlag.class::isInstance)
                 .map(IMaterialFlag.class::cast).toList();
 
@@ -195,7 +195,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IMaterialFlag> list = message.getConfig(ICJsonConfigs.materialFlagID).stream()
+        List<IMaterialFlag> list = message.getConfig(TCJsonConfigs.materialFlagID).stream()
                 .filter(IMaterialFlag.class::isInstance)
                 .map(IMaterialFlag.class::cast).toList();
 

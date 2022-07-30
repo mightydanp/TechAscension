@@ -1,7 +1,7 @@
 package mightydanp.techapi.common.resources;
 
 import mightydanp.techapi.common.resources.data.DataPackRegistry;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
@@ -20,7 +20,7 @@ public class ResourcePackEventHandler {
 
     @SubscribeEvent
     public static void addResourcePack(AddPackFindersEvent event){
-        ((MaterialRegistry) ICJsonConfigs.material.getFirst()).registryMap.forEach((modID, material) -> material.saveResources());
+        ((MaterialRegistry) TCJsonConfigs.material.getFirst()).registryMap.forEach((modID, material) -> material.saveResources());
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AssetPackRegistry::init);
 

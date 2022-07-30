@@ -1,6 +1,6 @@
 package mightydanp.techascension.common.tileentities;
 
-import mightydanp.techcore.common.blocks.ITBlocks;
+import mightydanp.techcore.common.blocks.TCBlocks;
 import mightydanp.techcore.common.tileentities.HoleTileEntity;
 import mightydanp.techcore.common.tileentities.TileEntities;
 import mightydanp.techascension.common.blocks.ModBlocks;
@@ -15,7 +15,7 @@ public class ModBlockEntity extends TileEntities {
     public static RegistryObject<BlockEntityType<HoleTileEntity>> hole_block_entity;
 
     public static void init(){
-        hole_block_entity = register("hole", HoleTileEntity::new, ITBlocks.hole_block);
+        hole_block_entity = register("hole", HoleTileEntity::new, TCBlocks.hole_block);
         campfire_block_entity = register("campfire_override", CampfireBlockEntityOverride::new, ModBlocks.campfire_override);
     }
 

@@ -3,14 +3,14 @@ package mightydanp.techcore.common.handler.generation;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techcore.common.handler.RegistryHandler;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.generation.orevein.OreVeinRegistry;
 import mightydanp.techcore.common.jsonconfig.generation.smallore.SmallOreVeinRegistry;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeature;
 import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
-import mightydanp.techcore.common.material.ITMaterial;
+import mightydanp.techcore.common.material.TCMaterial;
 import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeature;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
@@ -52,7 +52,7 @@ public class OreGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
-        ((OreVeinRegistry) ICJsonConfigs.oreVein.getFirst()).register(config);
+        ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).register(config);
         oreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
     }
 
@@ -75,7 +75,7 @@ public class OreGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, oreVeinFeature, list.toArray(new PlacementModifier[0]));
-        ((OreVeinRegistry)ICJsonConfigs.oreVein.getFirst()).register(config);
+        ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).register(config);
         oreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
     }
 
@@ -86,7 +86,7 @@ public class OreGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, smallOreFeature, list.toArray(new PlacementModifier[0]));
-        ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).register(config);
+        ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).register(config);
         smallOreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
     }
 
@@ -102,9 +102,9 @@ public class OreGenerationHandler {
                 }
             }
 
-            if(object instanceof ITMaterial) {
-                if (((ITMaterial) object).getRegistryName() != null) {
-                    Pair<String, Integer> veinBlockAndChance = new Pair<>(((ITMaterial) object).getRegistryName().toString(), integer);
+            if(object instanceof TCMaterial) {
+                if (((TCMaterial) object).getRegistryName() != null) {
+                    Pair<String, Integer> veinBlockAndChance = new Pair<>(((TCMaterial) object).getRegistryName().toString(), integer);
                     veinBlocksAndChances.add(veinBlockAndChance);
                 }
             }
@@ -118,7 +118,7 @@ public class OreGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, smallOreFeature, list.toArray(new PlacementModifier[0]));
-        ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).register(config);
+        ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).register(config);
         smallOreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
     }
 

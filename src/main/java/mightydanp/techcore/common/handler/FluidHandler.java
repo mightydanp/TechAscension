@@ -1,6 +1,6 @@
 package mightydanp.techcore.common.handler;
 
-import mightydanp.techcore.common.material.fluid.ITBucket;
+import mightydanp.techcore.common.material.fluid.TCBucket;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.world.item.Item;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -22,7 +22,7 @@ public class FluidHandler {
 
     public void initProperties() {
             if(bucket.isPresent()) {
-                ITBucket iTBucket = (ITBucket)bucket.get();
+                TCBucket iTBucket = (TCBucket)bucket.get();
                 ItemProperties.register(bucket.get(), new ResourceLocation(Ref.mod_id, "redness_level"), (stack, world, living, dsf) -> {
                     if (living != null){
                         return iTBucket.getRednessLevel();

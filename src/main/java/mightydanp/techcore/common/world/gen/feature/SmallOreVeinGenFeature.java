@@ -3,8 +3,8 @@ package mightydanp.techcore.common.world.gen.feature;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import mightydanp.techcore.common.blocks.SmallOreBlock;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
-import mightydanp.techcore.common.material.ITMaterial;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.material.TCMaterial;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
@@ -104,7 +104,7 @@ public class SmallOreVeinGenFeature extends Feature<SmallOreVeinGenFeatureConfig
         List<Pair<Block, Integer>> veinBlocksAndChancesThatCanReplace = new ArrayList<>();
 
         for (Pair<String, Integer> veinBlocksAndChance : veinBlocksAndChances) {
-            ITMaterial material = (ITMaterial) ICJsonConfigs.material.getFirst().registryMap.get(veinBlocksAndChance.getFirst());
+            TCMaterial material = (TCMaterial) TCJsonConfigs.material.getFirst().registryMap.get(veinBlocksAndChance.getFirst());
             int rarity = veinBlocksAndChance.getSecond();
 
             if (material != null) {

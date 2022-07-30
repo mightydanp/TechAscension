@@ -1,0 +1,7 @@
+{
+  "parent": "techascension:block/ore/state/gem",
+  "textures": {
+    "particle": "minecraft:block/stone",
+    "sourceblock": "minecraft:block/stone"
+  }
+}

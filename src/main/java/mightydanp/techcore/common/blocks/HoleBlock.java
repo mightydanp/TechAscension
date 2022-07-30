@@ -1,9 +1,9 @@
 package mightydanp.techcore.common.blocks;
 
-import mightydanp.techcore.common.blocks.state.ITBlockStateProperties;
+import mightydanp.techcore.common.blocks.state.TCBlockStateProperties;
 import mightydanp.techcore.common.crafting.recipe.HoleRecipe;
 import mightydanp.techcore.common.crafting.recipe.Recipes;
-import mightydanp.techcore.common.items.ITToolItem;
+import mightydanp.techcore.common.items.TCToolItem;
 import mightydanp.techcore.common.tileentities.HoleTileEntity;
 import mightydanp.techascension.common.tileentities.ModBlockEntity;
 import net.minecraft.world.level.block.*;
@@ -41,7 +41,7 @@ public class HoleBlock extends BaseEntityBlock {
 
     private static final VoxelShape SHAPES = Block.box(0.0D, 0.0D, 0.0D, 15.99D, 16.0D, 15.99D);
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    public static final BooleanProperty RESIN = ITBlockStateProperties.RESIN;
+    public static final BooleanProperty RESIN = TCBlockStateProperties.RESIN;
 
 
     public HoleBlock() {
@@ -71,9 +71,9 @@ public class HoleBlock extends BaseEntityBlock {
             if(validRecipe.isPresent()) {
                 if (validRecipe.get().getIngredients().size() == 2 && validRecipe.get().getIngredients().contains(mainHand) && validRecipe.get().getIngredients().contains(offHand) && blockRayTraceResult.getDirection() == blockRayTraceResult.getDirection() && blockRayTraceResult.getDirection() != Direction.UP && blockRayTraceResult.getDirection() != Direction.DOWN) {
                     if (!validRecipe.get().getConsumeIngredients()) {
-                        if (mainHand.getItem() instanceof ITToolItem && offHand.getItem() instanceof ITToolItem) {
-                            ITToolItem mainHandTool = (ITToolItem) mainHand.getItem();
-                            ITToolItem offHandTool = (ITToolItem) offHand.getItem();
+                        if (mainHand.getItem() instanceof TCToolItem && offHand.getItem() instanceof TCToolItem) {
+                            TCToolItem mainHandTool = (TCToolItem) mainHand.getItem();
+                            TCToolItem offHandTool = (TCToolItem) offHand.getItem();
                             mainHandTool.damageToolParts(playerEntity.getMainHandItem(), playerEntity, world, tileEntity.ingredientItemDamage);
                             offHandTool.damageToolParts(playerEntity.getOffhandItem(), playerEntity, world, tileEntity.ingredientItemDamage);
                         } else {
@@ -98,8 +98,8 @@ public class HoleBlock extends BaseEntityBlock {
                 if (validRecipe.get().getIngredients().size() == 1 && blockRayTraceResult.getDirection() == blockRayTraceResult.getDirection() && blockRayTraceResult.getDirection() != Direction.UP && blockRayTraceResult.getDirection() != Direction.DOWN) {
                     if (!validRecipe.get().getConsumeIngredients()) {
                         if (!validRecipe.get().getIngredients().contains(mainHand)) {
-                            if (mainHand.getItem() instanceof ITToolItem) {
-                                ITToolItem mainHandTool = (ITToolItem) mainHand.getItem();
+                            if (mainHand.getItem() instanceof TCToolItem) {
+                                TCToolItem mainHandTool = (TCToolItem) mainHand.getItem();
                                 mainHandTool.damageToolParts(playerEntity.getMainHandItem(), playerEntity, world, tileEntity.ingredientItemDamage);
                             } else {
                                 if (mainHand.isDamageableItem()) {
@@ -113,8 +113,8 @@ public class HoleBlock extends BaseEntityBlock {
 
                     if (!validRecipe.get().getConsumeIngredients()) {
                         if (validRecipe.get().getIngredients().contains(offHand)) {
-                            if (offHand.getItem() instanceof ITToolItem) {
-                                ITToolItem offHandTool = (ITToolItem) offHand.getItem();
+                            if (offHand.getItem() instanceof TCToolItem) {
+                                TCToolItem offHandTool = (TCToolItem) offHand.getItem();
                                 offHandTool.damageToolParts(playerEntity.getOffhandItem(), playerEntity, world, tileEntity.ingredientItemDamage);
                             } else {
                                 if (offHand.isDamageableItem()) {

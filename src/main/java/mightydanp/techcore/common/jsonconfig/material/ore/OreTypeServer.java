@@ -3,7 +3,7 @@ package mightydanp.techcore.common.jsonconfig.material.ore;
 import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
@@ -36,14 +36,14 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        if(message.getConfig(ICJsonConfigs.oreTypeID).size() != getServerMap().size()){
+        if(message.getConfig(TCJsonConfigs.oreTypeID).size() != getServerMap().size()){
             sync.set(false);
             ConfigSync.syncedJson.put("ore_type", sync.get());
             return false;
         }
 
         getServerMap().forEach((name, oreType) -> {
-            List<IOreType> list = message.getConfig(ICJsonConfigs.oreTypeID).stream()
+            List<IOreType> list = message.getConfig(TCJsonConfigs.oreTypeID).stream()
                     .filter(IOreType.class::isInstance)
                     .map(IOreType.class::cast).toList();
 
@@ -54,8 +54,8 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
                 if(optional.isPresent()) {
                     IOreType serverOreType = optional.get();
-                    JsonObject jsonMaterial = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).toJsonObject(oreType);
-                    JsonObject materialJson = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).toJsonObject(serverOreType);
+                    JsonObject jsonMaterial = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).toJsonObject(oreType);
+                    JsonObject materialJson = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).toJsonObject(serverOreType);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -92,8 +92,8 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = ICJsonConfigs.oreType.getFirst().getJsonObject(file.getName());
-                IOreType oreType = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = TCJsonConfigs.oreType.getFirst().getJsonObject(file.getName());
+                IOreType oreType = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getFromJsonObject(jsonObject);
                 clientOreTypes.put(oreType.getName(), oreType);
             }
 
@@ -102,8 +102,8 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
                 if(sync.get()) {
                     IOreType clientOreType = getServerMap().get(serverOreType.getName());
-                    JsonObject jsonMaterial = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).toJsonObject(serverOreType);
-                    JsonObject materialJson = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).toJsonObject(clientOreType);
+                    JsonObject jsonMaterial = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).toJsonObject(serverOreType);
+                    JsonObject materialJson = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).toJsonObject(clientOreType);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -130,7 +130,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
         for (IOreType oreType : getServerMap().values()) {
             String name = oreType.getName();
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).toJsonObject(oreType);
+            JsonObject jsonObject = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).toJsonObject(oreType);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -151,8 +151,8 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = ICJsonConfigs.oreType.getFirst().getJsonObject(file.getName());
-                    IOreType oreType = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = TCJsonConfigs.oreType.getFirst().getJsonObject(file.getName());
+                    IOreType oreType = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = oreType.getName();
 
@@ -172,7 +172,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IOreType> list = message.getConfig(ICJsonConfigs.oreTypeID).stream()
+        List<IOreType> list = message.getConfig(TCJsonConfigs.oreTypeID).stream()
                 .filter(IOreType.class::isInstance)
                 .map(IOreType.class::cast).toList();
 
@@ -192,7 +192,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IOreType> list = message.getConfig(ICJsonConfigs.oreTypeID).stream()
+        List<IOreType> list = message.getConfig(TCJsonConfigs.oreTypeID).stream()
                 .filter(IOreType.class::isInstance)
                 .map(IOreType.class::cast).toList();
 

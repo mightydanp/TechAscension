@@ -4,22 +4,22 @@ import mightydanp.techcore.client.ClientEvent;
 import mightydanp.techcore.client.jsonconfig.JsonConfigClient;
 import mightydanp.techcore.common.CommonEvent;
 import mightydanp.techcore.common.ISidedReference;
-import mightydanp.techcore.common.blocks.ITBlocks;
+import mightydanp.techcore.common.blocks.TCBlocks;
 import mightydanp.techcore.common.crafting.recipe.Recipes;
 import mightydanp.techcore.common.handler.EventHandler;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.inventory.container.Containers;
-import mightydanp.techcore.common.items.ITItems;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
-import mightydanp.techcore.common.material.tool.ITToolHandler;
-import mightydanp.techapi.common.jsonconfig.main.MainJsonConfig;
-import mightydanp.techapi.common.resources.asset.ITAssetHolder;
-import mightydanp.techapi.common.resources.data.ITDataHolder;
+import mightydanp.techcore.common.items.TCItems;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.material.tool.TCToolHandler;
+import mightydanp.techapi.common.jsonconfig.sync.gui.screen.main.MainJsonConfig;
+import mightydanp.techapi.common.resources.asset.TAAssetHolder;
+import mightydanp.techapi.common.resources.data.TADataHolder;
 import mightydanp.techapi.common.resources.ResourcePackEventHandler;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.tileentities.TileEntities;
-import mightydanp.techcore.common.material.tool.ITTools;
+import mightydanp.techcore.common.material.tool.TCTools;
 import mightydanp.techcore.server.DedicatedServerReference;
 import mightydanp.techcore.server.client.ModClientEvent;
 import mightydanp.techascension.common.blocks.ModBlocks;
@@ -48,8 +48,8 @@ public class TechAscension {
 
     public static MainJsonConfig mainJsonConfig = new MainJsonConfig();
 
-    public static ITAssetHolder assetHolder = new ITAssetHolder();
-    public static ITDataHolder dataHolder = new ITDataHolder();
+    public static TAAssetHolder assetHolder = new TAAssetHolder();
+    public static TADataHolder dataHolder = new TADataHolder();
 
     public TechAscension(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus(), forge = MinecraftForge.EVENT_BUS;
@@ -63,18 +63,18 @@ public class TechAscension {
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
 
         ModTools.init();
-        ITTools.init();
+        TCTools.init();
 
         ModMaterials.commonInit();
 
-        ICJsonConfigs.init();
+        TCJsonConfigs.init();
         ConfigSync.init();
         
-        ITItems.init();
+        TCItems.init();
         ModItems.init();
-        ITBlocks.init();
+        TCBlocks.init();
         ModBlocks.init();
-        ITItems.initBlockItems();
+        TCItems.initBlockItems();
         ModItems.initBlockItems();
         ModTrees.commonInit();
         Containers.init();
@@ -92,7 +92,7 @@ public class TechAscension {
         MinecraftForge.EVENT_BUS.register(Recipes.class);
         MinecraftForge.EVENT_BUS.register(ModRecipes.class);
         MinecraftForge.EVENT_BUS.register(EventHandler.class);
-        MinecraftForge.EVENT_BUS.register(ITToolHandler.class);
+        MinecraftForge.EVENT_BUS.register(TCToolHandler.class);
 
         bus.addListener(ResourcePackEventHandler::addResourcePack);
     }

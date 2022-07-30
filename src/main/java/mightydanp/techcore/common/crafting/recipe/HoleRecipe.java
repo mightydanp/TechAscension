@@ -1,6 +1,6 @@
 package mightydanp.techcore.common.crafting.recipe;
 
-import mightydanp.techcore.common.blocks.ITBlocks;
+import mightydanp.techcore.common.blocks.TCBlocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.Container;
@@ -131,7 +131,7 @@ public class HoleRecipe implements Recipe<Container> {
     }
 
     public ItemStack getToastSymbol() {
-        return new ItemStack(ITBlocks.hole_block.get());
+        return new ItemStack(TCBlocks.hole_block.get());
     }
 
     public RecipeSerializer<?> getSerializer() {

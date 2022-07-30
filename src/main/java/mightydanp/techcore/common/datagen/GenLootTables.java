@@ -2,8 +2,8 @@ package mightydanp.techcore.common.datagen;
 
 import com.mojang.datafixers.util.Pair;
 
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
-import mightydanp.techcore.common.material.ITMaterial;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.material.TCMaterial;
 import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.techcore.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.techascension.common.datagen.ModBlockLootTable;
@@ -51,33 +51,33 @@ public class GenLootTables extends LootTableProvider {
     protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
         tables.clear();
 
-        ICJsonConfigs.material.getFirst().registryMap.values().forEach(material -> {
+        TCJsonConfigs.material.getFirst().registryMap.values().forEach(material -> {
 
-            for (IMaterialFlag flag : ((ITMaterial)material).materialFlags) {
+            for (IMaterialFlag flag : ((TCMaterial)material).materialFlags) {
                 if (flag == DefaultMaterialFlag.ORE) {
-                    for (RegistryObject<Block> blockRegistered : ((ITMaterial)material).oreList) {
+                    for (RegistryObject<Block> blockRegistered : ((TCMaterial)material).oreList) {
                         standardDropTable(blockRegistered.get());
                     }
                 }
                 if (flag == DefaultMaterialFlag.GEM) {
-                    for (RegistryObject<Block> blockRegistered : ((ITMaterial)material).oreList) {
+                    for (RegistryObject<Block> blockRegistered : ((TCMaterial)material).oreList) {
                         standardDropTable(blockRegistered.get());
                     }
                 }
                 if (flag == DefaultMaterialFlag.ORE || flag == DefaultMaterialFlag.GEM) {
-                    for (RegistryObject<Block> blockRegistered : ((ITMaterial)material).smallOreList) {
+                    for (RegistryObject<Block> blockRegistered : ((TCMaterial)material).smallOreList) {
                         standardDropTable(blockRegistered.get());
                     }
 
                     int i = 0;
-                    for (RegistryObject<Block> blockRegistered : ((ITMaterial)material).denseOreList) {
+                    for (RegistryObject<Block> blockRegistered : ((TCMaterial)material).denseOreList) {
                         LootTable.Builder tableBuilder = LootTable.lootTable();
                         LootPool.Builder poolBuilder = LootPool.lootPool();
 
                         blockTable(blockRegistered.get(), tableBuilder.withPool(poolBuilder.setRolls(ConstantValue.exactly(1))
                                 .add(AlternativesEntry.alternatives().otherwise(LootItem.lootTableItem(blockRegistered.get())
                                         .when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate((Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1)))))))
-                                .add(LootItem.lootTableItem(((ITMaterial)material).oreList.get(i).get()))
+                                .add(LootItem.lootTableItem(((TCMaterial)material).oreList.get(i).get()))
                         ));
                         i++;
                     }

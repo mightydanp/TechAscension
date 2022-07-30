@@ -1,7 +1,7 @@
 [
 {
-  "modid": "industrialtech",
-  "name": "IndustrialTech",
+  "modid": "techascension",
+  "name": "TechAscension",
   "description": "Inspired by Gregtech",
   "version": "${version}",
   "mcversion": "${mcversion}",

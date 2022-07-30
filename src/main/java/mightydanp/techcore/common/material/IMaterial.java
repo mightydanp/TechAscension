@@ -6,11 +6,11 @@ import mightydanp.techcore.common.jsonconfig.flag.IMaterialFlag;
 import java.util.List;
 
 public interface IMaterial {
-    void save(ITMaterial material, List<ITMaterial> stoneLayerList, List<Pair<String, String>> toolParts, List<IMaterialFlag> materialFlag) throws InstantiationException, IllegalAccessException, NoSuchFieldException;
+    void save(TCMaterial material, List<TCMaterial> stoneLayerList, List<Pair<String, String>> toolParts, List<IMaterialFlag> materialFlag) throws InstantiationException, IllegalAccessException, NoSuchFieldException;
 
-    void clientRenderLayerInit(ITMaterial material);
+    void clientRenderLayerInit(TCMaterial material);
 
-    void registerColorForBlock(ITMaterial material);
+    void registerColorForBlock(TCMaterial material);
 
-    void registerColorForItem(ITMaterial material);
+    void registerColorForItem(TCMaterial material);
 }

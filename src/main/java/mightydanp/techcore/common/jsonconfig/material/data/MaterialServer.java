@@ -6,7 +6,7 @@ import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateRegistry;
 import mightydanp.techcore.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
@@ -14,7 +14,7 @@ import mightydanp.techcore.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.techcore.common.jsonconfig.material.ore.IOreType;
 import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeRegistry;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techcore.common.material.ITMaterial;
+import mightydanp.techcore.common.material.TCMaterial;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -30,32 +30,32 @@ import java.util.stream.Collectors;
 /**
  * Created by MightyDanp on 1/3/2022.
  */
-public class MaterialServer extends JsonConfigServer<ITMaterial> {
+public class MaterialServer extends JsonConfigServer<TCMaterial> {
 
     @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<ITMaterial> list = message.getConfig(ICJsonConfigs.materialID).stream()
-                .filter(ITMaterial.class::isInstance)
-                .map(ITMaterial.class::cast).toList();
+        List<TCMaterial> list = message.getConfig(TCJsonConfigs.materialID).stream()
+                .filter(TCMaterial.class::isInstance)
+                .map(TCMaterial.class::cast).toList();
         
-        if(list.size() != ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getAllValues().size()){
+        if(list.size() != ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().size()){
             sync.set(false);
             ConfigSync.syncedJson.put("material", sync.get());
             return false;
         }
 
-        ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getAllValues().forEach(itMaterial -> {
+        ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().forEach(itMaterial -> {
             sync.set(list.stream().anyMatch(o -> o.name.equals(itMaterial.name)));
 
             if(sync.get()) {
-                Optional<ITMaterial> optional = list.stream().filter(o -> o.name.equals(itMaterial.name)).findFirst();
+                Optional<TCMaterial> optional = list.stream().filter(o -> o.name.equals(itMaterial.name)).findFirst();
 
                 if(optional.isPresent()) {
-                    ITMaterial material = optional.get();
-                    JsonObject jsonMaterial = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(itMaterial);
-                    JsonObject materialJson = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(material);
+                    TCMaterial material = optional.get();
+                    JsonObject jsonMaterial = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(itMaterial);
+                    JsonObject materialJson = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(material);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -73,8 +73,8 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        Map<String, ITMaterial> materials = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getRegistryMapFromList(((MaterialRegistry)ICJsonConfigs.material.getFirst()).getAllValues());
-        Map<String, ITMaterial> worldMaterials = new HashMap<>();
+        Map<String, TCMaterial> materials = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getRegistryMapFromList(((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues());
+        Map<String, TCMaterial> worldMaterials = new HashMap<>();
 
         Path materialConfigs = Paths.get(singlePlayerConfigs + "/material");
 
@@ -92,16 +92,16 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
         if(materialConfigs.toFile().listFiles() != null){
             for(File file : materialConfigs.toFile().listFiles()){
-                worldMaterials.put(((MaterialRegistry)ICJsonConfigs.material.getFirst()).getFromJsonObject(((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(file.getName())).name, ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getFromJsonObject(ICJsonConfigs.material.getFirst().getJsonObject(file.getName())));
+                worldMaterials.put(((MaterialRegistry) TCJsonConfigs.material.getFirst()).getFromJsonObject(((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(file.getName())).name, ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getFromJsonObject(TCJsonConfigs.material.getFirst().getJsonObject(file.getName())));
             }
 
             materials.values().forEach(itMaterial -> {
                 sync.set(worldMaterials.containsKey(itMaterial.name));
 
                 if(sync.get()) {
-                    ITMaterial material = materials.get(itMaterial.name);
-                    JsonObject jsonMaterial = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(itMaterial);
-                    JsonObject materialJson = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(material);
+                    TCMaterial material = materials.get(itMaterial.name);
+                    JsonObject jsonMaterial = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(itMaterial);
+                    JsonObject materialJson = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(material);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -125,9 +125,9 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
             }
         }
 
-        for (ITMaterial material : serverMap.values()) {
+        for (TCMaterial material : serverMap.values()) {
             Path materialFile = Paths.get(serverConfigFolder + "/" + material.name + ".json");
-            JsonObject jsonObject = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getJsonObject(material);
+            JsonObject jsonObject = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(material);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -148,8 +148,8 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = ICJsonConfigs.material.getFirst().getJsonObject(file.getName());
-                    ITMaterial material = ((MaterialRegistry)ICJsonConfigs.material.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = TCJsonConfigs.material.getFirst().getJsonObject(file.getName());
+                    TCMaterial material = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getFromJsonObject(jsonObject);
 
                     Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + material.name + ".json");
                     if (!Files.exists(materialFile)) {
@@ -167,11 +167,11 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<ITMaterial> list = message.getConfig(ICJsonConfigs.materialID).stream()
-                .filter(ITMaterial.class::isInstance)
-                .map(ITMaterial.class::cast).toList();
+        List<TCMaterial> list = message.getConfig(TCJsonConfigs.materialID).stream()
+                .filter(TCMaterial.class::isInstance)
+                .map(TCMaterial.class::cast).toList();
 
-        Map<String, ITMaterial> materials = list.stream()
+        Map<String, TCMaterial> materials = list.stream()
                 .collect(Collectors.toMap(s -> s.name, s -> s));
 
         serverMap.clear();
@@ -181,7 +181,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, ITMaterial material) {
+    public void singleToBuffer(FriendlyByteBuf buffer, TCMaterial material) {
         buffer.writeUtf(material.name);
         buffer.writeInt(material.color);
         String textureIconString = material.textureIcon.getFirst() + ":" + material.textureIcon.getSecond().getName();
@@ -233,9 +233,9 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<ITMaterial> list = message.getConfig(ICJsonConfigs.materialID).stream()
-                .filter(ITMaterial.class::isInstance)
-                .map(ITMaterial.class::cast).toList();
+        List<TCMaterial> list = message.getConfig(TCJsonConfigs.materialID).stream()
+                .filter(TCMaterial.class::isInstance)
+                .map(TCMaterial.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -243,12 +243,12 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     }
 
     @Override
-    public ITMaterial singleFromBuffer(FriendlyByteBuf buffer) {
+    public TCMaterial singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
         int color = buffer.readInt();
         String textureIconString = buffer.readUtf();
-        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconString.split(":")[0], ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).getTextureIconByName(textureIconString.split(":")[1]));
-        ITMaterial material = new ITMaterial(name, color, textureIcon);
+        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconString.split(":")[0], ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getTextureIconByName(textureIconString.split(":")[1]));
+        TCMaterial material = new TCMaterial(name, color, textureIcon);
 
         String symbol = buffer.readUtf();
         if(!symbol.equals("")){
@@ -279,7 +279,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         String oreTypeString = buffer.readUtf();
 
         if(!oreTypeString.equals("")){
-            IOreType oreType =  ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).getByName(oreTypeString);
+            IOreType oreType =  ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getByName(oreTypeString);
             material.setOreType(oreType);
         }
 
@@ -295,7 +295,7 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
         int fluidViscosity = buffer.readInt();
 
         if(!fluidStateString.equals("") && fluidAcceleration != -1 && fluidDensity != -1 && fluidLuminosity != -1 && fluidViscosity != -1){
-            IFluidState fluidState = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidStateString);
+            IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidStateString);
             material.setFluidProperties(fluidState, fluidAcceleration, fluidDensity, fluidLuminosity, fluidViscosity);
         }
 
@@ -323,13 +323,13 @@ public class MaterialServer extends JsonConfigServer<ITMaterial> {
     }
 
     @Override
-    public List<ITMaterial> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<ITMaterial> materials = new ArrayList<>();
+    public List<TCMaterial> multipleFromBuffer(FriendlyByteBuf buffer) {
+        List<TCMaterial> materials = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            ITMaterial material = singleFromBuffer(buffer);
+            TCMaterial material = singleFromBuffer(buffer);
 
             materials.add(material);
         }

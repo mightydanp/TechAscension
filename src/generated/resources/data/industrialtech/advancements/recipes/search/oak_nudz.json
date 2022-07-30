@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "industrialtech:oak_nudz"
+      "techascension:oak_nudz"
     ]
   },
   "criteria": {
@@ -21,7 +21,7 @@
     "has_the_hole_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "industrialtech:oak_nudz"
+        "recipe": "techascension:oak_nudz"
       }
     }
   },

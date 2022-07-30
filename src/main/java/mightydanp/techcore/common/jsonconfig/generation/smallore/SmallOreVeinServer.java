@@ -6,7 +6,7 @@ import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
 import net.minecraft.network.FriendlyByteBuf;
@@ -36,7 +36,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(ICJsonConfigs.smallOreID).stream()
+        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(TCJsonConfigs.smallOreID).stream()
                 .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
                 .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
 
@@ -54,8 +54,8 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
                 if(optional.isPresent()) {
                     SmallOreVeinGenFeatureConfig serverSmallOreVein = optional.get();
-                    JsonObject jsonMaterial = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).toJsonObject(smallOreVein);
-                    JsonObject materialJson = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
+                    JsonObject jsonMaterial = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(smallOreVein);
+                    JsonObject materialJson = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -92,8 +92,8 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = ICJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
-                SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = TCJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
+                SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).getFromJsonObject(jsonObject);
                 clientSmallOreVeins.put(oreVein.name, oreVein);
             }
 
@@ -102,8 +102,8 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
                 if(sync.get()) {
                     SmallOreVeinGenFeatureConfig clientSmallOreVein = getServerMap().get(serverSmallOreVein.name);
-                    JsonObject jsonMaterial = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
-                    JsonObject materialJson = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).toJsonObject(clientSmallOreVein);
+                    JsonObject jsonMaterial = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
+                    JsonObject materialJson = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(clientSmallOreVein);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -130,7 +130,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
         for (SmallOreVeinGenFeatureConfig oreVein : getServerMap().values()) {
             String name = oreVein.name;
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).toJsonObject(oreVein);
+            JsonObject jsonObject = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(oreVein);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -151,8 +151,8 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = ICJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
-                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry)ICJsonConfigs.smallOre.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = TCJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
+                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = oreVein.name;
 
@@ -172,7 +172,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(ICJsonConfigs.smallOreID).stream()
+        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(TCJsonConfigs.smallOreID).stream()
                 .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
                 .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
 
@@ -210,7 +210,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(ICJsonConfigs.smallOreID).stream()
+        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(TCJsonConfigs.smallOreID).stream()
                 .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
                 .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
 

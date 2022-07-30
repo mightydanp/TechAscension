@@ -1,9 +1,9 @@
 package mightydanp.techascension.common.generation;
 
 import mightydanp.techcore.common.handler.generation.StoneLayerGenerationHandler;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
-import mightydanp.techcore.common.material.ITMaterial;
+import mightydanp.techcore.common.material.TCMaterial;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -30,9 +30,9 @@ public class StoneLayerGeneration {
     public static List<String> rockBlocks = new ArrayList<>();
 
     public static void init() {
-        List<ITMaterial> stoneLayerList = ((MaterialRegistry) ICJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
+        List<TCMaterial> stoneLayerList = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
         if(thinSlabBlocks.size() != stoneLayerList.size()){
-            for (ITMaterial iStoneLayer : stoneLayerList) {
+            for (TCMaterial iStoneLayer : stoneLayerList) {
                 Block replaceableBlock = iStoneLayer.thinSlabBlock.get();
 
                 thinSlabBlocks.add(String.valueOf(replaceableBlock.getRegistryName()));
@@ -40,7 +40,7 @@ public class StoneLayerGeneration {
         }
 
         if(rockBlocks.size() != stoneLayerList.size()){
-            for (ITMaterial iStoneLayer : stoneLayerList) {
+            for (TCMaterial iStoneLayer : stoneLayerList) {
                 Block replaceableBlock = iStoneLayer.rockBlock.get();
 
                 rockBlocks.add(String.valueOf(replaceableBlock.getRegistryName()));

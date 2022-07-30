@@ -6,7 +6,7 @@ import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -37,7 +37,7 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<IToolType> list = message.getConfig(ICJsonConfigs.toolTypeID).stream()
+        List<IToolType> list = message.getConfig(TCJsonConfigs.toolTypeID).stream()
                 .filter(IToolType.class::isInstance)
                 .map(IToolType.class::cast).toList();
         
@@ -55,8 +55,8 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
 
                 if(optional.isPresent()) {
                     IToolType serverToolType = optional.get();
-                    JsonObject jsonMaterial = ((ToolTypeRegistry)ICJsonConfigs.toolType.getFirst()).toJsonObject(toolType);
-                    JsonObject materialJson = ((ToolTypeRegistry)ICJsonConfigs.toolType.getFirst()).toJsonObject(serverToolType);
+                    JsonObject jsonMaterial = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).toJsonObject(toolType);
+                    JsonObject materialJson = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).toJsonObject(serverToolType);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -93,8 +93,8 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = ICJsonConfigs.toolType.getFirst().getJsonObject(file.getName());
-                IToolType toolType = ((ToolTypeRegistry)ICJsonConfigs.toolType.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = TCJsonConfigs.toolType.getFirst().getJsonObject(file.getName());
+                IToolType toolType = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).getFromJsonObject(jsonObject);
                 clientToolTypes.put(fixesToName(toolType.getPrefix(), toolType.getSuffix()), toolType);
             }
 
@@ -103,8 +103,8 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
 
                 if(sync.get()) {
                     IToolType clientToolType = getServerMap().get(fixesToName(serverToolType.getPrefix(), serverToolType.getSuffix()));
-                    JsonObject jsonMaterial = ((ToolTypeRegistry)ICJsonConfigs.toolType.getFirst()).toJsonObject(serverToolType);
-                    JsonObject materialJson = ((ToolTypeRegistry)ICJsonConfigs.toolType.getFirst()).toJsonObject(clientToolType);
+                    JsonObject jsonMaterial = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).toJsonObject(serverToolType);
+                    JsonObject materialJson = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).toJsonObject(clientToolType);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -131,7 +131,7 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
         for (IToolType toolType : getServerMap().values()) {
             String name = fixesToName(toolType.getPrefix(), toolType.getSuffix());
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((ToolTypeRegistry)ICJsonConfigs.toolType.getFirst()).toJsonObject(toolType);
+            JsonObject jsonObject = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).toJsonObject(toolType);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -152,8 +152,8 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = ICJsonConfigs.toolType.getFirst().getJsonObject(file.getName());
-                    IToolType toolType = ((ToolTypeRegistry)ICJsonConfigs.toolType.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = TCJsonConfigs.toolType.getFirst().getJsonObject(file.getName());
+                    IToolType toolType = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = fixesToName(toolType.getPrefix(), toolType.getSuffix());
 
@@ -173,7 +173,7 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IToolType> list = message.getConfig(ICJsonConfigs.toolTypeID).stream()
+        List<IToolType> list = message.getConfig(TCJsonConfigs.toolTypeID).stream()
                 .filter(IToolType.class::isInstance)
                 .map(IToolType.class::cast).toList();
 
@@ -195,7 +195,7 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IToolType> list = message.getConfig(ICJsonConfigs.toolTypeID).stream()
+        List<IToolType> list = message.getConfig(TCJsonConfigs.toolTypeID).stream()
                 .filter(IToolType.class::isInstance)
                 .map(IToolType.class::cast).toList();
 

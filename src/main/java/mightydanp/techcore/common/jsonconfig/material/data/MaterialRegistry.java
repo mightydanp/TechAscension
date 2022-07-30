@@ -5,14 +5,14 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateRegistry;
 import mightydanp.techcore.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.techcore.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.techcore.common.jsonconfig.material.ore.IOreType;
 import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeRegistry;
-import mightydanp.techcore.common.material.ITMaterial;
+import mightydanp.techcore.common.material.TCMaterial;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -23,10 +23,10 @@ import java.util.*;
 /**
  * Created by MightyDanp on 12/4/2021.
  */
-public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
+public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
     //todo StoneLayers in ITMaterial need to be registered before any other materials.
     @Override
-    public void register(ITMaterial materialIn){
+    public void register(TCMaterial materialIn){
         if(!registryMap.containsKey(materialIn.name)){
             registryMap.put(materialIn.name, materialIn);
         }else{
@@ -54,15 +54,15 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
         });
     }
 
-    public Map<String, ITMaterial> getRegistryMapFromList(List<ITMaterial> materials) {
-        Map<String, ITMaterial> materialList = new LinkedHashMap<>();
+    public Map<String, TCMaterial> getRegistryMapFromList(List<TCMaterial> materials) {
+        Map<String, TCMaterial> materialList = new LinkedHashMap<>();
         materials.forEach(itMaterial -> materialList.put(itMaterial.name, itMaterial));
 
         return materialList;
     }
 
     public void buildJson(){
-        for(ITMaterial material : registryMap.values()) {
+        for(TCMaterial material : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(material.name);
 
             if (jsonObject.size() == 0) {
@@ -83,7 +83,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsKey(getFromJsonObject(jsonObject).name)) {
-                        ITMaterial material = getFromJsonObject(jsonObject);
+                        TCMaterial material = getFromJsonObject(jsonObject);
 
                         registryMap.put(material.name, material);
                     } else {
@@ -96,7 +96,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
         }
     }
 
-    public JsonObject getJsonObject(ITMaterial materialIn) {
+    public JsonObject getJsonObject(TCMaterial materialIn) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", materialIn.name);
         jsonObject.addProperty("color", materialIn.color);
@@ -260,12 +260,12 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
     }
 
     @Override
-    public ITMaterial getFromJsonObject(JsonObject jsonObject) {
+    public TCMaterial getFromJsonObject(JsonObject jsonObject) {
         String nameJson = jsonObject.get("name").getAsString();
         int colorJson = jsonObject.get("color").getAsInt();
         String textureIconJson = jsonObject.get("texture_icon").getAsString();
-        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconJson.split(":")[0], ((TextureIconRegistry) ICJsonConfigs.textureIcon.getFirst()).getTextureIconByName(textureIconJson.split(":")[1]));
-        ITMaterial material = new ITMaterial(nameJson, colorJson, textureIcon);
+        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconJson.split(":")[0], ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getTextureIconByName(textureIconJson.split(":")[1]));
+        TCMaterial material = new TCMaterial(nameJson, colorJson, textureIcon);
 
         if(jsonObject.has("element_localization")) {
             JsonObject elementLocalization = jsonObject.get("element_localization").getAsJsonObject();{
@@ -309,7 +309,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
         if(jsonObject.has("ore_properties")) {
             JsonObject oreProperties = jsonObject.get("ore_properties").getAsJsonObject();{
                 if (oreProperties.has("ore_type") && oreProperties.has("dense_ore_density")) {
-                    IOreType oreTypeJson = ((OreTypeRegistry)ICJsonConfigs.oreType.getFirst()).getByName(oreProperties.get("ore_type").getAsString());
+                    IOreType oreTypeJson = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getByName(oreProperties.get("ore_type").getAsString());
                     int denseOreDensityJson = oreProperties.get("dense_ore_density").getAsInt();
                     material.setOreType(oreTypeJson);
                     material.setDenseOreDensity(denseOreDensityJson);
@@ -320,7 +320,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<ITMaterial>{
         if(jsonObject.has("fluid_properties")) {
             JsonObject fluidProperties = jsonObject.get("fluid_properties").getAsJsonObject();{
                 if (fluidProperties.has("fluid_state") && fluidProperties.has("fluid_acceleration") && fluidProperties.has("fluid_density") && fluidProperties.has("fluid_luminosity") && fluidProperties.has("fluid_viscosity")) {
-                    IFluidState fluidStateJson = ((FluidStateRegistry)ICJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidProperties.get("fluid_state").getAsString());
+                    IFluidState fluidStateJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidProperties.get("fluid_state").getAsString());
                     float fluidAccelerationJson = fluidProperties.get("fluid_acceleration").getAsFloat();
                     int fluidDensityJson = fluidProperties.get("fluid_density").getAsInt();
                     int fluidLuminosityJson = fluidProperties.get("fluid_luminosity").getAsInt();

@@ -5,7 +5,7 @@ import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,7 +34,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(ICJsonConfigs.blocksInWaterID).stream()
+        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(TCJsonConfigs.blocksInWaterID).stream()
                 .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
                 .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
 
@@ -52,8 +52,8 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
                 if(optional.isPresent()) {
                     BlocksInWaterGenFeatureConfig serverBlocksInWater = optional.get();
-                    JsonObject jsonMaterial = ((BlocksInWaterRegistry)ICJsonConfigs.blocksInWater.getFirst()).toJsonObject(BlocksInWater);
-                    JsonObject materialJson = ((BlocksInWaterRegistry)ICJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
+                    JsonObject jsonMaterial = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(BlocksInWater);
+                    JsonObject materialJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -90,8 +90,8 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = ICJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
-                BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry)ICJsonConfigs.blocksInWater.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = TCJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
+                BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).getFromJsonObject(jsonObject);
                 clientBlocksInWaters.put(blocksInWater.name, blocksInWater);
             }
 
@@ -100,8 +100,8 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
                 if(sync.get()) {
                     BlocksInWaterGenFeatureConfig clientBlocksInWater = getServerMap().get(serverBlocksInWater.name);
-                    JsonObject jsonMaterial = ((BlocksInWaterRegistry)ICJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
-                    JsonObject materialJson = ((BlocksInWaterRegistry)ICJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientBlocksInWater);
+                    JsonObject jsonMaterial = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
+                    JsonObject materialJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientBlocksInWater);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -128,7 +128,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         for (BlocksInWaterGenFeatureConfig blocksInWater : getServerMap().values()) {
             String name = blocksInWater.name;
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((BlocksInWaterRegistry)ICJsonConfigs.blocksInWater.getFirst()).toJsonObject(blocksInWater);
+            JsonObject jsonObject = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(blocksInWater);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -149,8 +149,8 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = ICJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
-                    BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry)ICJsonConfigs.blocksInWater.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = TCJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
+                    BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = blocksInWater.name;
 
@@ -170,7 +170,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(ICJsonConfigs.blocksInWaterID).stream()
+        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(TCJsonConfigs.blocksInWaterID).stream()
                 .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
                 .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
 
@@ -210,7 +210,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(ICJsonConfigs.blocksInWaterID).stream()
+        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(TCJsonConfigs.blocksInWaterID).stream()
                 .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
                 .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
 

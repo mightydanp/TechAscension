@@ -1,7 +1,0 @@
-{
-  "parent": "industrialtech:block/stone_layer/state/thin_slab",
-  "textures": {
-    "particle": "minecraft:block/granite",
-    "texture": "minecraft:block/granite"
-  }
-}

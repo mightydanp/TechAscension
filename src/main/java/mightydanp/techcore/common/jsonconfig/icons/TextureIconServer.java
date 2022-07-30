@@ -2,7 +2,7 @@ package mightydanp.techcore.common.jsonconfig.icons;
 
 import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
-import mightydanp.techcore.common.jsonconfig.ICJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
@@ -34,7 +34,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<ITextureIcon> list = message.getConfig(ICJsonConfigs.textureIconID).stream()
+        List<ITextureIcon> list = message.getConfig(TCJsonConfigs.textureIconID).stream()
                 .filter(ITextureIcon.class::isInstance)
                 .map(ITextureIcon.class::cast).toList();
         
@@ -52,8 +52,8 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
                 if(optional.isPresent()) {
                     ITextureIcon serverTextureIcon = optional.get();
-                    JsonObject jsonMaterial = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).toJsonObject(textureIcon);
-                    JsonObject materialJson = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
+                    JsonObject jsonMaterial = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(textureIcon);
+                    JsonObject materialJson = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -89,8 +89,8 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
         if(files.length > 0){
 
             for(File file : files){
-                JsonObject jsonObject = ICJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
-                ITextureIcon textureIcon = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).getFromJsonObject(jsonObject);
+                JsonObject jsonObject = TCJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
+                ITextureIcon textureIcon = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getFromJsonObject(jsonObject);
                 clientTextureIcons.put(textureIcon.getName(), textureIcon);
             }
 
@@ -99,8 +99,8 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
                 if(sync.get()) {
                     ITextureIcon clientTextureIcon = getServerMap().get(serverTextureIcon.getName());
-                    JsonObject jsonMaterial = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
-                    JsonObject materialJson = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).toJsonObject(clientTextureIcon);
+                    JsonObject jsonMaterial = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
+                    JsonObject materialJson = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(clientTextureIcon);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -126,7 +126,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
         for (ITextureIcon textureIcon : getServerMap().values()) {
             String name = textureIcon.getName();
             Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).toJsonObject(textureIcon);
+            JsonObject jsonObject = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(textureIcon);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -146,8 +146,8 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = ICJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
-                    ITextureIcon textureIcon = ((TextureIconRegistry)ICJsonConfigs.textureIcon.getFirst()).getFromJsonObject(jsonObject);
+                    JsonObject jsonObject = TCJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
+                    ITextureIcon textureIcon = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getFromJsonObject(jsonObject);
 
                     String name = textureIcon.getName();
 
@@ -167,7 +167,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<ITextureIcon> list = message.getConfig(ICJsonConfigs.textureIconID).stream()
+        List<ITextureIcon> list = message.getConfig(TCJsonConfigs.textureIconID).stream()
                 .filter(ITextureIcon.class::isInstance)
                 .map(ITextureIcon.class::cast).toList();
 
@@ -187,7 +187,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<ITextureIcon> list = message.getConfig(ICJsonConfigs.textureIconID).stream()
+        List<ITextureIcon> list = message.getConfig(TCJsonConfigs.textureIconID).stream()
                 .filter(ITextureIcon.class::isInstance)
                 .map(ITextureIcon.class::cast).toList();
 
