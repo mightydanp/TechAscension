@@ -2,7 +2,7 @@ package mightydanp.techcore.common.tileentities;
 
 import mightydanp.techcore.common.blocks.HoleBlock;
 import mightydanp.techcore.common.crafting.recipe.HoleRecipe;
-import mightydanp.techcore.common.crafting.recipe.Recipes;
+import mightydanp.techcore.common.crafting.recipe.TCRecipes;
 import mightydanp.techascension.common.tileentities.ModBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Items;
@@ -151,7 +151,7 @@ public class HoleTileEntity extends BlockEntity implements MenuProvider {
             inventoryCopy.set(i, inventory.get(i));
         }
 
-        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(Recipes.holeType, new SimpleContainer(p_213980_1_), this.level);
+        return inventoryCopy.stream().noneMatch(ItemStack::isEmpty) ? Optional.empty() : this.level.getRecipeManager().getRecipeFor(TCRecipes.holeType, new SimpleContainer(p_213980_1_), this.level);
     }
 
     @Override

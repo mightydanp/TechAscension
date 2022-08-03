@@ -2,7 +2,7 @@ package mightydanp.techcore.common.blocks;
 
 import mightydanp.techcore.common.blocks.state.TCBlockStateProperties;
 import mightydanp.techcore.common.crafting.recipe.HoleRecipe;
-import mightydanp.techcore.common.crafting.recipe.Recipes;
+import mightydanp.techcore.common.crafting.recipe.TCRecipes;
 import mightydanp.techcore.common.items.TCToolItem;
 import mightydanp.techcore.common.tileentities.HoleTileEntity;
 import mightydanp.techascension.common.tileentities.ModBlockEntity;
@@ -137,7 +137,7 @@ public class HoleBlock extends BaseEntityBlock {
     }
 
     public Optional<HoleRecipe> getValidRecipe(Level worldIn, ItemStack itemStackIn) {
-        return worldIn.getRecipeManager().getRecipeFor(Recipes.holeType, new SimpleContainer(itemStackIn), worldIn);
+        return worldIn.getRecipeManager().getRecipeFor(TCRecipes.holeType, new SimpleContainer(itemStackIn), worldIn);
     }
 
     public RenderShape getRenderShape(BlockState p_149645_1_) {

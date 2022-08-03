@@ -74,7 +74,7 @@ public class HoleRecipe implements Recipe<Container> {
 
     @Override
     public RecipeType<?> getType() {
-        return Recipes.holeType;
+        return TCRecipes.holeType;
     }
 
     public ResourceLocation getId() {
@@ -135,7 +135,7 @@ public class HoleRecipe implements Recipe<Container> {
     }
 
     public RecipeSerializer<?> getSerializer() {
-        return Recipes.holeSerializer.get();
+        return TCRecipes.holeSerializer.get();
     }
 
     public Fluid getResultFluid() {

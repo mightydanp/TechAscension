@@ -5,14 +5,14 @@ import mightydanp.techcore.client.jsonconfig.JsonConfigClient;
 import mightydanp.techcore.common.CommonEvent;
 import mightydanp.techcore.common.ISidedReference;
 import mightydanp.techcore.common.blocks.TCBlocks;
-import mightydanp.techcore.common.crafting.recipe.Recipes;
+import mightydanp.techcore.common.crafting.recipe.TCRecipes;
 import mightydanp.techcore.common.handler.EventHandler;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.inventory.container.Containers;
 import mightydanp.techcore.common.items.TCItems;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.material.tool.TCToolHandler;
-import mightydanp.techapi.common.jsonconfig.sync.gui.screen.main.MainJsonConfig;
+import mightydanp.techapi.common.jsonconfig.main.MainJsonConfig;
 import mightydanp.techapi.common.resources.asset.TAAssetHolder;
 import mightydanp.techapi.common.resources.data.TADataHolder;
 import mightydanp.techapi.common.resources.ResourcePackEventHandler;
@@ -89,7 +89,7 @@ public class TechAscension {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientEvent::init);
 
         MinecraftForge.EVENT_BUS.register(ConfigSync.class);
-        MinecraftForge.EVENT_BUS.register(Recipes.class);
+        MinecraftForge.EVENT_BUS.register(TCRecipes.class);
         MinecraftForge.EVENT_BUS.register(ModRecipes.class);
         MinecraftForge.EVENT_BUS.register(EventHandler.class);
         MinecraftForge.EVENT_BUS.register(TCToolHandler.class);

@@ -26,7 +26,7 @@ public class JsonConfigSingleFile {
 
 
     public void initiate(){
-        jsonFileLocation = Paths.get(jsonFolderLocation + Ref.mod_id + jsonFilename);
+        jsonFileLocation = Paths.get(jsonFolderLocation + "/" + Ref.mod_id + jsonFilename);
         buildConfigJson(getJsonObject());
     }
 

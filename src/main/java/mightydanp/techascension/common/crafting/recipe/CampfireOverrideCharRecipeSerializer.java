@@ -29,9 +29,7 @@ public class CampfireOverrideCharRecipeSerializer extends ForgeRegistryEntry<Rec
         else {
             String s1 = GsonHelper.getAsString(jsonObject, "result");
             ResourceLocation resourcelocation = new ResourceLocation(s1);
-            itemstack = new ItemStack(Registry.ITEM.getOptional(resourcelocation).orElseThrow(() -> {
-                return new IllegalStateException("Item: " + s1 + " does not exist");
-            }));
+            itemstack = new ItemStack(Registry.ITEM.getOptional(resourcelocation).orElseThrow(() -> new IllegalStateException("Item: " + s1 + " does not exist")));
         }
         float f = GsonHelper.getAsFloat(jsonObject, "experience", 0.0F);
         int i = GsonHelper.getAsInt(jsonObject, "cookingtime", this.defaultCookingTime);

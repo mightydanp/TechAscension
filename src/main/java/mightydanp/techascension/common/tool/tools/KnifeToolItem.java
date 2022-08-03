@@ -3,7 +3,7 @@ package mightydanp.techascension.common.tool.tools;
 import mightydanp.techcore.common.blocks.HoleBlock;
 import mightydanp.techcore.common.blocks.TCBlocks;
 import mightydanp.techcore.common.crafting.recipe.HoleRecipe;
-import mightydanp.techcore.common.crafting.recipe.Recipes;
+import mightydanp.techcore.common.crafting.recipe.TCRecipes;
 import mightydanp.techcore.common.items.TCToolItem;
 import mightydanp.techcore.common.tileentities.HoleTileEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,8 +37,8 @@ public class KnifeToolItem extends TCToolItem {
         BlockState clickedBlockState = world.getBlockState(blockPos);
 
         Container iinventory = new SimpleContainer(new ItemStack(clickedBlockState.getBlock()));
-        List<HoleRecipe> recipe = world.getRecipeManager().getRecipesFor(Recipes.holeType, iinventory, world);
-        Optional<HoleRecipe> validRecipe = world.getRecipeManager().getRecipeFor(Recipes.holeType, iinventory, world);
+        List<HoleRecipe> recipe = world.getRecipeManager().getRecipesFor(TCRecipes.holeType, iinventory, world);
+        Optional<HoleRecipe> validRecipe = world.getRecipeManager().getRecipeFor(TCRecipes.holeType, iinventory, world);
 
         int harvestToolDamage = validRecipe.map(HoleRecipe::getIngredientItemDamage).orElse(1);
 
@@ -85,6 +85,6 @@ public class KnifeToolItem extends TCToolItem {
     }
 
     public Optional<HoleRecipe> getValidRecipe(Level worldIn, ItemStack itemStackIn) {
-        return worldIn.getRecipeManager().getRecipeFor(Recipes.holeType, new SimpleContainer(itemStackIn), worldIn);
+        return worldIn.getRecipeManager().getRecipeFor(TCRecipes.holeType, new SimpleContainer(itemStackIn), worldIn);
     }
 }

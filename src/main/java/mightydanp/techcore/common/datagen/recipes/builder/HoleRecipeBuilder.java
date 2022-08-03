@@ -2,7 +2,7 @@ package mightydanp.techcore.common.datagen.recipes.builder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import mightydanp.techcore.common.crafting.recipe.Recipes;
+import mightydanp.techcore.common.crafting.recipe.TCRecipes;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriterionTriggerInstance;
@@ -227,7 +227,7 @@ public class HoleRecipeBuilder {
         }
 
         public RecipeSerializer<?> getType() {
-            return Recipes.holeSerializer.get();
+            return TCRecipes.holeSerializer.get();
         }
 
         public ResourceLocation getId() {

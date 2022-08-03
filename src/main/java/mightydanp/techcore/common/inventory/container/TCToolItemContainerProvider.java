@@ -29,7 +29,6 @@ public class TCToolItemContainerProvider implements MenuProvider {
     @Nullable
     @Override
     public TCToolItemContainer createMenu(int windowID, Inventory playerInventory, Player playerEntity) {
-        TCToolItemContainer newContainerServerSide = TCToolItemContainer.createContainerServerSide(windowID, playerInventory, itToolItem.inventory, itemStack);
-        return newContainerServerSide;
+        return TCToolItemContainer.createContainerServerSide(windowID, playerInventory, itToolItem.inventory, itemStack);
     }
 }

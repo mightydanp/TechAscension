@@ -33,7 +33,13 @@ public class LangData {
             }
         }else{
             String str = name.substring(0, 1).toUpperCase() + name.substring(1);
-            translatedName.append(str.split(":")[1]);
+
+            if(str.contains(":")) {
+                translatedName.append(str.split(":")[1]);
+            }else {
+                translatedName.append(str);
+            }
+
         }
 
         return translatedName.toString();

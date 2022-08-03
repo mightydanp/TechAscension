@@ -224,6 +224,9 @@ public class TCTool {
 
             if (materialFlag.contains(DefaultMaterialFlag.TOOL)) {
                 int i = materialParts.size();
+
+                enLang.addTranslation("item." + Ref.mod_id + "." + toolName, LangData.translateUpperCase(toolName));
+
                 if(dullHead != null){
                     i = i-1;
                 }
