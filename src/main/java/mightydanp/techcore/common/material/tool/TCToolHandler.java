@@ -41,8 +41,6 @@ public class TCToolHandler {
         Item offHandItem = event.getPlayer().getOffhandItem().getItem();
         Item mainHandItem = event.getPlayer().getMainHandItem().getItem();
 
-
-
         if(mainHandItem instanceof HeadItem toolHead) {
             List<TCTool> tool = TCTools.tools.stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
 
@@ -82,13 +80,10 @@ public class TCToolHandler {
         List<String> secondItemsThatCanBeUsed = compareAndAddToNewArray(-2, toolNeededIn);
 
         if (toolItemIn.getParts() == 3 || toolItemIn.getParts() == 2) {
-            Item toolParts0 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.parts.keySet()).get(0)));
-            Item toolParts1 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.parts.keySet()).get(1)));
 
-            ItemStack mainHandCheck = playerEntity.getMainHandItem().getItem() == toolParts0 ? playerEntity.getMainHandItem() : (playerEntity.getMainHandItem().getItem() == toolParts1 ? playerEntity.getMainHandItem() : null);
-            ItemStack offHandCheck = playerEntity.getOffhandItem().getItem() == toolParts0 ? playerEntity.getOffhandItem() : (playerEntity.getOffhandItem().getItem() == toolParts1 ? playerEntity.getOffhandItem() : null);
+            ItemStack mainHandCheck = toolItemIn.heads.containsValue(mainHand.getItem()) ? playerEntity.getMainHandItem() : (toolItemIn.handles.containsValue(mainHand.getItem()) ? playerEntity.getMainHandItem() : null);
+            ItemStack offHandCheck = toolItemIn.heads.containsValue(offHand.getItem()) ? playerEntity.getOffhandItem() : (toolItemIn.handles.containsValue(offHand.getItem()) ? playerEntity.getOffhandItem() : null);
             if (mainHandCheck != null && offHandCheck != null) {
-                //Item toolParts1 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.toolParts.keySet()).get(1)));
 
                 if (inventoryToolCheck(playerEntity, firstItemsNeeded) || inventoryToolCheck(playerEntity, firstItemsThatCanBeUsed)) {
                     if(inventoryToolCheck(playerEntity, firstItemsNeeded)){
@@ -129,10 +124,8 @@ public class TCToolHandler {
             ItemStack mainHandNew = playerEntity.getMainHandItem();
             ItemStack offHandNew = playerEntity.getOffhandItem();
 
-            Item toolParts2 = ForgeRegistries.ITEMS.getValue(stringToResourceLocation(new ArrayList<>(toolItemIn.parts.keySet()).get(2)));
-
-            ItemStack mainHandCheck = mainHandNew.getItem() == toolParts2 ? mainHandNew : (mainHandNew.getItem() instanceof TCToolItem ? playerEntity.getMainHandItem() : null);
-            ItemStack offHandCheck = offHandNew.getItem() == toolParts2 ? offHandNew : (offHandNew.getItem() instanceof TCToolItem ? playerEntity.getOffhandItem() : null);
+            ItemStack mainHandCheck = toolItemIn.bindings.containsValue(mainHand.getItem()) ? playerEntity.getMainHandItem() : (mainHandNew.getItem() instanceof TCToolItem ? playerEntity.getMainHandItem() : null);
+            ItemStack offHandCheck = toolItemIn.bindings.containsValue(offHand.getItem()) ? playerEntity.getOffhandItem() : (offHandNew.getItem() instanceof TCToolItem ? playerEntity.getOffhandItem() : null);
 
             if ((mainHandCheck != null && offHandCheck!= null)) {
                 if (inventoryToolCheck(playerEntity, secondItemsNeeded) || inventoryToolCheck(playerEntity, secondItemsThatCanBeUsed)) {

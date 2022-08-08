@@ -34,11 +34,21 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
             }
 
             @Override
+            public Integer getInputAmount() {
+                return 1;
+            }
+
+            @Override
             public NonNullList<Ingredient> getInput() {
                 NonNullList<Ingredient> list = NonNullList.create();
                 list.add(Ingredient.of(new ItemStack(Items.BRICKS.asItem(), 1)));
 
                 return list;
+            }
+
+            @Override
+            public Integer getOutputAmount() {
+                return 4;
             }
 
             @Override
@@ -118,9 +128,20 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
             }
 
             @Override
+            public Integer getInputAmount() {
+                return jsonObjectIn.get("input_amount").getAsInt();
+            }
+
+            @Override
             public NonNullList<Ingredient> getInput() {
                 return itemsFromJson(GsonHelper.getAsJsonArray(jsonObjectIn, "input_ingredients"));
             }
+
+            @Override
+            public Integer getOutputAmount() {
+                return jsonObjectIn.get("output_amount").getAsInt();
+            }
+
             @Override
             public NonNullList<Ingredient> getOutput() {
                 return itemsFromJson(GsonHelper.getAsJsonArray(jsonObjectIn, "output_ingredients"));
@@ -133,6 +154,8 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
 
         jsonObject.addProperty("name", handCrafting.getName());
 
+        jsonObject.addProperty("input_amount", handCrafting.getInputAmount());
+
         JsonArray inputList = new JsonArray();
 
         for(Ingredient ingredient : handCrafting.getInput()){
@@ -142,6 +165,8 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
         if(inputList.size() > 0){
             jsonObject.add("input_ingredients", inputList);
         }
+
+        jsonObject.addProperty("output_amount", handCrafting.getOutputAmount());
 
         JsonArray outputList = new JsonArray();
 

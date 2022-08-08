@@ -5,6 +5,11 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 public interface IHandCrafting {
     String getName();
+
+    Integer getInputAmount();
     NonNullList<Ingredient> getInput();
+
+    Integer getOutputAmount();
+
     NonNullList<Ingredient> getOutput();
 }

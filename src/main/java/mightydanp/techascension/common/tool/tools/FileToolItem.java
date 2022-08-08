@@ -19,8 +19,6 @@ public class FileToolItem extends TCToolItem {
     public FileToolItem() {
         super(new Item.Properties().tab(ModItemGroups.tool_tab));
         assembleItems.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
-        parts.put("file_head", 1);
-        parts.put("wedge_handle", 2);
 
         disassembleItems.add(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")));
         disassembleItems.add(String.valueOf(new ResourceLocation(Ref.mod_id, "chisel")));

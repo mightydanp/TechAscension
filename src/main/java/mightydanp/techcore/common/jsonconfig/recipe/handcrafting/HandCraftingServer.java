@@ -184,11 +184,16 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
     public void singleToBuffer(FriendlyByteBuf buffer, IHandCrafting handCrafting) {
         buffer.writeUtf(handCrafting.getName());
 
+        buffer.writeInt(handCrafting.getInputAmount());
+
         buffer.writeInt(handCrafting.getInput().size());
 
         for(Ingredient ingredient : handCrafting.getInput()) {
             ingredient.toNetwork(buffer);
         }
+
+        buffer.writeInt(handCrafting.getOutputAmount());
+
         buffer.writeInt(handCrafting.getOutput().size());
 
         for(Ingredient ingredient : handCrafting.getOutput()) {
@@ -210,15 +215,19 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
     @Override
     public IHandCrafting singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
-        int inputAmount = buffer.readInt();
 
-        NonNullList<Ingredient> inputs = NonNullList.withSize(inputAmount, Ingredient.EMPTY);
+        int inputAmount = buffer.readInt();
+        int inputSize = buffer.readInt();
+
+        NonNullList<Ingredient> inputs = NonNullList.withSize(inputSize, Ingredient.EMPTY);
 
         inputs.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
 
         int outputAmount = buffer.readInt();
 
-        NonNullList<Ingredient> outputs = NonNullList.withSize(outputAmount, Ingredient.EMPTY);
+        int outputSize = buffer.readInt();
+
+        NonNullList<Ingredient> outputs = NonNullList.withSize(outputSize, Ingredient.EMPTY);
 
         outputs.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
 
@@ -232,9 +241,20 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
             public NonNullList<Ingredient> getInput() {
                 return inputs;
             }
+
+            @Override
+            public Integer getInputAmount() {
+                return inputAmount;
+            }
+
             @Override
             public NonNullList<Ingredient> getOutput() {
                 return outputs;
+            }
+
+            @Override
+            public Integer getOutputAmount() {
+                return outputAmount;
             }
         };
     }

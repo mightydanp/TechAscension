@@ -34,10 +34,7 @@ public class TCTool {
     public Set<String> effectiveBlocks;
 
     public Map<String, Integer> assembleItems;
-    public Map<String, Integer> parts;
     public List<String> disassembleItems;
-
-    public RegistryObject<Item> toolItem;
     public List<RegistryObject<Item>> materialParts = new ArrayList<>();
     public PartHolders.handlePartHolder handle;
     public PartHolders.dullHeadPartHolder dullHead;
@@ -45,17 +42,16 @@ public class TCTool {
     public PartHolders.headPartHolder head;
     public PartHolders.bindingPartHolder binding;
 
-    public TCTool(String nameIn, int hitDamageIn, Set<String> effectiveBlocksIn, Map<String, Integer> assembleItemsIn, Map<String, Integer> partsIn, List<String> disassembleItemsIn, PartHolders.handlePartHolder handleIn, PartHolders.dullHeadPartHolder dullHeadIn, PartHolders.headPartHolder headIn, PartHolders.bindingPartHolder bindingIn, RegistryObject<Item> toolItemIn) {
+    public RegistryObject<Item> toolItem;
+
+    public TCTool(String nameIn, int hitDamageIn, Set<String> effectiveBlocksIn, Map<String, Integer> assembleItemsIn, List<String> disassembleItemsIn, PartHolders.handlePartHolder handleIn, PartHolders.dullHeadPartHolder dullHeadIn, PartHolders.headPartHolder headIn, PartHolders.bindingPartHolder bindingIn, RegistryObject<Item> toolItemIn) {
         toolName = nameIn;
         hitDamage = hitDamageIn;
 
         effectiveBlocks = effectiveBlocksIn;
 
         assembleItems = assembleItemsIn;
-        parts = partsIn;
         disassembleItems = disassembleItemsIn;
-
-        toolItem = toolItemIn;
 
         if(handleIn != null){
             handle = handleIn;
@@ -172,7 +168,8 @@ public class TCTool {
             @Override
             public void registerColorForItem(TCMaterial material) {
                 if (material.materialFlags.contains(DefaultMaterialFlag.TOOL)) {
-                    registerAToolItemColor(toolItem);
+                    registerAToolItemColor(toolItemIn);
+
                     if (handle != null && material.toolParts.contains(handle.prefixAndSuffix()) && material.toolParts.contains(handle.prefixAndSuffix())) {
 
                         String materialToolPartName = handle.prefixAndSuffix().getFirst() + material.name + (handle.special() ? "_" + toolName : "") + handle.prefixAndSuffix().getSecond();
@@ -249,16 +246,24 @@ public class TCTool {
                     String toolPartName = handle.prefixAndSuffix().getFirst() + (handle.special() ? toolName : "") + handle.prefixAndSuffix().getSecond();
 
                     if (material.extraSaveItems.containsKey(materialToolPartName)) {
-                        //--Item--\\
-                        //--Resources
-                        AssetPackRegistry.itemModelDataHashMap.put(materialToolPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                                .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + toolPartName)));
-                        enLang.addTranslation("item." + Ref.mod_id + "." + toolPartName, LangData.translateUpperCase(toolPartName));
-                        //TagHandler.addItemToTag("dull_pickaxe_head", new ResourceLocation(Ref.mod_id, "dull_" + name + "_pickaxe_head"));
-                        //--Tags
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName + "/" + material.name)).add(material.extraSaveItems.get(materialToolPartName).get()));
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName)).add(material.extraSaveItems.get(materialToolPartName).get()));
-                        //--LootTable
+                        RegistryObject<Item> registryItem = material.extraSaveItems.get(materialToolPartName);
+
+                        if (registryItem.isPresent()) {
+                            HandleItem handleItem = (HandleItem)registryItem.get();
+                            //--Item--\\
+                            //--Resources
+                            AssetPackRegistry.itemModelDataHashMap.put(materialToolPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
+                                    .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + toolPartName)));
+                            enLang.addTranslation("item." + Ref.mod_id + "." + toolPartName, LangData.translateUpperCase(toolPartName));
+                            //--Tags
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName + "/" + material.name)).add(handleItem));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName)).add(handleItem));
+                            //--LootTable
+
+                            ((TCToolItem)toolItemIn.get()).parts = ((TCToolItem)toolItemIn.get()).parts + 1;
+                            ((TCToolItem)toolItemIn.get()).handles.put(material.name, handleItem);
+                        }
+
                     }
 
                 }
@@ -269,16 +274,23 @@ public class TCTool {
                         String toolPartName = dullHead.prefixAndSuffix().getFirst() + (dullHead.special() ? toolName : "") + dullHead.prefixAndSuffix().getSecond();
 
                         if (material.extraSaveItems.containsKey(materialToolPartName)) {
-                            //--Item--\\
-                            //--Resources
-                            AssetPackRegistry.itemModelDataHashMap.put(materialToolPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                                    .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + toolPartName)));
-                            enLang.addTranslation("item." + Ref.mod_id + "." + toolPartName, LangData.translateUpperCase(toolPartName));
-                            //TagHandler.addItemToTag("dull_pickaxe_head", new ResourceLocation(Ref.mod_id, "dull_" + name + "_pickaxe_dullHead"));
-                            //--Tags
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName + "/" + material.name)).add(material.extraSaveItems.get(materialToolPartName).get()));
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName)).add(material.extraSaveItems.get(materialToolPartName).get()));
-                            //--LootTable
+                            RegistryObject<Item> registryItem = material.extraSaveItems.get(materialToolPartName);
+
+                            if (registryItem.isPresent()) {
+                                DullHeadItem dullHeadItem = (DullHeadItem)registryItem.get();
+
+                                //--Item--\\
+                                //--Resources
+                                AssetPackRegistry.itemModelDataHashMap.put(materialToolPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
+                                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + toolPartName)));
+                                enLang.addTranslation("item." + Ref.mod_id + "." + toolPartName, LangData.translateUpperCase(toolPartName));
+                                //--Tags
+                                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName + "/" + material.name)).add(material.extraSaveItems.get(materialToolPartName).get()));
+                                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName)).add(material.extraSaveItems.get(materialToolPartName).get()));
+                                //--LootTable
+
+                                ((TCToolItem)toolItemIn.get()).dullHeads.put(material.name, dullHeadItem);
+                            }
                         }
                     }
 
@@ -286,16 +298,24 @@ public class TCTool {
                     String toolPartName = head.prefixAndSuffix().getFirst() + (head.special() ? toolName : "") + head.prefixAndSuffix().getSecond();
 
                     if (material.extraSaveItems.containsKey(materialToolPartName)) {
-                        //--Item--\\
-                        //--Resources
-                        AssetPackRegistry.itemModelDataHashMap.put(materialToolPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                                .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + toolPartName)));
-                        enLang.addTranslation("item." + Ref.mod_id + "." + toolPartName, LangData.translateUpperCase(toolPartName));
-                        //TagHandler.addItemToTag("dull_pickaxe_head", new ResourceLocation(Ref.mod_id, "dull_" + name + "_pickaxe_head"));
-                        //--Tags
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName + "/" + material.name)).add(material.extraSaveItems.get(materialToolPartName).get()));
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName)).add(material.extraSaveItems.get(materialToolPartName).get()));
-                        //--LootTable
+                        RegistryObject<Item> registryItem = material.extraSaveItems.get(materialToolPartName);
+
+                        if (registryItem.isPresent()) {
+                            HeadItem headItem = (HeadItem)registryItem.get();
+
+                            //--Item--\\
+                            //--Resources
+                            AssetPackRegistry.itemModelDataHashMap.put(materialToolPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
+                                    .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + toolPartName)));
+                            enLang.addTranslation("item." + Ref.mod_id + "." + toolPartName, LangData.translateUpperCase(toolPartName));
+                            //--Tags
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName + "/" + material.name)).add(material.extraSaveItems.get(materialToolPartName).get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName)).add(material.extraSaveItems.get(materialToolPartName).get()));
+                            //--LootTable
+
+                            ((TCToolItem)toolItemIn.get()).parts = ((TCToolItem)toolItemIn.get()).parts + 1;
+                            ((TCToolItem)toolItemIn.get()).heads.put(material.name, headItem);
+                        }
                     }
                 }
 
@@ -304,22 +324,32 @@ public class TCTool {
                     String toolPartName = binding.prefixAndSuffix().getFirst() + (binding.special() ? toolName : "") + binding.prefixAndSuffix().getSecond();
 
                     if (material.extraSaveItems.containsKey(materialToolPartName)){
-                        //--Item--\\
-                        //--Resources
-                        AssetPackRegistry.itemModelDataHashMap.put(materialToolPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                                .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + toolPartName)));
-                        enLang.addTranslation("item." + Ref.mod_id + "." + materialToolPartName, LangData.translateUpperCase(materialToolPartName));
-                        //TagHandler.addItemToTag("dull_pickaxe_head", new ResourceLocation(Ref.mod_id, "dull_" + name + "_pickaxe_head"));
-                        //--Tags
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName + "/" + material.name)).add(material.extraSaveItems.get(materialToolPartName).get()));
-                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName)).add(material.extraSaveItems.get(materialToolPartName).get()));
-                        //--LootTable
+                        RegistryObject<Item> registryItem = material.extraSaveItems.get(materialToolPartName);
+
+                        if (registryItem.isPresent()) {
+                            BindingItem bindingItem = (BindingItem)registryItem.get();
+
+                            //--Item--\\
+                            //--Resources
+                            AssetPackRegistry.itemModelDataHashMap.put(materialToolPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
+                                    .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + toolPartName)));
+                            enLang.addTranslation("item." + Ref.mod_id + "." + materialToolPartName, LangData.translateUpperCase(materialToolPartName));
+                            //--Tags
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName + "/" + material.name)).add(material.extraSaveItems.get(materialToolPartName).get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", toolPartName)).add(material.extraSaveItems.get(materialToolPartName).get()));
+                            //--LootTable
+
+                            ((TCToolItem)toolItemIn.get()).parts = ((TCToolItem)toolItemIn.get()).parts + 1;
+                            ((TCToolItem)toolItemIn.get()).bindings.put(material.name, bindingItem);
+                        }
                     }
                 }
             }
 
             AssetPackRegistry.langDataMap.put("en_us", enLang);
         });
+
+        toolItem = toolItemIn;
     }
 
 

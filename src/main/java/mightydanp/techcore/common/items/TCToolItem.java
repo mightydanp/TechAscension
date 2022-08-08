@@ -5,6 +5,10 @@ import com.google.common.collect.Multimap;
 import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.tool.type.IToolType;
+import mightydanp.techcore.common.tool.part.BindingItem;
+import mightydanp.techcore.common.tool.part.DullHeadItem;
+import mightydanp.techcore.common.tool.part.HandleItem;
+import mightydanp.techcore.common.tool.part.HeadItem;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.*;
@@ -47,7 +51,12 @@ public class TCToolItem extends Item {
     public List<String> effectiveBlocks = new ArrayList<>();
     public boolean preformAction;
     public Map<String, Integer> assembleItems = new HashMap<>();
-    public Map<String, Integer> parts = new HashMap<>();
+    public Map<String, HandleItem> handles = new HashMap<>();
+    public Map<String, DullHeadItem> dullHeads = new HashMap<>();
+    public Map<String, HeadItem> heads = new HashMap<>();
+    public Map<String, BindingItem> bindings = new HashMap<>();
+
+    public Integer parts = 0;
     public List<String> disassembleItems = new ArrayList<>();
     public TCToolItemInventoryHelper inventory = new TCToolItemInventoryHelper();
 
@@ -71,8 +80,8 @@ public class TCToolItem extends Item {
         return this;
     }
 
-    public TCToolItem setParts(Map<String, Integer> partsIn) {
-        parts.putAll(partsIn);
+    public TCToolItem setParts(Integer parts) {
+        this.parts = parts;
         return this;
     }
 
@@ -93,7 +102,6 @@ public class TCToolItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack itemStackIn, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        List<Component> tooltipList = tooltip;
         CompoundTag nbt = itemStackIn.getOrCreateTag();
 
         tooltip.add(Component.nullToEmpty(""));
@@ -427,19 +435,19 @@ public class TCToolItem extends Item {
 
     public boolean canWork(ItemStack itemStackIn){
         if(itemStackIn.getItem() instanceof TCToolItem toolItem) {
-            if ((toolItem.parts.size() == 1 || toolItem.parts.size()  == 2 || toolItem.parts.size()  == 3) & toolItem.inventory.getToolHead() != null) {
+            if ((toolItem.parts == 1 || toolItem.parts  == 2 || toolItem.parts  == 3) & toolItem.inventory.getToolHead() != null) {
                 if (toolItem.inventory.getToolHead().getDamageValue() < toolItem.inventory.getToolHead().getMaxDamage()) {
                     return true;
                 }
             }
 
-            if ((toolItem.parts.size()  == 2 || toolItem.parts.size()  == 3) && toolItem.inventory.getToolHandle() != null && toolItem.inventory.getToolHead() != null) {
+            if ((toolItem.parts  == 2 || toolItem.parts  == 3) && toolItem.inventory.getToolHandle() != null && toolItem.inventory.getToolHead() != null) {
                 if (toolItem.inventory.getToolHandle().getDamageValue() < toolItem.inventory.getToolHandle().getMaxDamage() && toolItem.inventory.getToolHead().getDamageValue() < toolItem.inventory.getToolHead().getMaxDamage()) {
                     return true;
                 }
             }
 
-            if (toolItem.parts.size()  == 3 && toolItem.inventory.getToolHandle() != null && toolItem.inventory.getToolHead() != null && toolItem.inventory.getToolBinding() != null) {
+            if (toolItem.parts  == 3 && toolItem.inventory.getToolHandle() != null && toolItem.inventory.getToolHead() != null && toolItem.inventory.getToolBinding() != null) {
                 if (toolItem.inventory.getToolHandle().getDamageValue() < toolItem.inventory.getToolHandle().getMaxDamage() && toolItem.inventory.getToolHead().getDamageValue() < toolItem.inventory.getToolHead().getMaxDamage() && toolItem.inventory.getToolBinding().getDamageValue() < toolItem.inventory.getToolBinding().getMaxDamage()) {
                     return true;
                 }
@@ -457,7 +465,7 @@ public class TCToolItem extends Item {
             ItemStack toolBindingOnTool = toolItem.inventory.getToolBinding();
             ItemStack toolHandleOnTool = toolItem.inventory.getToolHandle();
 
-            if (toolHeadOnTool != null && (toolItem.parts.size()  == 3 || toolItem.parts.size()  == 2 || toolItem.parts.size()  == 1)) {
+            if (toolHeadOnTool != null && (toolItem.parts  == 3 || toolItem.parts  == 2 || toolItem.parts  == 1)) {
                 int headDamage = toolHeadOnTool.getDamageValue();
                 int headMaxDamage = toolHeadOnTool.getMaxDamage();
 
@@ -471,7 +479,7 @@ public class TCToolItem extends Item {
                 }
             }
 
-            if (toolHandleOnTool != null && (toolItem.parts.size()  == 3 || toolItem.parts.size()  == 2)) {
+            if (toolHandleOnTool != null && (toolItem.parts  == 3 || toolItem.parts  == 2)) {
                 int handleDamage = toolHandleOnTool.getDamageValue();
                 int handleMaxDamage = toolHandleOnTool.getMaxDamage();
 
@@ -485,7 +493,7 @@ public class TCToolItem extends Item {
                 }
             }
 
-            if (toolBindingOnTool != null && toolItem.parts.size()  == 3) {
+            if (toolBindingOnTool != null && toolItem.parts  == 3) {
                 int bindingDamage = toolBindingOnTool.getDamageValue();
                 int bindingMaxDamage = toolBindingOnTool.getMaxDamage();
                 if (bindingDamage != bindingMaxDamage) {
@@ -576,19 +584,19 @@ public class TCToolItem extends Item {
                 if(toolNeeded.getItem() instanceof TCToolItem){
                     TCToolItem toolNeededItem = (TCToolItem)playerIn.getInventory().getItem(i).getItem();
 
-                    if((toolNeededItem.parts.size()  == 1 || toolNeededItem.parts.size()  == 2 || toolNeededItem.parts.size()  == 3) & toolNeededItem.inventory.getToolHead() != null){
+                    if((toolNeededItem.parts  == 1 || toolNeededItem.parts  == 2 || toolNeededItem.parts  == 3) & toolNeededItem.inventory.getToolHead() != null){
                         if(toolNeededItem.inventory.getToolHead().getDamageValue() < toolNeededItem.inventory.getToolHead().getMaxDamage()) {
                             toolNeededIn.remove(toolNeeded.getItem());
                         }
                     }
 
-                    if((toolNeededItem.parts.size()  == 2 || toolNeededItem.parts.size()  == 3) & toolNeededItem.inventory.getToolHandle() != null){
+                    if((toolNeededItem.parts  == 2 || toolNeededItem.parts  == 3) & toolNeededItem.inventory.getToolHandle() != null){
                        if(toolNeededItem.inventory.getToolHandle().getDamageValue() < toolNeededItem.inventory.getToolHandle().getDamageValue()){
                            toolNeededIn.remove(toolNeeded.getItem());
                        }
                     }
 
-                    if(toolNeededItem.parts.size()  == 3 & toolNeededItem.inventory.getToolBinding() != null){
+                    if(toolNeededItem.parts  == 3 & toolNeededItem.inventory.getToolBinding() != null){
                        if(toolNeededItem.inventory.getToolBinding().getDamageValue() < toolNeededItem.inventory.getToolBinding().getDamageValue()){
                            toolNeededIn.remove(toolNeeded.getItem());
                        }
@@ -630,7 +638,7 @@ public class TCToolItem extends Item {
     }
 
     public int getParts() {
-        return parts.size() ;
+        return parts ;
     }
 
     public List<Item> getItemsFromForge(List<String> listIn){

@@ -7,9 +7,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by MightyDanp on 4/9/2021.
@@ -26,6 +28,8 @@ public class HandleItem extends Item {
     public Integer durability;
     public Float weight;
     public Pair<String, ITextureIcon> textureFlag;
+
+    public Map<String, RegistryObject<Item>> handleParts;
 
     public HandleItem(Properties propertiesIn, Pair<String, String> prefixAndSuffix) {
         super(propertiesIn.stacksTo(1));
