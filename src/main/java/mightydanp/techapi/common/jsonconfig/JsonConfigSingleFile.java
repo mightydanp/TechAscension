@@ -71,10 +71,21 @@ public class JsonConfigSingleFile {
         if(getJsonFileLocation().toFile().exists()) {
             JsonObject jsonObjectNew = getJsonObject();
 
-            jsonObjectNew.keySet().forEach(category -> {
-                JsonObject jsonConfig = jsonObjectNew.getAsJsonObject(category);
-                config.put(category, jsonConfig);
-            });
+            JsonObject test = new JsonObject();
+            config.forEach(test::add);
+
+            if(!jsonObjectNew.equals(test)) {
+                saveJson(jsonObject);
+            }
+            /*else {
+                    jsonObjectNew.keySet().forEach(category -> {
+                        JsonObject jsonConfig = jsonObjectNew.getAsJsonObject(category);
+                        jsonObject.add(category, jsonConfig);
+                        config.put(category, jsonConfig);
+                    });
+                }
+
+             */
         } else {
             saveJson(jsonObject);
         }
