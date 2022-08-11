@@ -37,9 +37,11 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
         AtomicBoolean sync = new AtomicBoolean(true);
 
         if(message.getConfig(TCJsonConfigs.oreTypeID).size() != getServerMap().size()){
-            sync.set(false);
-            ConfigSync.syncedJson.put("ore_type", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("ore_type", sync.get());
+                return false;
+            }
         }
 
         getServerMap().forEach((name, oreType) -> {
@@ -62,8 +64,6 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
             }
         });
 
-        sync.set(false);
-
         ConfigSync.syncedJson.put("ore_type", sync.get());
 
         return sync.get();
@@ -84,9 +84,11 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
                 return false;
             }
         }else{
-            sync.set(false);
-            ConfigSync.syncedJson.put("ore_type", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("ore_type", sync.get());
+                return false;
+            }
         }
 
         if(files.length > 0){

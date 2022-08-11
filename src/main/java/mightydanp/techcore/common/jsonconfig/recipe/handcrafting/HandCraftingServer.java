@@ -41,9 +41,11 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
                 .map(IHandCrafting.class::cast).toList();
 
         if(list.size() != getServerMap().size()){
-            sync.set(false);
-            ConfigSync.syncedJson.put("hand_crafting", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("hand_crafting", sync.get());
+                return false;
+            }
         }
 
         getServerMap().forEach((name, handCrafting) -> {
@@ -61,8 +63,6 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
                 }
             }
         });
-
-        sync.set(false);
 
         ConfigSync.syncedJson.put("hand_crafting", sync.get());
 
@@ -83,9 +83,11 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
                 return false;
             }
         }else{
-            sync.set(false);
-            ConfigSync.syncedJson.put("hand_crafting", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("hand_crafting", sync.get());
+                return false;
+            }
         }
 
         if(files.length > 0){

@@ -39,9 +39,11 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
                 .map(ITextureIcon.class::cast).toList();
         
         if(list.size() != getServerMap().size()){
-            sync.set(false);
-            ConfigSync.syncedJson.put("texture_icon", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("texture_icon", sync.get());
+                return false;
+            }
         }
 
         getServerMap().forEach((name, textureIcon) -> {
@@ -59,8 +61,6 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
                 }
             }
         });
-
-        sync.set(false);
 
         ConfigSync.syncedJson.put("texture_icon", sync.get());
 
@@ -81,9 +81,11 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
                 return false;
             }
         }else{
-            sync.set(false);
-            ConfigSync.syncedJson.put("texture_icon", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("texture_icon", sync.get());
+                return false;
+            }
         }
 
         if(files.length > 0){

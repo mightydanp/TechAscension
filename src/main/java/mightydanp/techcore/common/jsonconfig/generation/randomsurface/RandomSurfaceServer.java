@@ -40,9 +40,11 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
                 .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
         
         if(list.size() != getServerMap().size()){
-            sync.set(false);
-            ConfigSync.syncedJson.put("random_surface", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("random_surface", sync.get());
+                return false;
+            }
         }
 
         getServerMap().forEach((name, RandomSurface) -> {
@@ -60,8 +62,6 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
                 }
             }
         });
-
-        sync.set(false);
 
         ConfigSync.syncedJson.put("random_surface", sync.get());
 
@@ -83,9 +83,11 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
                 return false;
             }
         }else{
-            sync.set(false);
-            ConfigSync.syncedJson.put("random_surface", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("random_surface", sync.get());
+                return false;
+            }
         }
 
         if(files.length > 0){

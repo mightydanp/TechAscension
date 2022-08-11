@@ -39,9 +39,11 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
                 .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
 
         if(list.size() != getServerMap().size()){
-            sync.set(false);
-            ConfigSync.syncedJson.put("blocks_in_water", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("blocks_in_water", sync.get());
+                return false;
+            }
         }
 
         getServerMap().forEach((name, BlocksInWater) -> {
@@ -59,8 +61,6 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
                 }
             }
         });
-
-        sync.set(false);
 
         ConfigSync.syncedJson.put("blocks_in_water", sync.get());
 
@@ -82,9 +82,11 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
                 return false;
             }
         }else{
-            sync.set(false);
-            ConfigSync.syncedJson.put("blocks_in_water", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("blocks_in_water", sync.get());
+                return false;
+            }
         }
 
         if(files.length > 0){

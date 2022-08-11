@@ -62,8 +62,6 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
             }
         });
 
-        sync.set(false);
-
         ConfigSync.syncedJson.put("material_flag", sync.get());
 
         return sync.get();

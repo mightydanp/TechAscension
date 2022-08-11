@@ -42,9 +42,11 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
                 .map(IToolType.class::cast).toList();
         
         if(list.size() != getServerMap().size()){
-            sync.set(false);
-            ConfigSync.syncedJson.put("tool_type", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("tool_type", sync.get());
+                return false;
+            }
         }
 
         getServerMap().forEach((name, toolType) -> {
@@ -62,8 +64,6 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
                 }
             }
         });
-
-        sync.set(false);
 
         ConfigSync.syncedJson.put("tool_type", sync.get());
 
@@ -85,9 +85,11 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
                 return false;
             }
         }else{
-            sync.set(false);
-            ConfigSync.syncedJson.put("tool_type", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("tool_type", sync.get());
+                return false;
+            }
         }
 
         if(files.length > 0){

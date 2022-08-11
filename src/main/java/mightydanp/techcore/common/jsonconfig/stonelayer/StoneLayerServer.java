@@ -41,9 +41,11 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
                 .map(IStoneLayer.class::cast).toList();
         
         if(list.size() != getServerMap().size()){
-            sync.set(false);
-            ConfigSync.syncedJson.put("stone_layer", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("stone_layer", sync.get());
+                return false;
+            }
         }
 
         getServerMap().forEach((name, stoneLayer) -> {
@@ -61,8 +63,6 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
                 }
             }
         });
-
-        sync.set(false);
 
         ConfigSync.syncedJson.put("stone_layer", sync.get());
 
@@ -84,9 +84,11 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
                 return false;
             }
         }else{
-            sync.set(false);
-            ConfigSync.syncedJson.put("stone_layer", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("stone_layer", sync.get());
+                return false;
+            }
         }
 
         if(files.length > 0){

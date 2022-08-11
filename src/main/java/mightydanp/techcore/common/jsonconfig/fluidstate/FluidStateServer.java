@@ -42,9 +42,11 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
 
 
         if(list.size() != getServerMap().size()){
-            sync.set(false);
-            ConfigSync.syncedJson.put("fluid_state", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("fluid_state", sync.get());
+                return false;
+            }
         }
 
         getServerMap().forEach((name, fluidState) -> {
@@ -85,13 +87,14 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
                 return false;
             }
         }else{
-            sync.set(false);
-            ConfigSync.syncedJson.put("fluid_state", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("fluid_state", sync.get());
+                return false;
+            }
         }
 
         if(files.length > 0){
-
             for(File file : files){
                 JsonObject jsonObject = TCJsonConfigs.fluidState.getFirst().getJsonObject(file.getName());
                 IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFromJsonObject(jsonObject);

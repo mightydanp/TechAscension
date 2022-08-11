@@ -39,9 +39,11 @@ public class ToolServer extends JsonConfigServer<ITool> {
                 .map(ITool.class::cast).toList();
         
         if(list.size() != getServerMap().size()){
-            sync.set(false);
-            ConfigSync.syncedJson.put("tool", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("tool", sync.get());
+                return false;
+            }
         }
 
         getServerMap().forEach((name, tool) -> {
@@ -59,8 +61,6 @@ public class ToolServer extends JsonConfigServer<ITool> {
                 }
             }
         });
-
-        sync.set(false);
 
         ConfigSync.syncedJson.put("tool", sync.get());
 
@@ -81,9 +81,11 @@ public class ToolServer extends JsonConfigServer<ITool> {
                 return false;
             }
         }else{
-            sync.set(false);
-            ConfigSync.syncedJson.put("tool", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("tool", sync.get());
+                return false;
+            }
         }
 
         if(files.length > 0){
@@ -181,7 +183,7 @@ public class ToolServer extends JsonConfigServer<ITool> {
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, ITool tool) {//friendlybotbuff
+    public void singleToBuffer(FriendlyByteBuf buffer, ITool tool) {
         buffer.writeUtf(tool.getName());
     }
 

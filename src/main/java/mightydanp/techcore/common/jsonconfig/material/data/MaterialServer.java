@@ -41,9 +41,11 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
                 .map(TCMaterial.class::cast).toList();
         
         if(list.size() != ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().size()){
-            sync.set(false);
-            ConfigSync.syncedJson.put("material", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("material", sync.get());
+                return false;
+            }
         }
 
         ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().forEach(itMaterial -> {
@@ -61,8 +63,6 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
                 }
             }
         });
-
-        sync.set(false);
 
         ConfigSync.syncedJson.put("material", sync.get());
 
@@ -85,9 +85,11 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
                 return false;
             }
         }else{
-            sync.set(false);
-            ConfigSync.syncedJson.put("material", sync.get());
-            return false;
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("material", sync.get());
+                return false;
+            }
         }
 
         if(materialConfigs.toFile().listFiles() != null){
