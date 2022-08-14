@@ -1,6 +1,5 @@
 package mightydanp.techapi.common.jsonconfig.sync.gui.screen;
 
-import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.realmsclient.RealmsMainScreen;
@@ -57,11 +56,11 @@ public class SyncScreen extends Screen {
                     }
 
                     TechAscension.mainJsonConfig.setFolderLocation("config/" + Ref.mod_id + "/server");
-                    TechAscension.mainJsonConfig.buildConfigJson(new JsonObject());
+                    TechAscension.mainJsonConfig.reloadConfigJson();
 
                 }else{
                     TechAscension.mainJsonConfig.setFolderLocation("saves/" + ConfigSync.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id);
-                    TechAscension.mainJsonConfig.buildConfigJson(new JsonObject());
+                    TechAscension.mainJsonConfig.reloadConfigJson();
                 }
                 this.minecraft.stop();
             }));

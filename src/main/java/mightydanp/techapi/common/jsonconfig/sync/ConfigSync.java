@@ -1,6 +1,5 @@
 package mightydanp.techapi.common.jsonconfig.sync;
 
-import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.sync.gui.screen.SyncScreen;
 import mightydanp.techascension.common.TechAscension;
@@ -169,7 +168,7 @@ public class ConfigSync {
                             }
 
                             TechAscension.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
-                            TechAscension.mainJsonConfig.buildConfigJson(new JsonObject());
+                            TechAscension.mainJsonConfig.reloadConfigJson();
                         }
                     }
 
@@ -177,7 +176,7 @@ public class ConfigSync {
                         if((new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id).exists())) {
                             if (!TechAscension.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id)) {
                                 TechAscension.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
-                                TechAscension.mainJsonConfig.buildConfigJson(new JsonObject());
+                                TechAscension.mainJsonConfig.reloadConfigJson();
                                 Minecraft.getInstance().close();
                             }
                         }

@@ -68,27 +68,40 @@ public class JsonConfigSingleFile {
     }
 
     public void buildConfigJson(JsonObject jsonObject){
-        if(getJsonFileLocation().toFile().exists()) {
-            JsonObject jsonObjectNew = getJsonObject();
-
-            JsonObject test = new JsonObject();
-            config.forEach(test::add);
-
-            if(!jsonObjectNew.equals(test)) {
+        if(jsonObject.size() == 0){
+            TechAscension.LOGGER.warn(jsonFilename + " json config doesn't exist at (" + getJsonFileLocation().toFile() + ").");
+        }else{
+            if(getJsonFileLocation().toFile().exists()) {
+                reloadConfigFromJson();
+            }else{
                 saveJson(jsonObject);
             }
-            /*else {
-                    jsonObjectNew.keySet().forEach(category -> {
-                        JsonObject jsonConfig = jsonObjectNew.getAsJsonObject(category);
-                        jsonObject.add(category, jsonConfig);
-                        config.put(category, jsonConfig);
-                    });
-                }
-
-             */
-        } else {
-            saveJson(jsonObject);
         }
+    }
+
+    public void reloadConfigFromJson(){
+        if(getJsonFileLocation().toFile().exists()) {
+            JsonObject jsonObject = getJsonObject();
+
+            jsonObject.keySet().forEach(category -> {
+                JsonObject jsonConfig = jsonObject.getAsJsonObject(category);
+                config.put(category, jsonConfig);
+            });
+
+            return;
+
+        }else{
+            TechAscension.LOGGER.fatal(jsonFilename + " json config doesn't exist at (" + getJsonFileLocation().toFile() + ").");
+            //Minecraft.crash(new CrashReport("main json config doesn't exist at (" + jsonFileLocation.toFile().getAbsolutePath() + ").", new Throwable()));
+        }
+    }
+
+    public void reloadConfigJson() {
+        JsonObject test = new JsonObject();
+
+        config.forEach(test::add);
+
+        saveJson(test);
     }
 
     public void saveJson(JsonObject jsonConfig) {

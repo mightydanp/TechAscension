@@ -39,16 +39,17 @@ public class MainJsonConfig extends JsonConfigSingleFile {
     public void buildConfigJson(JsonObject jsonObject){
         if(jsonObject.size() == 0) {
             {
-                JsonObject jsonObject1 = new JsonObject();
                 if (!getFolderLocation().equals("")) {
-                    jsonObject1.addProperty("folder_location", getFolderLocation());
+                    jsonObject.addProperty("folder_location", getFolderLocation());
                 } else {
                     Path path = Paths.get(getJsonFolderLocation() + "/" + Ref.mod_id + "/default");
                     setFolderLocation(path.toFile().toString());
-                    jsonObject1.addProperty("folder_location", getFolderLocation());
+                    jsonObject.addProperty("folder_location", getFolderLocation());
                 }
 
-                jsonObject.add("json_config", jsonObject1);
+                if (jsonObject.size() > 0) {
+                    jsonObject.add("json_config", jsonObject);
+                }
             }
         }
 
