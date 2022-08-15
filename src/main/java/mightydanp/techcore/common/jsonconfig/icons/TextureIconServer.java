@@ -80,34 +80,35 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
                 ConfigSync.syncedJson.put("texture_icon", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
+                    ITextureIcon textureIcon = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getFromJsonObject(jsonObject);
+                    clientTextureIcons.put(textureIcon.getName(), textureIcon);
+                }
+
+                getServerMap().values().forEach(serverTextureIcon -> {
+                    sync.set(clientTextureIcons.containsKey(serverTextureIcon.getName()));
+
+                    if(sync.get()) {
+                        ITextureIcon clientTextureIcon = getServerMap().get(serverTextureIcon.getName());
+                        JsonObject jsonMaterial = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
+                        JsonObject materialJson = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(clientTextureIcon);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
+
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("texture_icon", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
-                ITextureIcon textureIcon = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getFromJsonObject(jsonObject);
-                clientTextureIcons.put(textureIcon.getName(), textureIcon);
-            }
-
-            getServerMap().values().forEach(serverTextureIcon -> {
-                sync.set(clientTextureIcons.containsKey(serverTextureIcon.getName()));
-
-                if(sync.get()) {
-                    ITextureIcon clientTextureIcon = getServerMap().get(serverTextureIcon.getName());
-                    JsonObject jsonMaterial = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
-                    JsonObject materialJson = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(clientTextureIcon);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("texture_icon", sync.get());

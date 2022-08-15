@@ -84,34 +84,35 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
                 ConfigSync.syncedJson.put("tool_part", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.toolPart.getFirst().getJsonObject(file.getName());
+                    IToolPart toolPart = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).getFromJsonObject(jsonObject);
+                    clientToolParts.put(fixesToName(toolPart.getPrefix(), toolPart.getSuffix()), toolPart);
+                }
+
+                getServerMap().values().forEach(serverToolPart -> {
+                    sync.set(clientToolParts.containsKey(fixesToName(serverToolPart.getPrefix(), serverToolPart.getSuffix())));
+
+                    if(sync.get()) {
+                        IToolPart clientToolPart = getServerMap().get(fixesToName(serverToolPart.getPrefix(), serverToolPart.getSuffix()));
+                        JsonObject jsonMaterial = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(serverToolPart);
+                        JsonObject materialJson = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(clientToolPart);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
+
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("tool_part", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.toolPart.getFirst().getJsonObject(file.getName());
-                IToolPart toolPart = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).getFromJsonObject(jsonObject);
-                clientToolParts.put(fixesToName(toolPart.getPrefix(), toolPart.getSuffix()), toolPart);
-            }
-
-            getServerMap().values().forEach(serverToolPart -> {
-                sync.set(clientToolParts.containsKey(fixesToName(serverToolPart.getPrefix(), serverToolPart.getSuffix())));
-
-                if(sync.get()) {
-                    IToolPart clientToolPart = getServerMap().get(fixesToName(serverToolPart.getPrefix(), serverToolPart.getSuffix()));
-                    JsonObject jsonMaterial = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(serverToolPart);
-                    JsonObject materialJson = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(clientToolPart);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("tool_part", sync.get());

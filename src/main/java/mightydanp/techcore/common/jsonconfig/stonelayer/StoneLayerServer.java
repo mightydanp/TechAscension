@@ -83,34 +83,34 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
                 ConfigSync.syncedJson.put("stone_layer", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.stoneLayer.getFirst().getJsonObject(file.getName());
+                    IStoneLayer stoneLayer = ((StoneLayerRegistry) TCJsonConfigs.stoneLayer.getFirst()).getFromJsonObject(jsonObject);
+                    clientStoneLayers.put(stoneLayer.getBlock().split(":")[1], stoneLayer);
+                }
+
+                getServerMap().values().forEach(serverStoneLayer -> {
+                    sync.set(clientStoneLayers.containsKey(serverStoneLayer.getBlock().split(":")[1]));
+
+                    if(sync.get()) {
+                        IStoneLayer clientStoneLayer = getServerMap().get(serverStoneLayer.getBlock().split(":")[1]);
+                        JsonObject jsonMaterial = ((StoneLayerRegistry) TCJsonConfigs.stoneLayer.getFirst()).toJsonObject(serverStoneLayer);
+                        JsonObject materialJson = ((StoneLayerRegistry) TCJsonConfigs.stoneLayer.getFirst()).toJsonObject(clientStoneLayer);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("stone_layer", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.stoneLayer.getFirst().getJsonObject(file.getName());
-                IStoneLayer stoneLayer = ((StoneLayerRegistry) TCJsonConfigs.stoneLayer.getFirst()).getFromJsonObject(jsonObject);
-                clientStoneLayers.put(stoneLayer.getBlock().split(":")[1], stoneLayer);
-            }
-
-            getServerMap().values().forEach(serverStoneLayer -> {
-                sync.set(clientStoneLayers.containsKey(serverStoneLayer.getBlock().split(":")[1]));
-
-                if(sync.get()) {
-                    IStoneLayer clientStoneLayer = getServerMap().get(serverStoneLayer.getBlock().split(":")[1]);
-                    JsonObject jsonMaterial = ((StoneLayerRegistry) TCJsonConfigs.stoneLayer.getFirst()).toJsonObject(serverStoneLayer);
-                    JsonObject materialJson = ((StoneLayerRegistry) TCJsonConfigs.stoneLayer.getFirst()).toJsonObject(clientStoneLayer);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("stone_layer", sync.get());

@@ -82,34 +82,35 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
                 ConfigSync.syncedJson.put("ore_vein", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.oreVein.getFirst().getJsonObject(file.getName());
+                    OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).getFromJsonObject(jsonObject);
+                    clientOreVeins.put(oreVein.name, oreVein);
+                }
+
+                getServerMap().values().forEach(serverOreVein -> {
+                    sync.set(clientOreVeins.containsKey(serverOreVein.name));
+
+                    if(sync.get()) {
+                        OreVeinGenFeatureConfig clientOreVein = getServerMap().get(serverOreVein.name);
+                        JsonObject jsonMaterial = ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).toJsonObject(serverOreVein);
+                        JsonObject materialJson = ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).toJsonObject(clientOreVein);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
+
         }else{
             if(getServerMap().size() > 0){
                 sync.set(false);
                 ConfigSync.syncedJson.put("ore_vein", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.oreVein.getFirst().getJsonObject(file.getName());
-                OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).getFromJsonObject(jsonObject);
-                clientOreVeins.put(oreVein.name, oreVein);
-            }
-
-            getServerMap().values().forEach(serverOreVein -> {
-                sync.set(clientOreVeins.containsKey(serverOreVein.name));
-
-                if(sync.get()) {
-                    OreVeinGenFeatureConfig clientOreVein = getServerMap().get(serverOreVein.name);
-                    JsonObject jsonMaterial = ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).toJsonObject(serverOreVein);
-                    JsonObject materialJson = ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).toJsonObject(clientOreVein);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("ore_vein", sync.get());

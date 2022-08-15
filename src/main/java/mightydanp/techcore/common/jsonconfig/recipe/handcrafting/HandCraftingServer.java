@@ -82,34 +82,34 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
                 ConfigSync.syncedJson.put("hand_crafting", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.handCrafting.getFirst().getJsonObject(file.getName());
+                    IHandCrafting handCrafting = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).getFromJsonObject(jsonObject);
+                    clientHandCraftingList.put(handCrafting.getName(), handCrafting);
+                }
+
+                getServerMap().values().forEach(serverHandCrafting -> {
+                    sync.set(clientHandCraftingList.containsKey(serverHandCrafting.getName()));
+
+                    if(sync.get()) {
+                        IHandCrafting clientHandCrafting = getServerMap().get(serverHandCrafting.getName());
+                        JsonObject jsonMaterial = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(serverHandCrafting);
+                        JsonObject materialJson = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(clientHandCrafting);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("hand_crafting", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.handCrafting.getFirst().getJsonObject(file.getName());
-                IHandCrafting handCrafting = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).getFromJsonObject(jsonObject);
-                clientHandCraftingList.put(handCrafting.getName(), handCrafting);
-            }
-
-            getServerMap().values().forEach(serverHandCrafting -> {
-                sync.set(clientHandCraftingList.containsKey(serverHandCrafting.getName()));
-
-                if(sync.get()) {
-                    IHandCrafting clientHandCrafting = getServerMap().get(serverHandCrafting.getName());
-                    JsonObject jsonMaterial = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(serverHandCrafting);
-                    JsonObject materialJson = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(clientHandCrafting);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("hand_crafting", sync.get());

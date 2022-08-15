@@ -86,33 +86,34 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
                 ConfigSync.syncedJson.put("fluid_state", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.fluidState.getFirst().getJsonObject(file.getName());
+                    IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFromJsonObject(jsonObject);
+                    clientFluidStates.put(fluidState.getName(), fluidState);
+                }
+
+                getServerMap().values().forEach(serverFluidState -> {
+                    sync.set(clientFluidStates.containsKey(serverFluidState.getName()));
+
+                    if(sync.get()) {
+                        IFluidState clientFluidState = getServerMap().get(serverFluidState.getName());
+                        JsonObject jsonMaterial = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(serverFluidState);
+                        JsonObject materialJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(clientFluidState);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
+
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("fluid_state", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.fluidState.getFirst().getJsonObject(file.getName());
-                IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFromJsonObject(jsonObject);
-                clientFluidStates.put(fluidState.getName(), fluidState);
-            }
-
-            getServerMap().values().forEach(serverFluidState -> {
-                sync.set(clientFluidStates.containsKey(serverFluidState.getName()));
-
-                if(sync.get()) {
-                    IFluidState clientFluidState = getServerMap().get(serverFluidState.getName());
-                    JsonObject jsonMaterial = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(serverFluidState);
-                    JsonObject materialJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(clientFluidState);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("fluid_state", sync.get());

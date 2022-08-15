@@ -81,34 +81,34 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
                 ConfigSync.syncedJson.put("blocks_in_water", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
+                    BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).getFromJsonObject(jsonObject);
+                    clientBlocksInWaters.put(blocksInWater.name, blocksInWater);
+                }
+
+                getServerMap().values().forEach(serverBlocksInWater -> {
+                    sync.set(clientBlocksInWaters.containsKey(serverBlocksInWater.name));
+
+                    if(sync.get()) {
+                        BlocksInWaterGenFeatureConfig clientBlocksInWater = getServerMap().get(serverBlocksInWater.name);
+                        JsonObject jsonMaterial = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
+                        JsonObject materialJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientBlocksInWater);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("blocks_in_water", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
-                BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).getFromJsonObject(jsonObject);
-                clientBlocksInWaters.put(blocksInWater.name, blocksInWater);
-            }
-
-            getServerMap().values().forEach(serverBlocksInWater -> {
-                sync.set(clientBlocksInWaters.containsKey(serverBlocksInWater.name));
-
-                if(sync.get()) {
-                    BlocksInWaterGenFeatureConfig clientBlocksInWater = getServerMap().get(serverBlocksInWater.name);
-                    JsonObject jsonMaterial = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
-                    JsonObject materialJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientBlocksInWater);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("blocks_in_water", sync.get());

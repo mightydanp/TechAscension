@@ -83,34 +83,35 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
                 ConfigSync.syncedJson.put("ore_vein", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
+                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).getFromJsonObject(jsonObject);
+                    clientSmallOreVeins.put(oreVein.name, oreVein);
+                }
+
+                getServerMap().values().forEach(serverSmallOreVein -> {
+                    sync.set(clientSmallOreVeins.containsKey(serverSmallOreVein.name));
+
+                    if(sync.get()) {
+                        SmallOreVeinGenFeatureConfig clientSmallOreVein = getServerMap().get(serverSmallOreVein.name);
+                        JsonObject jsonMaterial = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
+                        JsonObject materialJson = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(clientSmallOreVein);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
+
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("ore_vein", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
-                SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).getFromJsonObject(jsonObject);
-                clientSmallOreVeins.put(oreVein.name, oreVein);
-            }
-
-            getServerMap().values().forEach(serverSmallOreVein -> {
-                sync.set(clientSmallOreVeins.containsKey(serverSmallOreVein.name));
-
-                if(sync.get()) {
-                    SmallOreVeinGenFeatureConfig clientSmallOreVein = getServerMap().get(serverSmallOreVein.name);
-                    JsonObject jsonMaterial = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
-                    JsonObject materialJson = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(clientSmallOreVein);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("ore_vein", sync.get());

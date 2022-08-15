@@ -83,34 +83,35 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
                 ConfigSync.syncedJson.put("ore_type", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.oreType.getFirst().getJsonObject(file.getName());
+                    IOreType oreType = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getFromJsonObject(jsonObject);
+                    clientOreTypes.put(oreType.getName(), oreType);
+                }
+
+                getServerMap().values().forEach(serverOreType -> {
+                    sync.set(clientOreTypes.containsKey(serverOreType.getName()));
+
+                    if(sync.get()) {
+                        IOreType clientOreType = getServerMap().get(serverOreType.getName());
+                        JsonObject jsonMaterial = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).toJsonObject(serverOreType);
+                        JsonObject materialJson = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).toJsonObject(clientOreType);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
+
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("ore_type", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.oreType.getFirst().getJsonObject(file.getName());
-                IOreType oreType = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getFromJsonObject(jsonObject);
-                clientOreTypes.put(oreType.getName(), oreType);
-            }
-
-            getServerMap().values().forEach(serverOreType -> {
-                sync.set(clientOreTypes.containsKey(serverOreType.getName()));
-
-                if(sync.get()) {
-                    IOreType clientOreType = getServerMap().get(serverOreType.getName());
-                    JsonObject jsonMaterial = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).toJsonObject(serverOreType);
-                    JsonObject materialJson = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).toJsonObject(clientOreType);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("ore_type", sync.get());

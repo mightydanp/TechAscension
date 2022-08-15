@@ -84,34 +84,35 @@ public class ToolTypeServer extends JsonConfigServer<IToolType> {
                 ConfigSync.syncedJson.put("tool_type", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.toolType.getFirst().getJsonObject(file.getName());
+                    IToolType toolType = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).getFromJsonObject(jsonObject);
+                    clientToolTypes.put(fixesToName(toolType.getPrefix(), toolType.getSuffix()), toolType);
+                }
+
+                getServerMap().values().forEach(serverToolType -> {
+                    sync.set(clientToolTypes.containsKey(fixesToName(serverToolType.getPrefix(), serverToolType.getSuffix())));
+
+                    if(sync.get()) {
+                        IToolType clientToolType = getServerMap().get(fixesToName(serverToolType.getPrefix(), serverToolType.getSuffix()));
+                        JsonObject jsonMaterial = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).toJsonObject(serverToolType);
+                        JsonObject materialJson = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).toJsonObject(clientToolType);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
+
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("tool_type", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.toolType.getFirst().getJsonObject(file.getName());
-                IToolType toolType = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).getFromJsonObject(jsonObject);
-                clientToolTypes.put(fixesToName(toolType.getPrefix(), toolType.getSuffix()), toolType);
-            }
-
-            getServerMap().values().forEach(serverToolType -> {
-                sync.set(clientToolTypes.containsKey(fixesToName(serverToolType.getPrefix(), serverToolType.getSuffix())));
-
-                if(sync.get()) {
-                    IToolType clientToolType = getServerMap().get(fixesToName(serverToolType.getPrefix(), serverToolType.getSuffix()));
-                    JsonObject jsonMaterial = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).toJsonObject(serverToolType);
-                    JsonObject materialJson = ((ToolTypeRegistry) TCJsonConfigs.toolType.getFirst()).toJsonObject(clientToolType);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("tool_type", sync.get());

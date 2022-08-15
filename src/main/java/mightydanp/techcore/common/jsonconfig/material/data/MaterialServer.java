@@ -77,23 +77,16 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
         Map<String, TCMaterial> worldMaterials = new HashMap<>();
 
         Path materialConfigs = Paths.get(singlePlayerConfigs + "/material");
+        File[] files = materialConfigs.toFile().listFiles();
 
-        if(materialConfigs.toFile().listFiles() != null){
-            if(materials.size() != materialConfigs.toFile().listFiles().length){
+        if(files != null){
+            if(materials.size() != files.length){
                 sync.set(false);
                 ConfigSync.syncedJson.put("material", sync.get());
                 return false;
             }
-        }else{
-            if(getServerMap().size() > 0) {
-                sync.set(false);
-                ConfigSync.syncedJson.put("material", sync.get());
-                return false;
-            }
-        }
 
-        if(materialConfigs.toFile().listFiles() != null){
-            for(File file : materialConfigs.toFile().listFiles()){
+            for(File file : files){
                 worldMaterials.put(((MaterialRegistry) TCJsonConfigs.material.getFirst()).getFromJsonObject(((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(file.getName())).name, ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getFromJsonObject(TCJsonConfigs.material.getFirst().getJsonObject(file.getName())));
             }
 
@@ -109,6 +102,13 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
                 }
 
             });
+
+        }else{
+            if(getServerMap().size() > 0) {
+                sync.set(false);
+                ConfigSync.syncedJson.put("material", sync.get());
+                return false;
+            }
         }
 
         ConfigSync.syncedJson.put("material", sync.get());

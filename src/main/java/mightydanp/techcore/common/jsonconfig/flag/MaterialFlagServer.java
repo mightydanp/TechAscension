@@ -81,32 +81,33 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
                 ConfigSync.syncedJson.put("material_flag", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
+                    IMaterialFlag materialFlag = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).getFromJsonObject(jsonObject);
+                    clientMaterialFlags.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag);
+                }
+
+                getServerMap().values().forEach(serverMaterialFlag -> {
+                    sync.set(clientMaterialFlags.containsKey(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix())));
+
+                    if(sync.get()) {
+                        IMaterialFlag clientMaterialFlag = getServerMap().get(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix()));
+                        JsonObject jsonMaterial = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
+                        JsonObject materialJson = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(clientMaterialFlag);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
+
         }else{
             sync.set(false);
             ConfigSync.syncedJson.put("material_flag", sync.get());
             return false;
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
-                IMaterialFlag materialFlag = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).getFromJsonObject(jsonObject);
-                clientMaterialFlags.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag);
-            }
-
-            getServerMap().values().forEach(serverMaterialFlag -> {
-                sync.set(clientMaterialFlags.containsKey(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix())));
-
-                if(sync.get()) {
-                    IMaterialFlag clientMaterialFlag = getServerMap().get(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix()));
-                    JsonObject jsonMaterial = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
-                    JsonObject materialJson = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(clientMaterialFlag);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("material_flag", sync.get());

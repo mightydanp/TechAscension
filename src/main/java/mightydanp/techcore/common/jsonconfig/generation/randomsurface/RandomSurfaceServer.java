@@ -82,34 +82,35 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
                 ConfigSync.syncedJson.put("random_surface", sync.get());
                 return false;
             }
+
+            if(files.length > 0){
+
+                for(File file : files){
+                    JsonObject jsonObject = TCJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
+                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).getFromJsonObject(jsonObject);
+                    clientRandomSurfaces.put(randomSurface.name, randomSurface);
+                }
+
+                getServerMap().values().forEach(serverRandomSurface -> {
+                    sync.set(clientRandomSurfaces.containsKey(serverRandomSurface.name));
+
+                    if(sync.get()) {
+                        RandomSurfaceGenFeatureConfig clientRandomSurface = getServerMap().get(serverRandomSurface.name);
+                        JsonObject jsonMaterial = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
+                        JsonObject materialJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(clientRandomSurface);
+
+                        sync.set(materialJson.equals(jsonMaterial));
+                    }
+
+                });
+            }
+
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("random_surface", sync.get());
                 return false;
             }
-        }
-
-        if(files.length > 0){
-
-            for(File file : files){
-                JsonObject jsonObject = TCJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
-                RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).getFromJsonObject(jsonObject);
-                clientRandomSurfaces.put(randomSurface.name, randomSurface);
-            }
-
-            getServerMap().values().forEach(serverRandomSurface -> {
-                sync.set(clientRandomSurfaces.containsKey(serverRandomSurface.name));
-
-                if(sync.get()) {
-                    RandomSurfaceGenFeatureConfig clientRandomSurface = getServerMap().get(serverRandomSurface.name);
-                    JsonObject jsonMaterial = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
-                    JsonObject materialJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(clientRandomSurface);
-
-                    sync.set(materialJson.equals(jsonMaterial));
-                }
-
-            });
         }
 
         ConfigSync.syncedJson.put("random_surface", sync.get());
