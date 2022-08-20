@@ -5,4 +5,5 @@ package mightydanp.techascension.common.libs;
  */
 public class KeyBindingsRef {
     public static String activate_block_previewer = "activate_block_previewer";
+    public static String hand_crafting = "hand_crafting";
 }

@@ -9,7 +9,7 @@ import net.minecraft.world.item.Items;
 /**
  * Created by MightyDanp on 9/26/2020.
  */
-public class ModItemGroups {
+public class TCCreativeModeTab {
     public static final CreativeModeTab block_tab = new CreativeModeTab(Ref.block_tab) {
         @Override
         public ItemStack makeIcon() {

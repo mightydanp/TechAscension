@@ -1,6 +1,6 @@
 package mightydanp.techascension.common.items;
 
-import mightydanp.techcore.common.items.ModItemGroups;
+import mightydanp.techcore.common.items.TCCreativeModeTab;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -14,7 +14,7 @@ import net.minecraft.world.level.Level;
 public class LegItemBlock extends BlockItem {
     public LegItemBlock(Block block, Properties properties) {
         super(block, properties);
-        properties.tab(ModItemGroups.item_tab);
+        properties.tab(TCCreativeModeTab.item_tab);
     }
 
     @Override

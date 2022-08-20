@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level;
 public class ThinSlabItemBlock extends BlockItem {
     public ThinSlabItemBlock(Block block, Properties properties) {
         super(block, properties);
-        properties.tab(ModItemGroups.item_tab);
+        properties.tab(TCCreativeModeTab.item_tab);
     }
 
     @Override

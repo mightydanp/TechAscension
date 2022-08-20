@@ -2,7 +2,7 @@ package mightydanp.techascension.common.items;
 
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.items.BasicItem;
-import mightydanp.techcore.common.items.ModItemGroups;
+import mightydanp.techcore.common.items.TCCreativeModeTab;
 import mightydanp.techascension.common.blocks.ModBlocks;
 import mightydanp.techascension.common.libs.ItemRef;
 import net.minecraft.world.item.BlockItem;
@@ -43,9 +43,9 @@ public class ModItems {
     }
 
     public static void initBlockItems(){
-        cattail_bottom_item = RegistryHandler.BLOCK_ITEMS.register(ItemRef.cattail_bottom_name, () -> new BlockItem(ModBlocks.cattail_plant_bottom_block.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
-        cattail_top_item = RegistryHandler.BLOCK_ITEMS.register(ItemRef.cattail_top_name, () -> new BlockItem(ModBlocks.cattail_plant_top_block.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
-        campfire_block = RegistryHandler.BLOCK_ITEMS.register(ItemRef.campfire_block_name, () -> new BlockItem(ModBlocks.campfire_override.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(64)));
+        cattail_bottom_item = RegistryHandler.BLOCK_ITEMS.register(ItemRef.cattail_bottom_name, () -> new BlockItem(ModBlocks.cattail_plant_bottom_block.get(), new Item.Properties().tab(TCCreativeModeTab.item_tab).stacksTo(64)));
+        cattail_top_item = RegistryHandler.BLOCK_ITEMS.register(ItemRef.cattail_top_name, () -> new BlockItem(ModBlocks.cattail_plant_top_block.get(), new Item.Properties().tab(TCCreativeModeTab.item_tab).stacksTo(64)));
+        campfire_block = RegistryHandler.BLOCK_ITEMS.register(ItemRef.campfire_block_name, () -> new BlockItem(ModBlocks.campfire_override.get(), new Item.Properties().tab(TCCreativeModeTab.item_tab).stacksTo(64)));
 
 
     }

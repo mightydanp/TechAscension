@@ -208,12 +208,12 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 //--//--//--//--//--//--//--//--//
                     rockBlock = RegistryHandler.BLOCKS.register(name + "_rock", () -> new RockBlock(stoneLayerBlockName, BlockBehaviour.Properties.of(MCMaterialHolder.rock)));
                     //--
-                    rockItemBlock = RegistryHandler.ITEMS.register(name + "_rock", () -> new RockBlockItem(rockBlock.get(), stoneLayerBlockName, new Item.Properties().stacksTo(64).tab(ModItemGroups.stone_layer_tab)));
+                    rockItemBlock = RegistryHandler.ITEMS.register(name + "_rock", () -> new RockBlockItem(rockBlock.get(), stoneLayerBlockName, new Item.Properties().stacksTo(64).tab(TCCreativeModeTab.stone_layer_tab)));
 
 //--//--//--//--//--//--//--//--//
                     thinSlabBlock = RegistryHandler.BLOCKS.register("thin_" + name + "_slab", () -> new ThinSlabBlock(BlockBehaviour.Properties.of(MCMaterialHolder.rock), stoneLayerBlockName));
                     //--
-                    thinSlabItemBlock = RegistryHandler.ITEMS.register("thin_" + name + "_slab", () -> new ThinSlabItemBlock(thinSlabBlock.get(), new Item.Properties().stacksTo(1).tab(ModItemGroups.stone_layer_tab)));
+                    thinSlabItemBlock = RegistryHandler.ITEMS.register("thin_" + name + "_slab", () -> new ThinSlabItemBlock(thinSlabBlock.get(), new Item.Properties().stacksTo(1).tab(TCCreativeModeTab.stone_layer_tab)));
 //--//--//--//--//--//--//--//--//
                         /*
                         Block leg_block = RegistryHandler.BLOCKS.register(name + "_leg", new LegBlock(AbstractBlock.Properties.of(Material.STONE), new ResourceLocation("textures/" + stoneLayer.getBlock())));
@@ -226,47 +226,47 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 if (flag == ORE || flag == GEM) {
 //--//--//--//--//--//--//--//--//
                     rawOre = RegistryHandler.ITEMS.register("raw_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                            .tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
                     crushedOre = RegistryHandler.ITEMS.register("crushed_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                            .tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
                     purifiedOre = RegistryHandler.ITEMS.register("purified_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                            .tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
                     centrifugedOre = RegistryHandler.ITEMS.register("centrifuged_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
-                            .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                            .tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
                 }
 
                 if (flag == GEM) {
 //--//--//--//--//--//--//--//--//
                     gem = RegistryHandler.ITEMS.register(name + "_gem", () -> new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
+                            .tab(TCCreativeModeTab.gem_tab), symbol));
 //--//--//--//--//--//--//--//--//
                     chippedGem = RegistryHandler.ITEMS.register("chipped_" + name + "_gem", () -> new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
+                            .tab(TCCreativeModeTab.gem_tab), symbol));
 //--//--//--//--//--//--//--//--//
                     flawedGem = RegistryHandler.ITEMS.register("flawed_" + name + "_gem", () -> new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
+                            .tab(TCCreativeModeTab.gem_tab), symbol));
 //--//--//--//--//--//--//--//--//
                     flawlessGem = RegistryHandler.ITEMS.register("flawless_" + name + "_gem", () -> new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
+                            .tab(TCCreativeModeTab.gem_tab), symbol));
 //--//--//--//--//--//--//--//--//
                     legendaryGem = RegistryHandler.ITEMS.register("legendary_" + name + "_gem", () -> new GemItem(new Item.Properties()
-                            .tab(ModItemGroups.gem_tab), symbol));
+                            .tab(TCCreativeModeTab.gem_tab), symbol));
 //--//--//--//--//--//--//--//--//
                 }
 
 //--//--//--//--//--//--//--//--//
                 dust = RegistryHandler.ITEMS.register("" + name + "_dust", () -> new OreProductsItem(new Item.Properties()
-                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                        .tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
                 smallDust = RegistryHandler.ITEMS.register("small_" + name + "_dust", () -> new OreProductsItem(new Item.Properties()
-                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                        .tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
                 tinyDust = RegistryHandler.ITEMS.register("tiny_" + name + "_dust", () -> new OreProductsItem(new Item.Properties()
-                        .tab(ModItemGroups.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                        .tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
 
                 //-- Blocks with Items -- \\
@@ -282,7 +282,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         oreList.add(ore);
                         //--
                         RegistryObject<Item> oreItemR = RegistryHandler.ITEMS.register(stoneLayer.name + "_" + name + "_ore", () ->
-                                new BlockOreItem(ore, new Item.Properties().tab(ModItemGroups.ore_tab)
+                                new BlockOreItem(ore, new Item.Properties().tab(TCCreativeModeTab.ore_tab)
                                         , boilingPoint, meltingPoint, symbol));
                         oreItemList.add(oreItemR);
 //--//--//--//--//--//--//--//--//
@@ -291,7 +291,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         smallOreList.add(smallOreBlock);
                         //--
                         RegistryObject<Item> smallOreItemR = RegistryHandler.ITEMS.register("small_" + stoneLayer.name + "_" + name + "_ore", () ->
-                                new BlockOreItem(smallOreBlock, new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, symbol));
+                                new BlockOreItem(smallOreBlock, new Item.Properties().tab(TCCreativeModeTab.ore_tab), boilingPoint, meltingPoint, symbol));
                         smallOreItemList.add(smallOreItemR);
 //--//--//--//--//--//--//--//--//
                         RegistryObject<Block> denseOreBlock = RegistryHandler.BLOCKS.register("dense_" + stoneLayer.name + "_" + name + "_ore", () ->
@@ -299,7 +299,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         denseOreList.add(denseOreBlock);
                         //--
                         RegistryObject<Item> denseOreItemR = RegistryHandler.ITEMS.register("dense_" + stoneLayer.name + "_" + name + "_ore", () ->
-                                new BlockOreItem(denseOreBlock, new Item.Properties().tab(ModItemGroups.ore_tab), boilingPoint, meltingPoint, symbol));
+                                new BlockOreItem(denseOreBlock, new Item.Properties().tab(TCCreativeModeTab.ore_tab), boilingPoint, meltingPoint, symbol));
                         denseOreItemList.add(denseOreItemR);
 //--//--//--//--//--//--//--//--//
                     }
@@ -336,7 +336,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
             if (flag == INGOT) {
 //--//--//--//--//--//--//--//--//
-                ingot = RegistryHandler.ITEMS.register(name + "_" + INGOT.name(), () -> new IngotItem(new Item.Properties().tab(ModItemGroups.item_tab), boilingPoint, meltingPoint, symbol));
+                ingot = RegistryHandler.ITEMS.register(name + "_" + INGOT.name(), () -> new IngotItem(new Item.Properties().tab(TCCreativeModeTab.item_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
             }
 

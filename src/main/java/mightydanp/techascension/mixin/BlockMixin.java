@@ -8,4 +8,5 @@ import org.spongepowered.asm.mixin.Mixin;
  */
 @Mixin(Block.class)
 public abstract class BlockMixin {
+
 }

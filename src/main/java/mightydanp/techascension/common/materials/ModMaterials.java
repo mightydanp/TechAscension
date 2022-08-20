@@ -58,7 +58,12 @@ public class ModMaterials extends TCMaterials {
         materialRegistry.register(end_stone = new TCMaterial("end_stone", 0xb8b09b, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.END_STONE.getRegistryName()), "minecraft:block/end_stone"));
         materialRegistry.register(granite = new TCMaterial("granite", 0xA26B56, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.GRANITE.getRegistryName()), "minecraft:block/granite"));
         materialRegistry.register(netherrack = new TCMaterial("netherrack", 0x6F4644, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.NETHERRACK.getRegistryName()), "minecraft:block/netherrack"));
-        materialRegistry.register(stone = new TCMaterial("stone", 0x808080, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.STONE.getRegistryName()), "minecraft:block/stone"));
+
+        stoneToolTypes = List.of(new Pair<>("", "_handle"), new Pair<>("", "_head"), new Pair<>("", "_binding"));
+
+
+        materialRegistry.register(stone = new TCMaterial("stone", 0x808080, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, String.valueOf(Blocks.STONE.getRegistryName()), "minecraft:block/stone")
+                .setToolProperties( 40, 12, 40F, 1F, 4F, 2, stoneToolTypes));
         //--//
         materialRegistry.register(alexandrite = new TCMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL)).setOreType(DefaultOreType.ORE).setDenseOreDensity(8));
         materialRegistry.register(almandine = new TCMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH)).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));

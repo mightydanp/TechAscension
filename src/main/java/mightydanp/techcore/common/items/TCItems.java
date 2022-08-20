@@ -17,6 +17,6 @@ public class TCItems {
     }
 
     public static void initBlockItems() {
-        hole_block = RegistryHandler.BLOCK_ITEMS.register(ItemRef.hole_block_name, () -> new BlockItem(TCBlocks.hole_block.get(), new Item.Properties().tab(ModItemGroups.item_tab).stacksTo(1)));
+        hole_block = RegistryHandler.BLOCK_ITEMS.register(ItemRef.hole_block_name, () -> new BlockItem(TCBlocks.hole_block.get(), new Item.Properties().tab(TCCreativeModeTab.item_tab).stacksTo(1)));
     }
 }

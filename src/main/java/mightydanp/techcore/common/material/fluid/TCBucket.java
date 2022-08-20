@@ -3,7 +3,7 @@ package mightydanp.techcore.common.material.fluid;
 import mightydanp.techcore.common.material.TCMaterials;
 import mightydanp.techcore.common.material.TCMaterial;
 import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
-import mightydanp.techcore.common.items.ModItemGroups;
+import mightydanp.techcore.common.items.TCCreativeModeTab;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.material.Fluid;
@@ -41,7 +41,7 @@ public class TCBucket extends BucketItem {
 
     //for empty bucket with no material;
     public TCBucket(Properties propertiesIn, int rednessStartingTemperatureIn, int meltingTemperatureIn, int bucketRGBIn) {
-        super(Fluids.EMPTY, propertiesIn.stacksTo(1).tab(ModItemGroups.fluid_tab));
+        super(Fluids.EMPTY, propertiesIn.stacksTo(1).tab(TCCreativeModeTab.fluid_tab));
         rednessStartingTemperature = rednessStartingTemperatureIn;
         meltingTemperature = meltingTemperatureIn;
         bucketRGB = bucketRGBIn;
@@ -55,7 +55,7 @@ public class TCBucket extends BucketItem {
 
     //FluidBucket for non ITMaterial, ITFluid
     public TCBucket(Fluid fluidIn, Properties propertiesIn, Item craftingReturnIn, int rednessStartingTemperatureIn, int meltingTemperatureIn, int fluidRGBIn, int bucketRGBIn) {
-        super(fluidIn, propertiesIn.stacksTo(1).craftRemainder(craftingReturnIn).tab(ModItemGroups.fluid_tab));
+        super(fluidIn, propertiesIn.stacksTo(1).craftRemainder(craftingReturnIn).tab(TCCreativeModeTab.fluid_tab));
         rednessStartingTemperature = rednessStartingTemperatureIn;
         meltingTemperature = meltingTemperatureIn;
         fluidRGB = fluidRGBIn;
@@ -69,7 +69,7 @@ public class TCBucket extends BucketItem {
 
     //FluidBucket for ITMaterial, ITFluid
     public TCBucket(TCFluid fluidIn, Properties propertiesIn, Item craftingReturnIn, int rednessStartingTemperatureIn, TCMaterial ITMaterialIn) {
-        super(fluidIn, propertiesIn.stacksTo(1).craftRemainder(craftingReturnIn).tab(ModItemGroups.fluid_tab));
+        super(fluidIn, propertiesIn.stacksTo(1).craftRemainder(craftingReturnIn).tab(TCCreativeModeTab.fluid_tab));
         rednessStartingTemperature = rednessStartingTemperatureIn;
         ITMaterial = ITMaterialIn;
         meltingTemperature = ITMaterialIn.meltingPoint;

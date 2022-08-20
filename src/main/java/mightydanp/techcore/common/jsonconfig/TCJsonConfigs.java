@@ -30,25 +30,23 @@ import mightydanp.techcore.common.jsonconfig.tool.ToolRegistry;
 import mightydanp.techcore.common.jsonconfig.tool.ToolServer;
 import mightydanp.techcore.common.jsonconfig.tool.part.ToolPartRegistry;
 import mightydanp.techcore.common.jsonconfig.tool.part.ToolPartServer;
-import mightydanp.techcore.common.jsonconfig.tool.type.ToolTypeRegistry;
-import mightydanp.techcore.common.jsonconfig.tool.type.ToolTypeServer;
 
 public class TCJsonConfigs extends ConfigSync {
     public static int materialFlagID = 0;
     public static int fluidStateID = 1;
     public static int oreTypeID = 2;
     public static int textureIconID = 3;
-    public static int toolPartID = 4;
-    public static int toolTypeID = 5;
-    public static int stoneLayerID = 6;
-    public static int toolID = 7;
-    public static int materialID = 8;
-    public static int oreVeinID = 9;
-    public static int smallOreID = 10;
-    public static int blocksInWaterID = 11;
-    public static int randomSurfaceID = 12;
+    public static int stoneLayerID = 4;
 
-    public static int handCraftingID = 13;
+    public static int toolPartID = 5;
+    public static int toolID = 6;
+    public static int materialID = 7;
+    public static int oreVeinID = 8;
+    public static int smallOreID = 9;
+    public static int blocksInWaterID = 10;
+    public static int randomSurfaceID = 11;
+
+    public static int handCraftingID = 12;
 
 
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> materialFlag = configs.getOrDefault(materialFlagID, new Pair<>(new MaterialFlagRegistry(),  new MaterialFlagServer()));
@@ -56,9 +54,8 @@ public class TCJsonConfigs extends ConfigSync {
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreType = configs.getOrDefault(oreTypeID, new Pair<>(new OreTypeRegistry(),  new OreTypeServer()));
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  textureIcon = configs.getOrDefault(textureIconID, new Pair<>(new TextureIconRegistry(),  new TextureIconServer()));
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolPart = configs.getOrDefault(toolPartID, new Pair<>(new ToolPartRegistry(),  new ToolPartServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolType = configs.getOrDefault(toolTypeID, new Pair<>(new ToolTypeRegistry(),  new ToolTypeServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  stoneLayer = configs.getOrDefault(stoneLayerID, new Pair<>(new StoneLayerRegistry(),  new StoneLayerServer()));
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  tool = configs.getOrDefault(toolID, new Pair<>(new ToolRegistry(),  new ToolServer()));
+    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  stoneLayer = configs.getOrDefault(stoneLayerID, new Pair<>(new StoneLayerRegistry(),  new StoneLayerServer()));
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  material = configs.getOrDefault(materialID, new Pair<>(new MaterialRegistry(),  new MaterialServer()));
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreVein = configs.getOrDefault(oreVeinID, new Pair<>(new OreVeinRegistry(),  new OreVeinServer()));
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  smallOre = configs.getOrDefault(smallOreID, new Pair<>(new SmallOreVeinRegistry(),  new SmallOreVeinServer()));
@@ -72,9 +69,8 @@ public class TCJsonConfigs extends ConfigSync {
         configs.put(oreTypeID, oreType);
         configs.put(textureIconID, textureIcon);
         configs.put(toolPartID, toolPart);
-        configs.put(toolTypeID, toolType);
-        configs.put(stoneLayerID, stoneLayer);
         configs.put(toolID, tool);
+        configs.put(stoneLayerID, stoneLayer);
         configs.put(materialID, material);
         configs.put(oreVeinID, oreVein);
         configs.put(smallOreID, smallOre);

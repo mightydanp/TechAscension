@@ -1,4 +1,4 @@
-package mightydanp.techcore.common.material.tool;
+package mightydanp.techcore.common.tool;
 
 import mightydanp.techcore.common.tool.TCTool;
 

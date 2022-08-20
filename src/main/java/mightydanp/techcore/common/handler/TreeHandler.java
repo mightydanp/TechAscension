@@ -4,7 +4,7 @@ import mightydanp.techcore.common.items.BlockFuelItem;
 import mightydanp.techcore.common.libs.EnumTreeFlags;
 import mightydanp.techcore.common.blocks.LeaveBlock;
 import mightydanp.techcore.common.items.TCToolItem;
-import mightydanp.techcore.common.items.ModItemGroups;
+import mightydanp.techcore.common.items.TCCreativeModeTab;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.block.grower.OakTreeGrower;
 import net.minecraft.world.level.block.grower.AbstractTreeGrower;
@@ -75,22 +75,22 @@ public class TreeHandler {
         for(EnumTreeFlags flag : flags) {
             if (flag == EnumTreeFlags.LEAVE) {
                 leave_block = RegistryHandler.BLOCKS.register(treeName + "_leave", () -> new LeaveBlock(treeName + "_leave", BlockBehaviour.Properties.of(Material.LEAVES), leafDecayLength));
-                leave_item = RegistryHandler.ITEMS.register(treeName + "_leave", () -> new BlockFuelItem(leave_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), leafBurnTime));
+                leave_item = RegistryHandler.ITEMS.register(treeName + "_leave", () -> new BlockFuelItem(leave_block.get(), new Item.Properties().tab(TCCreativeModeTab.tree_tab), leafBurnTime));
             }
 
             if (flag == EnumTreeFlags.LOG) {
                 log_block = RegistryHandler.BLOCKS.register(treeName + "_log", () -> new RotatedPillarBlock(BlockBehaviour.Properties.of(Material.WOOD)));
-                log_item = RegistryHandler.ITEMS.register(treeName + "_log", () -> new BlockFuelItem(log_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), logBurnTime));
+                log_item = RegistryHandler.ITEMS.register(treeName + "_log", () -> new BlockFuelItem(log_block.get(), new Item.Properties().tab(TCCreativeModeTab.tree_tab), logBurnTime));
             }
 
             if (flag == EnumTreeFlags.PLANK) {
                 plank_block = RegistryHandler.BLOCKS.register(treeName + "_plank", () -> new Block(BlockBehaviour.Properties.of(Material.WOOD)));
-                plank_item = RegistryHandler.ITEMS.register(treeName + "_plank", () -> new BlockFuelItem(plank_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), plankBurnTime));
+                plank_item = RegistryHandler.ITEMS.register(treeName + "_plank", () -> new BlockFuelItem(plank_block.get(), new Item.Properties().tab(TCCreativeModeTab.tree_tab), plankBurnTime));
             }
 
             if (flag == EnumTreeFlags.SAPLING) {
                 sapling_block = RegistryHandler.BLOCKS.register(treeName + "_sapling", () -> new SaplingBlock(new OakTreeGrower(), BlockBehaviour.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
-                sapling_item = RegistryHandler.ITEMS.register(treeName + "_sapling", () -> new BlockFuelItem(sapling_block.get(), new Item.Properties().tab(ModItemGroups.tree_tab), saplingBurnTime));
+                sapling_item = RegistryHandler.ITEMS.register(treeName + "_sapling", () -> new BlockFuelItem(sapling_block.get(), new Item.Properties().tab(TCCreativeModeTab.tree_tab), saplingBurnTime));
             }
             if (flag == EnumTreeFlags.RESIN) {
                 //sapling_block = RegistryHandler.BLOCKS.register(treeName + "_sapling", () -> new SaplingBlock(new OakTree(), AbstractBlock.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));

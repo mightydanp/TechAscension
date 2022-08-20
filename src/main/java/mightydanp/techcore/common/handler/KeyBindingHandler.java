@@ -13,11 +13,12 @@ import java.util.List;
  */
 public class KeyBindingHandler {
 
-    private static List<KeyMapping> keyBindingList = new ArrayList<>();
-    public KeyMapping keyBinding;
+    private static final List<KeyMapping> keyBindingList = new ArrayList<>();
 
-    public KeyBindingHandler(String buttonName, int buttonNumber){
-        keyBindingList.add(keyBinding = new KeyMapping("key." + buttonName , buttonNumber , "key.categories." + Ref.mod_id));
+    public static KeyMapping addKeyBinding(String buttonName, int buttonNumber){
+        KeyMapping keyBinding = new KeyMapping("key." + buttonName , buttonNumber , "key.categories." + Ref.mod_id);
+        keyBindingList.add(keyBinding);
+        return keyBinding;
     }
 
     public static void clientInit(){

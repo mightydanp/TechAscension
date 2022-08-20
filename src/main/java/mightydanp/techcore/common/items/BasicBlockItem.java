@@ -8,6 +8,6 @@ import net.minecraft.world.item.BlockItem;
  */
 public class BasicBlockItem extends BlockItem {
     public BasicBlockItem(Block blockIn) {
-        super(blockIn, new Properties().tab(ModItemGroups.item_tab));
+        super(blockIn, new Properties().tab(TCCreativeModeTab.item_tab));
     }
 }
