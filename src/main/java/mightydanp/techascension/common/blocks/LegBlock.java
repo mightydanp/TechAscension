@@ -38,4 +38,8 @@ public class LegBlock extends Block{
         return true;
     }
 
+    @Override
+    public VoxelShape getCollisionShape(BlockState p_60572_, BlockGetter p_60573_, BlockPos p_60574_, CollisionContext p_60575_) {
+        return super.getCollisionShape(p_60572_, p_60573_, p_60574_, p_60575_);
+    }
 }

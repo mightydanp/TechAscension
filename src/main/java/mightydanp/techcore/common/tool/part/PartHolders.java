@@ -9,4 +9,6 @@ public class PartHolders {
     public record dullHeadPartHolder(Pair<String, String> prefixAndSuffix, boolean special, Class<? extends DullHeadItem> part){}
     public record headPartHolder(Pair<String, String> prefixAndSuffix, boolean special, List<String> partItems, Class<? extends HeadItem> part){}
     public record bindingPartHolder(Pair<String, String> prefixAndSuffix, boolean special, List<String> partItems, Class<? extends BindingItem> part){}
+
+    public record extraPartHolder(Pair<String, String> prefixAndSuffix, boolean special, List<String> partItems, Class<? extends BindingItem> part){}
 }

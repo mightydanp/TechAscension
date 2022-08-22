@@ -11,9 +11,9 @@ import java.util.*;
 
 public class TagData<A> {
     private final ResourceLocation name;
-    private Tag.Builder builder = new Tag.Builder();
+    private final Tag.Builder builder = new Tag.Builder();
     private final TagKey<A> tagKey;
-    private Set<ResourceLocation> values = new HashSet<>();
+    private final Set<ResourceLocation> values = new HashSet<>();
     private final Registry<A> registry;
 
     public TagData(ResourceLocation name, ResourceKey<? extends Registry<A>> ResourceKey, Registry<A> registry){

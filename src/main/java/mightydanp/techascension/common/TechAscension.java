@@ -6,6 +6,7 @@ import mightydanp.techcore.common.CommonEvent;
 import mightydanp.techcore.common.ISidedReference;
 import mightydanp.techcore.common.blocks.TCBlocks;
 import mightydanp.techcore.common.crafting.recipe.TCRecipes;
+import mightydanp.techcore.common.events.TreeEvents;
 import mightydanp.techcore.common.handler.EventHandler;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.inventory.container.Containers;
@@ -93,6 +94,8 @@ public class TechAscension {
         MinecraftForge.EVENT_BUS.register(ModRecipes.class);
         MinecraftForge.EVENT_BUS.register(EventHandler.class);
         MinecraftForge.EVENT_BUS.register(TCToolHandler.class);
+        MinecraftForge.EVENT_BUS.register(TreeEvents.class);
+
 
         bus.addListener(ResourcePackEventHandler::addResourcePack);
     }

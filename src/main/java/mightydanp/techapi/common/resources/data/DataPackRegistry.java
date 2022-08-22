@@ -1,6 +1,7 @@
 package mightydanp.techapi.common.resources.data;
 
 import mightydanp.techapi.common.resources.data.data.LootTableData;
+import mightydanp.techapi.common.resources.data.data.ShapelessRecipeData;
 import mightydanp.techapi.common.resources.data.data.TagData;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.core.Registry;
@@ -18,17 +19,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DataPackRegistry {
-    private static Map<ResourceLocation, TagData<Block>> blockTagDataMap = new HashMap<>();
-    private static Map<ResourceLocation, TagData<EntityType<?>>> entityTypeTagDataMap = new HashMap<>();
-    private static Map<ResourceLocation, TagData<Fluid>> fluidTagDataMap = new HashMap<>();
-    private static Map<ResourceLocation, TagData<GameEvent>> gameEventTagDataMap = new HashMap<>();
-    private static Map<ResourceLocation, TagData<Item>> itemTagDataMap = new HashMap<>();
-    private static Map<ResourceLocation, TagData<Biome>> biomeDataMap = new HashMap<>();
-    private static Map<ResourceLocation, TagData<ConfiguredStructureFeature<?, ?>>> configuredStructureFeatureDataMap = new HashMap<>();
-    private static Map<ResourceLocation, LootTableData> blockLootTableDataMap = new HashMap<>();
-    private static Map<ResourceLocation, LootTableData> chestLootTableDataMap = new HashMap<>();
-    private static Map<ResourceLocation, LootTableData> entityLootTableDataMap = new HashMap<>();
-    private static Map<ResourceLocation, LootTableData> gameplayLootTableDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, TagData<Block>> blockTagDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, TagData<EntityType<?>>> entityTypeTagDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, TagData<Fluid>> fluidTagDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, TagData<GameEvent>> gameEventTagDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, TagData<Item>> itemTagDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, TagData<Biome>> biomeDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, TagData<ConfiguredStructureFeature<?, ?>>> configuredStructureFeatureDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, LootTableData> blockLootTableDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, LootTableData> chestLootTableDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, LootTableData> entityLootTableDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, LootTableData> gameplayLootTableDataMap = new HashMap<>();
+    private static final Map<ResourceLocation, ShapelessRecipeData> shapelessRecipeDataMap = new HashMap<>();
 
     public static void init() {
         int c;
@@ -43,6 +45,7 @@ public class DataPackRegistry {
         chestLootTableDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/chests/" +  s.getPath() + ".json"), b.createJson()));
         entityLootTableDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/entities/" +  s.getPath() + ".json"), b.createJson()));
         gameplayLootTableDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "loot_tables/gameplay/" +  s.getPath() + ".json"), b.createJson()));
+        shapelessRecipeDataMap.forEach((s, b) -> TechAscension.dataHolder.addToResources(new ResourceLocation(s.getNamespace(), "recipes" +  s.getPath() + ".json"), b.createJson()));
         int i;
     }
 
@@ -90,6 +93,10 @@ public class DataPackRegistry {
         return gameplayLootTableDataMap.getOrDefault(name, new LootTableData(name));
     }
 
+    public static ShapelessRecipeData shapelessRecipeData(ResourceLocation name) {
+        return shapelessRecipeDataMap.getOrDefault(name, new ShapelessRecipeData(name));
+    }
+
     public static void saveBlockTagData(TagData<Block> data) {
         blockTagDataMap.put(data.getName(), data);
     }
@@ -132,5 +139,9 @@ public class DataPackRegistry {
 
     public static void saveGameplayLootTableDataMap(LootTableData data) {
         gameplayLootTableDataMap.put(data.getName(), data);
+    }
+
+    public static void saveShapelessRecipeData(ShapelessRecipeData data) {
+        shapelessRecipeDataMap.put(data.getName(), data);
     }
 }
