@@ -89,7 +89,7 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.toolPart.getFirst().getJsonObject(file.getName());
-                    IToolPart toolPart = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).getFromJsonObject(jsonObject);
+                    IToolPart toolPart = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).fromJsonObject(jsonObject);
                     clientToolParts.put(fixesToName(toolPart.getPrefix(), toolPart.getSuffix()), toolPart);
                 }
 
@@ -156,7 +156,7 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.toolPart.getFirst().getJsonObject(file.getName());
-                    IToolPart toolPart = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).getFromJsonObject(jsonObject);
+                    IToolPart toolPart = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).fromJsonObject(jsonObject);
 
                     String name = fixesToName(toolPart.getPrefix(), toolPart.getSuffix());
 

@@ -66,7 +66,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
             JsonObject jsonObject = getJsonObject(material.name);
 
             if (jsonObject.size() == 0) {
-                JsonObject materialJson = getJsonObject(material);
+                JsonObject materialJson = toJsonObject(material);
 
                 this.saveJsonObject(material.name, materialJson);
             }
@@ -82,8 +82,8 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsKey(getFromJsonObject(jsonObject).name)) {
-                        TCMaterial material = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsKey(fromJsonObject(jsonObject).name)) {
+                        TCMaterial material = fromJsonObject(jsonObject);
 
                         registryMap.put(material.name, material);
                     } else {
@@ -96,7 +96,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         }
     }
 
-    public JsonObject getJsonObject(TCMaterial materialIn) {
+    public JsonObject toJsonObject(TCMaterial materialIn) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", materialIn.name);
         jsonObject.addProperty("color", materialIn.color);
@@ -229,20 +229,37 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
                     properties.addProperty("tool_level", materialIn.toolLevel);
                 }
 
-                JsonArray toolParts = new JsonArray();
-                if(materialIn.toolParts != null){
-                    for (Pair<String, String> toolPart : materialIn.toolParts) {
+                JsonArray toolPartWhiteList = new JsonArray();
+                if(materialIn.toolPartWhiteList != null){
+                    for (Pair<String, String> toolPart : materialIn.toolPartWhiteList) {
                         JsonObject toolPartProperties = new JsonObject();
                         toolPartProperties.addProperty("tool_part_prefix", toolPart.getFirst());
                         toolPartProperties.addProperty("tool_part_suffix", toolPart.getSecond());
 
                         if (toolPartProperties.size() > 0) {
-                            toolParts.add(toolPartProperties);
+                            toolPartWhiteList.add(toolPartProperties);
                         }
                     }
 
-                    if (toolParts.size() > 0) {
-                        jsonObject.add("tool_parts", toolParts);
+                    if (toolPartWhiteList.size() > 0) {
+                        jsonObject.add("tool_part_white_list", toolPartWhiteList);
+                    }
+                }
+
+                JsonArray toolPartBlackList = new JsonArray();
+                if(materialIn.toolPartBlackList != null){
+                    for (Pair<String, String> toolPart : materialIn.toolPartBlackList) {
+                        JsonObject toolPartProperties = new JsonObject();
+                        toolPartProperties.addProperty("tool_part_prefix", toolPart.getFirst());
+                        toolPartProperties.addProperty("tool_part_suffix", toolPart.getSecond());
+
+                        if (toolPartProperties.size() > 0) {
+                            toolPartBlackList.add(toolPartProperties);
+                        }
+                    }
+
+                    if (toolPartBlackList.size() > 0) {
+                        jsonObject.add("tool_part_black_list", toolPartBlackList);
                     }
                 }
 
@@ -260,18 +277,17 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
     }
 
     @Override
-    public TCMaterial getFromJsonObject(JsonObject jsonObject) {
-        String nameJson = jsonObject.get("name").getAsString();
-        int colorJson = jsonObject.get("color").getAsInt();
+    public TCMaterial fromJsonObject(JsonObject jsonObject) {
         String textureIconJson = jsonObject.get("texture_icon").getAsString();
-        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconJson.split(":")[0], ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getTextureIconByName(textureIconJson.split(":")[1]));
-        TCMaterial material = new TCMaterial(nameJson, colorJson, textureIcon);
+        TCMaterial material = new TCMaterial(
+                jsonObject.get("name").getAsString(),
+                jsonObject.get("color").getAsInt(),
+                new Pair<>(textureIconJson.split(":")[0], ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getTextureIconByName(textureIconJson.split(":")[1])));
 
         if(jsonObject.has("element_localization")) {
             JsonObject elementLocalization = jsonObject.get("element_localization").getAsJsonObject();{
                 if (elementLocalization.has("symbol")) {
-                    String symbolJson = elementLocalization.get("symbol").getAsString();
-                    material.setElementalLocalization(symbolJson);
+                    material.setElementalLocalization(elementLocalization.get("symbol").getAsString());
                 }
             }
         }
@@ -279,9 +295,9 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         if(jsonObject.has("temperature_properties")) {
             JsonObject temperatureProperties = jsonObject.get("temperature_properties").getAsJsonObject();{
                 if (temperatureProperties.has("melting_point") && temperatureProperties.has("boiling_point")) {
-                    int meltingPointJson = temperatureProperties.get("melting_point").getAsInt();
-                    int boilingPointJson = temperatureProperties.get("boiling_point").getAsInt();
-                    material.setTemperatureProperties(meltingPointJson, boilingPointJson);
+                    material.setTemperatureProperties(
+                            temperatureProperties.get("melting_point").getAsInt(),
+                            temperatureProperties.get("boiling_point").getAsInt());
                 }
             }
         }
@@ -289,10 +305,10 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         if(jsonObject.has("stone_layer_properties")) {
             JsonObject stoneLayerProperties = jsonObject.get("stone_layer_properties").getAsJsonObject();{
                 if (stoneLayerProperties.has("is_stone_layer") && stoneLayerProperties.has("stone_layer_block") && stoneLayerProperties.has("mining_level")) {
-                    Boolean isStoneLayerJson = stoneLayerProperties.get("is_stone_layer").getAsBoolean();
-                    String replacementBlockJson = stoneLayerProperties.get("stone_layer_block").getAsString();
-                    String stoneLayerTextureLocationJson = stoneLayerProperties.get("stone_layer_texture_location").getAsString();
-                    material.setStoneLayerProperties(isStoneLayerJson, replacementBlockJson, stoneLayerTextureLocationJson);
+                    material.setStoneLayerProperties(
+                            stoneLayerProperties.get("is_stone_layer").getAsBoolean(),
+                            stoneLayerProperties.get("stone_layer_block").getAsString(),
+                            stoneLayerProperties.get("stone_layer_texture_location").getAsString());
                 }
             }
         }
@@ -300,8 +316,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         if(jsonObject.has("block_properties")) {
             JsonObject blockProperties = jsonObject.get("block_properties").getAsJsonObject();{
                 if (blockProperties.has("mining_level")) {
-                    int miningLevelJson = blockProperties.get("mining_level").getAsInt();
-                    material.setBlockProperties(miningLevelJson);
+                    material.setBlockProperties(blockProperties.get("mining_level").getAsInt());
                 }
             }
         }
@@ -309,10 +324,8 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         if(jsonObject.has("ore_properties")) {
             JsonObject oreProperties = jsonObject.get("ore_properties").getAsJsonObject();{
                 if (oreProperties.has("ore_type") && oreProperties.has("dense_ore_density")) {
-                    IOreType oreTypeJson = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getByName(oreProperties.get("ore_type").getAsString());
-                    int denseOreDensityJson = oreProperties.get("dense_ore_density").getAsInt();
-                    material.setOreType(oreTypeJson);
-                    material.setDenseOreDensity(denseOreDensityJson);
+                    material.setOreType( ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getByName(oreProperties.get("ore_type").getAsString()));
+                    material.setDenseOreDensity(oreProperties.get("dense_ore_density").getAsInt());
                 }
             }
         }
@@ -320,13 +333,12 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         if(jsonObject.has("fluid_properties")) {
             JsonObject fluidProperties = jsonObject.get("fluid_properties").getAsJsonObject();{
                 if (fluidProperties.has("fluid_state") && fluidProperties.has("fluid_acceleration") && fluidProperties.has("fluid_density") && fluidProperties.has("fluid_luminosity") && fluidProperties.has("fluid_viscosity")) {
-                    IFluidState fluidStateJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidProperties.get("fluid_state").getAsString());
-                    float fluidAccelerationJson = fluidProperties.get("fluid_acceleration").getAsFloat();
-                    int fluidDensityJson = fluidProperties.get("fluid_density").getAsInt();
-                    int fluidLuminosityJson = fluidProperties.get("fluid_luminosity").getAsInt();
-                    int fluidViscosityJson = fluidProperties.get("fluid_viscosity").getAsInt();
-
-                    material.setFluidProperties(fluidStateJson, fluidAccelerationJson, fluidDensityJson, fluidLuminosityJson, fluidViscosityJson);
+                    material.setFluidProperties(
+                            ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidProperties.get("fluid_state").getAsString()),
+                            fluidProperties.get("fluid_acceleration").getAsFloat(),
+                            fluidProperties.get("fluid_density").getAsInt(),
+                            fluidProperties.get("fluid_luminosity").getAsInt(),
+                            fluidProperties.get("fluid_viscosity").getAsInt());
                 }
             }
         }
@@ -335,33 +347,48 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
             JsonArray toolProperties = jsonObject.get("tool_properties").getAsJsonArray();
 
             if(toolProperties.size()> 0) {
-                JsonObject Properties = toolProperties.get(0).getAsJsonObject();
-                JsonArray toolPartsArray = jsonObject.get("tool_parts").getAsJsonArray();
+                JsonObject properties = toolProperties.get(0).getAsJsonObject();
 
                 {
-                    if (Properties.has("attack_speed") && Properties.has("durability") && Properties.has("attack_damage") && Properties.has("weight")  && jsonObject.has("efficiency")  && jsonObject.has("tool_level") && jsonObject.has("tool_parts")) {
-                        int attackSpeedJson = Properties.get("attack_speed").getAsInt();
-                        int durabilityJson = Properties.get("durability").getAsInt();
-                        float attackDamageJson = Properties.get("attack_damage").getAsFloat();
-                        float weightJson = Properties.get("weight").getAsFloat();
-                        float efficiencyJson = Properties.get("efficiency").getAsFloat();
-                        int toolLevelJson = Properties.get("tool_level").getAsInt();
+                    if (properties.has("attack_speed") && properties.has("durability") && properties.has("attack_damage") && properties.has("weight")  && jsonObject.has("efficiency")  && jsonObject.has("tool_level") && jsonObject.has("tool_parts")) {
+                        JsonArray toolPartWhiteListArray = jsonObject.get("tool_part_white_list").getAsJsonArray();
+                        List<Pair<String, String>> toolPartWhiteList = new ArrayList<>();
 
-                        List<Pair<String, String>> toolPartsJsonList = new ArrayList<>();
-
-                        for (int i = 0; i < toolPartsArray.size(); i++) {
-                            JsonObject toolPartProperties = toolPartsArray.get(i).getAsJsonObject();
+                        for (int i = 0; i < toolPartWhiteListArray.size(); i++) {
+                            JsonObject toolPartProperties = toolPartWhiteListArray.get(i).getAsJsonObject();
                             if (toolPartProperties.has("tool_part_prefix") && toolPartProperties.has("tool_part_suffix")) {
                                 String toolPartPrefix = toolPartProperties.get("tool_part_prefix").getAsString();
                                 String toolPartSuffix = toolPartProperties.get("tool_part_suffix").getAsString();
 
                                 Pair<String, String> toolPartJson = new Pair<>(toolPartPrefix, toolPartSuffix);
 
-                                toolPartsJsonList.add(toolPartJson);
+                                toolPartWhiteList.add(toolPartJson);
                             }
                         }
 
-                        material.setToolProperties(attackSpeedJson, durabilityJson, attackDamageJson, weightJson, efficiencyJson, toolLevelJson, toolPartsJsonList);
+                        JsonArray toolPartBlackListArray = jsonObject.get("tool_part_black_list").getAsJsonArray();
+                        List<Pair<String, String>> toolPartBlackList = new ArrayList<>();
+
+                        for (int i = 0; i < toolPartBlackListArray.size(); i++) {
+                            JsonObject toolPartProperties = toolPartBlackListArray.get(i).getAsJsonObject();
+                            if (toolPartProperties.has("tool_part_prefix") && toolPartProperties.has("tool_part_suffix")) {
+                                String toolPartPrefix = toolPartProperties.get("tool_part_prefix").getAsString();
+                                String toolPartSuffix = toolPartProperties.get("tool_part_suffix").getAsString();
+
+                                Pair<String, String> toolPartJson = new Pair<>(toolPartPrefix, toolPartSuffix);
+
+                                toolPartBlackList.add(toolPartJson);
+                            }
+                        }
+
+                        material.setToolProperties(
+                                properties.get("attack_speed").getAsInt(),
+                                properties.get("durability").getAsInt(),
+                                properties.get("attack_damage").getAsFloat(),
+                                properties.get("weight").getAsFloat(),
+                                properties.get("efficiency").getAsFloat(),
+                                properties.get("tool_level").getAsInt(),
+                                toolPartWhiteList, toolPartBlackList);
                     }
                 }
             }

@@ -44,7 +44,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
     public IMaterialFlag getMaterialFlagByFixes(Pair<String, String> fixesIn) {
         Optional<IMaterialFlag> materialFlag = registryMap.values().stream().filter(o -> fixesToName(new Pair<>(o.getPrefix(), o.getSuffix())).equals(fixesToName(fixesIn))).findFirst();
 
-        if(!materialFlag.isPresent()) {
+        if(materialFlag.isEmpty()) {
             TechAscension.LOGGER.warn("(" + fixesToName(fixesIn) + "), does not exist as a material flag.");
         }
 
@@ -54,7 +54,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
     public IMaterialFlag getMaterialFlagByName(String name){
         Optional<IMaterialFlag> materialFlag = registryMap.values().stream().filter(o -> fixesToName(new Pair<>(o.getPrefix(), o.getSuffix())).equals(name)).findFirst();
 
-        if(!materialFlag.isPresent()) {
+        if(materialFlag.isEmpty()) {
             TechAscension.LOGGER.warn("(" + name + "), does not exist as a material flag.");
         }
 
@@ -67,17 +67,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
             JsonObject jsonObject = getJsonObject(name);
 
             if (jsonObject.size() == 0) {
-                JsonObject materialFlagJson = new JsonObject();
-                {
-                    materialFlagJson.addProperty("name", name);
-                    materialFlagJson.addProperty("prefix", materialFlag.getPrefix());
-                    materialFlagJson.addProperty("suffix", materialFlag.getSuffix());
-
-                    if (materialFlagJson.size() > 0) {
-                        jsonObject.add("material_flag", materialFlagJson);
-                    }
-                }
-                this.saveJsonObject(name, jsonObject);
+                this.saveJsonObject(name, toJsonObject(materialFlag));
             }
         }
     }
@@ -90,10 +80,9 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        JsonObject materialFlagJson = jsonObject.getAsJsonObject("material_flag");
-                        String materialFlagName = materialFlagJson.get("name").getAsString();
-                        IMaterialFlag materialFlag = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        String materialFlagName = jsonObject.get("name").getAsString();
+                        IMaterialFlag materialFlag = fromJsonObject(jsonObject);
 
                         registryMap.put(materialFlagName, materialFlag);
 
@@ -108,14 +97,10 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
     }
 
     @Override
-    public IMaterialFlag getFromJsonObject(JsonObject jsonObjectIn){
-
-        JsonObject materialFlagJson = jsonObjectIn.getAsJsonObject("material_flag");
-
-        if(materialFlagJson != null) {
-            String name = materialFlagJson.get("name").getAsString();
-            String prefix = materialFlagJson.get("prefix").getAsString();
-            String suffix = materialFlagJson.get("suffix").getAsString();
+    public IMaterialFlag fromJsonObject(JsonObject jsonObjectIn){
+            String name = jsonObjectIn.get("name").getAsString();
+            String prefix = jsonObjectIn.get("prefix").getAsString();
+            String suffix = jsonObjectIn.get("suffix").getAsString();
 
             return new IMaterialFlag() {
 
@@ -134,22 +119,13 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
                     return new Pair<>(prefix, suffix);
                 }
             };
-        }else {
-            return null;
-        }
     }
 
     public JsonObject toJsonObject(IMaterialFlag material) {
         JsonObject jsonObject = new JsonObject();
-
-        JsonObject json = new JsonObject();
-        json.addProperty("name", fixesToName(new Pair<>(material.getPrefix(), material.getSuffix())));
-        json.addProperty("prefix", material.getPrefix());
-        json.addProperty("suffix", material.getSuffix());
-
-        if (json.size() > 0) {
-            jsonObject.add("material_flag", json);
-        }
+        jsonObject.addProperty("name", fixesToName(new Pair<>(material.getPrefix(), material.getSuffix())));
+        jsonObject.addProperty("prefix", material.getPrefix());
+        jsonObject.addProperty("suffix", material.getSuffix());
 
         return jsonObject;
     }

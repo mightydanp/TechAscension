@@ -86,7 +86,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
-                    IMaterialFlag materialFlag = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).getFromJsonObject(jsonObject);
+                    IMaterialFlag materialFlag = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).fromJsonObject(jsonObject);
                     clientMaterialFlags.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag);
                 }
 
@@ -152,7 +152,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
-                    IMaterialFlag materialFlag = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).getFromJsonObject(jsonObject);
+                    IMaterialFlag materialFlag = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).fromJsonObject(jsonObject);
 
                     String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
 

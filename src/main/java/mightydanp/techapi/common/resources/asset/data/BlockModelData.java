@@ -10,7 +10,7 @@ public class BlockModelData {
     private String parentFolder;
 
     private ResourceLocation Parent = null;
-    private Map<String, ResourceLocation> texturesLocation = new HashMap<>();
+    private final Map<String, ResourceLocation> texturesLocation = new HashMap<>();
 
     public BlockModelData setParentFolder(String parentFolder) {
         this.parentFolder = parentFolder;

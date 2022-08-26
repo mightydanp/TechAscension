@@ -50,8 +50,8 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        SmallOreVeinGenFeatureConfig smallOreVein = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        SmallOreVeinGenFeatureConfig smallOreVein = fromJsonObject(jsonObject);
 
                         registryMap.put(smallOreVein.name, smallOreVein);
                         OreGenerationHandler.addRegistrySmallOreVeinGeneration(smallOreVein);
@@ -66,12 +66,7 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
     }
 
     @Override
-    public SmallOreVeinGenFeatureConfig getFromJsonObject(JsonObject jsonObjectIn) {
-        String name = jsonObjectIn.get("name").getAsString();
-        int rarity = jsonObjectIn.get("rarity").getAsInt();
-        int minHeight = jsonObjectIn.get("min_height").getAsInt();
-        int maxHeight = jsonObjectIn.get("max_height").getAsInt();
-
+    public SmallOreVeinGenFeatureConfig fromJsonObject(JsonObject jsonObjectIn) {
         JsonArray dimensionsJson = jsonObjectIn.getAsJsonArray("dimensions");
         List<String> dimensionsList = new ArrayList<>();
         dimensionsJson.forEach(jsonElement -> dimensionsList.add(jsonElement.getAsString()));
@@ -90,7 +85,12 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
 
         veinBlocksJson.forEach(jsonElement -> veinBlockChances.add(new Pair<>(jsonElement.getAsJsonObject().get("vein_block").getAsString(), jsonElement.getAsJsonObject().get("vein_block_chance").getAsInt())));
 
-        return new SmallOreVeinGenFeatureConfig(name, rarity, minHeight, maxHeight, dimensionsList, validBiomesList, invalidBiomesList, veinBlockChances);
+        return new SmallOreVeinGenFeatureConfig(
+                jsonObjectIn.get("name").getAsString(),
+                jsonObjectIn.get("rarity").getAsInt(),
+                jsonObjectIn.get("min_height").getAsInt(),
+                jsonObjectIn.get("max_height").getAsInt(),
+                dimensionsList, validBiomesList, invalidBiomesList, veinBlockChances);
     }
 
     public JsonObject toJsonObject(SmallOreVeinGenFeatureConfig config) {

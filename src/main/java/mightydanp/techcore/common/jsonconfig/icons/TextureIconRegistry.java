@@ -39,8 +39,8 @@ public class TextureIconRegistry extends JsonConfigMultiFile<ITextureIcon> {
         registryMap.put(name, textureIconIn);
     }
 
-    public ITextureIcon getTextureIconByName(String texture_icon) {
-        return registryMap.get(texture_icon);
+    public ITextureIcon getTextureIconByName(String textureIcon) {
+        return registryMap.get(textureIcon);
     }
 
     public Set<ITextureIcon> getAllTextureIcon() {
@@ -52,15 +52,7 @@ public class TextureIconRegistry extends JsonConfigMultiFile<ITextureIcon> {
             JsonObject jsonObject = getJsonObject(textureIcon.getName());
 
             if (jsonObject.size() == 0) {
-                JsonObject materialFlagJson = new JsonObject();
-                {
-                    materialFlagJson.addProperty("name", textureIcon.getName());
-
-                    if (materialFlagJson.size() > 0) {
-                        jsonObject.add("texture_icon", materialFlagJson);
-                    }
-                }
-                this.saveJsonObject(textureIcon.getName(), jsonObject);
+                this.saveJsonObject(textureIcon.getName(), toJsonObject(textureIcon));
             }
         }
     }
@@ -73,8 +65,8 @@ public class TextureIconRegistry extends JsonConfigMultiFile<ITextureIcon> {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        ITextureIcon textureIcon = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        ITextureIcon textureIcon = fromJsonObject(jsonObject);
 
                         registryMap.put(textureIcon.getName(), textureIcon);
 
@@ -89,23 +81,19 @@ public class TextureIconRegistry extends JsonConfigMultiFile<ITextureIcon> {
     }
 
     @Override
-    public ITextureIcon getFromJsonObject(JsonObject jsonObjectIn){
-        JsonObject textureIconJson = jsonObjectIn.getAsJsonObject("texture_icon");
-
-        String name = textureIconJson.get("name").getAsString();
-
-        return () -> name;
+    public ITextureIcon fromJsonObject(JsonObject jsonObjectIn){
+        return new ITextureIcon() {
+            @Override
+            public String getName() {
+                return jsonObjectIn.get("name").getAsString();
+            }
+        };
     }
 
     public JsonObject toJsonObject(ITextureIcon textureIcon) {
         JsonObject jsonObject = new JsonObject();
 
-        JsonObject json = new JsonObject();
-        json.addProperty("name", textureIcon.getName());
-
-        if (json.size() > 0) {
-            jsonObject.add("texture_icon", json);
-        }
+        jsonObject.addProperty("name", textureIcon.getName());
 
         return jsonObject;
     }

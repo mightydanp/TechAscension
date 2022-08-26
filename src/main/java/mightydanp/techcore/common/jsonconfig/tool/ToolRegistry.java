@@ -48,15 +48,7 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
             JsonObject jsonObject = getJsonObject(tool.getName());
 
             if (jsonObject.size() == 0) {
-                JsonObject materialFlagJson = new JsonObject();
-                {
-                    materialFlagJson.addProperty("name", tool.getName());
-
-                    if (materialFlagJson.size() > 0) {
-                        jsonObject.add("tool", materialFlagJson);
-                    }
-                }
-                this.saveJsonObject(tool.getName(), jsonObject);
+                this.saveJsonObject(tool.getName(), toJsonObject(tool));
             }
         }
     }
@@ -69,8 +61,8 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        ITool tool = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        ITool tool = fromJsonObject(jsonObject);
 
                         registryMap.put(tool.getName(), tool);
 
@@ -85,23 +77,14 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
     }
 
     @Override
-    public ITool getFromJsonObject(JsonObject jsonObjectIn){
-        JsonObject textureIconJson = jsonObjectIn.getAsJsonObject("tool");
-
-        String name = textureIconJson.get("name").getAsString();
-
-        return () -> name;
+    public ITool fromJsonObject(JsonObject jsonObjectIn){
+        return () -> jsonObjectIn.get("name").getAsString();
     }
 
     public JsonObject toJsonObject(ITool tool) {
         JsonObject jsonObject = new JsonObject();
 
-        JsonObject json = new JsonObject();
-        json.addProperty("name", tool.getName());
-
-        if (json.size() > 0) {
-            jsonObject.add("tool", json);
-        }
+        jsonObject.addProperty("name", tool.getName());
 
         return jsonObject;
     }

@@ -87,7 +87,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
-                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).getFromJsonObject(jsonObject);
+                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).fromJsonObject(jsonObject);
                     clientRandomSurfaces.put(randomSurface.name, randomSurface);
                 }
 
@@ -154,7 +154,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
-                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).getFromJsonObject(jsonObject);
+                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).fromJsonObject(jsonObject);
 
                     String name = randomSurface.name;
 

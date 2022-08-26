@@ -88,7 +88,7 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.stoneLayer.getFirst().getJsonObject(file.getName());
-                    IStoneLayer stoneLayer = ((StoneLayerRegistry) TCJsonConfigs.stoneLayer.getFirst()).getFromJsonObject(jsonObject);
+                    IStoneLayer stoneLayer = ((StoneLayerRegistry) TCJsonConfigs.stoneLayer.getFirst()).fromJsonObject(jsonObject);
                     clientStoneLayers.put(stoneLayer.getBlock().split(":")[1], stoneLayer);
                 }
 
@@ -154,7 +154,7 @@ public class StoneLayerServer extends JsonConfigServer<IStoneLayer> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.stoneLayer.getFirst().getJsonObject(file.getName());
-                    IStoneLayer stoneLayer = ((StoneLayerRegistry) TCJsonConfigs.stoneLayer.getFirst()).getFromJsonObject(jsonObject);
+                    IStoneLayer stoneLayer = ((StoneLayerRegistry) TCJsonConfigs.stoneLayer.getFirst()).fromJsonObject(jsonObject);
 
                     String name = stoneLayer.getBlock().split(":")[1];
 

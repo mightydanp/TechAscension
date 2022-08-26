@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.Container;
+import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +21,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 @Mixin(Inventory.class)
-public class InventoryMixin{
+public abstract class InventoryMixin implements Container, Nameable {
+
+    public final int SLOT_BACK = 41;
 
     @Final
     @Shadow

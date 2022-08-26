@@ -88,7 +88,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
-                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).getFromJsonObject(jsonObject);
+                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).fromJsonObject(jsonObject);
                     clientSmallOreVeins.put(oreVein.name, oreVein);
                 }
 
@@ -155,7 +155,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
-                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).getFromJsonObject(jsonObject);
+                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).fromJsonObject(jsonObject);
 
                     String name = oreVein.name;
 

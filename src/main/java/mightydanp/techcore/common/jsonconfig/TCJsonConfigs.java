@@ -30,6 +30,10 @@ import mightydanp.techcore.common.jsonconfig.tool.ToolRegistry;
 import mightydanp.techcore.common.jsonconfig.tool.ToolServer;
 import mightydanp.techcore.common.jsonconfig.tool.part.ToolPartRegistry;
 import mightydanp.techcore.common.jsonconfig.tool.part.ToolPartServer;
+import mightydanp.techcore.common.jsonconfig.trait.block.BlockTraitRegistry;
+import mightydanp.techcore.common.jsonconfig.trait.block.BlockTraitServer;
+import mightydanp.techcore.common.jsonconfig.trait.item.ItemTraitRegistry;
+import mightydanp.techcore.common.jsonconfig.trait.item.ItemTraitServer;
 
 public class TCJsonConfigs extends ConfigSync {
     public static int materialFlagID = 0;
@@ -46,7 +50,11 @@ public class TCJsonConfigs extends ConfigSync {
     public static int blocksInWaterID = 10;
     public static int randomSurfaceID = 11;
 
-    public static int handCraftingID = 12;
+    public static int blockTraitID = 12;
+
+    public static int itemTraitID = 13;
+
+    public static int handCraftingID = 14;
 
 
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> materialFlag = configs.getOrDefault(materialFlagID, new Pair<>(new MaterialFlagRegistry(),  new MaterialFlagServer()));
@@ -61,6 +69,8 @@ public class TCJsonConfigs extends ConfigSync {
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  smallOre = configs.getOrDefault(smallOreID, new Pair<>(new SmallOreVeinRegistry(),  new SmallOreVeinServer()));
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  blocksInWater = configs.getOrDefault(blocksInWaterID, new Pair<>(new BlocksInWaterRegistry(),  new BlocksInWaterServer()));
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  randomSurface = configs.getOrDefault(randomSurfaceID, new Pair<>(new RandomSurfaceRegistry(),  new RandomSurfaceServer()));
+    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  blockTrait = configs.getOrDefault(blockTraitID, new Pair<>(new BlockTraitRegistry(),  new BlockTraitServer()));
+    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  itemTrait = configs.getOrDefault(blockTraitID, new Pair<>(new ItemTraitRegistry(),  new ItemTraitServer()));
     public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  handCrafting = configs.getOrDefault(handCraftingID, new Pair<>(new HandCraftingRegistry(),  new HandCraftingServer()));
 
     public static void init() {
@@ -76,6 +86,8 @@ public class TCJsonConfigs extends ConfigSync {
         configs.put(smallOreID, smallOre);
         configs.put(blocksInWaterID, blocksInWater);
         configs.put(randomSurfaceID, randomSurface);
+        configs.put(blockTraitID, blockTrait);
+        configs.put(itemTraitID, itemTrait);
         configs.put(handCraftingID, handCrafting);
     }
 }

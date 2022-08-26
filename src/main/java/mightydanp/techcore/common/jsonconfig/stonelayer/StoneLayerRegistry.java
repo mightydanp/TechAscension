@@ -54,15 +54,7 @@ public class StoneLayerRegistry extends JsonConfigMultiFile<IStoneLayer> {
             JsonObject jsonObject = getJsonObject(stoneLayer.getBlock().split(":")[1]);
 
             if (jsonObject.size() == 0) {
-                JsonObject materialFlagJson = new JsonObject();
-                {
-                    materialFlagJson.addProperty("block", stoneLayer.getBlock());
-
-                    if (materialFlagJson.size() > 0) {
-                        jsonObject.add("stone_layer", materialFlagJson);
-                    }
-                }
-                this.saveJsonObject(stoneLayer.getBlock().split(":")[1], jsonObject);
+                this.saveJsonObject(stoneLayer.getBlock().split(":")[1], toJsonObject(stoneLayer));
             }
         }
     }
@@ -75,8 +67,8 @@ public class StoneLayerRegistry extends JsonConfigMultiFile<IStoneLayer> {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        IStoneLayer stoneLayer = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        IStoneLayer stoneLayer = fromJsonObject(jsonObject);
 
                         registryMap.put(String.valueOf(convertToResourceLocation(stoneLayer)), stoneLayer);
 
@@ -91,23 +83,19 @@ public class StoneLayerRegistry extends JsonConfigMultiFile<IStoneLayer> {
     }
 
     @Override
-    public IStoneLayer getFromJsonObject(JsonObject jsonObjectIn){
-        JsonObject stoneLayerJson = jsonObjectIn.getAsJsonObject("stone_layer");
-
-        String block = stoneLayerJson.get("block").getAsString();
-
-        return () -> block;
+    public IStoneLayer fromJsonObject(JsonObject jsonObjectIn){
+        return  new IStoneLayer() {
+            @Override
+            public String getBlock() {
+                return jsonObjectIn.get("block").getAsString();
+            }
+        };
     }
 
     public JsonObject toJsonObject(IStoneLayer stoneLayer) {
         JsonObject jsonObject = new JsonObject();
 
-        JsonObject json = new JsonObject();
-        json.addProperty("block", stoneLayer.getBlock());
-
-        if (json.size() > 0) {
-            jsonObject.add("stone_layer", json);
-        }
+        jsonObject.addProperty("block", stoneLayer.getBlock());
 
         return jsonObject;
     }

@@ -82,7 +82,8 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public Float weight = null;
     public Integer toolLevel = null;
     public Float efficiency = null;
-    public List<Pair<String, String>> toolParts = new ArrayList<>();
+    public List<Pair<String, String>> toolPartWhiteList = new ArrayList<>();
+    public List<Pair<String, String>> toolPartBlackList = new ArrayList<>();
 
     public List<IMaterialFlag> materialFlags = new ArrayList<>();
     public List<RegistryObject<Block>> oreList = new ArrayList<>();
@@ -181,14 +182,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         return this;
     }
 
-    public TCMaterial setToolProperties(int attackSpeedIn, int durabilityIn, float attackDamageIn, float weightIn, float efficiencyIn, Integer toolLevelIn, List<Pair<String, String>> toolPartsIn) {
+    public TCMaterial setToolProperties(int attackSpeedIn, int durabilityIn, float attackDamageIn, float weightIn, float efficiencyIn, Integer toolLevelIn, List<Pair<String, String>> toolPartWhiteListIn, List<Pair<String, String>> toolPartBlackListIn) {
         attackSpeed = attackSpeedIn;
         durability = durabilityIn;
         attackDamage = attackDamageIn;
         weight = weightIn;
         efficiency = efficiencyIn;
         toolLevel = toolLevelIn;
-        toolParts = toolPartsIn;
+        toolPartWhiteList = toolPartWhiteListIn;
+        toolPartBlackList = toolPartBlackListIn;
         materialFlags.add(TOOL);
         return this;
     }
@@ -342,7 +344,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
             extraSave.forEach((string, iMaterial) -> {
                 try {
-                    iMaterial.save(this, stoneLayerList, toolParts, materialFlags);
+                    iMaterial.save(this);
                 } catch (InstantiationException | NoSuchFieldException | IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -435,7 +437,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "thin_slabs/" + name)).add(rockItemBlock.get()));
                     DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "thin_slabs")).add(rockItemBlock.get()));
                     //--LootTable
-                    DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, "thin_" + name + "_slab")).setLootTable(LootTableData.standardDropTable(thinSlabBlock.get())));
+                    //DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, "thin_" + name + "_slab")).setLootTable(LootTableData.standardDropTable(thinSlabBlock.get())));
 //--//--//--//--//--//--//--//--//
                         /*
                         Block leg_block = RegistryHandler.BLOCKS.register(name + "_leg", new LegBlock(AbstractBlock.Properties.of(Material.STONE), new ResourceLocation("textures/" + stoneLayer.getBlock())));
@@ -715,7 +717,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
             }
         }
 
-        extraSaveResources.forEach((string, iMaterial) -> iMaterial.saveResources(this, stoneLayerList, toolParts, materialFlags));
+        extraSaveResources.forEach((string, iMaterial) -> iMaterial.saveResources(this));
 
         AssetPackRegistry.langDataMap.put("en_us", enLang);
     }

@@ -46,7 +46,7 @@ public class JsonConfigMultiFile<T> {
 
     }
 
-    public T getFromJsonObject(JsonObject jsonObjectIn){
+    public T fromJsonObject(JsonObject jsonObjectIn){
         return null;
     }
 

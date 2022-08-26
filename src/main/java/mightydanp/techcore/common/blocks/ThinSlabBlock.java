@@ -1,5 +1,14 @@
 package mightydanp.techcore.common.blocks;
 
+import mightydanp.techascension.mixin.InventoryMixin;
+import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -10,6 +19,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
@@ -94,5 +104,18 @@ public class ThinSlabBlock extends Block implements LiquidBlockContainer {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(WATERLOGGED);
+    }
+
+    @Override
+    public InteractionResult use(BlockState p_60503_, Level p_60504_, BlockPos p_60505_, Player p_60506_, InteractionHand p_60507_, BlockHitResult p_60508_) {
+        if(p_60506_.getMainHandItem().isEmpty() && p_60506_.getMainHandItem().isEmpty() && p_60506_.isShiftKeyDown()) {
+            if (p_60506_.getInventory().canPlaceItem(41, new ItemStack(p_60503_.getBlock()))) {
+                p_60506_.getInventory().setItem(41, new ItemStack(p_60503_.getBlock()));
+                p_60504_.setBlock(p_60505_, p_60503_.getFluidState() == Fluids.WATER.getSource(false)? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState(), 2);
+            }
+
+            return InteractionResult.SUCCESS;
+        }
+        return super.use(p_60503_, p_60504_, p_60505_, p_60506_, p_60507_, p_60508_);
     }
 }

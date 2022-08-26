@@ -104,8 +104,8 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        IHandCrafting handCrafting = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        IHandCrafting handCrafting = fromJsonObject(jsonObject);
 
                         registryMap.put(handCrafting.getName(), handCrafting);
 
@@ -120,7 +120,7 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
     }
 
     @Override
-    public IHandCrafting getFromJsonObject(JsonObject jsonObjectIn) {
+    public IHandCrafting fromJsonObject(JsonObject jsonObjectIn) {
         return new IHandCrafting() {
             @Override
             public String getName() {

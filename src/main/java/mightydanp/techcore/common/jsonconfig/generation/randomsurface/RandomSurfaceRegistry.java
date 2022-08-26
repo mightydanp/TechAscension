@@ -51,8 +51,8 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        RandomSurfaceGenFeatureConfig randomSurface = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        RandomSurfaceGenFeatureConfig randomSurface = fromJsonObject(jsonObject);
 
                         registryMap.put(randomSurface.name, randomSurface);
                         PlantGenerationHandler.addRegistryRandomSurfaceGenerate(randomSurface);
@@ -67,13 +67,7 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
     }
 
     @Override
-    public RandomSurfaceGenFeatureConfig getFromJsonObject(JsonObject jsonObjectIn) {
-        String name = jsonObjectIn.get("name").getAsString();
-        int rarity = jsonObjectIn.get("rarity").getAsInt();
-        int minNumberOfSmallOreLayers = jsonObjectIn.get("min_number_of_small_ore_layers").getAsInt();
-        JsonArray biomesJson = jsonObjectIn.getAsJsonArray("biomes");
-        List<String> biomesList = new ArrayList<>();
-
+    public RandomSurfaceGenFeatureConfig fromJsonObject(JsonObject jsonObjectIn) {
         JsonArray dimensionsJson = jsonObjectIn.getAsJsonArray("dimensions");
         List<String> dimensionsList = new ArrayList<>();
         dimensionsJson.forEach(jsonElement -> dimensionsList.add(jsonElement.getAsString()));
@@ -100,7 +94,7 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
             blocks.add(jsonElement.getAsString());
         });
 
-        return new RandomSurfaceGenFeatureConfig(name, rarity, dimensionsList, validBiomesList, invalidBiomesList, validBlocks, blocks);
+        return new RandomSurfaceGenFeatureConfig(jsonObjectIn.get("name").getAsString(), jsonObjectIn.get("rarity").getAsInt(), dimensionsList, validBiomesList, invalidBiomesList, validBlocks, blocks);
     }
 
     public JsonObject toJsonObject(RandomSurfaceGenFeatureConfig config) {

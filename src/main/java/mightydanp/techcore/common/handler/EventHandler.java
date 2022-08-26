@@ -1,14 +1,15 @@
 package mightydanp.techcore.common.handler;
 
 import mightydanp.techcore.common.libs.Ref;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.Objects;
 
 /**
  * Created by MightyDanp on 9/30/2020.
@@ -17,13 +18,21 @@ import net.minecraftforge.fml.common.Mod;
 public class EventHandler {
 
     @SubscribeEvent
-    public static void handleFiniteWaterSource(BlockEvent.CreateFluidSourceEvent event){
-        BlockState state = event.getState();
-        FluidState fluidState = state.getFluidState();
-        if (fluidState.getType().isSame(Fluids.WATER)){
-            event.setResult(Event.Result.DENY);
-        } else if (fluidState.getType().isSame(Fluids.LAVA)){
-            event.setResult(Event.Result.DENY);
+    public static void playerPickup(EntityItemPickupEvent event){
+        if(!event.getPlayer().getInventory().getItem(41).isEmpty()){
+            event.setCanceled(true);
+        }
+    }
+    @SubscribeEvent
+    public static void onItemRightClickEvent(PlayerInteractEvent.RightClickBlock event) {
+        if(!event.getPlayer().getInventory().getItem(41).isEmpty()){
+            if (event.getPlayer().isShiftKeyDown() && event.getPlayer().getOffhandItem().isEmpty() && event.getPlayer().getMainHandItem().isEmpty()) {
+                if(event.getPlayer().getInventory().getItem(41).getItem() instanceof BlockItem blockItem) {
+
+                    event.getWorld().setBlock(event.getPos().relative(Objects.requireNonNull(event.getFace())), blockItem.getBlock().defaultBlockState(), 2);
+                    event.getPlayer().getInventory().setItem(41, ItemStack.EMPTY);
+                }
+            }
         }
     }
 

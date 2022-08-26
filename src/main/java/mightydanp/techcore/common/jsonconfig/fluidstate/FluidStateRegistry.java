@@ -50,15 +50,7 @@ public class FluidStateRegistry extends JsonConfigMultiFile<IFluidState> {
             JsonObject jsonObject = getJsonObject(fluidState.getName());
 
             if (jsonObject.size() == 0) {
-                JsonObject materialFlagJson = new JsonObject();
-                {
-                    materialFlagJson.addProperty("name", fluidState.getName());
-
-                    if (materialFlagJson.size() > 0) {
-                        jsonObject.add("fluid_state", materialFlagJson);
-                    }
-                }
-                this.saveJsonObject(fluidState.getName(), jsonObject);
+                this.saveJsonObject(fluidState.getName(), toJsonObject(fluidState));
             }
         }
     }
@@ -71,8 +63,8 @@ public class FluidStateRegistry extends JsonConfigMultiFile<IFluidState> {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        IFluidState fluidState = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        IFluidState fluidState = fromJsonObject(jsonObject);
 
                         registryMap.put(fluidState.getName(), fluidState);
 
@@ -87,23 +79,19 @@ public class FluidStateRegistry extends JsonConfigMultiFile<IFluidState> {
     }
 
     @Override
-    public IFluidState getFromJsonObject(JsonObject jsonObjectIn){
-        JsonObject fluidStateJson = jsonObjectIn.getAsJsonObject("fluid_state");
-
-        String name = fluidStateJson.get("name").getAsString();
-
-        return () -> name;
+    public IFluidState fromJsonObject(JsonObject jsonObjectIn){
+        return new IFluidState() {
+            @Override
+            public String getName() {
+                return jsonObjectIn.get("name").getAsString();
+            }
+        };
     }
 
     public JsonObject toJsonObject(IFluidState fluidState) {
         JsonObject jsonObject = new JsonObject();
 
-        JsonObject json = new JsonObject();
-        json.addProperty("name", fluidState.getName());
-
-        if (json.size() > 0) {
-            jsonObject.add("fluid_state", json);
-        }
+        jsonObject.addProperty("name", fluidState.getName());
 
         return jsonObject;
     }

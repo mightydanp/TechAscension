@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class BlockStateData {
     private ResourceLocation Parent = null;
-    private Map<String, ResourceLocation> blockStateModelLocation = new HashMap<>();
-    private Map<String, ResourceLocation> blockTexturesLocation = new HashMap<>();
+    private final Map<String, ResourceLocation> blockStateModelLocation = new HashMap<>();
+    private final Map<String, ResourceLocation> blockTexturesLocation = new HashMap<>();
 
     public BlockStateData setParent(ResourceLocation parent) {
         Parent = parent;

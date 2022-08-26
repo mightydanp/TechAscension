@@ -6,7 +6,7 @@ import mightydanp.techcore.common.blocks.TCBlocks;
 import mightydanp.techcore.common.handler.KeyBindingHandler;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.tileentities.TileEntities;
-import mightydanp.techcore.server.client.rendering.models.CampFireBakedModel;
+import mightydanp.techascension.client.rendering.models.CampFireBakedModel;
 import mightydanp.techascension.common.blocks.ModBlocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.block.BlockModelShaper;

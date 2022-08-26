@@ -55,8 +55,8 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        BlocksInWaterGenFeatureConfig blocksInWater = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        BlocksInWaterGenFeatureConfig blocksInWater = fromJsonObject(jsonObject);
 
                         registryMap.put(blocksInWater.name, blocksInWater);
                         PlantGenerationHandler.addRegistryBlockInWaterGenerate(blocksInWater);
@@ -71,12 +71,7 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     }
 
     @Override
-    public BlocksInWaterGenFeatureConfig getFromJsonObject(JsonObject jsonObjectIn) {
-        String name = jsonObjectIn.get("name").getAsString();
-        int rarity = jsonObjectIn.get("rarity").getAsInt();
-        int minHeight = jsonObjectIn.get("height").getAsInt();
-        boolean shallowWater = jsonObjectIn.get("shallow_water").getAsBoolean();
-        boolean goAboveWater = jsonObjectIn.get("go_above_water").getAsBoolean();
+    public BlocksInWaterGenFeatureConfig fromJsonObject(JsonObject jsonObjectIn) {
 
         JsonArray dimensionsJson = jsonObjectIn.getAsJsonArray("dimensions");
         List<String> dimensionsList = new ArrayList<>();
@@ -96,11 +91,13 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
 
         validBlocksJson.forEach(jsonElement -> validBlocks.add(jsonElement.getAsString()));
 
-        String topState = jsonObjectIn.get("top_state").getAsString();
-
-        String bellowState = jsonObjectIn.get("bellow_state").getAsString();
-
-        return new BlocksInWaterGenFeatureConfig(name, rarity, minHeight, shallowWater, goAboveWater, dimensionsList, validBiomesList, invalidBiomesList, validBlocks, topState, bellowState);
+        return new BlocksInWaterGenFeatureConfig(
+                jsonObjectIn.get("name").getAsString(),
+                jsonObjectIn.get("rarity").getAsInt(),
+                jsonObjectIn.get("height").getAsInt(),
+                jsonObjectIn.get("shallow_water").getAsBoolean(), jsonObjectIn.get("go_above_water").getAsBoolean(),
+                dimensionsList, validBiomesList, invalidBiomesList, validBlocks,
+                jsonObjectIn.get("top_state").getAsString(), jsonObjectIn.get("bellow_state").getAsString());
     }
 
     public JsonObject toJsonObject(BlocksInWaterGenFeatureConfig config) {

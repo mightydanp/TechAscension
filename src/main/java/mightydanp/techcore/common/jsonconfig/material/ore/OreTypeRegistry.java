@@ -48,15 +48,7 @@ public class OreTypeRegistry extends JsonConfigMultiFile<IOreType> {
             JsonObject jsonObject = getJsonObject(oreType.getName());
 
             if (jsonObject.size() == 0) {
-                JsonObject materialFlagJson = new JsonObject();
-                {
-                    materialFlagJson.addProperty("name", oreType.getName());
-
-                    if (materialFlagJson.size() > 0) {
-                        jsonObject.add("ore_type", materialFlagJson);
-                    }
-                }
-                this.saveJsonObject(oreType.getName(), jsonObject);
+                this.saveJsonObject(oreType.getName(), toJsonObject(oreType));
             }
         }
     }
@@ -69,8 +61,8 @@ public class OreTypeRegistry extends JsonConfigMultiFile<IOreType> {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        IOreType oreType = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        IOreType oreType = fromJsonObject(jsonObject);
 
                         registryMap.put(oreType.getName(), oreType);
 
@@ -85,23 +77,19 @@ public class OreTypeRegistry extends JsonConfigMultiFile<IOreType> {
     }
 
     @Override
-    public IOreType getFromJsonObject(JsonObject jsonObjectIn){
-        JsonObject oreTypeJson = jsonObjectIn.getAsJsonObject("ore_type");
-
-        String name = oreTypeJson.get("name").getAsString();
-
-        return () -> name;
+    public IOreType fromJsonObject(JsonObject jsonObjectIn){
+        return new IOreType() {
+            @Override
+            public String getName() {
+                return jsonObjectIn.get("name").getAsString();
+            }
+        };
     }
 
     public JsonObject toJsonObject(IOreType oreType) {
         JsonObject jsonObject = new JsonObject();
 
-        JsonObject json = new JsonObject();
-        json.addProperty("name", oreType.getName());
-
-        if (json.size() > 0) {
-            jsonObject.add("ore_type", json);
-        }
+        jsonObject.addProperty("name", oreType.getName());
 
         return jsonObject;
     }

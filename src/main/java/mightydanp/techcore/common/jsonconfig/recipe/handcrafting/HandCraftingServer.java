@@ -87,7 +87,7 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.handCrafting.getFirst().getJsonObject(file.getName());
-                    IHandCrafting handCrafting = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).getFromJsonObject(jsonObject);
+                    IHandCrafting handCrafting = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).fromJsonObject(jsonObject);
                     clientHandCraftingList.put(handCrafting.getName(), handCrafting);
                 }
 
@@ -149,7 +149,7 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.handCrafting.getFirst().getJsonObject(file.getName());
-                    IHandCrafting handCrafting = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).getFromJsonObject(jsonObject);
+                    IHandCrafting handCrafting = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).fromJsonObject(jsonObject);
 
                     String name = handCrafting.getName();
 

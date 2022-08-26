@@ -56,8 +56,8 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
 
                 if(optional.isPresent()) {
                     TCMaterial material = optional.get();
-                    JsonObject jsonMaterial = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(itMaterial);
-                    JsonObject materialJson = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(material);
+                    JsonObject jsonMaterial = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).toJsonObject(itMaterial);
+                    JsonObject materialJson = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).toJsonObject(material);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -87,7 +87,7 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
             }
 
             for(File file : files){
-                worldMaterials.put(((MaterialRegistry) TCJsonConfigs.material.getFirst()).getFromJsonObject(((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(file.getName())).name, ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getFromJsonObject(TCJsonConfigs.material.getFirst().getJsonObject(file.getName())));
+                worldMaterials.put(((MaterialRegistry) TCJsonConfigs.material.getFirst()).fromJsonObject(((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(file.getName())).name, ((MaterialRegistry) TCJsonConfigs.material.getFirst()).fromJsonObject(TCJsonConfigs.material.getFirst().getJsonObject(file.getName())));
             }
 
             materials.values().forEach(itMaterial -> {
@@ -95,8 +95,8 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
 
                 if(sync.get()) {
                     TCMaterial material = materials.get(itMaterial.name);
-                    JsonObject jsonMaterial = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(itMaterial);
-                    JsonObject materialJson = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(material);
+                    JsonObject jsonMaterial = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).toJsonObject(itMaterial);
+                    JsonObject materialJson = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).toJsonObject(material);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
@@ -129,7 +129,7 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
 
         for (TCMaterial material : serverMap.values()) {
             Path materialFile = Paths.get(serverConfigFolder + "/" + material.name + ".json");
-            JsonObject jsonObject = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getJsonObject(material);
+            JsonObject jsonObject = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).toJsonObject(material);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(materialFile)) {
                 Files.createDirectories(materialFile.getParent());
@@ -151,7 +151,7 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.material.getFirst().getJsonObject(file.getName());
-                    TCMaterial material = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getFromJsonObject(jsonObject);
+                    TCMaterial material = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).fromJsonObject(jsonObject);
 
                     Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + material.name + ".json");
                     if (!Files.exists(materialFile)) {
@@ -222,9 +222,19 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
         buffer.writeFloat(Objects.requireNonNullElse(material.efficiency, -1F));
         buffer.writeInt(Objects.requireNonNullElse(material.toolLevel, -1));
 
-        if(material.toolParts != null && material.toolParts.size() > 0){
-            buffer.writeInt(material.toolParts.size());
-            for (Pair<String, String> toolPart : material.toolParts) {
+        if(material.toolPartWhiteList != null && material.toolPartWhiteList.size() > 0){
+            buffer.writeInt(material.toolPartWhiteList.size());
+            for (Pair<String, String> toolPart : material.toolPartWhiteList) {
+                buffer.writeUtf(toolPart.getFirst());
+                buffer.writeUtf(toolPart.getSecond());
+            }
+        } else {
+            buffer.writeInt(0);
+        }
+
+        if(material.toolPartBlackList != null && material.toolPartBlackList.size() > 0){
+            buffer.writeInt(material.toolPartBlackList.size());
+            for (Pair<String, String> toolPart : material.toolPartBlackList) {
                 buffer.writeUtf(toolPart.getFirst());
                 buffer.writeUtf(toolPart.getSecond());
             }
@@ -308,17 +318,30 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
         float efficiency  = buffer.readFloat();
         int toolLevel = buffer.readInt();
 
-        List<Pair<String, String>> toolParts = new ArrayList<>();
-        int toolPartsSize = buffer.readInt();
+        List<Pair<String, String>> toolPartWhiteList = new ArrayList<>();
+        int toolPartWhiteListSize = buffer.readInt();
 
-        if(toolPartsSize > 0) {
-            for (int i = 0; i < toolPartsSize; i++) {
+        if(toolPartWhiteListSize > 0) {
+            for (int i = 0; i < toolPartWhiteListSize; i++) {
                 String toolPartPrefix = buffer.readUtf();
                 String toolPartSuffix = buffer.readUtf();
-                toolParts.add(new Pair<>(toolPartPrefix, toolPartSuffix));
+                toolPartWhiteList.add(new Pair<>(toolPartPrefix, toolPartSuffix));
             }
+        }
 
-            material.setToolProperties(attackSpeed, durability, attackDamage, weight, efficiency, toolLevel, toolParts);
+        List<Pair<String, String>> toolPartBlackList = new ArrayList<>();
+        int toolPartBlackListSize = buffer.readInt();
+
+        if(toolPartBlackListSize > 0) {
+            for (int i = 0; i < toolPartBlackListSize; i++) {
+                String toolPartPrefix = buffer.readUtf();
+                String toolPartSuffix = buffer.readUtf();
+                toolPartWhiteList.add(new Pair<>(toolPartPrefix, toolPartSuffix));
+            }
+        }
+
+        if(attackSpeed != -1 && durability != -1 && attackDamage  != -1 && weight != -1 && efficiency  != -1 && toolLevel != -1) {
+            material.setToolProperties(attackSpeed, durability, attackDamage, weight, efficiency, toolLevel, toolPartWhiteList, toolPartBlackList);
         }
 
         return material;

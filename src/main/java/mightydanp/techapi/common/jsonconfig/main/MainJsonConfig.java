@@ -16,7 +16,10 @@ public class MainJsonConfig extends JsonConfigSingleFile {
     public void initiate(){
         setJsonFolderLocation("config");
         setJsonFilename("main_config");
+
         super.initiate();
+
+        this.buildConfigJson(getJsonObject());
 
     }
 
@@ -39,16 +42,17 @@ public class MainJsonConfig extends JsonConfigSingleFile {
     public void buildConfigJson(JsonObject jsonObject){
         if(jsonObject.size() == 0) {
             {
+                JsonObject json_config = new JsonObject();
                 if (!getFolderLocation().equals("")) {
-                    jsonObject.addProperty("folder_location", getFolderLocation());
+                    json_config.addProperty("folder_location", getFolderLocation());
                 } else {
                     Path path = Paths.get(getJsonFolderLocation() + "/" + Ref.mod_id + "/default");
                     setFolderLocation(path.toFile().toString());
-                    jsonObject.addProperty("folder_location", getFolderLocation());
+                    json_config.addProperty("folder_location", getFolderLocation());
                 }
 
-                if (jsonObject.size() > 0) {
-                    jsonObject.add("json_config", jsonObject);
+                if (json_config.size() > 0) {
+                    jsonObject.add("json_config", json_config);
                 }
             }
         }

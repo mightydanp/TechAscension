@@ -90,7 +90,7 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
             if(files.length > 0){
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.fluidState.getFirst().getJsonObject(file.getName());
-                    IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFromJsonObject(jsonObject);
+                    IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).fromJsonObject(jsonObject);
                     clientFluidStates.put(fluidState.getName(), fluidState);
                 }
 
@@ -157,7 +157,7 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.fluidState.getFirst().getJsonObject(file.getName());
-                    IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFromJsonObject(jsonObject);
+                    IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).fromJsonObject(jsonObject);
 
                     String name = fluidState.getName();
 

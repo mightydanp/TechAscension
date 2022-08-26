@@ -9,7 +9,8 @@
     "InventoryMenuMixin",
     "InventoryMixin",
     "ItemMixin",
-    "LeavesBlockMixin"
+    "LeavesBlockMixin",
+    "PlayerMixin"
   ],
   "client": [
   ],

@@ -86,7 +86,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
-                    BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).getFromJsonObject(jsonObject);
+                    BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).fromJsonObject(jsonObject);
                     clientBlocksInWaters.put(blocksInWater.name, blocksInWater);
                 }
 
@@ -152,7 +152,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
-                    BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).getFromJsonObject(jsonObject);
+                    BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).fromJsonObject(jsonObject);
 
                     String name = blocksInWater.name;
 

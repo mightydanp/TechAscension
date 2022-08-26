@@ -22,7 +22,7 @@ import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.tileentities.TileEntities;
 import mightydanp.techcore.common.tool.TCTools;
 import mightydanp.techcore.server.DedicatedServerReference;
-import mightydanp.techcore.server.client.ModClientEvent;
+import mightydanp.techascension.client.ModClientEvent;
 import mightydanp.techascension.common.blocks.ModBlocks;
 import mightydanp.techascension.common.crafting.recipe.ModRecipes;
 import mightydanp.techascension.common.items.ModItems;

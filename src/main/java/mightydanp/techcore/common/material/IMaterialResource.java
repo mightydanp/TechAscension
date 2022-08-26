@@ -6,5 +6,5 @@ import mightydanp.techcore.common.jsonconfig.flag.IMaterialFlag;
 import java.util.List;
 
 public interface IMaterialResource {
-    void saveResources(TCMaterial material, List<TCMaterial> stoneLayerList, List<Pair<String, String>> toolParts, List<IMaterialFlag> materialFlag);
+    void saveResources(TCMaterial material);
 }

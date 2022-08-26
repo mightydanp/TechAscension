@@ -85,7 +85,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
-                    ITextureIcon textureIcon = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getFromJsonObject(jsonObject);
+                    ITextureIcon textureIcon = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).fromJsonObject(jsonObject);
                     clientTextureIcons.put(textureIcon.getName(), textureIcon);
                 }
 
@@ -150,7 +150,7 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
-                    ITextureIcon textureIcon = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getFromJsonObject(jsonObject);
+                    ITextureIcon textureIcon = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).fromJsonObject(jsonObject);
 
                     String name = textureIcon.getName();
 

@@ -44,44 +44,31 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
         return registryMap.get(fixesIn);
     }
 
-    public void buildJson(){
-        for(IToolPart toolPart : registryMap.values()) {
-            String prefix = toolPart.getPrefix().replace("_", "");
-            String suffix = toolPart.getSuffix().replace("_", "");
+    public void buildJson() {
+        for (IToolPart toolPart : registryMap.values()) {
             String name = fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix()));
 
-            if(!name.equals("")) {
+            if (!name.equals("")) {
                 JsonObject jsonObject = getJsonObject(name);
 
                 if (jsonObject.size() == 0) {
-                    JsonObject toolPartJson = new JsonObject();
-                    {
-                        toolPartJson.addProperty("name", name);
-                        toolPartJson.addProperty("prefix", toolPart.getPrefix());
-                        toolPartJson.addProperty("suffix", toolPart.getSuffix());
-
-                        if (toolPartJson.size() > 0) {
-                            jsonObject.add("tool_part", toolPartJson);
-                        }
-                    }
-                    this.saveJsonObject(name, jsonObject);
+                    this.saveJsonObject(name, toJsonObject(toolPart));
                 }
             }
         }
     }
 
-    public void loadExistJson(){
+    public void loadExistJson() {
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
-        if(path.toFile().listFiles() != null) {
+        if (path.toFile().listFiles() != null) {
             for (final File file : Objects.requireNonNull(path.toFile().listFiles())) {
                 if (file.getName().contains(".json")) {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
-                    if (!registryMap.containsValue(getFromJsonObject(jsonObject))) {
-                        JsonObject toolPartJson = jsonObject.getAsJsonObject("tool_part");
-                        String toolPartName = toolPartJson.get("name").getAsString();
-                        IToolPart toolPart = getFromJsonObject(jsonObject);
+                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                        String toolPartName = jsonObject.get("name").getAsString();
+                        IToolPart toolPart = fromJsonObject(jsonObject);
 
                         registryMap.put(fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix())), toolPart);
 
@@ -96,12 +83,9 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
     }
 
     @Override
-    public IToolPart getFromJsonObject(JsonObject jsonObjectIn){
-        JsonObject toolPartJson = jsonObjectIn.getAsJsonObject("tool_part");
-
-        String name = toolPartJson.get("name").getAsString();
-        String prefix = toolPartJson.get("prefix").getAsString();
-        String suffix = toolPartJson.get("suffix").getAsString();
+    public IToolPart fromJsonObject(JsonObject jsonObjectIn) {
+        String prefix = jsonObjectIn.get("prefix").getAsString();
+        String suffix = jsonObjectIn.get("suffix").getAsString();
 
         return new IToolPart() {
 
@@ -125,14 +109,9 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
     public JsonObject toJsonObject(IToolPart toolPart) {
         JsonObject jsonObject = new JsonObject();
 
-        JsonObject json = new JsonObject();
-        json.addProperty("name", fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix())));
-        json.addProperty("prefix", toolPart.getPrefix());
-        json.addProperty("suffix", toolPart.getSuffix());
-
-        if (json.size() > 0) {
-            jsonObject.add("tool_part", json);
-        }
+        jsonObject.addProperty("name", fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix())));
+        jsonObject.addProperty("prefix", toolPart.getPrefix());
+        jsonObject.addProperty("suffix", toolPart.getSuffix());
 
         return jsonObject;
     }

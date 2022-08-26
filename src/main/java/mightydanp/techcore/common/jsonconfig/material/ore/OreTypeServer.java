@@ -88,7 +88,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.oreType.getFirst().getJsonObject(file.getName());
-                    IOreType oreType = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getFromJsonObject(jsonObject);
+                    IOreType oreType = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).fromJsonObject(jsonObject);
                     clientOreTypes.put(oreType.getName(), oreType);
                 }
 
@@ -155,7 +155,7 @@ public class OreTypeServer extends JsonConfigServer<IOreType> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.oreType.getFirst().getJsonObject(file.getName());
-                    IOreType oreType = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getFromJsonObject(jsonObject);
+                    IOreType oreType = ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).fromJsonObject(jsonObject);
 
                     String name = oreType.getName();
 

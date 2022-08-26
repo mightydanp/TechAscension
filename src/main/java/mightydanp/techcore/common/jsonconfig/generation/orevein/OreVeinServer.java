@@ -87,7 +87,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.oreVein.getFirst().getJsonObject(file.getName());
-                    OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).getFromJsonObject(jsonObject);
+                    OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).fromJsonObject(jsonObject);
                     clientOreVeins.put(oreVein.name, oreVein);
                 }
 
@@ -154,7 +154,7 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureConfig> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.oreVein.getFirst().getJsonObject(file.getName());
-                    OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).getFromJsonObject(jsonObject);
+                    OreVeinGenFeatureConfig oreVein = ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).fromJsonObject(jsonObject);
 
                     String name = oreVein.name;
 

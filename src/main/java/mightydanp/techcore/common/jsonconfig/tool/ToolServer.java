@@ -85,7 +85,7 @@ public class ToolServer extends JsonConfigServer<ITool> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.tool.getFirst().getJsonObject(file.getName());
-                    ITool tool = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).getFromJsonObject(jsonObject);
+                    ITool tool = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).fromJsonObject(jsonObject);
                     clientTools.put(tool.getName(), tool);
                 }
 
@@ -149,7 +149,7 @@ public class ToolServer extends JsonConfigServer<ITool> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.tool.getFirst().getJsonObject(file.getName());
-                    ITool tool = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).getFromJsonObject(jsonObject);
+                    ITool tool = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).fromJsonObject(jsonObject);
 
                     String name = tool.getName();
 
