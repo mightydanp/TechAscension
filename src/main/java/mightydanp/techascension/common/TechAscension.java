@@ -21,6 +21,7 @@ import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.tileentities.TileEntities;
 import mightydanp.techcore.common.tool.TCTools;
+import mightydanp.techcore.common.trait.TraitEventHandler;
 import mightydanp.techcore.server.DedicatedServerReference;
 import mightydanp.techascension.client.ModClientEvent;
 import mightydanp.techascension.common.blocks.ModBlocks;
@@ -95,6 +96,7 @@ public class TechAscension {
         MinecraftForge.EVENT_BUS.register(EventHandler.class);
         MinecraftForge.EVENT_BUS.register(TCToolHandler.class);
         MinecraftForge.EVENT_BUS.register(TreeEvents.class);
+        MinecraftForge.EVENT_BUS.register(TraitEventHandler.class);
 
 
         bus.addListener(ResourcePackEventHandler::addResourcePack);

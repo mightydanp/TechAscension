@@ -3,7 +3,7 @@ package mightydanp.techcore.common.handler;
 import mightydanp.techcore.common.items.BlockFuelItem;
 import mightydanp.techcore.common.libs.EnumTreeFlags;
 import mightydanp.techcore.common.blocks.LeaveBlock;
-import mightydanp.techcore.common.items.TCToolItem;
+import mightydanp.techcore.common.tool.TCToolItem;
 import mightydanp.techcore.common.items.TCCreativeModeTab;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.block.grower.OakTreeGrower;

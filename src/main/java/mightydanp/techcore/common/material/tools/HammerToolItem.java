@@ -1,6 +1,6 @@
-package mightydanp.techascension.common.tool.tools;
+package mightydanp.techcore.common.material.tools;
 
-import mightydanp.techcore.common.items.TCToolItem;
+import mightydanp.techcore.common.tool.TCToolItem;
 import net.minecraft.world.item.Item;
 
 /**

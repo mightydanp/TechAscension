@@ -3,7 +3,7 @@ package mightydanp.techcore.common.blocks;
 import mightydanp.techcore.common.blocks.state.TCBlockStateProperties;
 import mightydanp.techcore.common.crafting.recipe.HoleRecipe;
 import mightydanp.techcore.common.crafting.recipe.TCRecipes;
-import mightydanp.techcore.common.items.TCToolItem;
+import mightydanp.techcore.common.tool.TCToolItem;
 import mightydanp.techcore.common.tileentities.HoleTileEntity;
 import mightydanp.techascension.common.tileentities.ModBlockEntity;
 import net.minecraft.world.level.block.*;

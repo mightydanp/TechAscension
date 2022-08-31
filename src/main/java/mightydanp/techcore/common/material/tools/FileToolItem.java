@@ -1,7 +1,7 @@
-package mightydanp.techascension.common.tool.tools;
+package mightydanp.techcore.common.material.tools;
 
 import com.google.common.collect.ImmutableSet;
-import mightydanp.techcore.common.items.TCToolItem;
+import mightydanp.techcore.common.tool.TCToolItem;
 import mightydanp.techcore.common.items.TCCreativeModeTab;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.world.level.block.Blocks;

@@ -94,6 +94,7 @@ public class JsonConfigMultiFile<T> {
     public JsonObject getJsonObject(String name) {
         JsonObject jsonObject = new JsonObject();
         Path file;
+
         if(name.contains(".json")){
             file = Paths.get(getJsonFolderLocation() + "/" + jsonFolderName + "/" + name);
         }else{

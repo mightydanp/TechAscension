@@ -1,12 +1,15 @@
 package mightydanp.techcore.common.tool;
 
+import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.client.settings.keybindings.KeyBindings;
 import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.trait.item.IItemTrait;
 import mightydanp.techcore.common.tool.part.HandleItem;
-import mightydanp.techcore.common.items.TCToolItem;
 import mightydanp.techcore.common.tool.part.BindingItem;
 import mightydanp.techcore.common.tool.part.HeadItem;
 import mightydanp.techcore.common.libs.Ref;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -79,43 +82,71 @@ public class TCToolHandler {
         ItemStack offHandCheck = toolItemIn.heads.containsValue(offHand.getItem()) ? playerEntity.getOffhandItem() : (toolItemIn.handles.containsValue(offHand.getItem()) ? playerEntity.getOffhandItem() : null);
 
         if (toolItemIn.getParts() >= 2) {
-            if (mainHandCheck != null && offHandCheck != null && mainHandCheck.getDamageValue() != mainHandCheck.getMaxDamage() && offHandCheck.getDamageValue() != offHandCheck.getMaxDamage()) {
+            if (mainHandCheck != null && offHandCheck != null) {
+                if (mainHandCheck.getCount() == 1 && (mainHandCheck.getDamageValue() != mainHandCheck.getMaxDamage() || !mainHandCheck.isDamageableItem()) && offHandCheck.getCount() == 1 && (offHandCheck.getDamageValue() != offHandCheck.getMaxDamage() || !offHandCheck.isDamageableItem())) {
 
-                if (inventoryToolCheck(playerEntity, firstItemsNeeded) || (firstItemsThatCanBeUsed.size() != 0 && inventoryToolCheck(playerEntity, firstItemsThatCanBeUsed))) {
-                    if(inventoryToolCheck(playerEntity, firstItemsNeeded)){
-                        toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, firstItemsNeeded);
+                    if (inventoryToolCheck(playerEntity, firstItemsNeeded) || (firstItemsThatCanBeUsed.size() != 0 && inventoryToolCheck(playerEntity, firstItemsThatCanBeUsed))) {
+                        ItemStack headItemStack = mainHandCheck.getItem() instanceof HeadItem ? mainHandCheck : offHandCheck.getItem() instanceof HeadItem ? offHandCheck : null;
+                        ItemStack handleItemStack = mainHandCheck.getItem() instanceof HandleItem ? mainHandCheck : offHandCheck.getItem() instanceof HandleItem ? offHandCheck : null;
+
+                        itemStackHandler.setToolHead(toolItem, headItemStack);
+
+                        HeadItem toolHeadItem = (HeadItem) headItemStack.getItem();
+
+                        toolItemIn.setHeadColor(toolItem, toolHeadItem.color);
+
+                        if (toolItemIn.getParts() == 2) {
+                            toolItemIn.setAttackDamage(toolItem, toolHeadItem.attackDamage);
+                            toolItemIn.setEfficiency(toolItem, toolHeadItem.efficiency);
+                            toolItemIn.setToolLevel(toolItem, toolHeadItem.tools);
+                        }
+
+                        if (handleItemStack == null) {
+                            ItemStack stack = null;
+
+                            if (mainHandCheck == mainHand) {
+                                stack = mainHandCheck;
+                            } else if (offHandCheck == offHand) {
+                                stack = offHandCheck;
+                            }
+
+                            if (stack != null) {
+                                if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(stack.getItem().getRegistryName().getPath())) {
+                                    IItemTrait trait = (IItemTrait) TCJsonConfigs.itemTrait.getFirst().registryMap.get(stack.getItem().getRegistryName().getPath());
+                                    Float weight = trait.getPounds() != null ? trait.getPounds().floatValue() : trait.kilogramsToPounds(trait.getKilograms()).floatValue();
+
+                                    if (!stack.isDamageableItem()) {
+                                        CompoundTag tag = stack.getOrCreateTag();
+                                        tag.putInt("damage", 0);
+                                        tag.putInt("max_damage", trait.getMaxDamage());
+                                        stack.setTag(tag);
+                                    }
+
+                                    itemStackHandler.setToolHandle(toolItem, stack);
+
+                                    toolItemIn.setHandleColor(toolItem, trait.getColor());
+                                    toolItemIn.setAttackSpeed(toolItem, weight + toolHeadItem.weight);
+                                } else {
+                                    TechAscension.LOGGER.warn("The item " + stack.getItem().getRegistryName() + " does not have any traits set and connot be used as a handle for tool " + toolItemIn.name);
+                                }
+                            }
+                        } else {
+                            HandleItem toolHandleItem = (HandleItem) handleItemStack.getItem();
+                            toolItemIn.setHandleColor(toolItem, toolHandleItem.color);
+                            toolItemIn.setAttackSpeed(toolItem, toolHandleItem.weight + toolHeadItem.weight);
+                        }
+
+                        if (inventoryToolCheck(playerEntity, firstItemsNeeded)) {
+                            toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, firstItemsNeeded);
+                        }
+
+                        if (inventoryToolCheck(playerEntity, firstItemsThatCanBeUsed)) {
+                            toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, firstItemsThatCanBeUsed);
+                        }
+
+                        playerEntity.setItemInHand(InteractionHand.MAIN_HAND, toolItem);
+                        playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof TCToolItem ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                     }
-
-                    if(inventoryToolCheck(playerEntity, firstItemsThatCanBeUsed)){
-                        toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, firstItemsThatCanBeUsed);
-                    }
-
-                    itemStackHandler.setToolHead(toolItem, mainHandCheck.getItem() instanceof HeadItem ? mainHandCheck : offHandCheck);
-                    itemStackHandler.setToolHandle(toolItem, mainHandCheck.getItem() instanceof HandleItem ? mainHandCheck : offHandCheck);
-
-                    ItemStack handleItemStack = itemStackHandler.getToolHandle(toolItem);
-                    ItemStack headItemStack = itemStackHandler.getToolHead(toolItem);
-
-                    HandleItem toolHandleItem = (HandleItem) handleItemStack.getItem();
-                    HeadItem toolHeadItem = (HeadItem) headItemStack.getItem();
-
-                    toolItemIn.setHandleColor(toolItem, toolHandleItem.color);
-                    toolItemIn.setHeadColor(toolItem, toolHeadItem.color);
-
-                    toolItemIn.setAttackDamage(toolItem, toolHeadItem.attackDamage);
-                    toolItemIn.setEfficiency(toolItem, toolHeadItem.efficiency);
-                    toolItemIn.setToolLevel(toolItem, toolHeadItem.tools);
-
-                    if (toolItemIn.getParts() == 2) {
-                        toolItemIn.setAttackSpeed(toolItem, toolHandleItem.weight + toolHeadItem.weight);
-                    }
-
-                    Random random = new Random();
-
-                    //playerEntity.playSound(SoundEvents., 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
-
-                    playerEntity.setItemInHand(InteractionHand.MAIN_HAND, toolItem);
-                    playerEntity.setItemInHand(playerEntity.getMainHandItem().getItem() instanceof TCToolItem ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                 }
             }
         }
@@ -130,39 +161,79 @@ public class TCToolHandler {
             itemStackHandler = mainHand.getItem() instanceof TCToolItem ? ((TCToolItem)mainHand.getItem()).getInventory(mainHand) : offHand.getItem() instanceof TCToolItem ? ((TCToolItem)offHand.getItem()).getInventory(offHand) : null;
 
             if(itemStackHandler != null) {
-                if (mainHandCheck != null && offHandCheck != null && mainHandCheck.getDamageValue() != mainHandCheck.getMaxDamage() && offHandCheck.getDamageValue() != offHandCheck.getMaxDamage()) {
-                    if (inventoryToolCheck(playerEntity, secondItemsNeeded) || (secondItemsThatCanBeUsed.size() != 0 && inventoryToolCheck(playerEntity, secondItemsThatCanBeUsed))) {
-                        if (inventoryToolCheck(playerEntity, secondItemsNeeded)) {
-                            toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, secondItemsNeeded);
-                        }
+                if (mainHandCheck != null && offHandCheck != null){
+                    if (mainHandCheck.getCount() == 1 && (mainHandCheck.getDamageValue() != mainHandCheck.getMaxDamage() || !mainHandCheck.isDamageableItem()) && offHandCheck.getCount() == 1 && (offHandCheck.getDamageValue() != offHandCheck.getMaxDamage() || !offHandCheck.isDamageableItem())) {
+                        if (inventoryToolCheck(playerEntity, secondItemsNeeded) || (secondItemsThatCanBeUsed.size() != 0 && inventoryToolCheck(playerEntity, secondItemsThatCanBeUsed))) {
+                            ItemStack handleItemStack = mainHandCheck.getItem() instanceof HandleItem ? mainHandCheck : offHandCheck.getItem() instanceof HandleItem ? offHandCheck : null;
+                            ItemStack headItemStack = mainHandCheck.getItem() instanceof HeadItem ? mainHandCheck : offHandCheck.getItem() instanceof HeadItem ? offHandCheck : null;
+                            ItemStack bindingItemStack = mainHandCheck.getItem() instanceof BindingItem ? mainHandCheck : offHandCheck.getItem() instanceof BindingItem ? offHandCheck : null;
 
-                        if (inventoryToolCheck(playerEntity, secondItemsThatCanBeUsed)) {
-                            toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, secondItemsThatCanBeUsed);
-                        }
 
-                        toolItem = (mainHandCheck.getItem() instanceof TCToolItem ? mainHandCheck : offHandCheck);
-                        TCToolItem newToolItem = (TCToolItem) toolItem.getItem();
+                            toolItem = (mainHandCheck.getItem() instanceof TCToolItem ? mainHandCheck : offHandCheck);
+                            TCToolItem newToolItem = (TCToolItem) toolItem.getItem();
 
-                        itemStackHandler.setToolBinding(toolItem, mainHandCheck.getItem() instanceof BindingItem ? mainHandCheck : offHandCheck);
-                        ItemStack handleItemStack = itemStackHandler.getToolHandle(toolItem);
-                        ItemStack headItemStack = itemStackHandler.getToolHead(toolItem);
-                        ItemStack bindingItemStack = itemStackHandler.getToolBinding(toolItem);
-                        HandleItem handleItem = (HandleItem) handleItemStack.getItem();
-                        HeadItem headItem = (HeadItem) headItemStack.getItem();
-                        BindingItem bindingItem = (BindingItem) bindingItemStack.getItem();
+                            if (bindingItemStack == null) {
+                                ItemStack stack = null;
+                                if (mainHandCheck == mainHand) {
+                                    stack = mainHandCheck;
+                                } else if (offHandCheck == offHand) {
+                                    stack = offHandCheck;
+                                }
 
-                        newToolItem.setBindingColor(toolItem, bindingItem.color);
-                        newToolItem.setAttackDamage(toolItem, headItem.attackDamage);
-                        newToolItem.setEfficiency(toolItem, headItem.efficiency);
-                        newToolItem.setAttackSpeed(toolItem, handleItem.weight + headItem.weight + bindingItem.weight);
-                        newToolItem.setToolLevel(toolItem, headItem.tools);
+                                if (stack != null) {
+                                    if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(stack.getItem().getRegistryName().getPath())){
+                                        IItemTrait trait = (IItemTrait) TCJsonConfigs.itemTrait.getFirst().registryMap.get(stack.getItem().getRegistryName().getPath());
 
-                        if(playerEntity.getMainHandItem().getItem() instanceof TCToolItem){
-                            playerEntity.setItemInHand(InteractionHand.MAIN_HAND, toolItem);
-                            playerEntity.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
-                        }else{
-                            playerEntity.setItemInHand(InteractionHand.OFF_HAND, toolItem);
-                            playerEntity.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                                        CompoundTag tag = stack.getOrCreateTag();
+
+                                        if (!stack.isDamageableItem()) {
+
+                                            tag.putInt("damage", 0);
+                                            tag.putInt("max_damage", trait.getMaxDamage());
+                                            stack.setTag(tag);
+                                        }
+
+                                        itemStackHandler.setToolBinding(toolItem, stack);
+                                        Float weight = trait.getPounds() != null ? trait.getPounds().floatValue() : trait.kilogramsToPounds(trait.getKilograms()).floatValue();
+
+                                        newToolItem.setBindingColor(toolItem, trait.getColor());
+                                        newToolItem.setAttackSpeed(toolItem, newToolItem.getAttackSpeed(toolItem) + weight);
+                                    } else{
+                                        TechAscension.LOGGER.warn("The item " + stack.getItem().getRegistryName() + " does not have any traits set and connot be used as a handle for tool " + toolItemIn.name);
+                                    }
+                                }
+                            } else {
+                                BindingItem toolBindingItem = (BindingItem) bindingItemStack.getItem();
+                                toolItemIn.setBindingColor(toolItem, toolBindingItem.color);
+
+                                newToolItem.setAttackSpeed(toolItem, newToolItem.getAttackSpeed(toolItem) + toolBindingItem.weight);
+
+                                itemStackHandler.setToolBinding(toolItem, bindingItemStack);
+                            }
+
+                            if (toolItemIn.getParts() == 3) {
+                                HeadItem headItem = (HeadItem) itemStackHandler.getToolHead(toolItem).getItem();
+
+                                toolItemIn.setAttackDamage(toolItem, headItem.attackDamage);
+                                toolItemIn.setEfficiency(toolItem, headItem.efficiency);
+                                toolItemIn.setToolLevel(toolItem, headItem.tools);
+                            }
+
+                            if (inventoryToolCheck(playerEntity, secondItemsNeeded)) {
+                                toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, secondItemsNeeded);
+                            }
+
+                            if (inventoryToolCheck(playerEntity, secondItemsThatCanBeUsed)) {
+                                toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, secondItemsThatCanBeUsed);
+                            }
+
+                            if (playerEntity.getMainHandItem().getItem() instanceof TCToolItem) {
+                                playerEntity.setItemInHand(InteractionHand.MAIN_HAND, toolItem);
+                                playerEntity.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+                            } else {
+                                playerEntity.setItemInHand(InteractionHand.OFF_HAND, toolItem);
+                                playerEntity.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                            }
                         }
                     }
                 }

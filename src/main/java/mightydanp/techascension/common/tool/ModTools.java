@@ -11,9 +11,9 @@ import mightydanp.techascension.common.tool.part.TABindingItem;
 import mightydanp.techascension.common.tool.part.TADullHeadItem;
 import mightydanp.techascension.common.tool.part.TAHandleItem;
 import mightydanp.techascension.common.tool.part.TAHeadItem;
-import mightydanp.techascension.common.tool.tools.HammerToolItem;
-import mightydanp.techascension.common.tool.tools.KnifeToolItem;
-import mightydanp.techascension.common.tool.tools.PickaxeToolItem;
+import mightydanp.techcore.common.material.tools.HammerToolItem;
+import mightydanp.techcore.common.material.tools.KnifeToolItem;
+import mightydanp.techcore.common.material.tools.PickaxeToolItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
@@ -68,34 +68,34 @@ public class ModTools extends TCTools {
 
     public static void init(){
         tools.add(chisel = new TCTool(chiselName, 1, chiselEffectiveOn, chiselAssembleItems, chiselDisassembleItems,
-                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), true, chiselHandlePartItems, TAHandleItem.class),
+                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), true, true, chiselHandlePartItems, TAHandleItem.class),
                 null,
-                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, chiselHeadPartItems, TAHeadItem.class),
-                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), true, chiselBindingPartItems, TABindingItem.class),
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, true, chiselHeadPartItems, TAHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), false, false, chiselBindingPartItems, TABindingItem.class),
                 chiselTool = RegistryHandler.ITEMS.register(chiselName, ()-> new HammerToolItem().setName(chiselName).setEffectiveBlocks(chiselEffectiveOn).setAssembleItems(chiselAssembleItems).setDisassembleItems(chiselDisassembleItems))
         ));
 
         tools.add(hammer = new TCTool(hammerName, 1, hammerEffectiveOn, hammerAssembleItems, hammerDisassembleItems,
-                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), true, hammerHandlePartItems, TAHandleItem.class),
+                new PartHolders.handlePartHolder(new Pair<>("", "_wedge_handle"), false, true, hammerHandlePartItems, TAHandleItem.class),
                 null,
-                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, hammerHeadPartItems, TAHeadItem.class),
-                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), true, hammerBindingPartItems, TABindingItem.class),
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, true, hammerHeadPartItems, TAHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_wedge"), false, true, hammerBindingPartItems, TABindingItem.class),
                 hammerTool = RegistryHandler.ITEMS.register(hammerName, ()-> new HammerToolItem().setName(hammerName).setEffectiveBlocks(hammerEffectiveOn).setAssembleItems(hammerAssembleItems).setDisassembleItems(hammerDisassembleItems))
         ));
 
         tools.add(pickaxe = new TCTool(pickaxeName, 1, pickaxeEffectiveOn, pickaxeAssembleItems, pickaxeDisassembleItems,
-                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), true, pickaxeHandlePartItems, TAHandleItem.class),
-                new PartHolders.dullHeadPartHolder(new Pair<>("dull_", "_head"), true, TADullHeadItem.class),
-                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, pickaxeHeadPartItems, TAHeadItem.class),
-                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), true, pickaxeBindingPartItems, TABindingItem.class),
+                new PartHolders.handlePartHolder(new Pair<>("", "_wedge_handle"), false, true, pickaxeHandlePartItems, TAHandleItem.class),
+                new PartHolders.dullHeadPartHolder(new Pair<>("dull_", "_head"), false, false, TADullHeadItem.class),
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, true, pickaxeHeadPartItems, TAHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_wedge"), false, true, pickaxeBindingPartItems, TABindingItem.class),
                 pickaxeTool = RegistryHandler.ITEMS.register(pickaxeName, ()-> new PickaxeToolItem().setName(pickaxeName).setEffectiveBlocks(pickaxeEffectiveOn).setAssembleItems(pickaxeAssembleItems).setDisassembleItems(pickaxeDisassembleItems))
         ));
 
         tools.add(knife = new TCTool(knifeName, 1, knifeEffectiveOn, knifeAssembleItems, knifeDisassembleItems,
-                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), true, knifeHandlePartItems, TAHandleItem.class),
-                new PartHolders.dullHeadPartHolder(new Pair<>("dull_", "_head"), true, TADullHeadItem.class),
-                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, knifeHeadPartItems, TAHeadItem.class),
-                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), true, knifeBindingPartItems, TABindingItem.class),
+                new PartHolders.handlePartHolder(new Pair<>("", "_handle"), true, true, knifeHandlePartItems, TAHandleItem.class),
+                new PartHolders.dullHeadPartHolder(new Pair<>("dull_", "_head"), true, true, TADullHeadItem.class),
+                new PartHolders.headPartHolder(new Pair<>("", "_head"), true, true, knifeHeadPartItems, TAHeadItem.class),
+                new PartHolders.bindingPartHolder(new Pair<>("", "_binding"), false, false, knifeBindingPartItems, TABindingItem.class),
                 knifeTool = RegistryHandler.ITEMS.register(knifeName, ()-> new KnifeToolItem().setName(knifeName).setEffectiveBlocks(knifeEffectiveOn).setAssembleItems(knifeAssembleItems).setDisassembleItems(knifeDisassembleItems))
         ));
     }

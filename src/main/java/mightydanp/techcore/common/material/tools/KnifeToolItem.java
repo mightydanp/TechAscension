@@ -1,10 +1,10 @@
-package mightydanp.techascension.common.tool.tools;
+package mightydanp.techcore.common.material.tools;
 
 import mightydanp.techcore.common.blocks.HoleBlock;
 import mightydanp.techcore.common.blocks.TCBlocks;
 import mightydanp.techcore.common.crafting.recipe.HoleRecipe;
 import mightydanp.techcore.common.crafting.recipe.TCRecipes;
-import mightydanp.techcore.common.items.TCToolItem;
+import mightydanp.techcore.common.tool.TCToolItem;
 import mightydanp.techcore.common.tileentities.HoleTileEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;

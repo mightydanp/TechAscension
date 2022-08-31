@@ -3,8 +3,6 @@ package mightydanp.techcore.common.jsonconfig.trait.item;
 import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
-import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -21,11 +19,9 @@ public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
         setJsonFolderName("trait/item");
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
-        /*
         for (DefaultItemTrait itemTrait : DefaultItemTrait.values()) {
             register(itemTrait);
         }
-        */
 
         buildJson();
         loadExistJson();
@@ -34,8 +30,9 @@ public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
 
     @Override
     public void register(IItemTrait itemTraitIn) {
-        String registry = itemTraitIn.getRegistry();
-        if (registryMap.containsKey(itemTraitIn.getRegistry()))
+        String registry = itemTraitIn.getRegistry().split(":")[1];
+
+        if (registryMap.containsKey(registry))
             throw new IllegalArgumentException("item trait for registry item(" + registry + "), already exists.");
         registryMap.put(registry, itemTraitIn);
     }
@@ -50,10 +47,11 @@ public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
 
     public void buildJson(){
         for(IItemTrait itemTrait : registryMap.values()) {
-            JsonObject jsonObject = getJsonObject(itemTrait.getRegistry());
+            String registry = itemTrait.getRegistry().split(":")[1];
+            JsonObject jsonObject = getJsonObject(registry);
 
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(itemTrait.getRegistry(), toJsonObject(itemTrait));
+                this.saveJsonObject(registry, toJsonObject(itemTrait));
             }
         }
     }
@@ -68,8 +66,9 @@ public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
                         IItemTrait itemTrait = fromJsonObject(jsonObject);
+                        String registry = itemTrait.getRegistry().split(":")[1];
 
-                        registryMap.put(itemTrait.getRegistry(), itemTrait);
+                        registryMap.put(registry, itemTrait);
                     } else {
                         TechAscension.LOGGER.fatal("[{}] could not be added to item trait because a item trait already exist!!", file.getAbsolutePath());
                     }
@@ -95,33 +94,49 @@ public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
             }
 
             @Override
-            public Integer getDurability() {
-                return jsonObjectIn.get("durability").getAsInt();
+            public Integer getMaxDamage() {
+                return jsonObjectIn.get("max_damage").getAsInt();
             }
 
             @Override
-            public ITextureIcon getTextureIcon() {
-                return (ITextureIcon)TCJsonConfigs.textureIcon.getFirst().registryMap.get(jsonObjectIn.get("texture_icon").getAsString());
+            public String getTextureIcon() {
+                return jsonObjectIn.get("texture_icon").getAsString();
             }
 
             @Override
             public Double getPounds() {
-                return jsonObjectIn.get("pounds").getAsDouble();
+                if(jsonObjectIn.get("pounds") == null){
+                    return null;
+                }else {
+                    return jsonObjectIn.get("pounds").getAsDouble();
+                }
             }
 
             @Override
             public Double getKilograms() {
-                return jsonObjectIn.get("kilograms").getAsDouble();
+                if(jsonObjectIn.get("kilograms") == null){
+                    return null;
+                }else {
+                    return jsonObjectIn.get("kilograms").getAsDouble();
+                }
             }
 
             @Override
             public Double getMeters() {
-                return jsonObjectIn.get("meters").getAsDouble();
+                if(jsonObjectIn.get("meters") == null){
+                    return null;
+                }else {
+                    return jsonObjectIn.get("meters").getAsDouble();
+                }
             }
 
             @Override
             public Double getYards() {
-                return jsonObjectIn.get("yards").getAsDouble();
+                if(jsonObjectIn.get("yards") == null){
+                    return null;
+                }else {
+                    return jsonObjectIn.get("yards").getAsDouble();
+                }
             }
         };
     }
@@ -131,8 +146,8 @@ public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
 
         jsonObject.addProperty("registry", itemTrait.getRegistry());
         jsonObject.addProperty("color", itemTrait.getColor());
-        jsonObject.addProperty("durability", itemTrait.getDurability());
-        jsonObject.addProperty("texture_icon", itemTrait.getTextureIcon().getName());
+        jsonObject.addProperty("max_damage", itemTrait.getMaxDamage());
+        jsonObject.addProperty("texture_icon", itemTrait.getTextureIcon());
 
 
         if(itemTrait.getPounds() != null) {
@@ -141,6 +156,14 @@ public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
 
         if(itemTrait.getKilograms() != null) {
             jsonObject.addProperty("kilograms", itemTrait.getKilograms());
+        }
+
+        if(itemTrait.getMeters() != null) {
+            jsonObject.addProperty("meters", itemTrait.getKilograms());
+        }
+
+        if(itemTrait.getYards() != null) {
+            jsonObject.addProperty("yards", itemTrait.getKilograms());
         }
 
         return jsonObject;

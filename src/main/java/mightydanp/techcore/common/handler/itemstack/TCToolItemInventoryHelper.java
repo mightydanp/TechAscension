@@ -38,19 +38,11 @@ public class TCToolItemInventoryHelper{
     }
 
     public ItemStack getToolHandle(ItemStack toolIn) {
-        CompoundTag tag = toolIn.getOrCreateTag().getCompound("inventory");
-        ItemStack itemStack = getInventory(toolIn).get(0);
-        if(itemStack.getItem() instanceof HandleItem){
-            return itemStack;
-        }
-
-        return null;
+        return getInventory(toolIn).get(0);
     }
 
     public void setToolHandle(ItemStack toolIn, ItemStack itemStackIn) {
-        if(itemStackIn.getItem() instanceof HandleItem){
-            inventory.set(0, itemStackIn);
-        }
+        inventory.set(0, itemStackIn);
 
         CompoundTag tag = toolIn.getOrCreateTag().getCompound("inventory");
         ContainerHelper.saveAllItems(tag, inventory);
@@ -59,17 +51,11 @@ public class TCToolItemInventoryHelper{
     }
 
     public ItemStack getToolHead(ItemStack toolIn) {
-        ItemStack itemStack = getInventory(toolIn).get(1);
-        if(itemStack.getItem() instanceof HeadItem){
-            return itemStack;
-        }
-        return null;
+        return getInventory(toolIn).get(1);
     }
 
     public void setToolHead(ItemStack toolIn, ItemStack itemStackIn) {
-        if(itemStackIn.getItem() instanceof HeadItem){
-            inventory.set(1, itemStackIn);
-        }
+        inventory.set(1, itemStackIn);
 
         CompoundTag tag = toolIn.getOrCreateTag().getCompound("inventory");
         ContainerHelper.saveAllItems(tag, inventory);
@@ -78,17 +64,11 @@ public class TCToolItemInventoryHelper{
     }
 
     public ItemStack getToolBinding(ItemStack toolIn) {
-        ItemStack itemStack = getInventory(toolIn).get(2);
-        if(itemStack.getItem() instanceof BindingItem){
-            return itemStack;
-        }
-        return null;
+        return getInventory(toolIn).get(2);
     }
 
     public void setToolBinding(ItemStack toolIn, ItemStack itemStackIn) {
-        if(itemStackIn.getItem() instanceof BindingItem){
-            inventory.set(2, itemStackIn);
-        }
+        inventory.set(2, itemStackIn);
 
         CompoundTag tag = toolIn.getOrCreateTag().getCompound("inventory");
         ContainerHelper.saveAllItems(tag, inventory);

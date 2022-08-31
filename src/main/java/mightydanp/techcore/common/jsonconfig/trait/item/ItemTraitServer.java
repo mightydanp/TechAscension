@@ -6,7 +6,6 @@ import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
-import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -185,6 +184,7 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
     public void singleToBuffer(FriendlyByteBuf buffer, IItemTrait itemTrait) {
         buffer.writeUtf(itemTrait.getRegistry());
         buffer.writeVarInt(itemTrait.getColor());
+        buffer.writeVarInt(itemTrait.getMaxDamage());
 
         if(itemTrait.getPounds() != null && itemTrait.getKilograms() == null) {
             buffer.writeUtf("pounds");
@@ -230,13 +230,13 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
             }
 
             @Override
-            public Integer getDurability() {
+            public Integer getMaxDamage() {
                 return buffer.readVarInt();
             }
 
             @Override
-            public ITextureIcon getTextureIcon() {
-                return (ITextureIcon)TCJsonConfigs.textureIcon.getFirst().registryMap.get(buffer.readUtf());
+            public String getTextureIcon() {
+                return buffer.readUtf();
             }
 
             final String weight = buffer.readUtf();

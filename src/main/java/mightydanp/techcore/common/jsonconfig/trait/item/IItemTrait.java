@@ -1,7 +1,5 @@
 package mightydanp.techcore.common.jsonconfig.trait.item;
 
-import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
-
 public interface IItemTrait {
     String getRegistry();
     //weight
@@ -30,7 +28,7 @@ public interface IItemTrait {
 
     //tool properties
     Integer getColor();
-    Integer getDurability();
-    ITextureIcon getTextureIcon();
+    Integer getMaxDamage();
+    String getTextureIcon();
 
 }

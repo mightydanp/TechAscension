@@ -32,8 +32,8 @@ public class BlockTraitRegistry extends JsonConfigMultiFile<IBlockTrait> {
 
     @Override
     public void register(IBlockTrait blockTraitIn) {
-        String registry = blockTraitIn.getRegistry();
-        if (registryMap.containsKey(blockTraitIn.getRegistry()))
+        String registry = blockTraitIn.getRegistry().split(":")[1];
+        if (registryMap.containsKey(registry))
             throw new IllegalArgumentException("block trait for registry block(" + registry + "), already exists.");
         registryMap.put(registry, blockTraitIn);
     }
@@ -48,10 +48,11 @@ public class BlockTraitRegistry extends JsonConfigMultiFile<IBlockTrait> {
 
     public void buildJson(){
         for(IBlockTrait blockTrait : registryMap.values()) {
-            JsonObject jsonObject = getJsonObject(blockTrait.getRegistry());
+            String registry = blockTrait.getRegistry().split(":")[1];
+            JsonObject jsonObject = getJsonObject(registry);
 
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(blockTrait.getRegistry(), toJsonObject(blockTrait));
+                this.saveJsonObject(registry, toJsonObject(blockTrait));
             }
         }
     }
@@ -66,8 +67,9 @@ public class BlockTraitRegistry extends JsonConfigMultiFile<IBlockTrait> {
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
                         IBlockTrait blockTrait = fromJsonObject(jsonObject);
+                        String registry = blockTrait.getRegistry().split(":")[1];
 
-                        registryMap.put(blockTrait.getRegistry(), blockTrait);
+                        registryMap.put(registry, blockTrait);
                     } else {
                         TechAscension.LOGGER.fatal("[{}] could not be added to block trait because a block trait already exist!!", file.getAbsolutePath());
                     }

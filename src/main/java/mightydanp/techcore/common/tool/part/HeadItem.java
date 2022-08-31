@@ -22,7 +22,6 @@ public class HeadItem extends ToolPart {
 
     public Map<String, Integer> tools = new HashMap<>();
     public Float attackDamage;
-    public Float weight;
 
     public HeadItem(Properties properties) {
         super(properties);
