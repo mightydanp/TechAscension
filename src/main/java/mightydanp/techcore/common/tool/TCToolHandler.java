@@ -111,8 +111,8 @@ public class TCToolHandler {
                             }
 
                             if (stack != null) {
-                                if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(stack.getItem().getRegistryName().getPath())) {
-                                    IItemTrait trait = (IItemTrait) TCJsonConfigs.itemTrait.getFirst().registryMap.get(stack.getItem().getRegistryName().getPath());
+                                if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(stack.getItem().getRegistryName()).toString())) {
+                                    IItemTrait trait = (IItemTrait) TCJsonConfigs.itemTrait.getFirst().registryMap.get(Objects.requireNonNull(stack.getItem().getRegistryName()).toString());
                                     Float weight = trait.getPounds() != null ? trait.getPounds().floatValue() : trait.kilogramsToPounds(trait.getKilograms()).floatValue();
 
                                     if (!stack.isDamageableItem()) {
@@ -181,8 +181,8 @@ public class TCToolHandler {
                                 }
 
                                 if (stack != null) {
-                                    if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(stack.getItem().getRegistryName().getPath())){
-                                        IItemTrait trait = (IItemTrait) TCJsonConfigs.itemTrait.getFirst().registryMap.get(stack.getItem().getRegistryName().getPath());
+                                    if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(stack.getItem().getRegistryName()).toString())){
+                                        IItemTrait trait = (IItemTrait) TCJsonConfigs.itemTrait.getFirst().registryMap.get(Objects.requireNonNull(stack.getItem().getRegistryName()).toString());
 
                                         CompoundTag tag = stack.getOrCreateTag();
 

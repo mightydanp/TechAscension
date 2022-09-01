@@ -2,17 +2,17 @@ package mightydanp.techcore.common.jsonconfig.trait.item;
 
 import com.google.gson.JsonObject;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFileDirectory;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
+public class ItemTraitRegistry extends JsonConfigMultiFileDirectory<IItemTrait> {
 
     @Override
     public void initiate() {
@@ -30,11 +30,9 @@ public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
 
     @Override
     public void register(IItemTrait itemTraitIn) {
-        String registry = itemTraitIn.getRegistry().split(":")[1];
-
-        if (registryMap.containsKey(registry))
-            throw new IllegalArgumentException("item trait for registry item(" + registry + "), already exists.");
-        registryMap.put(registry, itemTraitIn);
+        if (registryMap.containsKey(itemTraitIn.getRegistry()))
+            throw new IllegalArgumentException("item trait for registry item(" + itemTraitIn.getRegistry() + "), already exists.");
+        registryMap.put(itemTraitIn.getRegistry(), itemTraitIn);
     }
 
     public IItemTrait getItemTraitByName(String item_trait) {
@@ -47,11 +45,10 @@ public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
 
     public void buildJson(){
         for(IItemTrait itemTrait : registryMap.values()) {
-            String registry = itemTrait.getRegistry().split(":")[1];
-            JsonObject jsonObject = getJsonObject(registry);
+            JsonObject jsonObject = getJsonObject(itemTrait.getRegistry());
 
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(registry, toJsonObject(itemTrait));
+                this.saveJsonObject(itemTrait.getRegistry(), toJsonObject(itemTrait));
             }
         }
     }
@@ -59,22 +56,30 @@ public class ItemTraitRegistry extends JsonConfigMultiFile<IItemTrait> {
     public void loadExistJson(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
-        if(path.toFile().listFiles() != null) {
-            for (final File file : Objects.requireNonNull(path.toFile().listFiles())) {
-                if (file.getName().contains(".json")) {
-                    JsonObject jsonObject = getJsonObject(file.getName());
+        List<File> folders = Arrays.stream(Objects.requireNonNull(path.toFile().listFiles())).filter(file -> !file.getName().contains(".")).toList();
 
-                    if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        IItemTrait itemTrait = fromJsonObject(jsonObject);
-                        String registry = itemTrait.getRegistry().split(":")[1];
+        if(path.toFile().listFiles() != null && folders.size() > 0) {
+            for(File folder : folders){
+                if(folder.listFiles() != null) {
+                    for (final File file : Objects.requireNonNull(folder.listFiles())) {
+                        if (file.getName().contains(".json")) {
+                            JsonObject jsonObject = getJsonObject(new ResourceLocation(folder.getName(), file.getName().replace(".json", "")).toString());
 
-                        registryMap.put(registry, itemTrait);
-                    } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to item trait because a item trait already exist!!", file.getAbsolutePath());
+                            if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
+                                IItemTrait itemTrait = fromJsonObject(jsonObject);
+                                String registry = itemTrait.getRegistry();
+
+                                registryMap.put(registry, itemTrait);
+                            } else {
+                                TechAscension.LOGGER.fatal("[{}] could not be added to item trait because a item trait already exist!!", file.getAbsolutePath());
+                            }
+                        }
                     }
+                } else {
+                    TechAscension.LOGGER.warn(new CrashReport("item trait json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
                 }
             }
-        } else {
+        }  else {
             TechAscension.LOGGER.warn(new CrashReport("item trait json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }

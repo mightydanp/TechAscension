@@ -29,9 +29,8 @@ public class JsonConfigSingleFile {
         jsonFileLocation = Paths.get(jsonFolderLocation + "/" + Ref.mod_id + jsonFilename);
     }
 
-    public JsonConfigSingleFile addToCategoryInConfig(String category, JsonObject jsonObject){
+    public void addToCategoryInConfig(String category, JsonObject jsonObject){
         config.put(category, jsonObject);
-        return this;
     }
 
     public JsonElement getConfigFromCategory(String category, String config){
@@ -130,10 +129,9 @@ public class JsonConfigSingleFile {
 
                     while ((line = bufferedReader.readLine()) != null) {
                         stringBuilder.append(line);
-                        //System.out.println(line);
                     }
 
-                    jsonObject = new JsonParser().parse(stringBuilder.toString()).getAsJsonObject();
+                    jsonObject = JsonParser.parseString(stringBuilder.toString()).getAsJsonObject();
 
                     return jsonObject;
                 }

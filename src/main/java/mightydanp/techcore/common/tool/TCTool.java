@@ -367,8 +367,8 @@ public class TCTool {
                                     Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(registry.split(":")[0], (registry.split(":")[1])));
 
                                     if (item != null) {
-                                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(item.getRegistryName()).getPath()))
-                                            ((TCToolItem) toolItemIn.get()).handles.put(item.getRegistryName().getPath(), item);
+                                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(item.getRegistryName()).toString()))
+                                            ((TCToolItem) toolItemIn.get()).handles.put(item.getRegistryName().toString(), item);
                                     }
                                 }
                             }
@@ -450,8 +450,8 @@ public class TCTool {
                                     Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(registry.split(":")[0], (registry.split(":")[1])));
 
                                     if (item != null) {
-                                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(item.getRegistryName()).getPath()))
-                                            ((TCToolItem) toolItemIn.get()).heads.put(item.getRegistryName().getPath(), item);
+                                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(item.getRegistryName()).toString()))
+                                            ((TCToolItem) toolItemIn.get()).heads.put(item.getRegistryName().toString(), item);
                                     }
                                 }
                             }
@@ -498,8 +498,8 @@ public class TCTool {
                                     Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(registry.split(":")[0], (registry.split(":")[1])));
 
                                     if (item != null) {
-                                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(item.getRegistryName()).getPath()))
-                                            ((TCToolItem) toolItemIn.get()).bindings.put(item.getRegistryName().getPath(), item);
+                                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(item.getRegistryName()).toString()))
+                                            ((TCToolItem) toolItemIn.get()).bindings.put(item.getRegistryName().toString(), item);
                                     }
                                 }
                             }

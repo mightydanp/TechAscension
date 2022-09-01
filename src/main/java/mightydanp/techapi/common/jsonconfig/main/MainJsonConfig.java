@@ -23,11 +23,10 @@ public class MainJsonConfig extends JsonConfigSingleFile {
 
     }
 
-    public MainJsonConfig setFolderLocation(String folderLocation) {
+    public void setFolderLocation(String folderLocation) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("folder_location", folderLocation);
         addToCategoryInConfig("json_config", jsonObject);
-        return this;
     }
 
     public String getFolderLocation() {

@@ -1,7 +1,7 @@
 package mightydanp.techapi.common.jsonconfig.sync.network.message;
 
 import com.mojang.datafixers.util.Pair;
-import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techapi.common.jsonconfig.IJsonConfig;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techcore.common.libs.Ref;
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * Created by MightyDanp on 12/27/2021.
  */
 public class SyncMessage {
-    private Map<Integer, List<?>> configs = new HashMap<>();
+    private final Map<Integer, List<?>> configs = new HashMap<>();
 
     private final boolean isSinglePlayer;
     private final String singlePlayerWorldName;
@@ -64,7 +64,7 @@ public class SyncMessage {
         buffer.writeUtf(message.singlePlayerWorldName);
 
         for(int i = 0; i < ConfigSync.configs.size(); i++){
-            Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
+            Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
             config.getSecond().multipleToBuffer(message, buffer);
         }
 
@@ -74,7 +74,7 @@ public class SyncMessage {
         context.get().enqueueWork(() -> {
 
             for(int i = 0; i < ConfigSync.configs.size(); i++){
-                Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
+                Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
                 config.getSecond().loadFromServer(message);
             }
 
@@ -83,7 +83,7 @@ public class SyncMessage {
                 ConfigSync.singlePlayerWorldName = "";
 
                 for(int i = 0; i < ConfigSync.configs.size(); i++){
-                    Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
+                    Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
                     config.getSecond().isClientAndServerConfigsSynced(message);
                 }
 
@@ -92,7 +92,7 @@ public class SyncMessage {
                 ConfigSync.singlePlayerWorldName = message.getSinglePlayerWorldName();
 
                 for(int i = 0; i < ConfigSync.configs.size(); i++){
-                    Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
+                    Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
                     config.getSecond().isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
                 }
             }

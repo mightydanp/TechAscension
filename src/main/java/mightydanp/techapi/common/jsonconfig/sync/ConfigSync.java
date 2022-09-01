@@ -1,6 +1,7 @@
 package mightydanp.techapi.common.jsonconfig.sync;
 
 import com.mojang.datafixers.util.Pair;
+import mightydanp.techapi.common.jsonconfig.IJsonConfig;
 import mightydanp.techapi.common.jsonconfig.sync.gui.screen.SyncScreen;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.NetworkHandler;
@@ -42,7 +43,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class ConfigSync {
     public static Map<String, Boolean> syncedJson = new HashMap<>();
-    public static Map<Integer, Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>> configs = new HashMap<>();
+    public static Map<Integer, Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>> configs = new HashMap<>();
 
     public static boolean isSinglePlayer;
     public static String singlePlayerWorldName;
@@ -50,7 +51,7 @@ public class ConfigSync {
 
     public static void init(){
         for(int i = 0; i < configs.size(); i++){
-            Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = configs.get(i);
+            Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = configs.get(i);
 
             config.getFirst().initiate();
             configs.put(i, config);
@@ -87,7 +88,7 @@ public class ConfigSync {
             SyncMessage syncMessage = new SyncMessage(isSinglePlayer, singlePlayerWorldName);
 
             for(int i = 0; i < configs.size(); i++){
-                Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = configs.get(i);
+                Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = configs.get(i);
                 syncMessage.setConfig(i, config.getFirst().getAllValues());
             }
 
@@ -125,22 +126,6 @@ public class ConfigSync {
         }
     }
 
-    /*
-    @SubscribeEvent
-    public static void onLoadChunk(ChunkEvent.Load event){
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-
-        if (server != null){
-            if(server.isSingleplayer()) {
-                if (!TechAscension.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(FolderName.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id  + "/" + Ref.mod_id)) {
-                    server.close();
-                }
-            }
-        }
-    }
-
-     */
-
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onDisconnect(ScreenOpenEvent event) {
@@ -159,7 +144,7 @@ public class ConfigSync {
                     if (event.getScreen() instanceof ProgressScreen) {
                         if (!(new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id).exists()) && !TechAscension.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id)) {
                             for(int i = 0; i < configs.size(); i++){
-                                Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = configs.get(i);
+                                Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = configs.get(i);
                                 try {
                                     config.getSecond().syncClientWithSinglePlayerWorld("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
                                 } catch (IOException e) {

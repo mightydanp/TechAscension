@@ -1,7 +1,7 @@
 package mightydanp.techcore.common.jsonconfig;
 
 import com.mojang.datafixers.util.Pair;
-import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techapi.common.jsonconfig.IJsonConfig;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techcore.common.jsonconfig.flag.MaterialFlagRegistry;
@@ -57,21 +57,21 @@ public class TCJsonConfigs extends ConfigSync {
     public static int handCraftingID = 14;
 
 
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> materialFlag = configs.getOrDefault(materialFlagID, new Pair<>(new MaterialFlagRegistry(),  new MaterialFlagServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> fluidState = configs.getOrDefault(fluidStateID, new Pair<>(new FluidStateRegistry(),  new FluidStateServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreType = configs.getOrDefault(oreTypeID, new Pair<>(new OreTypeRegistry(),  new OreTypeServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  textureIcon = configs.getOrDefault(textureIconID, new Pair<>(new TextureIconRegistry(),  new TextureIconServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  toolPart = configs.getOrDefault(toolPartID, new Pair<>(new ToolPartRegistry(),  new ToolPartServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  tool = configs.getOrDefault(toolID, new Pair<>(new ToolRegistry(),  new ToolServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  stoneLayer = configs.getOrDefault(stoneLayerID, new Pair<>(new StoneLayerRegistry(),  new StoneLayerServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  material = configs.getOrDefault(materialID, new Pair<>(new MaterialRegistry(),  new MaterialServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  oreVein = configs.getOrDefault(oreVeinID, new Pair<>(new OreVeinRegistry(),  new OreVeinServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  smallOre = configs.getOrDefault(smallOreID, new Pair<>(new SmallOreVeinRegistry(),  new SmallOreVeinServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  blocksInWater = configs.getOrDefault(blocksInWaterID, new Pair<>(new BlocksInWaterRegistry(),  new BlocksInWaterServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  randomSurface = configs.getOrDefault(randomSurfaceID, new Pair<>(new RandomSurfaceRegistry(),  new RandomSurfaceServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  blockTrait = configs.getOrDefault(blockTraitID, new Pair<>(new BlockTraitRegistry(),  new BlockTraitServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  itemTrait = configs.getOrDefault(blockTraitID, new Pair<>(new ItemTraitRegistry(),  new ItemTraitServer()));
-    public static Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>>  handCrafting = configs.getOrDefault(handCraftingID, new Pair<>(new HandCraftingRegistry(),  new HandCraftingServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> materialFlag = configs.getOrDefault(materialFlagID, new Pair<>(new MaterialFlagRegistry(),  new MaterialFlagServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> fluidState = configs.getOrDefault(fluidStateID, new Pair<>(new FluidStateRegistry(),  new FluidStateServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  oreType = configs.getOrDefault(oreTypeID, new Pair<>(new OreTypeRegistry(),  new OreTypeServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  textureIcon = configs.getOrDefault(textureIconID, new Pair<>(new TextureIconRegistry(),  new TextureIconServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  toolPart = configs.getOrDefault(toolPartID, new Pair<>(new ToolPartRegistry(),  new ToolPartServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  tool = configs.getOrDefault(toolID, new Pair<>(new ToolRegistry(),  new ToolServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  stoneLayer = configs.getOrDefault(stoneLayerID, new Pair<>(new StoneLayerRegistry(),  new StoneLayerServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  material = configs.getOrDefault(materialID, new Pair<>(new MaterialRegistry(),  new MaterialServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  oreVein = configs.getOrDefault(oreVeinID, new Pair<>(new OreVeinRegistry(),  new OreVeinServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  smallOre = configs.getOrDefault(smallOreID, new Pair<>(new SmallOreVeinRegistry(),  new SmallOreVeinServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  blocksInWater = configs.getOrDefault(blocksInWaterID, new Pair<>(new BlocksInWaterRegistry(),  new BlocksInWaterServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  randomSurface = configs.getOrDefault(randomSurfaceID, new Pair<>(new RandomSurfaceRegistry(),  new RandomSurfaceServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  blockTrait = configs.getOrDefault(blockTraitID, new Pair<>(new BlockTraitRegistry(),  new BlockTraitServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  itemTrait = configs.getOrDefault(blockTraitID, new Pair<>(new ItemTraitRegistry(),  new ItemTraitServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  handCrafting = configs.getOrDefault(handCraftingID, new Pair<>(new HandCraftingRegistry(),  new HandCraftingServer()));
 
     public static void init() {
         configs.put(materialFlagID, materialFlag);

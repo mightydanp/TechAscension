@@ -8,6 +8,7 @@ import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -68,43 +69,47 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, IItemTrait> clientItemTraits = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/item_trait");
-        File[] files = configs.toFile().listFiles();
+        Path path = Paths.get(singlePlayerConfigs + "/trait/item");
+        List<File> folders = Arrays.stream(Objects.requireNonNull(path.toFile().listFiles())).filter(file -> !file.getName().contains(".")).toList();
+        for(File folder : folders) {
 
-        if(files != null){
-            if(getServerMap().size() != files.length){
-                sync.set(false);
-                ConfigSync.syncedJson.put("item_trait", sync.get());
-                return false;
-            }
+            File[] files = folder.listFiles();
 
-            if(files.length > 0){
-
-                for(File file : files){
-                    JsonObject jsonObject = TCJsonConfigs.itemTrait.getFirst().getJsonObject(file.getName());
-                    IItemTrait itemTrait = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).fromJsonObject(jsonObject);
-                    clientItemTraits.put(itemTrait.getRegistry(), itemTrait);
+            if (files != null) {
+                if (getServerMap().size() != files.length) {
+                    sync.set(false);
+                    ConfigSync.syncedJson.put("item_trait", sync.get());
+                    return false;
                 }
 
-                getServerMap().values().forEach(serverItemTrait -> {
-                    sync.set(clientItemTraits.containsKey(serverItemTrait.getRegistry()));
+                if (files.length > 0) {
 
-                    if(sync.get()) {
-                        IItemTrait clientItemTrait = getServerMap().get(serverItemTrait.getRegistry());
-                        JsonObject jsonMaterial = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(serverItemTrait);
-                        JsonObject materialJson = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(clientItemTrait);
-
-                        sync.set(materialJson.equals(jsonMaterial));
+                    for (File file : files) {
+                        JsonObject jsonObject = TCJsonConfigs.itemTrait.getFirst().getJsonObject(file.getParentFile().getName() + ":" + file.getName().replace(".json", ""));
+                        IItemTrait itemTrait = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).fromJsonObject(jsonObject);
+                        clientItemTraits.put(itemTrait.getRegistry(), itemTrait);
                     }
 
-                });
-            }
+                    getServerMap().values().forEach(serverItemTrait -> {
+                        sync.set(clientItemTraits.containsKey(serverItemTrait.getRegistry()));
 
-        }else{
-            if(getServerMap().size() > 0) {
-                sync.set(false);
-                ConfigSync.syncedJson.put("item_trait", sync.get());
-                return false;
+                        if (sync.get()) {
+                            IItemTrait clientItemTrait = getServerMap().get(serverItemTrait.getRegistry());
+                            JsonObject jsonMaterial = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(serverItemTrait);
+                            JsonObject materialJson = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(clientItemTrait);
+
+                            sync.set(materialJson.equals(jsonMaterial));
+                        }
+
+                    });
+                }
+
+            } else {
+                if (getServerMap().size() > 0) {
+                    sync.set(false);
+                    ConfigSync.syncedJson.put("item_trait", sync.get());
+                    return false;
+                }
             }
         }
 
@@ -114,25 +119,28 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
     }
 
     public void syncClientWithServer(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/item_trait");
+        Path path = Paths.get("config/" + Ref.mod_id + "/server" + "/trait/item");
 
-        if(serverConfigFolder.toFile().listFiles() != null) {
-            for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
-                Files.deleteIfExists(Paths.get(file.getAbsolutePath()));
+        List<File> folders = Arrays.stream(Objects.requireNonNull(path.toFile().listFiles())).filter(file -> !file.getName().contains(".")).toList();
+
+        for(File folder : folders) {
+            if (folder.listFiles() != null) {
+                for (File file : Objects.requireNonNull(folder.listFiles())) {
+                    Files.deleteIfExists(Paths.get(file.getAbsolutePath()));
+                }
             }
-        }
 
-        for (IItemTrait itemTrait : getServerMap().values()) {
-            String name = itemTrait.getRegistry();
-            Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(itemTrait);
-            String s = GSON.toJson(jsonObject);
-            if (!Files.exists(materialFile)) {
-                Files.createDirectories(materialFile.getParent());
+            for (IItemTrait itemTrait : getServerMap().values()) {
+                String name = itemTrait.getRegistry();
+                Path file = Paths.get(folder + "/" + name + ".json");
+                JsonObject jsonObject = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(itemTrait);
+                String s = GSON.toJson(jsonObject);
+                if (!Files.exists(file)) {
+                    Files.createDirectories(file.getParent());
 
-                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
-                    bufferedwriter.write(s);
+                    try (BufferedWriter bufferedwriter = Files.newBufferedWriter(file)) {
+                        bufferedwriter.write(s);
+                    }
                 }
             }
         }
@@ -140,24 +148,27 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
 
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/item_trait");
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/item_trait");
+        Path path = Paths.get(folderName + "/trait/item");
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/trait/item");
+        List<File> folders = Arrays.stream(Objects.requireNonNull(path.toFile().listFiles())).filter(file -> !file.getName().contains(".")).toList();
 
-        if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
-            if(configFolder.toFile().listFiles() != null){
-                for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
-                    JsonObject jsonObject = TCJsonConfigs.itemTrait.getFirst().getJsonObject(file.getName());
-                    IItemTrait itemTrait = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).fromJsonObject(jsonObject);
+        if (configFolder.toFile().listFiles() != null) {
+            for(File folder : folders) {
+                 if (folder.listFiles() == null){
+                    for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
+                        JsonObject jsonObject = TCJsonConfigs.itemTrait.getFirst().getJsonObject(file.getParentFile().getName() + ":" + file.getName());
+                        IItemTrait itemTrait = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = itemTrait.getRegistry();
+                        String name = itemTrait.getRegistry();
 
-                    Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
-                    if (!Files.exists(materialFile)) {
-                        Files.createDirectories(materialFile.getParent());
+                        Path materialFile = Paths.get(folder + "/" + name + ".json");
+                        if (!Files.exists(materialFile)) {
+                            Files.createDirectories(materialFile.getParent());
 
-                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
-                            String s = GSON.toJson(jsonObject);
-                            bufferedwriter.write(s);
+                            try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                                String s = GSON.toJson(jsonObject);
+                                bufferedwriter.write(s);
+                            }
                         }
                     }
                 }

@@ -3,7 +3,7 @@ package mightydanp.techapi.common.jsonconfig.sync.gui.screen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.realmsclient.RealmsMainScreen;
-import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techapi.common.jsonconfig.IJsonConfig;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techcore.common.libs.TCButtonRef;
@@ -47,7 +47,7 @@ public class SyncScreen extends Screen {
             this.addRenderableWidget(new Button(this.width / 5, this.height - 82, 300, 20, new TranslatableComponent(TCButtonRef.syncClientConfigsWithServers), (button) -> {
                 if(!ConfigSync.isSinglePlayer){
                     for(int i = 0; i < ConfigSync.configs.size(); i++){
-                        Pair<? extends JsonConfigMultiFile<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
+                        Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
                         try {
                             config.getSecond().syncClientWithServer("");
                         } catch (IOException e) {

@@ -17,8 +17,8 @@ public class TraitEventHandler {
     @SubscribeEvent
     public static void toolTip(ItemTooltipEvent event){
         ItemTraitRegistry registry = (ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst();
-        String registryName = Objects.requireNonNull(event.getItemStack().getItem().getRegistryName()).getPath();
-        if (registry.registryMap.values().stream().anyMatch(iItemTrait -> iItemTrait.getRegistry().split(":")[1].equals(registryName))) {
+        String registryName = Objects.requireNonNull(event.getItemStack().getItem().getRegistryName()).toString();
+        if (registry.registryMap.values().stream().anyMatch(iItemTrait -> iItemTrait.getRegistry().equals(registryName))) {
             IItemTrait itemTrait = registry.registryMap.get(registryName);
 
             event.getToolTip().add(new TextComponent("color: " + itemTrait.getColor()));
