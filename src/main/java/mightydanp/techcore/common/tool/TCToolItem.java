@@ -145,7 +145,6 @@ public class TCToolItem extends Item {
     public boolean mineBlock(ItemStack itemStack,  Level world, BlockState blockState, BlockPos blockPos, LivingEntity entityLiving) {
         if(blockState.requiresCorrectToolForDrops()) {
             if (canWork(itemStack)) {
-                if (blockState.requiresCorrectToolForDrops()) {
                     if (isCorrectToolForDrops(itemStack, blockState)) {
                         damageToolParts(entityLiving.getMainHandItem(), (Player) entityLiving, world, 1);
                         return true;
@@ -153,14 +152,12 @@ public class TCToolItem extends Item {
                         damageToolParts(entityLiving.getMainHandItem(), (Player) entityLiving, world, 2);
                         return false;
                     }
-                }
             } else {
                 return false;
             }
         } else {
             return true;
         }
-        return false;
     }
 
     @Override
@@ -261,7 +258,7 @@ public class TCToolItem extends Item {
                     return blocks.contains(state.getBlock());
                 }
             } else {
-                isCorrect.set(true);
+                isCorrect.set(false);
             }
         } else {
             isCorrect.set(false);
@@ -456,18 +453,20 @@ public class TCToolItem extends Item {
                 if (inventory.getToolBinding(itemStackIn) != null) {
                     ItemStack part = inventory.getToolBinding(itemStackIn);
 
-                    if (part.isDamageableItem()) {
-                        if (part.getDamageValue() == part.getMaxDamage()) return false;
-                    } else {
-                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(part.getItem().getRegistryName()).toString())) {
-                            if (part.getTag() != null && part.getTag().contains("damage") && part.getTag().contains("max_damage")) {
-                                int damage = part.getTag().getInt("damage");
-                                int maxDamage = part.getTag().getInt("max_damage");
+                    if(!part.isEmpty()) {
+                        if (part.isDamageableItem()) {
+                            if (part.getDamageValue() == part.getMaxDamage()) return false;
+                        } else {
+                            if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(part.getItem().getRegistryName()).toString())) {
+                                if (part.getTag() != null && part.getTag().contains("damage") && part.getTag().contains("max_damage")) {
+                                    int damage = part.getTag().getInt("damage");
+                                    int maxDamage = part.getTag().getInt("max_damage");
 
-                                if (damage == maxDamage) return false;
+                                    if (damage == maxDamage) return false;
+                                } else return false;
                             } else return false;
-                        } else return false;
-                    }
+                        }
+                    } else return false;
                 } else return false;
             }
 
@@ -475,36 +474,41 @@ public class TCToolItem extends Item {
                 if (inventory.getToolHandle(itemStackIn) != null) {
                     ItemStack part = inventory.getToolHandle(itemStackIn);
 
-                    if (part.isDamageableItem()) {
-                        if (part.getDamageValue() == part.getMaxDamage()) return false;
-                    } else {
-                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(part.getItem().getRegistryName()).toString())) {
-                            if (part.getTag() != null && part.getTag().contains("damage") && part.getTag().contains("max_damage")) {
-                                int damage = part.getTag().getInt("damage");
-                                int maxDamage = part.getTag().getInt("max_damage");
+                    if(!part.isEmpty()) {
+                        if (part.isDamageableItem()) {
+                            if (part.getDamageValue() == part.getMaxDamage()) return false;
+                        } else {
+                            if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(part.getItem().getRegistryName()).toString())) {
+                                if (part.getTag() != null && part.getTag().contains("damage") && part.getTag().contains("max_damage")) {
+                                    int damage = part.getTag().getInt("damage");
+                                    int maxDamage = part.getTag().getInt("max_damage");
 
-                                if (damage == maxDamage) return false;
+                                    if (damage == maxDamage) return false;
+                                } else return false;
                             } else return false;
-                        } else return false;
-                    }
+                        }
+                    } else return false;
                 } else return false;
             }
 
             if (toolItem.parts >= 1) {
                 if (inventory.getToolHead(itemStackIn) != null) {
                     ItemStack part = inventory.getToolHead(itemStackIn);
-                    if (part.isDamageableItem()) {
-                        return part.getDamageValue() != part.getMaxDamage();
-                    } else {
-                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(part.getItem().getRegistryName()).toString())) {
-                            if (part.getTag() != null && part.getTag().contains("damage") && part.getTag().contains("max_damage")) {
-                                int damage = part.getTag().getInt("damage");
-                                int maxDamage = part.getTag().getInt("max_damage");
 
-                                return damage != maxDamage;
+                    if(!part.isEmpty()) {
+                        if (part.isDamageableItem()) {
+                            return part.getDamageValue() != part.getMaxDamage();
+                        } else {
+                            if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(part.getItem().getRegistryName()).toString())) {
+                                if (part.getTag() != null && part.getTag().contains("damage") && part.getTag().contains("max_damage")) {
+                                    int damage = part.getTag().getInt("damage");
+                                    int maxDamage = part.getTag().getInt("max_damage");
+
+                                    return damage != maxDamage;
+                                } else return false;
                             } else return false;
-                        } else return false;
-                    }
+                        }
+                    } else return false;
                 } else return false;
             }
         }

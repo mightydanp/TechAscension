@@ -134,6 +134,7 @@ public class TCToolHandler {
                             HandleItem toolHandleItem = (HandleItem) handleItemStack.getItem();
                             toolItemIn.setHandleColor(toolItem, toolHandleItem.color);
                             toolItemIn.setAttackSpeed(toolItem, toolHandleItem.weight + toolHeadItem.weight);
+                            itemStackHandler.setToolHandle(toolItem, handleItemStack);
                         }
 
                         if (inventoryToolCheck(playerEntity, firstItemsNeeded)) {

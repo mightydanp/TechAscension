@@ -317,12 +317,12 @@ public class TCTool {
                 enLang.addTranslation("item." + Ref.mod_id + "." + toolName, LangData.translateUpperCase(toolName));
 
                 if (i == 3) {
-                    data.setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()));
-                    data.setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()));
+                    data.setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()));
+                    data.setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()));
                     data.setTexturesLocation("layer2", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + binding.prefixAndSuffix().getFirst() + toolName + binding.prefixAndSuffix().getSecond()));
                 } else if (i == 2) {
-                    data.setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()));
-                    data.setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()));
+                    data.setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()));
+                    data.setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()));
                 } else if (i == 1) {
                     data.setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName));
                     data.setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName + "_overlay"));
