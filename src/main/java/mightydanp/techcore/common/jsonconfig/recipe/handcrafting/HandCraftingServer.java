@@ -186,11 +186,19 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
     public void singleToBuffer(FriendlyByteBuf buffer, IHandCrafting handCrafting) {
         buffer.writeUtf(handCrafting.getName());
 
-        buffer.writeInt(handCrafting.getInputAmount());
+        buffer.writeInt(handCrafting.getInput1Amount());
 
-        buffer.writeInt(handCrafting.getInput().size());
+        buffer.writeInt(handCrafting.getInput1().size());
 
-        for(Ingredient ingredient : handCrafting.getInput()) {
+        for(Ingredient ingredient : handCrafting.getInput1()) {
+            ingredient.toNetwork(buffer);
+        }
+
+        buffer.writeInt(handCrafting.getInput2Amount());
+
+        buffer.writeInt(handCrafting.getInput2().size());
+
+        for(Ingredient ingredient : handCrafting.getInput2()) {
             ingredient.toNetwork(buffer);
         }
 
@@ -218,12 +226,19 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
     public IHandCrafting singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
 
-        int inputAmount = buffer.readInt();
-        int inputSize = buffer.readInt();
+        int inputAmount1 = buffer.readInt();
+        int inputSize1 = buffer.readInt();
 
-        NonNullList<Ingredient> inputs = NonNullList.withSize(inputSize, Ingredient.EMPTY);
+        NonNullList<Ingredient> inputs1 = NonNullList.withSize(inputSize1, Ingredient.EMPTY);
 
-        inputs.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
+        inputs1.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
+
+        int inputAmount2 = buffer.readInt();
+        int inputSize2 = buffer.readInt();
+
+        NonNullList<Ingredient> inputs2 = NonNullList.withSize(inputSize2, Ingredient.EMPTY);
+
+        inputs2.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
 
         int outputAmount = buffer.readInt();
 
@@ -240,13 +255,24 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
             }
 
             @Override
-            public NonNullList<Ingredient> getInput() {
-                return inputs;
+            public Integer getInput1Amount() {
+                return inputAmount1;
             }
 
             @Override
-            public Integer getInputAmount() {
-                return inputAmount;
+            public NonNullList<Ingredient> getInput1() {
+                return inputs1;
+            }
+
+
+            @Override
+            public Integer getInput2Amount() {
+                return inputAmount2;
+            }
+
+            @Override
+            public NonNullList<Ingredient> getInput2() {
+                return inputs2;
             }
 
             @Override

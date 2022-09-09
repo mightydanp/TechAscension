@@ -8,7 +8,6 @@ import net.minecraft.CrashReport;
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
@@ -27,41 +26,6 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
         setJsonFolderName("recipe/hand_crafting");
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
-        IHandCrafting recipe = new IHandCrafting() {
-            @Override
-            public String getName() {
-                return "test";
-            }
-
-            @Override
-            public Integer getInputAmount() {
-                return 1;
-            }
-
-            @Override
-            public NonNullList<Ingredient> getInput() {
-                NonNullList<Ingredient> list = NonNullList.create();
-                list.add(Ingredient.of(new ItemStack(Items.BRICKS.asItem(), 1)));
-
-                return list;
-            }
-
-            @Override
-            public Integer getOutputAmount() {
-                return 4;
-            }
-
-            @Override
-            public NonNullList<Ingredient> getOutput() {
-                NonNullList<Ingredient> list = NonNullList.create();
-                list.add(Ingredient.of(new ItemStack(Items.ACACIA_DOOR.asItem(), 1)));
-
-                return list;
-            }
-        };
-
-        register(recipe);
-
         buildJson();
         loadExistJson();
         super.initiate();
@@ -70,8 +34,7 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
     @Override
     public void register(IHandCrafting handCraftingIn) {
         String name = handCraftingIn.getName();
-        NonNullList<Ingredient> input = handCraftingIn.getInput();
-        NonNullList<Ingredient> output = handCraftingIn.getOutput();
+
         if (registryMap.containsKey(handCraftingIn.getName()))
             throw new IllegalArgumentException("hand crafting with name(" + name + "), already exists.");
         registryMap.put(name, handCraftingIn);
@@ -128,13 +91,23 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
             }
 
             @Override
-            public Integer getInputAmount() {
-                return jsonObjectIn.get("input_amount").getAsInt();
+            public Integer getInput1Amount() {
+                return jsonObjectIn.get("input_amount_1").getAsInt();
             }
 
             @Override
-            public NonNullList<Ingredient> getInput() {
-                return itemsFromJson(GsonHelper.getAsJsonArray(jsonObjectIn, "input_ingredients"));
+            public NonNullList<Ingredient> getInput1() {
+                return itemsFromJson(GsonHelper.getAsJsonArray(jsonObjectIn, "input_ingredients_1"));
+            }
+
+            @Override
+            public Integer getInput2Amount() {
+                return jsonObjectIn.get("input_amount_2").getAsInt();
+            }
+
+            @Override
+            public NonNullList<Ingredient> getInput2() {
+                return itemsFromJson(GsonHelper.getAsJsonArray(jsonObjectIn, "input_ingredients_2"));
             }
 
             @Override
@@ -154,17 +127,28 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
 
         jsonObject.addProperty("name", handCrafting.getName());
 
-        jsonObject.addProperty("input_amount", handCrafting.getInputAmount());
+        jsonObject.addProperty("input_amount", handCrafting.getInput1Amount());
 
-        JsonArray inputList = new JsonArray();
+        JsonArray input1List = new JsonArray();
 
-        for(Ingredient ingredient : handCrafting.getInput()){
-            inputList.add(ingredient.toJson());
+        for(Ingredient ingredient : handCrafting.getInput1()){
+            input1List.add(ingredient.toJson());
         }
 
-        if(inputList.size() > 0){
-            jsonObject.add("input_ingredients", inputList);
+        if(input1List.size() > 0){
+            jsonObject.add("input_ingredients_1", input1List);
         }
+
+        JsonArray input2List = new JsonArray();
+
+        for(Ingredient ingredient : handCrafting.getInput1()){
+            input2List.add(ingredient.toJson());
+        }
+
+        if(input2List.size() > 0){
+            jsonObject.add("input_ingredients_2", input2List);
+        }
+
 
         jsonObject.addProperty("output_amount", handCrafting.getOutputAmount());
 
