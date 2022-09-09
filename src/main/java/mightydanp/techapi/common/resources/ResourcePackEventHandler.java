@@ -1,26 +1,46 @@
 package mightydanp.techapi.common.resources;
 
+import mightydanp.techapi.common.resources.asset.data.IItems;
 import mightydanp.techapi.common.resources.data.DataPackRegistry;
+import mightydanp.techapi.common.resources.data.data.BlockStateVariantData;
+import mightydanp.techascension.common.blocks.CampfireBlockOverride;
+import mightydanp.techascension.common.blocks.ModBlocks;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
 import mightydanp.techascension.common.TechAscension;
+import net.minecraft.core.Direction;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.model.generators.ConfiguredModel;
+import net.minecraftforge.client.model.generators.ModelFile;
+import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class ResourcePackEventHandler {
+    public static List<IItems> itemResources = new ArrayList<>();
 
     @SubscribeEvent
     public static void addResourcePack(AddPackFindersEvent event){
         ((MaterialRegistry) TCJsonConfigs.material.getFirst()).registryMap.forEach((modID, material) -> material.saveResources());
+
+        itemResources.forEach(IItems::initResource);
+
+        //BlockStateVariantData campfireBlockState = new VariantBlockStateBuilder(ModBlocks.campfire_override.get());
+        //campfireBlockState.getBlockState().partialState().with(CampfireBlockOverride.FACING, Direction.DOWN).with(CampfireBlockOverride.LIT, false).addModels(new ConfiguredModel(new ModelFile.UncheckedModelFile(ModBlocks.campfire_override.get().getRegistryName())));
+        //campfireBlockState.getBlockState().partialState().with(CampfireBlockOverride.FACING, Direction.UP).with(CampfireBlockOverride.LIT, true).addModels(new ConfiguredModel(new ModelFile.UncheckedModelFile(ModBlocks.campfire_override.get().getRegistryName())));
+        //campfireBlockState.createBlockState(campfireBlockState.getBlockState());
+        //campfireBlockState.createJson();
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AssetPackRegistry::init);
 

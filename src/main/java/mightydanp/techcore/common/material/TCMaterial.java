@@ -24,6 +24,7 @@ import mightydanp.techcore.common.holder.MCMaterialHolder;
 import mightydanp.techcore.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.techapi.common.resources.data.data.LootTableData;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
@@ -32,6 +33,12 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.item.Item;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -400,7 +407,10 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "harvest_level/" + harvestLevel)).add(rockBlock.get()));
                     }
                     //--LootTables
-                    DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, name + "_rock")).setLootTable(LootTableData.standardDropTable(rockBlock.get())));
+                    DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, name + "_rock")).setLootTable(
+                            LootTable.lootTable().withPool(
+                                    LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(Items.AIR).setWeight(100))
+                                            .setBonusRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(Items.FLINT).setWeight(10))).build()));
 
                     //--Item--\\
                     //--Resources

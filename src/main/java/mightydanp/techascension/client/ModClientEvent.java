@@ -1,6 +1,7 @@
 package mightydanp.techascension.client;
 
 import mightydanp.techascension.client.settings.KeyBindings.ModKeyBindings;
+import mightydanp.techascension.common.items.ModItems;
 import mightydanp.techcore.client.rendering.models.HoleBakedModel;
 import mightydanp.techcore.common.ISidedReference;
 
@@ -34,6 +35,7 @@ public class ModClientEvent implements ISidedReference {
 
     public static void init(FMLClientSetupEvent event) {
         ModBlocks.setRenderType();
+        ModItems.initClient();
         ModMaterials.clientInit();
         ModTrees.clientInit();
         ModBlockEntity.clientInit();

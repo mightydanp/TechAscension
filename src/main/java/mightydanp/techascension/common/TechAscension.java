@@ -71,6 +71,8 @@ public class TechAscension {
 
         TCJsonConfigs.init();
         ConfigSync.init();
+
+        ModItems modItems = new ModItems();
         
         TCItems.init();
         ModItems.init();
@@ -82,6 +84,8 @@ public class TechAscension {
         Containers.init();
         ModBlockEntity.init();
         TileEntities.init();
+
+        ResourcePackEventHandler.itemResources.add(modItems);
 
         bus.addListener(JsonConfigClient::init);
         bus.addListener(CommonEvent::init);

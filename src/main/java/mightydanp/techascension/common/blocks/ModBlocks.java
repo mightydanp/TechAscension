@@ -1,7 +1,9 @@
 package mightydanp.techascension.common.blocks;
 
+import mightydanp.techapi.common.resources.data.data.BlockStateVariantData;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techascension.common.libs.BlockRef;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -9,6 +11,9 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraftforge.client.model.generators.ConfiguredModel;
+import net.minecraftforge.client.model.generators.ModelFile;
+import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.registries.RegistryObject;
 
 /**
@@ -33,5 +38,7 @@ public class ModBlocks {
         ItemBlockRenderTypes.setRenderLayer(cattail_plant_bottom_block.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(cattail_plant_top_block.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(campfire_override.get(), RenderType.cutout());
+
+
     }
 }
