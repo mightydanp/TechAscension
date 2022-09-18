@@ -8,6 +8,7 @@ import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -185,6 +186,19 @@ public class ToolServer extends JsonConfigServer<ITool> {
     @Override
     public void singleToBuffer(FriendlyByteBuf buffer, ITool tool) {
         buffer.writeUtf(tool.getName());
+
+        buffer.writeInt(tool.getAssembleStepsItems().size());
+
+        tool.getAssembleStepsItems().forEach((integer, combinations) -> {
+            buffer.writeInt(integer);
+            buffer.writeInt(combinations.size());
+
+            for (List<Ingredient> ingredients : combinations) {
+                buffer.writeInt(ingredients.size());
+
+                ingredients.forEach(ingredient -> ingredient.toNetwork(buffer));
+            }
+        });
     }
 
     @Override
@@ -207,6 +221,36 @@ public class ToolServer extends JsonConfigServer<ITool> {
             @Override
             public String getName() {
                 return name;
+            }
+
+            @Override
+            public Map<Integer, List<List<Ingredient>>> getAssembleStepsItems() {
+                Map<Integer, List<List<Ingredient>>> assembleSteps = new HashMap<>();
+
+                int assembleStepsSize = buffer.readInt();
+
+                for(int i = 0; i < assembleStepsSize; i++){
+                    int assembleStep = buffer.readInt();
+                    int combinationsSize = buffer.readInt();
+
+                    List<List<Ingredient>> combinationsList = new ArrayList<>();
+
+                    for(int j = 0; j < combinationsSize; j++){
+                        int ingredientSize = buffer.readInt();
+
+                        List<Ingredient> ingredientsList = new ArrayList<>();
+
+                        for(int k = 0; k < ingredientSize; k++){
+                            ingredientsList.add(Ingredient.fromNetwork(buffer));
+                        }
+
+                        combinationsList.add(ingredientsList);
+                    }
+
+                    assembleSteps.put(assembleStep, combinationsList);
+                }
+
+                return assembleSteps;
             }
         };
     }

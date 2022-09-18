@@ -4,6 +4,7 @@ import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.client.settings.keybindings.KeyBindings;
 import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.recipe.handcrafting.IHandCrafting;
 import mightydanp.techcore.common.jsonconfig.trait.item.IItemTrait;
 import mightydanp.techcore.common.tool.part.HandleItem;
 import mightydanp.techcore.common.tool.part.BindingItem;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -35,7 +37,7 @@ public class TCToolHandler {
 
         if(KeyBindings.handCrafting.isDown()){
 
-            Item offHandItem = event.getPlayer().getOffhandItem().getItem();
+            Item offHandItem  = event.getPlayer().getOffhandItem().getItem();
             Item mainHandItem = event.getPlayer().getMainHandItem().getItem();
 
             if (mainHandItem instanceof HeadItem toolHead) {
@@ -62,6 +64,23 @@ public class TCToolHandler {
 
             if (offHandItem instanceof TCToolItem tool) {
                 handToolCrafting(tool, event, 1, tool.assembleItems);
+            }
+
+            List<IHandCrafting> handCraftingList = (List<IHandCrafting>) TCJsonConfigs.handCrafting.getFirst().registryMap.values();
+
+            for(IHandCrafting handCrafting : handCraftingList) {
+                List<Ingredient> offhandRecipeItem = handCrafting.getInput1().stream().filter(ingredient -> Arrays.stream(ingredient.getItems()).anyMatch(itemStack -> itemStack.equals(event.getPlayer().getMainHandItem()) || itemStack.equals(event.getPlayer().getOffhandItem()))).toList();
+                List<Ingredient> mainHandRecipeItem = new ArrayList<>();
+
+                if(handCrafting.getInput1().stream().anyMatch(ingredient -> Arrays.stream(ingredient.getItems()).anyMatch(itemStack -> itemStack.equals(event.getPlayer().getMainHandItem()))) && handCrafting.getInput1().stream().anyMatch(ingredient -> Arrays.stream(ingredient.getItems()).anyMatch(itemStack -> itemStack.equals(event.getPlayer().getOffhandItem())))){
+                    if(event.getPlayer().getMainHandItem().getCount() == handCrafting.getInput1Amount() && event.getPlayer().getOffhandItem().getCount() == handCrafting.getInput2Amount()) {
+                        ItemStack itemStack = handCrafting.getOutput().get(0).getItems()[0];
+                        itemStack.setCount(handCrafting.getOutputAmount());
+
+                        event.getPlayer().setItemInHand(InteractionHand.MAIN_HAND, itemStack);
+                        event.getPlayer().setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+                    }
+                }
             }
         }
     }

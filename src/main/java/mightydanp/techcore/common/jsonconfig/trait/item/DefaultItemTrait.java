@@ -1,11 +1,13 @@
 package mightydanp.techcore.common.jsonconfig.trait.item;
 
 import mightydanp.techcore.common.jsonconfig.icons.DefaultTextureIcon;
+import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.resources.ResourceLocation;
 
 public enum DefaultItemTrait implements IItemTrait{
-    stick(new ResourceLocation("stick").toString(), 0x854F2B, 10, DefaultTextureIcon.WOOD.getName(), 0.852D, null, null, null),
-    diamond(new ResourceLocation("diamond").toString(), 0x854F2B, 10, DefaultTextureIcon.WOOD.getName(), 0.852D, null, null, null)
+    stick(new ResourceLocation("stick").toString(), 0x854F2B, 16, DefaultTextureIcon.WOOD.getName(), 0.852D, null, null, null),
+    plant_fiber(new ResourceLocation(Ref.mod_id, "plant_fiber").toString(), 0x3c5817, 8, DefaultTextureIcon.LEAF.getName(), 0.0003, null, 0.3048, null),
+    diamond(new ResourceLocation("diamond").toString(), 0x854F2B, 10, DefaultTextureIcon.DIAMOND.getName(), 0.852D, null, null, null)
     ;
 
     final String registry;

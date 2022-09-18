@@ -26,6 +26,8 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
         setJsonFolderName("recipe/hand_crafting");
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
+
+
         buildJson();
         loadExistJson();
         super.initiate();
