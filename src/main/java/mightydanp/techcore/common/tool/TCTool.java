@@ -16,6 +16,7 @@ import mightydanp.techcore.common.tool.part.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.Item;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -30,10 +31,10 @@ public class TCTool {
     public int hitDamage;
     public List<String> toolParts = new ArrayList<>();
 
-    public Set<String> effectiveBlocks;
+    public List<String> effectiveBlocks;
 
-    public Map<String, Integer> assembleItems;
-    public List<String> disassembleItems;
+    public Map<Integer, List<Map<Ingredient, Integer>>> assembleItems;
+    public List<Map<Ingredient, Integer>> disassembleItems;
     public List<RegistryObject<Item>> materialParts = new ArrayList<>();
     public PartHolders.handlePartHolder handle;
     public PartHolders.dullHeadPartHolder dullHead;
@@ -43,7 +44,7 @@ public class TCTool {
 
     public RegistryObject<Item> toolItem;
 
-    public TCTool(String nameIn, int hitDamageIn, Set<String> effectiveBlocksIn, Map<String, Integer> assembleItemsIn, List<String> disassembleItemsIn, PartHolders.handlePartHolder handleIn, PartHolders.dullHeadPartHolder dullHeadIn, PartHolders.headPartHolder headIn, PartHolders.bindingPartHolder bindingIn, RegistryObject<Item> toolItemIn) {
+    public TCTool(String nameIn, int hitDamageIn, List<String> effectiveBlocksIn, Map<Integer, List<Map<Ingredient, Integer>>> assembleItemsIn, List<Map<Ingredient, Integer>> disassembleItemsIn, PartHolders.handlePartHolder handleIn, PartHolders.dullHeadPartHolder dullHeadIn, PartHolders.headPartHolder headIn, PartHolders.bindingPartHolder bindingIn, RegistryObject<Item> toolItemIn) {
         toolName = nameIn;
         hitDamage = hitDamageIn;
 

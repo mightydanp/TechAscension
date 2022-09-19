@@ -7,7 +7,12 @@ import java.util.Map;
 
 public interface ITool {
     String getName();
+    Integer getUseDamage();
 
-    Map<Integer, List<List<Ingredient>>> getAssembleStepsItems();
+    List<String> getEffectiveOn();
+
+    Map<Integer, List<Map<Ingredient, Integer>>> getAssembleStepsItems();
+
+    List<Map<Ingredient, Integer>> getDisassembleItems();
 
 }

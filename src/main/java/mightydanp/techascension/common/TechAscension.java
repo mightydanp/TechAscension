@@ -20,7 +20,6 @@ import mightydanp.techapi.common.resources.ResourcePackEventHandler;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.tileentities.TileEntities;
-import mightydanp.techcore.common.tool.TCTools;
 import mightydanp.techcore.common.trait.TraitEventHandler;
 import mightydanp.techcore.server.DedicatedServerReference;
 import mightydanp.techascension.client.ModClientEvent;
@@ -65,7 +64,6 @@ public class TechAscension {
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
 
         ModTools.init();
-        TCTools.init();
 
         ModMaterials.commonInit();
 

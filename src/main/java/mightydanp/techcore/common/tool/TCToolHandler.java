@@ -41,7 +41,7 @@ public class TCToolHandler {
             Item mainHandItem = event.getPlayer().getMainHandItem().getItem();
 
             if (mainHandItem instanceof HeadItem toolHead) {
-                List<TCTool> tool = TCTools.tools.stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
+                List<TCTool> tool = TCTools.getTools().stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
 
                 if (tool.size() > 0) {
                     TCToolItem toolItem = (TCToolItem) tool.get(0).toolItem.get();
@@ -50,7 +50,7 @@ public class TCToolHandler {
             }
 
             if (offHandItem instanceof HeadItem toolHead) {
-                List<TCTool> tool = TCTools.tools.stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
+                List<TCTool> tool = TCTools.getTools().stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
 
                 if (tool.size() > 0) {
                     TCToolItem toolItem = (TCToolItem) tool.get(0).toolItem.get();

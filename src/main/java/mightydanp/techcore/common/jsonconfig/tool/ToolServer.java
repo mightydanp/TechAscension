@@ -187,17 +187,37 @@ public class ToolServer extends JsonConfigServer<ITool> {
     public void singleToBuffer(FriendlyByteBuf buffer, ITool tool) {
         buffer.writeUtf(tool.getName());
 
+        buffer.writeInt(tool.getUseDamage());
+
+        buffer.writeInt(tool.getEffectiveOn().size());
+
+        tool.getEffectiveOn().forEach(buffer::writeUtf);
+
         buffer.writeInt(tool.getAssembleStepsItems().size());
 
         tool.getAssembleStepsItems().forEach((integer, combinations) -> {
             buffer.writeInt(integer);
             buffer.writeInt(combinations.size());
 
-            for (List<Ingredient> ingredients : combinations) {
+            for (Map<Ingredient, Integer> ingredients : combinations) {
                 buffer.writeInt(ingredients.size());
 
-                ingredients.forEach(ingredient -> ingredient.toNetwork(buffer));
+                ingredients.forEach((ingredient, integer1) -> {
+                    ingredient.toNetwork(buffer);
+                    buffer.writeInt(integer1);
+                });
             }
+        });
+
+        buffer.writeInt(tool.getDisassembleItems().size());
+
+        tool.getDisassembleItems().forEach(list -> {
+            buffer.writeInt(list.size());
+
+            list.forEach((ingredient, integer) -> {
+                ingredient.toNetwork(buffer);
+                buffer.writeInt(integer);
+            });
         });
     }
 
@@ -215,6 +235,41 @@ public class ToolServer extends JsonConfigServer<ITool> {
     @Override
     public ITool singleFromBuffer(FriendlyByteBuf buffer) {
         String name = buffer.readUtf();
+        int useDamage = buffer.readInt();
+        List<String> effectiveOn = new ArrayList<>();
+
+        for(int i = 0; i > buffer.readInt(); i++){
+            effectiveOn.add(buffer.readUtf());
+        }
+
+        Map<Integer, List<Map<Ingredient, Integer>>> assembleStepsItems = new HashMap<>();
+
+        for(int i = 0; i > buffer.readInt(); i++){
+            int step = buffer.readInt();
+
+            List<Map<Ingredient, Integer>> combinations = new ArrayList<>();
+            for(int j = 0; j > buffer.readInt(); j++){
+                Map<Ingredient, Integer> ingredients = new HashMap<>();
+                for(int k = 0; k > buffer.readInt(); k++){
+                    ingredients.put(Ingredient.fromNetwork(buffer), buffer.readInt());
+                }
+
+                combinations.add(ingredients);
+            }
+
+            assembleStepsItems.put(step, combinations);
+        }
+
+        List<Map<Ingredient, Integer>> disassembleItems = new ArrayList<>();
+
+        for(int i = 0; i > buffer.readInt(); i++){
+            Map<Ingredient, Integer> combinations = new HashMap<>();
+            for(int j = 0; j > buffer.readInt(); j++){
+                combinations.put(Ingredient.fromNetwork(buffer), buffer.readInt());
+            }
+
+            disassembleItems.add(combinations);
+        }
 
         return new ITool() {
 
@@ -224,33 +279,23 @@ public class ToolServer extends JsonConfigServer<ITool> {
             }
 
             @Override
-            public Map<Integer, List<List<Ingredient>>> getAssembleStepsItems() {
-                Map<Integer, List<List<Ingredient>>> assembleSteps = new HashMap<>();
+            public Integer getUseDamage() {
+                return useDamage;
+            }
 
-                int assembleStepsSize = buffer.readInt();
+            @Override
+            public List<String> getEffectiveOn() {
+                return effectiveOn;
+            }
 
-                for(int i = 0; i < assembleStepsSize; i++){
-                    int assembleStep = buffer.readInt();
-                    int combinationsSize = buffer.readInt();
+            @Override
+            public  Map<Integer, List<Map<Ingredient, Integer>>> getAssembleStepsItems() {
+                return assembleStepsItems;
+            }
 
-                    List<List<Ingredient>> combinationsList = new ArrayList<>();
-
-                    for(int j = 0; j < combinationsSize; j++){
-                        int ingredientSize = buffer.readInt();
-
-                        List<Ingredient> ingredientsList = new ArrayList<>();
-
-                        for(int k = 0; k < ingredientSize; k++){
-                            ingredientsList.add(Ingredient.fromNetwork(buffer));
-                        }
-
-                        combinationsList.add(ingredientsList);
-                    }
-
-                    assembleSteps.put(assembleStep, combinationsList);
-                }
-
-                return assembleSteps;
+            @Override
+            public List<Map<Ingredient, Integer>> getDisassembleItems() {
+                return disassembleItems;
             }
         };
     }

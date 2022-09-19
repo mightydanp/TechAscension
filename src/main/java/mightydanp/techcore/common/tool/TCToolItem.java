@@ -13,6 +13,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -84,7 +85,7 @@ public class TCToolItem extends Item {
         return this;
     }
 
-    public TCToolItem setAssembleItems(Map<String, Integer> assembleItemsIn) {
+    public TCToolItem setAssembleItems(Map<Integer, List<Map<Ingredient, Integer>>> assembleItemsIn) {
         assembleItems.putAll(assembleItemsIn);
         return this;
     }
@@ -94,7 +95,7 @@ public class TCToolItem extends Item {
         return this;
     }
 
-    public TCToolItem setDisassembleItems(List<String> disassembleItemsIn) {
+    public TCToolItem setDisassembleItems(List<Map<Ingredient, Integer>> disassembleItemsIn) {
         disassembleItems.addAll(disassembleItemsIn);
         return this;
     }

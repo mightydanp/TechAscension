@@ -53,6 +53,11 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
         }
     }
 
+    public void buildAndRegisterTool(ITool tool){
+        this.register(tool);
+        this.saveJsonObject(tool.getName(), toJsonObject(tool));
+    }
+
     public void loadExistJson(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
@@ -85,21 +90,41 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
             }
 
             @Override
-            public Map<Integer, List<List<Ingredient>>> getAssembleStepsItems() {
-                Map<Integer, List<List<Ingredient>>> map = new HashMap<>();
+            public Integer getUseDamage() {
+                return jsonObjectIn.get("use_damage").getAsInt();
+            }
+
+            @Override
+            public List<String> getEffectiveOn() {
+                List<String> registry = new ArrayList<>();
+                JsonArray array = jsonObjectIn.get("get_effective_on").getAsJsonArray();
+                array.forEach(jsonElement -> registry.add(jsonElement.getAsString()));
+
+                return registry;
+            }
+
+            @Override
+            public Map<Integer, List<Map<Ingredient, Integer>>> getAssembleStepsItems() {
+                Map<Integer, List<Map<Ingredient, Integer>>> map = new HashMap<>();
 
                 JsonObject assembleSteps = jsonObjectIn.getAsJsonObject("assemble_steps");
 
                 for(int i = 0; i < assembleSteps.size(); i++){
-                    List<List<Ingredient>> combinationsList = new ArrayList<>();
+                    List<Map<Ingredient, Integer>> combinationsList = new ArrayList<>();
 
-                    JsonArray combinations = assembleSteps.getAsJsonArray(String.valueOf(i));
+                    JsonArray combinations = assembleSteps.get(String.valueOf(i)).getAsJsonArray();
 
                     for(int j = 0; j < combinations.size(); j++) {
-                        JsonArray ingredients = combinations.getAsJsonArray();
-                        List<Ingredient> ingredientsList = new ArrayList<>();
+                        JsonArray ingredients = combinations.get(j).getAsJsonArray();
+                        Map<Ingredient, Integer> ingredientsList = new HashMap<>();
 
-                        ingredients.forEach(jsonElement -> ingredientsList.add(Ingredient.fromJson(jsonElement)));
+                        for(int k = 0; k < ingredients.size(); k++){
+                            Ingredient ingredient = Ingredient.fromJson(ingredients.get(i).getAsJsonObject().get("item" + k));
+                            int amount = ingredients.get(i).getAsJsonObject().get("amount" + k).getAsInt();
+
+                            ingredientsList.put(ingredient, amount);
+
+                        }
 
                         combinationsList.add(ingredientsList);
                     }
@@ -109,6 +134,30 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
 
                 return map;
             }
+
+            @Override
+            public List<Map<Ingredient, Integer>> getDisassembleItems() {
+                JsonObject disassembleItems = jsonObjectIn.getAsJsonObject("disassemble_items");
+
+                List<Map<Ingredient, Integer>> list = new ArrayList<>();
+
+                for(int i = 0; i < disassembleItems.size(); i++){
+                    Map<Ingredient, Integer> combinationsList = new HashMap<>();
+
+                    JsonArray combinations = disassembleItems.get(String.valueOf(i)).getAsJsonArray();
+
+                    for(int j = 0; j < combinations.size(); j++) {
+                        Ingredient ingredient = Ingredient.fromJson(combinations.get(i).getAsJsonObject().get("item" + j));
+                        int amount = combinations.get(i).getAsJsonObject().get("amount" + j).getAsInt();
+
+                        combinationsList.put(ingredient, amount);
+                    }
+
+                    list.add(combinationsList);
+                }
+
+                return list;
+            }
         };
     }
 
@@ -117,25 +166,56 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
 
         jsonObject.addProperty("name", tool.getName());
 
+        jsonObject.addProperty("use_damage", tool.getUseDamage());
+
+        JsonArray array = new JsonArray();
+
+        tool.getEffectiveOn().forEach(array::add);
+
+        if(array.size() > 0) {
+            jsonObject.add("get_effective_on", array);
+        }
+
         JsonObject assembleSteps = new JsonObject();
 
         tool.getAssembleStepsItems().forEach((integer, lists) -> {
             JsonArray combinations = new JsonArray();
 
-            lists.forEach(combination -> {
-                JsonArray ingredients = new JsonArray();
+            for (Map<Ingredient, Integer> combinationsMap : lists) {
+                JsonObject ingredients = new JsonObject();
 
-                combination.forEach(ingredient -> ingredients.add(ingredient.toJson()));
+                for(int i = 0; i < combinationsMap.size(); i++){
+                    ingredients.add("item" + i, combinationsMap.keySet().stream().toList().get(i).toJson());
+                    ingredients.addProperty("amount" + i, combinationsMap.values().stream().toList().get(i));
+                }
 
                 combinations.add(ingredients);
-            });
-
+            }
             assembleSteps.add(String.valueOf(integer), combinations);
 
         });
 
         if(assembleSteps.size() > 0){
             jsonObject.add("assemble_steps", assembleSteps);
+        }
+
+        JsonArray disassembleItems = new JsonArray();
+
+        JsonArray combinations = new JsonArray();
+        tool.getDisassembleItems().forEach(map -> {
+            JsonObject ingredients = new JsonObject();
+            for(int i = 0; i < tool.getDisassembleItems().size(); i++){
+                ingredients.add("item" + i, map.keySet().stream().toList().get(i).toJson());
+                ingredients.addProperty("amount" + i, map.values().stream().toList().get(i));
+            }
+
+            combinations.add(ingredients);
+        });
+
+        disassembleItems.add(combinations);
+
+        if(disassembleItems.size() > 0){
+            jsonObject.add("disassemble_items", disassembleItems);
         }
 
         return jsonObject;
