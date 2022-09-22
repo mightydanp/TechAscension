@@ -97,10 +97,45 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
             @Override
             public List<String> getEffectiveOn() {
                 List<String> registry = new ArrayList<>();
-                JsonArray array = jsonObjectIn.get("get_effective_on").getAsJsonArray();
+                JsonArray array = jsonObjectIn.get("effective_on").getAsJsonArray();
                 array.forEach(jsonElement -> registry.add(jsonElement.getAsString()));
 
                 return registry;
+            }
+
+            @Override
+            public List<Ingredient> getHandleItems() {
+                List<Ingredient> items = new ArrayList<>();
+                JsonArray array = jsonObjectIn.get("handle_items").getAsJsonArray();
+                for(int i = 0; i < array.size(); i++) {
+                    items.add(Ingredient.fromJson(array.get(i).getAsJsonObject().get("item")));
+                }
+
+                return items;
+            }
+
+            @Override
+            public List<Ingredient> getHeadItems() {
+                List<Ingredient> items = new ArrayList<>();
+
+                JsonArray array = jsonObjectIn.get("head_items").getAsJsonArray();
+                for(int i = 0; i < array.size(); i++) {
+                    items.add(Ingredient.fromJson(array.get(i).getAsJsonObject().get("item")));
+                }
+
+                return items;
+            }
+
+            @Override
+            public List<Ingredient> getBindingItems() {
+                List<Ingredient> items = new ArrayList<>();
+
+                JsonArray array = jsonObjectIn.get("binding_items").getAsJsonArray();
+                for(int i = 0; i < array.size(); i++) {
+                    items.add(Ingredient.fromJson(array.get(i).getAsJsonObject().get("item")));
+                }
+
+                return items;
             }
 
             @Override
@@ -174,6 +209,27 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
 
         if(array.size() > 0) {
             jsonObject.add("get_effective_on", array);
+        }
+
+        {
+            JsonArray items = new JsonArray();
+            tool.getHandleItems().forEach(ingredient -> items.add(ingredient.toJson()));
+
+            jsonObject.add("handle_items", items);
+        }
+
+        {
+            JsonArray items = new JsonArray();
+            tool.getHeadItems().forEach(ingredient -> items.add(ingredient.toJson()));
+
+            jsonObject.add("head_items", items);
+        }
+
+        {
+            JsonArray items = new JsonArray();
+            tool.getBindingItems().forEach(ingredient -> items.add(ingredient.toJson()));
+
+            jsonObject.add("binding_items", items);
         }
 
         JsonObject assembleSteps = new JsonObject();

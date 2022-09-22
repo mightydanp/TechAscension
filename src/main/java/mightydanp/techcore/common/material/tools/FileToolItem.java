@@ -18,9 +18,9 @@ public class FileToolItem extends TCToolItem {
 
     public FileToolItem() {
         super(new Item.Properties().tab(TCCreativeModeTab.tool_tab));
-        assembleItems.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
+        //assembleItems.put(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")), 1);
 
-        disassembleItems.add(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")));
-        disassembleItems.add(String.valueOf(new ResourceLocation(Ref.mod_id, "chisel")));
+        //disassembleItems.add(String.valueOf(new ResourceLocation(Ref.mod_id, "hammer")));
+        //disassembleItems.add(String.valueOf(new ResourceLocation(Ref.mod_id, "chisel")));
     }
 }

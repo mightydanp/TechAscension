@@ -5,6 +5,7 @@ import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
+import mightydanp.techcore.common.jsonconfig.tool.ITool;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.material.IMaterial;
 import mightydanp.techcore.common.material.TCMaterial;
@@ -16,6 +17,7 @@ import mightydanp.techcore.common.tool.part.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.Item;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -30,11 +32,6 @@ public class TCTool {
     public String toolName;
     public int hitDamage;
     public List<String> toolParts = new ArrayList<>();
-
-    public List<String> effectiveBlocks;
-
-    public Map<Integer, List<Map<Ingredient, Integer>>> assembleItems;
-    public List<Map<Ingredient, Integer>> disassembleItems;
     public List<RegistryObject<Item>> materialParts = new ArrayList<>();
     public PartHolders.handlePartHolder handle;
     public PartHolders.dullHeadPartHolder dullHead;
@@ -47,11 +44,6 @@ public class TCTool {
     public TCTool(String nameIn, int hitDamageIn, List<String> effectiveBlocksIn, Map<Integer, List<Map<Ingredient, Integer>>> assembleItemsIn, List<Map<Ingredient, Integer>> disassembleItemsIn, PartHolders.handlePartHolder handleIn, PartHolders.dullHeadPartHolder dullHeadIn, PartHolders.headPartHolder headIn, PartHolders.bindingPartHolder bindingIn, RegistryObject<Item> toolItemIn) {
         toolName = nameIn;
         hitDamage = hitDamageIn;
-
-        effectiveBlocks = effectiveBlocksIn;
-
-        assembleItems = assembleItemsIn;
-        disassembleItems = disassembleItemsIn;
 
         if(handleIn != null){
             handle = handleIn;
@@ -358,20 +350,22 @@ public class TCTool {
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName + "/" + material.name)).add(handleItem));
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName)).add(handleItem));
                                 //--LootTable
-                                ((TCToolItem) toolItemIn.get()).handles.put(material.name, handleItem);
+                                ((TCToolItem) toolItemIn.get()).handles.put(material.name, new ItemStack(handleItem));
                             }
                         }
 
-                        if(handle.partItems().size() > 0){
-                            for(String registry : handle.partItems()) {
-                                if(!((TCToolItem) toolItemIn.get()).handles.containsKey(registry.split(":")[1])){
-                                    Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(registry.split(":")[0], (registry.split(":")[1])));
+                        if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(toolName)) {
+                            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
 
-                                    if (item != null) {
-                                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(item.getRegistryName()).toString()))
-                                            ((TCToolItem) toolItemIn.get()).handles.put(item.getRegistryName().toString(), item);
+                            if(tool.getHandleItems().size() > 0){
+                                tool.getHandleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
+                                    String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+                                    if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
+                                        if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
+                                            ((TCToolItem) toolItemIn.get()).handles.put(registryName, itemStack);
+                                        }
                                     }
-                                }
+                                }));
                             }
                         }
                     }
@@ -409,7 +403,7 @@ public class TCTool {
                                     DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName)).add(material.extraSaveItems.get(materialPartName).get()));
                                     //--LootTable
 
-                                    ((TCToolItem) toolItemIn.get()).dullHeads.put(material.name, dullHeadItem);
+                                    ((TCToolItem) toolItemIn.get()).dullHeads.put(material.name, new ItemStack(dullHeadItem));
                                 }
                             }
                         }
@@ -441,20 +435,22 @@ public class TCTool {
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName + "/" + material.name)).add(material.extraSaveItems.get(materialPartName).get()));
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName)).add(material.extraSaveItems.get(materialPartName).get()));
                                 //--LootTable
-                                ((TCToolItem) toolItemIn.get()).heads.put(material.name, headItem);
+                                ((TCToolItem) toolItemIn.get()).heads.put(material.name, new ItemStack(headItem));
                             }
                         }
 
-                        if(head.partItems().size() > 0){
-                            for(String registry : head.partItems()) {
-                                if(!((TCToolItem) toolItemIn.get()).heads.containsKey(registry.split(":")[1])) {
-                                    Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(registry.split(":")[0], (registry.split(":")[1])));
+                        if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(toolName)) {
+                            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
 
-                                    if (item != null) {
-                                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(item.getRegistryName()).toString()))
-                                            ((TCToolItem) toolItemIn.get()).heads.put(item.getRegistryName().toString(), item);
+                            if(tool.getHandleItems().size() > 0){
+                                tool.getHandleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
+                                    String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+                                    if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
+                                        if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
+                                            ((TCToolItem) toolItemIn.get()).heads.put(registryName, itemStack);
+                                        }
                                     }
-                                }
+                                }));
                             }
                         }
                     }
@@ -489,20 +485,22 @@ public class TCTool {
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName + "/" + material.name)).add(material.extraSaveItems.get(materialPartName).get()));
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName)).add(material.extraSaveItems.get(materialPartName).get()));
                                 //--LootTable
-                                ((TCToolItem) toolItemIn.get()).bindings.put(material.name, bindingItem);
+                                ((TCToolItem) toolItemIn.get()).bindings.put(material.name, new ItemStack(bindingItem));
                             }
                         }
 
-                        if(binding.partItems().size() > 0){
-                            for(String registry : binding.partItems()) {
-                                if(!((TCToolItem) toolItemIn.get()).bindings.containsKey(registry.split(":")[1])) {
-                                    Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(registry.split(":")[0], (registry.split(":")[1])));
+                        if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(toolName)) {
+                            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
 
-                                    if (item != null) {
-                                        if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(item.getRegistryName()).toString()))
-                                            ((TCToolItem) toolItemIn.get()).bindings.put(item.getRegistryName().toString(), item);
+                            if(tool.getHandleItems().size() > 0){
+                                tool.getHandleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
+                                    String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+                                    if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
+                                        if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
+                                            ((TCToolItem) toolItemIn.get()).bindings.put(registryName, itemStack);
+                                        }
                                     }
-                                }
+                                }));
                             }
                         }
                     }

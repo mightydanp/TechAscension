@@ -11,6 +11,10 @@ public interface ITool {
 
     List<String> getEffectiveOn();
 
+    List<Ingredient> getHandleItems();
+    List<Ingredient> getHeadItems();
+    List<Ingredient> getBindingItems();
+
     Map<Integer, List<Map<Ingredient, Integer>>> getAssembleStepsItems();
 
     List<Map<Ingredient, Integer>> getDisassembleItems();

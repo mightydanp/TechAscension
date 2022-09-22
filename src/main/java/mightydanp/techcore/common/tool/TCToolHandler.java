@@ -41,29 +41,29 @@ public class TCToolHandler {
             Item mainHandItem = event.getPlayer().getMainHandItem().getItem();
 
             if (mainHandItem instanceof HeadItem toolHead) {
-                List<TCTool> tool = TCTools.getTools().stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
+                List<TCTool> tool = TCTools.getTools().values().stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
 
                 if (tool.size() > 0) {
                     TCToolItem toolItem = (TCToolItem) tool.get(0).toolItem.get();
-                    handToolCrafting(toolItem, event, 1, toolItem.assembleItems);
+                    handToolCrafting(toolItem, event, 1, toolItem.getAssembleItems());
                 }
             }
 
             if (offHandItem instanceof HeadItem toolHead) {
-                List<TCTool> tool = TCTools.getTools().stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
+                List<TCTool> tool = TCTools.getTools().values().stream().filter(itTool -> Objects.equals(itTool.toolName, toolHead.suggestedCraftedTool)).toList();
 
                 if (tool.size() > 0) {
                     TCToolItem toolItem = (TCToolItem) tool.get(0).toolItem.get();
-                    handToolCrafting(toolItem, event, 1, toolItem.assembleItems);
+                    handToolCrafting(toolItem, event, 1, toolItem.getAssembleItems());
                 }
             }
 
             if (mainHandItem instanceof TCToolItem tool) {
-                handToolCrafting(tool, event, 1, tool.assembleItems);
+                handToolCrafting(tool, event, 1, tool.getAssembleItems());
             }
 
             if (offHandItem instanceof TCToolItem tool) {
-                handToolCrafting(tool, event, 1, tool.assembleItems);
+                handToolCrafting(tool, event, 1, tool.getAssembleItems());
             }
 
             List<IHandCrafting> handCraftingList = (List<IHandCrafting>) TCJsonConfigs.handCrafting.getFirst().registryMap.values();
@@ -85,6 +85,8 @@ public class TCToolHandler {
         }
     }
 
+
+
     @SuppressWarnings("ALL")
     public static void handToolCrafting(TCToolItem toolItemIn, PlayerInteractEvent.RightClickItem event, int toolNeededDamage, Map<String, Integer> toolNeededIn) {
         Player playerEntity = event.getPlayer();
@@ -92,10 +94,6 @@ public class TCToolHandler {
         ItemStack offHand = playerEntity.getOffhandItem();
         ItemStack toolItem = new ItemStack(toolItemIn.asItem());
         TCToolItemInventoryHelper itemStackHandler = toolItemIn.getInventory(toolItem);
-        List<String> firstItemsNeeded = compareAndAddToNewArray(1, toolNeededIn);
-        List<String> firstItemsThatCanBeUsed = compareAndAddToNewArray(-1, toolNeededIn);
-        List<String> secondItemsNeeded = compareAndAddToNewArray(2, toolNeededIn);
-        List<String> secondItemsThatCanBeUsed = compareAndAddToNewArray(-2, toolNeededIn);
 
         ItemStack mainHandCheck = toolItemIn.heads.containsValue(mainHand.getItem()) ? playerEntity.getMainHandItem() : (toolItemIn.handles.containsValue(mainHand.getItem()) ? playerEntity.getMainHandItem() : null);
         ItemStack offHandCheck = toolItemIn.heads.containsValue(offHand.getItem()) ? playerEntity.getOffhandItem() : (toolItemIn.handles.containsValue(offHand.getItem()) ? playerEntity.getOffhandItem() : null);

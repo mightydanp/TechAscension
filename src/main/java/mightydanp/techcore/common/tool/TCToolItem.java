@@ -6,12 +6,14 @@ import mightydanp.techcore.client.settings.keybindings.KeyBindings;
 import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
 import mightydanp.techcore.common.items.TCCreativeModeTab;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.tool.ITool;
 import mightydanp.techcore.common.tool.part.BindingItem;
 import mightydanp.techcore.common.tool.part.HandleItem;
 import mightydanp.techcore.common.tool.part.HeadItem;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -51,15 +53,12 @@ import net.minecraft.world.InteractionResultHolder;
  */
 public class TCToolItem extends Item {
     public String name;
-    public List<String> effectiveBlocks = new ArrayList<>();
-    public Map<String, Integer> assembleItems = new HashMap<>();
-    public Map<String, Item> handles = new HashMap<>();
-    public Map<String, Item> dullHeads = new HashMap<>();
-    public Map<String, Item> heads = new HashMap<>();
-    public Map<String, Item> bindings = new HashMap<>();
+    public Map<String, ItemStack> handles = new HashMap<>();
+    public Map<String, ItemStack> dullHeads = new HashMap<>();
+    public Map<String, ItemStack> heads = new HashMap<>();
+    public Map<String, ItemStack> bindings = new HashMap<>();
 
     public Integer parts = 0;
-    public List<String> disassembleItems = new ArrayList<>();
     //public TCToolItemInventoryHelper inventory = new TCToolItemInventoryHelper();
 
     public TCToolItem(Properties propertiesIn) {
@@ -80,24 +79,25 @@ public class TCToolItem extends Item {
         return this;
     }
 
-    public TCToolItem setEffectiveBlocks(Set<String> effectiveBlocksIn) {
-        effectiveBlocks.addAll(effectiveBlocksIn);
-        return this;
+    public List<String> getEffectiveBlocks() {
+        if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
+            return ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name)).getEffectiveOn();
+        }
+        return null;
     }
 
-    public TCToolItem setAssembleItems(Map<Integer, List<Map<Ingredient, Integer>>> assembleItemsIn) {
-        assembleItems.putAll(assembleItemsIn);
-        return this;
+    public Map<Integer, List<Map<Ingredient, Integer>>> getAssembleItems() {
+        if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
+            return ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name)).getAssembleStepsItems();
+        }
+        return null;
     }
 
-    public TCToolItem setParts(Integer parts) {
-        this.parts = parts;
-        return this;
-    }
-
-    public TCToolItem setDisassembleItems(List<Map<Ingredient, Integer>> disassembleItemsIn) {
-        disassembleItems.addAll(disassembleItemsIn);
-        return this;
+    public List<Map<Ingredient, Integer>> getDisassembleItems() {
+        if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
+            return ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name)).getDisassembleItems();
+        }
+        return null;
     }
 
     @Override
@@ -188,12 +188,54 @@ public class TCToolItem extends Item {
     }
 
     public void handToolDisassemble(Level worldIn, Player playerEntityIn, InteractionHand handIn){
-        HashSet<String> playerInventory = new HashSet<>(playerEntityIn.getInventory().items.stream().map(itemStack -> Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString()).toList());
-        if (playerInventory.containsAll(disassembleItems)) {
+        List<ItemStack> disassembleItems = containsDisassembleItems(getDisassembleItems(), playerEntityIn.getInventory());
+
+        if (disassembleItems.size() > 0) {
+
+
             disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 2, disassembleItems);
             playerEntityIn.setItemInHand(handIn, ItemStack.EMPTY);
         }
     }
+
+    public List<ItemStack> containsDisassembleItems(List<Map<Ingredient, Integer>> disassembleItems, Inventory playerInventory){
+        List<ItemStack> items = new ArrayList<>();
+
+        for(Map<Ingredient, Integer> map : disassembleItems) {
+            List<List<ItemStack>> stack = new ArrayList<>();
+            map.forEach((ingredient, integer) -> {
+                List<ItemStack> ing = new ArrayList<>();
+                Arrays.stream(ingredient.getItems()).toList().forEach(itemStack -> {
+                    itemStack.setCount(integer);
+                    ing.add(itemStack);
+                });
+                stack.add(ing);
+
+            });
+
+            for (int i = 9; i <= 45; i++) {
+                for (List<ItemStack> itemStacks : stack) {
+                    for (ItemStack itemStack : itemStacks) {
+                        if (playerInventory.getItem(i).equals(itemStack)) {
+                            items.add(itemStack);
+                            break;
+                        }
+                    }
+                }
+
+                if (map.size() == stack.size()) {
+                    break;
+                }
+            }
+
+            if (items.size() == disassembleItems.size()) {
+                break;
+            }
+        }
+
+        return items;
+    }
+
     public void setToolLevel(ItemStack itemStackIn, Map<String, Integer> toolMapIn) {
         CompoundTag nbt = itemStackIn.getOrCreateTag();
         int[] harvestArray = new int[toolMapIn.size()];
@@ -251,7 +293,7 @@ public class TCToolItem extends Item {
                 if (!isCorrect.get()) {
                     List<Block> blocks = new ArrayList<>();
 
-                    effectiveBlocks.forEach(string -> {
+                    getEffectiveBlocks().forEach(string -> {
                         Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(string));
                         blocks.add(block);
                     });
@@ -635,7 +677,7 @@ public class TCToolItem extends Item {
 
     }
 
-    public void disassembleTool(ItemStack itemStackIn, Player playerIn, Level worldIn, int toolInDamage, List<String> toolNeededIn) {
+    public void disassembleTool(ItemStack itemStackIn, Player playerIn, Level worldIn, int toolInDamage, List<ItemStack> toolNeededIn) {
         Random random = new Random();
 
         if(itemStackIn.getItem() instanceof TCToolItem toolItem) {
@@ -709,14 +751,14 @@ public class TCToolItem extends Item {
         }
     }
 
-    public void damageToolsNeededInPlayerInventory(Player playerIn, Level worldIn, int Damage, List<String> toolNeededIn){
-        if(inventoryToolCheck(playerIn, getItemsFromForge(toolNeededIn)) && toolNeededIn.size() != 0){
-            for(Item toolThatIsNeeded : getItemsFromForge(toolNeededIn)){
+    public void damageToolsNeededInPlayerInventory(Player playerIn, Level worldIn, int Damage, List<ItemStack> toolNeededIn){
+        if(inventoryToolCheck(playerIn, toolNeededIn) && toolNeededIn.size() != 0){
+            for(ItemStack toolThatIsNeeded : toolNeededIn){
                 for(int i = 9; i <= 45; i++){
-                    if (toolThatIsNeeded == playerIn.getInventory().getItem(i).getItem()){
-                        toolNeededIn.remove(String.valueOf(playerIn.getInventory().getItem(i).getItem().getRegistryName()));
+                    if (toolThatIsNeeded == playerIn.getInventory().getItem(i)){
+                        toolNeededIn.remove(playerIn.getInventory().getItem(i));
                         ItemStack toolItem = playerIn.getInventory().getItem(i);
-                        if(toolThatIsNeeded instanceof TCToolItem) {
+                        if(toolThatIsNeeded.getItem() instanceof TCToolItem) {
                             damageToolParts(toolItem, playerIn, worldIn, 1);
                         }else{
                             if(toolItem.isDamageableItem()) {
@@ -744,10 +786,10 @@ public class TCToolItem extends Item {
         }
     }
 
-    public boolean inventoryToolCheck(Player playerIn, List<Item> toolNeededIn){
+    public boolean inventoryToolCheck(Player playerIn, List<ItemStack> toolNeededIn){
         for(int i = 9; i <= 45; i++){
             ItemStack toolNeeded = playerIn.getInventory().getItem(i);
-            if(toolNeededIn.contains(toolNeeded.getItem())){
+            if(toolNeededIn.contains(toolNeeded)){
                 if(toolNeeded.getItem() instanceof TCToolItem toolItem){
                     TCToolItemInventoryHelper inventory = toolItem.getInventory(toolNeeded);
 
@@ -758,7 +800,7 @@ public class TCToolItem extends Item {
 
                         if(part.isDamageableItem()) {
                             if (part.getDamageValue() < part.getMaxDamage()) {
-                                toolNeededIn.remove(toolNeeded.getItem());
+                                toolNeededIn.remove(toolNeeded);
                             }
                         }else if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(part.getItem().getRegistryName()).toString())) {
                             if(part.getTag() != null && part.getTag().contains("damage") && part.getTag().contains("max_damage")) {
@@ -766,7 +808,7 @@ public class TCToolItem extends Item {
                                 int maxDamage = part.getTag().getInt("max_damage");
 
                                 if (damage < maxDamage) {
-                                    toolNeededIn.remove(toolNeeded.getItem());
+                                    toolNeededIn.remove(toolNeeded);
                                 }
                             }
                         }
@@ -777,14 +819,14 @@ public class TCToolItem extends Item {
 
                         if(part.isDamageableItem()) {
                             if (part.getDamageValue() < part.getDamageValue()) {
-                                toolNeededIn.remove(toolNeeded.getItem());
+                                toolNeededIn.remove(toolNeeded);
                             }else if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(part.getItem().getRegistryName()).toString())) {
                                 if(part.getTag() != null && part.getTag().contains("damage") && part.getTag().contains("max_damage")) {
                                     int damage = part.getTag().getInt("damage");
                                     int maxDamage = part.getTag().getInt("max_damage");
 
                                     if (damage < maxDamage) {
-                                        toolNeededIn.remove(toolNeeded.getItem());
+                                        toolNeededIn.remove(toolNeeded);
                                     }
                                 }
                             }
@@ -795,7 +837,7 @@ public class TCToolItem extends Item {
                         ItemStack part = inventory.getToolBinding(toolNeeded);
                         if(part.isDamageableItem()) {
                             if (part.getDamageValue() < part.getDamageValue()) {
-                                toolNeededIn.remove(toolNeeded.getItem());
+                                toolNeededIn.remove(toolNeeded);
                             }
                         } else if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(part.getItem().getRegistryName()).toString())) {
                             if(part.getTag() != null && part.getTag().contains("damage") && part.getTag().contains("max_damage")) {
@@ -803,14 +845,14 @@ public class TCToolItem extends Item {
                                 int maxDamage = part.getTag().getInt("max_damage");
 
                                 if (damage < maxDamage) {
-                                    toolNeededIn.remove(toolNeeded.getItem());
+                                    toolNeededIn.remove(toolNeeded);
                                 }
                             }
                         }
                     }
                 }else{
                     if(toolNeeded.getDamageValue() < toolNeeded.getMaxDamage()) {
-                        toolNeededIn.remove(toolNeeded.getItem());
+                        toolNeededIn.remove(toolNeeded);
                     }
                 }
             }
