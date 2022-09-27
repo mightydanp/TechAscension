@@ -53,10 +53,10 @@ import net.minecraft.world.InteractionResultHolder;
  */
 public class TCToolItem extends Item {
     public String name;
-    public Map<String, ItemStack> handles = new HashMap<>();
-    public Map<String, ItemStack> dullHeads = new HashMap<>();
-    public Map<String, ItemStack> heads = new HashMap<>();
-    public Map<String, ItemStack> bindings = new HashMap<>();
+    private Map<String, ItemStack> handles = new HashMap<>();
+    private Map<String, ItemStack> dullHeads = new HashMap<>();
+    private Map<String, ItemStack> heads = new HashMap<>();
+    private Map<String, ItemStack> bindings = new HashMap<>();
 
     public Integer parts = 0;
     //public TCToolItemInventoryHelper inventory = new TCToolItemInventoryHelper();
@@ -77,6 +77,69 @@ public class TCToolItem extends Item {
         this.name = name;
 
         return this;
+    }
+
+    public void addHandle(String reference, ItemStack itemStack) {
+        handles.put(reference, itemStack);
+    }
+
+    public void addDullHead(String reference, ItemStack itemStack) {
+        dullHeads.put(reference, itemStack);
+    }
+
+    public void addHead(String reference, ItemStack itemStack) {
+        heads.put(reference, itemStack);
+    }
+
+    public void addBinding(String reference, ItemStack itemStack) {
+        bindings.put(reference, itemStack);
+    }
+
+    public Map<String, ItemStack> getHandles() {
+        Map<String, ItemStack> map = handles;
+        if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
+            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name));
+
+            for (Ingredient partItems : tool.getHandleItems()) {
+                for (ItemStack partItemStack : partItems.getItems()) {
+                    map.put(Objects.requireNonNull(partItemStack.getItem().getRegistryName()).toString(), partItemStack);
+                }
+            }
+        }
+        return map;
+    }
+
+    public Map<String, ItemStack> getDullHeads() {
+        return dullHeads;
+    }
+
+    public Map<String, ItemStack> getHeads() {
+        Map<String, ItemStack> map = handles;
+        if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
+            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name));
+
+            for (Ingredient partItems : tool.getHeadItems()) {
+                for (ItemStack partItemStack : partItems.getItems()) {
+                    map.put(Objects.requireNonNull(partItemStack.getItem().getRegistryName()).toString(), partItemStack);
+                }
+            }
+        }
+        return map;
+    }
+
+    public Map<String, ItemStack> getBindings() {
+        Map<String, ItemStack> map = handles;
+        if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
+            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name));
+
+            for (Ingredient partItems : tool.getBindingItems()) {
+                for (ItemStack partItemStack : partItems.getItems()) {
+                    map.put(Objects.requireNonNull(partItemStack.getItem().getRegistryName()).toString(), partItemStack);
+                }
+            }
+        }
+
+        return map;
     }
 
     public List<String> getEffectiveBlocks() {

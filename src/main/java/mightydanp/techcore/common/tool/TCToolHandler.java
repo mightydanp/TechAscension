@@ -140,8 +140,12 @@ public class TCToolHandler {
         ItemStack toolItem = new ItemStack(toolItemIn.asItem());
         TCToolItemInventoryHelper itemStackHandler = toolItemIn.getInventory(toolItem);
 
-        ItemStack mainHandCheck = toolItemIn.heads.containsValue(mainHand.getItem()) ? playerEntity.getMainHandItem() : (toolItemIn.handles.containsValue(mainHand.getItem()) ? playerEntity.getMainHandItem() : null);
-        ItemStack offHandCheck = toolItemIn.heads.containsValue(offHand.getItem()) ? playerEntity.getOffhandItem() : (toolItemIn.handles.containsValue(offHand.getItem()) ? playerEntity.getOffhandItem() : null);
+        List<Item> headItems = toolItemIn.getHeads().values().stream().map(itemStack -> itemStack.getItem()).toList();
+        List<Item> handleItems = toolItemIn.getHandles().values().stream().map(itemStack -> itemStack.getItem()).toList();
+        List<Item> bindingItems = toolItemIn.getBindings().values().stream().map(itemStack -> itemStack.getItem()).toList();
+
+        ItemStack mainHandCheck = headItems.contains(mainHand.getItem()) ? playerEntity.getMainHandItem() : (handleItems.contains(mainHand.getItem()) ? playerEntity.getMainHandItem() : null);
+        ItemStack offHandCheck = headItems.contains(offHand.getItem()) ? playerEntity.getOffhandItem() : (handleItems.contains(offHand.getItem()) ? playerEntity.getOffhandItem() : null);
 
         if (toolItemIn.getParts() >= 2) {
             if (mainHandCheck != null && offHandCheck != null) {
@@ -216,8 +220,8 @@ public class TCToolHandler {
             mainHand = playerEntity.getMainHandItem();
             offHand = playerEntity.getOffhandItem();
 
-            mainHandCheck = toolItemIn.bindings.containsValue(mainHand.getItem()) ? playerEntity.getMainHandItem() : (mainHand.getItem() instanceof TCToolItem ? playerEntity.getMainHandItem() : null);
-            offHandCheck = toolItemIn.bindings.containsValue(offHand.getItem()) ? playerEntity.getOffhandItem() : (offHand.getItem() instanceof TCToolItem ? playerEntity.getOffhandItem() : null);
+            mainHandCheck = bindingItems.contains(mainHand.getItem()) ? playerEntity.getMainHandItem() : (mainHand.getItem() instanceof TCToolItem ? playerEntity.getMainHandItem() : null);
+            offHandCheck =  bindingItems.contains(offHand.getItem()) ? playerEntity.getOffhandItem() : (offHand.getItem() instanceof TCToolItem ? playerEntity.getOffhandItem() : null);
 
             itemStackHandler = mainHand.getItem() instanceof TCToolItem ? ((TCToolItem)mainHand.getItem()).getInventory(mainHand) : offHand.getItem() instanceof TCToolItem ? ((TCToolItem)offHand.getItem()).getInventory(offHand) : null;
 

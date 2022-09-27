@@ -350,7 +350,7 @@ public class TCTool {
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName + "/" + material.name)).add(handleItem));
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName)).add(handleItem));
                                 //--LootTable
-                                ((TCToolItem) toolItemIn.get()).handles.put(material.name, new ItemStack(handleItem));
+                                ((TCToolItem) toolItemIn.get()).addHandle(material.name, new ItemStack(handleItem));
                             }
                         }
 
@@ -362,7 +362,7 @@ public class TCTool {
                                     String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
                                     if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
                                         if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
-                                            ((TCToolItem) toolItemIn.get()).handles.put(registryName, itemStack);
+                                            ((TCToolItem) toolItemIn.get()).addHandle(registryName, itemStack);
                                         }
                                     }
                                 }));
@@ -403,7 +403,7 @@ public class TCTool {
                                     DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName)).add(material.extraSaveItems.get(materialPartName).get()));
                                     //--LootTable
 
-                                    ((TCToolItem) toolItemIn.get()).dullHeads.put(material.name, new ItemStack(dullHeadItem));
+                                    ((TCToolItem) toolItemIn.get()).addDullHead(material.name, new ItemStack(dullHeadItem));
                                 }
                             }
                         }
@@ -435,7 +435,7 @@ public class TCTool {
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName + "/" + material.name)).add(material.extraSaveItems.get(materialPartName).get()));
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName)).add(material.extraSaveItems.get(materialPartName).get()));
                                 //--LootTable
-                                ((TCToolItem) toolItemIn.get()).heads.put(material.name, new ItemStack(headItem));
+                                ((TCToolItem) toolItemIn.get()).addHead(material.name, new ItemStack(headItem));
                             }
                         }
 
@@ -447,7 +447,7 @@ public class TCTool {
                                     String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
                                     if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
                                         if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
-                                            ((TCToolItem) toolItemIn.get()).heads.put(registryName, itemStack);
+                                            ((TCToolItem) toolItemIn.get()).addHead(registryName, itemStack);
                                         }
                                     }
                                 }));
@@ -485,7 +485,7 @@ public class TCTool {
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName + "/" + material.name)).add(material.extraSaveItems.get(materialPartName).get()));
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName)).add(material.extraSaveItems.get(materialPartName).get()));
                                 //--LootTable
-                                ((TCToolItem) toolItemIn.get()).bindings.put(material.name, new ItemStack(bindingItem));
+                                ((TCToolItem) toolItemIn.get()).addBinding(material.name, new ItemStack(bindingItem));
                             }
                         }
 
@@ -497,7 +497,7 @@ public class TCTool {
                                     String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
                                     if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
                                         if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
-                                            ((TCToolItem) toolItemIn.get()).bindings.put(registryName, itemStack);
+                                            ((TCToolItem) toolItemIn.get()).addBinding(registryName, itemStack);
                                         }
                                     }
                                 }));
