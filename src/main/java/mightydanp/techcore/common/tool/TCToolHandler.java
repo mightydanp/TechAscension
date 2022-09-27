@@ -85,10 +85,40 @@ public class TCToolHandler {
         }
     }
 
+    public static Set<ItemStack> convertAssembleItems(Integer step, ItemStack mainHand, ItemStack offHand, Map<Integer, List<Map<Ingredient, Integer>>> toolNeededIn){
+        Set<ItemStack> map = new HashSet<>();
+        Set<ItemStack> mapCheck = new HashSet<>();
+
+        for(Map<Ingredient, Integer> stepMap : toolNeededIn.get(step)) {
+            stepMap.forEach((ingredient, count) -> {
+                for(ItemStack itemStack : ingredient.getItems()) {
+                    if (itemStack.getItem() == mainHand.getItem() || itemStack.getItem() == offHand.getItem()) {
+                        itemStack.setCount(count);
+                        mapCheck.add(itemStack);
+                    }
+                }
+
+                if(mapCheck.size() != 2){
+                    System.out.println(mapCheck.size() + " : ingredient size");
+                    mapCheck.clear();
+                }
+            });
+
+            if(mapCheck.size() != 2) {
+                mapCheck.clear();
+            } else {
+                map.addAll(mapCheck);
+                return mapCheck;
+            }
+        }
+
+        return map;
+    }
+
 
 
     @SuppressWarnings("ALL")
-    public static void handToolCrafting(TCToolItem toolItemIn, PlayerInteractEvent.RightClickItem event, int toolNeededDamage, Map<String, Integer> toolNeededIn) {
+    public static void handToolCrafting(TCToolItem toolItemIn, PlayerInteractEvent.RightClickItem event, int toolNeededDamage, Map<Integer, List<Map<Ingredient, Integer>>> toolNeededIn) {
         Player playerEntity = event.getPlayer();
         ItemStack mainHand = playerEntity.getMainHandItem();
         ItemStack offHand = playerEntity.getOffhandItem();
@@ -102,7 +132,9 @@ public class TCToolHandler {
             if (mainHandCheck != null && offHandCheck != null) {
                 if (mainHandCheck.getCount() == 1 && (mainHandCheck.getDamageValue() != mainHandCheck.getMaxDamage() || !mainHandCheck.isDamageableItem()) && offHandCheck.getCount() == 1 && (offHandCheck.getDamageValue() != offHandCheck.getMaxDamage() || !offHandCheck.isDamageableItem())) {
 
-                    if (inventoryToolCheck(playerEntity, firstItemsNeeded) || (firstItemsThatCanBeUsed.size() != 0 && inventoryToolCheck(playerEntity, firstItemsThatCanBeUsed))) {
+                    Set<ItemStack> stepSet = convertAssembleItems(2, mainHand, offHand, toolNeededIn);
+
+                    if (stepSet.size() == 2 && inventoryToolCheck(playerEntity, stepSet)) {
                         ItemStack headItemStack = mainHandCheck.getItem() instanceof HeadItem ? mainHandCheck : offHandCheck.getItem() instanceof HeadItem ? offHandCheck : null;
                         ItemStack handleItemStack = mainHandCheck.getItem() instanceof HandleItem ? mainHandCheck : offHandCheck.getItem() instanceof HandleItem ? offHandCheck : null;
 
@@ -154,12 +186,8 @@ public class TCToolHandler {
                             itemStackHandler.setToolHandle(toolItem, handleItemStack);
                         }
 
-                        if (inventoryToolCheck(playerEntity, firstItemsNeeded)) {
-                            toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, firstItemsNeeded);
-                        }
-
-                        if (inventoryToolCheck(playerEntity, firstItemsThatCanBeUsed)) {
-                            toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, firstItemsThatCanBeUsed);
+                        if (inventoryToolCheck(playerEntity, stepSet)) {
+                            toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, stepSet);
                         }
 
                         playerEntity.setItemInHand(InteractionHand.MAIN_HAND, toolItem);
@@ -181,7 +209,9 @@ public class TCToolHandler {
             if(itemStackHandler != null) {
                 if (mainHandCheck != null && offHandCheck != null){
                     if (mainHandCheck.getCount() == 1 && (mainHandCheck.getDamageValue() != mainHandCheck.getMaxDamage() || !mainHandCheck.isDamageableItem()) && offHandCheck.getCount() == 1 && (offHandCheck.getDamageValue() != offHandCheck.getMaxDamage() || !offHandCheck.isDamageableItem())) {
-                        if (inventoryToolCheck(playerEntity, secondItemsNeeded) || (secondItemsThatCanBeUsed.size() != 0 && inventoryToolCheck(playerEntity, secondItemsThatCanBeUsed))) {
+                        Set<ItemStack> stepSet = convertAssembleItems(3, mainHand, offHand, toolNeededIn);
+
+                        if (stepSet.size() == 2 && inventoryToolCheck(playerEntity, stepSet)) {
                             ItemStack handleItemStack = mainHandCheck.getItem() instanceof HandleItem ? mainHandCheck : offHandCheck.getItem() instanceof HandleItem ? offHandCheck : null;
                             ItemStack headItemStack = mainHandCheck.getItem() instanceof HeadItem ? mainHandCheck : offHandCheck.getItem() instanceof HeadItem ? offHandCheck : null;
                             ItemStack bindingItemStack = mainHandCheck.getItem() instanceof BindingItem ? mainHandCheck : offHandCheck.getItem() instanceof BindingItem ? offHandCheck : null;
@@ -237,12 +267,8 @@ public class TCToolHandler {
                                 toolItemIn.setToolLevel(toolItem, headItem.tools);
                             }
 
-                            if (inventoryToolCheck(playerEntity, secondItemsNeeded)) {
-                                toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, secondItemsNeeded);
-                            }
-
-                            if (inventoryToolCheck(playerEntity, secondItemsThatCanBeUsed)) {
-                                toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, secondItemsThatCanBeUsed);
+                            if (inventoryToolCheck(playerEntity, stepSet)) {
+                                toolItemIn.damageToolsNeededInPlayerInventory(playerEntity, event.getWorld(), toolNeededDamage, stepSet);
                             }
 
                             if (playerEntity.getMainHandItem().getItem() instanceof TCToolItem) {
@@ -260,14 +286,13 @@ public class TCToolHandler {
     }
 
     @SuppressWarnings("ALL")
-    public static boolean inventoryToolCheck(Player playerIn, List<String> toolNeededIn){
-        List<Item> toolNeededList = convertToItem(toolNeededIn);
-
+    public static boolean inventoryToolCheck(Player playerIn, Set<ItemStack> toolNeededIn){
+        List<Item> toolNeededList = toolNeededIn.stream().map(itemStack -> itemStack.getItem()).toList();
         boolean debug = true;
 
         for(int i = 0; i <= 35; i++){
             ItemStack toolNeeded = playerIn.getInventory().getItem(i);
-            if(toolNeededList.contains(toolNeeded.getItem())){
+            if(toolNeededList.stream().anyMatch(itemStack -> itemStack == toolNeeded.getItem())){
                 if(toolNeeded.getItem() instanceof TCToolItem){
                     TCToolItem toolNeededItem = (TCToolItem)playerIn.getInventory().getItem(i).getItem();
                     TCToolItemInventoryHelper itemStackHandler = toolNeededItem.getInventory(toolNeeded);
@@ -293,7 +318,7 @@ public class TCToolHandler {
                     }
 
                     if(test.size() == toolNeededItem.getParts() || debug){
-                        toolNeededList.remove(toolNeeded.getItem());
+                        toolNeededIn.remove(toolNeeded.getItem());
                     }
                 }else{
                     if(toolNeeded.getDamageValue() < toolNeeded.getMaxDamage() || debug) {

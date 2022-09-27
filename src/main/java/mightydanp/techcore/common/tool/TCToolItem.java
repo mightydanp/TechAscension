@@ -191,9 +191,9 @@ public class TCToolItem extends Item {
         List<ItemStack> disassembleItems = containsDisassembleItems(getDisassembleItems(), playerEntityIn.getInventory());
 
         if (disassembleItems.size() > 0) {
+            Set<ItemStack> set = new HashSet<>(disassembleItems);
 
-
-            disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 2, disassembleItems);
+            disassembleTool(playerEntityIn.getMainHandItem(), playerEntityIn, worldIn, 2, set);
             playerEntityIn.setItemInHand(handIn, ItemStack.EMPTY);
         }
     }
@@ -677,7 +677,7 @@ public class TCToolItem extends Item {
 
     }
 
-    public void disassembleTool(ItemStack itemStackIn, Player playerIn, Level worldIn, int toolInDamage, List<ItemStack> toolNeededIn) {
+    public void disassembleTool(ItemStack itemStackIn, Player playerIn, Level worldIn, int toolInDamage, Set<ItemStack> toolNeededIn) {
         Random random = new Random();
 
         if(itemStackIn.getItem() instanceof TCToolItem toolItem) {
@@ -751,7 +751,7 @@ public class TCToolItem extends Item {
         }
     }
 
-    public void damageToolsNeededInPlayerInventory(Player playerIn, Level worldIn, int Damage, List<ItemStack> toolNeededIn){
+    public void damageToolsNeededInPlayerInventory(Player playerIn, Level worldIn, int Damage, Set<ItemStack> toolNeededIn){
         if(inventoryToolCheck(playerIn, toolNeededIn) && toolNeededIn.size() != 0){
             for(ItemStack toolThatIsNeeded : toolNeededIn){
                 for(int i = 9; i <= 45; i++){
@@ -786,7 +786,7 @@ public class TCToolItem extends Item {
         }
     }
 
-    public boolean inventoryToolCheck(Player playerIn, List<ItemStack> toolNeededIn){
+    public boolean inventoryToolCheck(Player playerIn, Set<ItemStack> toolNeededIn){
         for(int i = 9; i <= 45; i++){
             ItemStack toolNeeded = playerIn.getInventory().getItem(i);
             if(toolNeededIn.contains(toolNeeded)){
