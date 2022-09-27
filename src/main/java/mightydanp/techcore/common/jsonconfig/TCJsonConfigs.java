@@ -70,7 +70,7 @@ public class TCJsonConfigs extends ConfigSync {
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  blocksInWater = configs.getOrDefault(blocksInWaterID, new Pair<>(new BlocksInWaterRegistry(),  new BlocksInWaterServer()));
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  randomSurface = configs.getOrDefault(randomSurfaceID, new Pair<>(new RandomSurfaceRegistry(),  new RandomSurfaceServer()));
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  blockTrait = configs.getOrDefault(blockTraitID, new Pair<>(new BlockTraitRegistry(),  new BlockTraitServer()));
-    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  itemTrait = configs.getOrDefault(blockTraitID, new Pair<>(new ItemTraitRegistry(),  new ItemTraitServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  itemTrait = configs.getOrDefault(itemTraitID, new Pair<>(new ItemTraitRegistry(),  new ItemTraitServer()));
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  handCrafting = configs.getOrDefault(handCraftingID, new Pair<>(new HandCraftingRegistry(),  new HandCraftingServer()));
 
     public static void init() {

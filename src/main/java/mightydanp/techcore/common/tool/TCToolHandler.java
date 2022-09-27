@@ -85,37 +85,52 @@ public class TCToolHandler {
         }
     }
 
-    public static Set<ItemStack> convertAssembleItems(Integer step, ItemStack mainHand, ItemStack offHand, Map<Integer, List<Map<Ingredient, Integer>>> toolNeededIn){
-        Set<ItemStack> map = new HashSet<>();
-        Set<ItemStack> mapCheck = new HashSet<>();
+    public static List<Set<Set<ItemStack>>> convertAssembleItems(Integer step, Map<Integer, List<Map<Ingredient, Integer>>> toolNeededIn){
+        List<Set<Set<ItemStack>>> map = new ArrayList<>();
 
         for(Map<Ingredient, Integer> stepMap : toolNeededIn.get(step)) {
+            Set<Set<ItemStack>> itemStackSet = new HashSet<>();
             stepMap.forEach((ingredient, count) -> {
+                Set<ItemStack> oreDict = new HashSet<>();
                 for(ItemStack itemStack : ingredient.getItems()) {
-                    if (itemStack.getItem() == mainHand.getItem() || itemStack.getItem() == offHand.getItem()) {
-                        itemStack.setCount(count);
-                        mapCheck.add(itemStack);
-                    }
+
+                    itemStack.setCount(count);
+                    oreDict.add(itemStack);
                 }
 
-                if(mapCheck.size() != 2){
-                    System.out.println(mapCheck.size() + " : ingredient size");
-                    mapCheck.clear();
-                }
+                itemStackSet.add(oreDict);
             });
-
-            if(mapCheck.size() != 2) {
-                mapCheck.clear();
-            } else {
-                map.addAll(mapCheck);
-                return mapCheck;
-            }
+            map.add(itemStackSet);
         }
 
         return map;
     }
 
+    public static Set<ItemStack> checkAssembleItems(ItemStack mainHand, ItemStack offHand, List<Set<Set<ItemStack>>> setIn){
+        Set<ItemStack> map = new HashSet<>();
 
+        for(Set<Set<ItemStack>> combination : setIn){
+            for(Set<ItemStack> itemStacks : combination){
+                ItemStack itemStackAccepted = null;
+                for(ItemStack itemStack : itemStacks){
+                    if(itemStack.equals(mainHand) || itemStack.equals(offHand)){
+                        if(itemStackAccepted == null) {
+                            itemStackAccepted = itemStack;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
+                if(itemStackAccepted != null){
+                    map.add(itemStackAccepted);
+                    break;
+                }
+            }
+        }
+
+        return map;
+    }
 
     @SuppressWarnings("ALL")
     public static void handToolCrafting(TCToolItem toolItemIn, PlayerInteractEvent.RightClickItem event, int toolNeededDamage, Map<Integer, List<Map<Ingredient, Integer>>> toolNeededIn) {
@@ -132,9 +147,9 @@ public class TCToolHandler {
             if (mainHandCheck != null && offHandCheck != null) {
                 if (mainHandCheck.getCount() == 1 && (mainHandCheck.getDamageValue() != mainHandCheck.getMaxDamage() || !mainHandCheck.isDamageableItem()) && offHandCheck.getCount() == 1 && (offHandCheck.getDamageValue() != offHandCheck.getMaxDamage() || !offHandCheck.isDamageableItem())) {
 
-                    Set<ItemStack> stepSet = convertAssembleItems(2, mainHand, offHand, toolNeededIn);
+                    Set<ItemStack> stepSet = checkAssembleItems(mainHand, offHand, convertAssembleItems(2, toolNeededIn));
 
-                    if (stepSet.size() == 2 && inventoryToolCheck(playerEntity, stepSet)) {
+                    if (stepSet.size() != 0 && inventoryToolCheck(playerEntity, stepSet)) {
                         ItemStack headItemStack = mainHandCheck.getItem() instanceof HeadItem ? mainHandCheck : offHandCheck.getItem() instanceof HeadItem ? offHandCheck : null;
                         ItemStack handleItemStack = mainHandCheck.getItem() instanceof HandleItem ? mainHandCheck : offHandCheck.getItem() instanceof HandleItem ? offHandCheck : null;
 
@@ -209,9 +224,9 @@ public class TCToolHandler {
             if(itemStackHandler != null) {
                 if (mainHandCheck != null && offHandCheck != null){
                     if (mainHandCheck.getCount() == 1 && (mainHandCheck.getDamageValue() != mainHandCheck.getMaxDamage() || !mainHandCheck.isDamageableItem()) && offHandCheck.getCount() == 1 && (offHandCheck.getDamageValue() != offHandCheck.getMaxDamage() || !offHandCheck.isDamageableItem())) {
-                        Set<ItemStack> stepSet = convertAssembleItems(3, mainHand, offHand, toolNeededIn);
+                        Set<ItemStack> stepSet = checkAssembleItems(mainHand, offHand, convertAssembleItems(3, toolNeededIn));
 
-                        if (stepSet.size() == 2 && inventoryToolCheck(playerEntity, stepSet)) {
+                        if (stepSet.size() != 0 && inventoryToolCheck(playerEntity, stepSet)) {
                             ItemStack handleItemStack = mainHandCheck.getItem() instanceof HandleItem ? mainHandCheck : offHandCheck.getItem() instanceof HandleItem ? offHandCheck : null;
                             ItemStack headItemStack = mainHandCheck.getItem() instanceof HeadItem ? mainHandCheck : offHandCheck.getItem() instanceof HeadItem ? offHandCheck : null;
                             ItemStack bindingItemStack = mainHandCheck.getItem() instanceof BindingItem ? mainHandCheck : offHandCheck.getItem() instanceof BindingItem ? offHandCheck : null;
