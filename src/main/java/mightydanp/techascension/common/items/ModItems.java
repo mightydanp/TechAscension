@@ -75,10 +75,10 @@ public class ModItems implements IItems {
         LangData enLang = AssetPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
 
         //assets
-        enLang.addTranslation("block." + Ref.mod_id + "." + ItemRef.plant_fiber_name, LangData.translateUpperCase(ItemRef.plant_fiber_name));
+        enLang.addTranslation("item." + Ref.mod_id + "." + ItemRef.plant_fiber_name, LangData.translateUpperCase(ItemRef.plant_fiber_name));
         AssetPackRegistry.itemModelDataHashMap.put(ItemRef.plant_fiber_name, new ItemModelData().setParent(new ResourceLocation("item/handheld")).setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.plant_fiber_name)));
 
-        enLang.addTranslation("block." + Ref.mod_id + "." + ItemRef.twine_name, LangData.translateUpperCase(ItemRef.twine_name));
+        enLang.addTranslation("item." + Ref.mod_id + "." + ItemRef.twine_name, LangData.translateUpperCase(ItemRef.twine_name));
         AssetPackRegistry.itemModelDataHashMap.put(ItemRef.twine_name, new ItemModelData().setParent(new ResourceLocation("item/handheld"))
                 .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name))
                 .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name + "_overlay")

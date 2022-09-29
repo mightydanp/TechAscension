@@ -30,9 +30,11 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
     @Override
     public void register(ITool toolIn) {
         String name = toolIn.getName();
-        if (registryMap.containsKey(toolIn.getName()))
-            throw new IllegalArgumentException("tool with name(" + name + "), already exists.");
-        registryMap.put(name, toolIn);
+        if (registryMap.containsKey(toolIn.getName())) {
+            TechAscension.LOGGER.warn("tool with name(" + name + "), already exists.");
+        } else {
+            registryMap.put(name, toolIn);
+        }
     }
 
     public ITool getToolByName(String tool) {
@@ -144,25 +146,21 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
 
                 JsonObject assembleSteps = jsonObjectIn.getAsJsonObject("assemble_steps");
 
+                List<Map<Ingredient, Integer>> combinationsList = new ArrayList<>();
                 for(int i = 0; i < assembleSteps.size(); i++){
-                    List<Map<Ingredient, Integer>> combinationsList = new ArrayList<>();
-
-                    JsonArray combinations = assembleSteps.get(String.valueOf(i)).getAsJsonArray();
+                    JsonArray combinations = assembleSteps.get(String.valueOf(i + 1)).getAsJsonArray();
+                    Map<Ingredient, Integer> ingredientsList = new HashMap<>();
 
                     for(int j = 0; j < combinations.size(); j++) {
-                        JsonArray ingredients = combinations.get(j).getAsJsonArray();
-                        Map<Ingredient, Integer> ingredientsList = new HashMap<>();
-
-                        for(int k = 0; k < ingredients.size(); k++){
-                            Ingredient ingredient = Ingredient.fromJson(ingredients.get(i).getAsJsonObject().get("item" + k));
-                            int amount = ingredients.get(i).getAsJsonObject().get("amount" + k).getAsInt();
-
+                        JsonArray combination = combinations.get(i).getAsJsonArray();
+                        for(int k = 0; k < combinations.get(k).getAsJsonObject().size(); k++) {
+                            Ingredient ingredient = Ingredient.fromJson(combination.get(k).getAsJsonObject());
+                            int amount = combination.get(k).getAsJsonObject().get("amount").getAsInt();
                             ingredientsList.put(ingredient, amount);
-
                         }
-
-                        combinationsList.add(ingredientsList);
                     }
+
+                    combinationsList.add(ingredientsList);
 
                     map.put(i + 1, combinationsList);
                 }
@@ -172,22 +170,23 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
 
             @Override
             public List<Map<Ingredient, Integer>> getDisassembleItems() {
-                JsonObject disassembleItems = jsonObjectIn.getAsJsonObject("disassemble_items");
+                JsonArray disassembleItems = jsonObjectIn.getAsJsonArray("disassemble_items");
 
                 List<Map<Ingredient, Integer>> list = new ArrayList<>();
 
                 for(int i = 0; i < disassembleItems.size(); i++){
                     Map<Ingredient, Integer> combinationsList = new HashMap<>();
 
-                    JsonArray combinations = disassembleItems.get(String.valueOf(i)).getAsJsonArray();
+                    JsonArray combinations = disassembleItems.get(i).getAsJsonArray();
 
                     for(int j = 0; j < combinations.size(); j++) {
-                        Ingredient ingredient = Ingredient.fromJson(combinations.get(i).getAsJsonObject().get("item" + j));
-                        int amount = combinations.get(i).getAsJsonObject().get("amount" + j).getAsInt();
-
-                        combinationsList.put(ingredient, amount);
+                        JsonArray combination = combinations.get(i).getAsJsonArray();
+                        for(int k = 0; k < combinations.get(k).getAsJsonObject().size(); k++) {
+                            Ingredient ingredient = Ingredient.fromJson(combination.get(k).getAsJsonObject());
+                            int amount = combination.get(k).getAsJsonObject().get("amount").getAsInt();
+                            combinationsList.put(ingredient, amount);
+                        }
                     }
-
                     list.add(combinationsList);
                 }
 
@@ -208,7 +207,7 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
         tool.getEffectiveOn().forEach(array::add);
 
         if(array.size() > 0) {
-            jsonObject.add("get_effective_on", array);
+            jsonObject.add("effective_on", array);
         }
 
         {
@@ -238,11 +237,12 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
             JsonArray combinations = new JsonArray();
 
             for (Map<Ingredient, Integer> combinationsMap : lists) {
-                JsonObject ingredients = new JsonObject();
+                JsonArray ingredients = new JsonArray();
 
                 for(int i = 0; i < combinationsMap.size(); i++){
-                    ingredients.add("item" + i, combinationsMap.keySet().stream().toList().get(i).toJson());
-                    ingredients.addProperty("amount" + i, combinationsMap.values().stream().toList().get(i));
+                    JsonObject ingredient = combinationsMap.keySet().stream().toList().get(i).toJson().getAsJsonObject();
+                    ingredient.addProperty("amount", combinationsMap.values().stream().toList().get(i));
+                    ingredients.add(ingredient);
                 }
 
                 combinations.add(ingredients);
@@ -259,10 +259,11 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
 
         JsonArray combinations = new JsonArray();
         tool.getDisassembleItems().forEach(map -> {
-            JsonObject ingredients = new JsonObject();
-            for(int i = 0; i < tool.getDisassembleItems().size(); i++){
-                ingredients.add("item" + i, map.keySet().stream().toList().get(i).toJson());
-                ingredients.addProperty("amount" + i, map.values().stream().toList().get(i));
+            JsonArray ingredients = new JsonArray();
+            for(int i = 0; i < map.size(); i++){
+                JsonObject ingredient = map.keySet().stream().toList().get(i).toJson().getAsJsonObject();
+                ingredient.addProperty("amount", map.values().stream().toList().get(i));
+                ingredients.add(ingredient);
             }
 
             combinations.add(ingredients);

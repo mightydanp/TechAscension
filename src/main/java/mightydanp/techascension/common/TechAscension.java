@@ -79,6 +79,7 @@ public class TechAscension {
         TCItems.initBlockItems();
         ModItems.initBlockItems();
         ModTrees.commonInit();
+
         Containers.init();
         ModBlockEntity.init();
         TileEntities.init();

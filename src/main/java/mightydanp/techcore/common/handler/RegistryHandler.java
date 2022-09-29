@@ -1,5 +1,6 @@
 package mightydanp.techcore.common.handler;
 
+import mightydanp.techascension.common.tool.ModTools;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.*;
 
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -45,10 +47,5 @@ public class RegistryHandler extends RegisterHelper{
         FEATURES.register(IEventBus);
         RECIPE_TYPE.register(IEventBus);
         RECIPE_SERIALIZER.register(IEventBus);
-
-    }
-
-    public void register(){
-
     }
 }

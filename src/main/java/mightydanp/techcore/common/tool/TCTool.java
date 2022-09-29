@@ -30,7 +30,6 @@ import java.util.*;
 
 public class TCTool {
     public String toolName;
-    public int hitDamage;
     public List<String> toolParts = new ArrayList<>();
     public List<RegistryObject<Item>> materialParts = new ArrayList<>();
     public PartHolders.handlePartHolder handle;
@@ -41,9 +40,8 @@ public class TCTool {
 
     public RegistryObject<Item> toolItem;
 
-    public TCTool(String nameIn, int hitDamageIn, List<String> effectiveBlocksIn, Map<Integer, List<Map<Ingredient, Integer>>> assembleItemsIn, List<Map<Ingredient, Integer>> disassembleItemsIn, PartHolders.handlePartHolder handleIn, PartHolders.dullHeadPartHolder dullHeadIn, PartHolders.headPartHolder headIn, PartHolders.bindingPartHolder bindingIn, RegistryObject<Item> toolItemIn) {
+    public TCTool(String nameIn, PartHolders.handlePartHolder handleIn, PartHolders.dullHeadPartHolder dullHeadIn, PartHolders.headPartHolder headIn, PartHolders.bindingPartHolder bindingIn, RegistryObject<Item> toolItemIn) {
         toolName = nameIn;
-        hitDamage = hitDamageIn;
 
         if(handleIn != null){
             handle = handleIn;
