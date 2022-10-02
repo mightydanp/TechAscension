@@ -23,6 +23,7 @@ import mightydanp.techapi.common.resources.data.DataPackRegistry;
 import mightydanp.techcore.common.holder.MCMaterialHolder;
 import mightydanp.techcore.common.jsonconfig.flag.IMaterialFlag;
 import mightydanp.techapi.common.resources.data.data.LootTableData;
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -36,6 +37,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.predicates.AlternativeLootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
@@ -97,16 +101,13 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public List<RegistryObject<Block>> smallOreList = new ArrayList<>();
     public List<RegistryObject<Block>> denseOreList = new ArrayList<>();
 
-    public List<RegistryObject<Block>> thinSlabList = new ArrayList<>();
-
-    public List<RegistryObject<Item>> oreItemList = new ArrayList<>();
-    public List<RegistryObject<Item>> smallOreItemList = new ArrayList<>();
-    public List<RegistryObject<Item>> denseOreItemList = new ArrayList<>();
-
-    public List<RegistryObject<Item>> thinSlabItemList = new ArrayList<>();
+    public List<TCMaterialHolders.itemStoneLayerColorHolder> rawOreItemList = new ArrayList<>();
+    public List<TCMaterialHolders.itemStoneLayerColorHolder> oreItemList = new ArrayList<>();
+    public List<TCMaterialHolders.itemStoneLayerColorHolder> smallOreItemList = new ArrayList<>();
+    public List<TCMaterialHolders.itemStoneLayerColorHolder> denseOreItemList = new ArrayList<>();
 
 
-    public RegistryObject<Item> ingot, gem, chippedGem, flawedGem, flawlessGem, legendaryGem, rawOre, crushedOre, purifiedOre, centrifugedOre, dust, smallDust, tinyDust;
+    public RegistryObject<Item> ingot, gem, chippedGem, flawedGem, flawlessGem, legendaryGem, crushedOre, purifiedOre, centrifugedOre, dust, smallDust, tinyDust;
     public RegistryObject<FlowingFluid> fluid, fluid_flowing;
     public RegistryObject<Block> fluidBlock;
 
@@ -234,9 +235,6 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
                 if (flag == ORE || flag == GEM) {
 //--//--//--//--//--//--//--//--//
-                    rawOre = RegistryHandler.ITEMS.register("raw_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
-                            .tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
-//--//--//--//--//--//--//--//--//
                     crushedOre = RegistryHandler.ITEMS.register("crushed_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
                             .tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
@@ -290,26 +288,30 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         RegistryObject<Block> ore = RegistryHandler.BLOCKS.register(stoneLayer.name + "_" + name + "_ore", () -> new OreBlock(name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), stoneLayerBlockName));
                         oreList.add(ore);
                         //--
-                        RegistryObject<Item> oreItemR = RegistryHandler.ITEMS.register(stoneLayer.name + "_" + name + "_ore", () ->
+                        RegistryObject<Item> oreItem = RegistryHandler.ITEMS.register(stoneLayer.name + "_" + name + "_ore", () ->
                                 new BlockOreItem(ore, new Item.Properties().tab(TCCreativeModeTab.ore_tab)
                                         , boilingPoint, meltingPoint, symbol));
-                        oreItemList.add(oreItemR);
+                        oreItemList.add(new TCMaterialHolders.itemStoneLayerColorHolder(oreItem, stoneLayer.color));
+                        //--
+                        RegistryObject<Item> rawOre = RegistryHandler.ITEMS.register("raw_" + stoneLayer.name + "_" + name + "_ore", () ->
+                                new OreProductsItem(new Item.Properties().tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
+                        rawOreItemList.add(new TCMaterialHolders.itemStoneLayerColorHolder(rawOre, stoneLayer.color));
 //--//--//--//--//--//--//--//--//
                         RegistryObject<Block> smallOreBlock = RegistryHandler.BLOCKS.register("small_" + stoneLayer.name + "_" + name + "_ore", () ->
                                 new SmallOreBlock("small_" + name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), stoneLayerBlockName));
                         smallOreList.add(smallOreBlock);
                         //--
-                        RegistryObject<Item> smallOreItemR = RegistryHandler.ITEMS.register("small_" + stoneLayer.name + "_" + name + "_ore", () ->
+                        RegistryObject<Item> smallOreItem = RegistryHandler.ITEMS.register("small_" + stoneLayer.name + "_" + name + "_ore", () ->
                                 new BlockOreItem(smallOreBlock, new Item.Properties().tab(TCCreativeModeTab.ore_tab), boilingPoint, meltingPoint, symbol));
-                        smallOreItemList.add(smallOreItemR);
+                        smallOreItemList.add(new TCMaterialHolders.itemStoneLayerColorHolder(smallOreItem, stoneLayer.color));
 //--//--//--//--//--//--//--//--//
                         RegistryObject<Block> denseOreBlock = RegistryHandler.BLOCKS.register("dense_" + stoneLayer.name + "_" + name + "_ore", () ->
                                 new DenseOreBlock("dense_" + name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), denseOreDensity, stoneLayerBlockName));
                         denseOreList.add(denseOreBlock);
                         //--
-                        RegistryObject<Item> denseOreItemR = RegistryHandler.ITEMS.register("dense_" + stoneLayer.name + "_" + name + "_ore", () ->
+                        RegistryObject<Item> denseOreItem = RegistryHandler.ITEMS.register("dense_" + stoneLayer.name + "_" + name + "_ore", () ->
                                 new BlockOreItem(denseOreBlock, new Item.Properties().tab(TCCreativeModeTab.ore_tab), boilingPoint, meltingPoint, symbol));
-                        denseOreItemList.add(denseOreItemR);
+                        denseOreItemList.add(new TCMaterialHolders.itemStoneLayerColorHolder(denseOreItem, stoneLayer.color));
 //--//--//--//--//--//--//--//--//
                     }
                 }
@@ -458,19 +460,6 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 //-- Item --\\
 
                 if (flag == ORE || flag == GEM) {
-//--//--//--//--//--//--//--//--//
-                    //-- Item --\\
-                    //--Resources
-
-                    AssetPackRegistry.itemModelDataHashMap.put("raw_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/raw_ore")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":raw_ore", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
-                            .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore"))
-                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore_overlay")));
-                    enLang.addTranslation("item." + Ref.mod_id + "." + "raw_" + name + "_ore", LangData.translateUpperCase("raw_" + name + "_ore"));
-                    //--Tags
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "raw_ores/" + name)).add(rawOre.get()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "raw_ores")).add(rawOre.get()));
-                    //--LootTable
 
 //--//--//--//--//--//--//--//--//
                     //-- Item --\\
@@ -639,18 +628,38 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         //--LootTable
 
                         // -- Item --\\
+                        //--Resources
+                        AssetPackRegistry.itemModelDataHashMap.put("raw_" + stoneLayer.name + "_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/raw_ore")));
+                        AssetPackRegistry.itemModelDataHashMap.put(stoneLayer.name + "_" + name + ":raw_ore", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                                .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore"))
+                                .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore_overlay")));
+                        enLang.addTranslation("item." + Ref.mod_id + "." + "raw_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("raw_" + stoneLayer.name + "_" + name + "_ore"));
+                        //--
                         AssetPackRegistry.itemModelDataHashMap.put(stoneLayer.name + "_" + name + "_ore", new ItemModelData()
                                 .setParent(new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore")));
                         enLang.addTranslation("item." + Ref.mod_id + "." + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase(stoneLayer.name + "_" + name + "_ore"));
                         //--Tags
+                        rawOreItemList.forEach(object -> {
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "raw_ores/" + stoneLayer.name + "_" + name)).add(object.item().get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "raw_ores")).add(object.item().get()));
+                        });
+
                         oreItemList.forEach(object -> {
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "ores/" + name)).add(object.get()));
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "ores")).add(object.get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "ores/" + name)).add(object.item().get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "ores")).add(object.item().get()));
                         });
                         //--LootTable
-
+                        rawOreItemList.forEach(object -> {
+                            /*DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(object.item().getId()).setLootTable(LootTable.lootTable()
+                                    .withPool(LootPool.lootPool().when(new AlternativeLootItemCondition(new LootItemCondition[]{
+                                            new MatchTool(new ItemPredicate())
+                                    })))
+                            ));
+                             */
+                        });
 //--//--//--//--//--//--//--//--//
                         // -- Block --\\
+
                         //--Resources
                         AssetPackRegistry.blockStateDataMap.put("small_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
                         enLang.addTranslation("block." + Ref.mod_id + "." + "small_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("small_" + stoneLayer.name + "_" + name + "_ore"));
@@ -663,16 +672,16 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         //--LootTable
 
                         // -- Item --\\
+
                         //--Resources
                         AssetPackRegistry.itemModelDataHashMap.put("small_" + stoneLayer.name + "_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
                         enLang.addTranslation("item." + Ref.mod_id + "." + "small_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("small_" + stoneLayer.name + "_" + name + "_ore"));
                         //--Tags
                         smallOreItemList.forEach(object -> {
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_ores/" + stoneLayer.name + "_" + name)).add(object.get()));
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_ores")).add(object.get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_ores/" + stoneLayer.name + "_" + name)).add(object.item().get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_ores")).add(object.item().get()));
                         });
                         //--LootTable
-
 //--//--//--//--//--//--//--//--//
                         // -- Block --\\
                         //--Resources
@@ -692,8 +701,8 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         enLang.addTranslation("item." + Ref.mod_id + "." + "dense_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("dense_" + stoneLayer.name + "_" + name + "_ore"));
                         //--Tags
                         denseOreItemList.forEach(object -> {
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores/" + stoneLayer.name + "_" + name)).add(object.get()));
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores")).add(object.get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores/" + stoneLayer.name + "_" + name)).add(object.item().get()));
+                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores")).add(object.item().get()));
                         });
                         //--LootTable
 
@@ -717,8 +726,8 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 //--//--//--//--//--//--//--//--//
                 // -- Item --\\
                 //--Resources
-                AssetPackRegistry.itemModelDataHashMap.put(name + "_" + INGOT.name(), new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "/material_icons/" + textureIcon.getSecond().getName() + "/ingot")));
-                enLang.addTranslation("item." + Ref.mod_id + "." + name + "_" + INGOT.name(), LangData.translateUpperCase(name + "_" + INGOT.name()));
+                //AssetPackRegistry.itemModelDataHashMap.put(name + "_" + INGOT.name(), new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "/material_icons/" + textureIcon.getSecond().getName() + "/ingot")));
+                //enLang.addTranslation("item." + Ref.mod_id + "." + name + "_" + INGOT.name(), LangData.translateUpperCase(name + "_" + INGOT.name()));
                 //--Tags
 
                 //--LootTable
@@ -777,32 +786,42 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
             registerAItemColor(rockItemBlock.get(), 1);
         }
 
-        for (RegistryObject<Item> item : oreItemList) {
+        for (TCMaterialHolders.itemStoneLayerColorHolder item : rawOreItemList) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
-                if (tintIndex != 0)
-                    return 0xFFFFFFFF;
-                return color;
-            }, item.get());
-        }
-        for (RegistryObject<Item> item : smallOreItemList) {
-            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
-                if (tintIndex != 0)
-                    return 0xFFFFFFFF;
-                return color;
-            }, item.get());
+                if(tintIndex == 0)
+                    return color;
+
+                if(tintIndex == 1)
+                    return item.stoneLayerColor();
+                return 0xFFFFFFFF;
+            }, item.item().get());
         }
 
-        for (RegistryObject<Item> item : denseOreItemList) {
+        for (TCMaterialHolders.itemStoneLayerColorHolder item : oreItemList) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 if (tintIndex != 0)
                     return 0xFFFFFFFF;
                 return color;
-            }, item.get());
+            }, item.item().get());
         }
 
-        if (rawOre != null) {
-            registerAItemColor(rawOre.get(), 1);
+        for (TCMaterialHolders.itemStoneLayerColorHolder item : smallOreItemList) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex != 0)
+                    return 0xFFFFFFFF;
+                return color;
+            }, item.item().get());
         }
+
+        for (TCMaterialHolders.itemStoneLayerColorHolder item : denseOreItemList) {
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex != 0)
+                    return 0xFFFFFFFF;
+                return color;
+            }, item.item().get());
+        }
+
+
 
         if (dust != null) {
             registerAItemColor(dust.get(), 0);
