@@ -38,7 +38,6 @@ public class ModClientEvent implements ISidedReference {
         ModBlocks.setRenderType();
         ModItems.initClient();
         ModMaterials.clientInit();
-        ModTrees.clientInit();
         ModBlockEntity.clientInit();
         ModKeyBindings.init();
         ModTools.postInit();

@@ -1,7 +1,6 @@
 package mightydanp.techcore.common.datagen;
 
 import mightydanp.techcore.common.material.TCMaterial;
-import mightydanp.techcore.common.handler.TreeHandler;
 import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
 import mightydanp.techcore.common.libs.EnumTreeFlags;
 import mightydanp.techcore.common.libs.Ref;
@@ -103,13 +102,5 @@ public class GenBlockStates extends BlockStateProvider {
     }
 
      */
-
-    private void treeHandler(TreeHandler treeHandler) {
-        for(EnumTreeFlags flag : treeHandler.treeFlags) {
-            if (flag == EnumTreeFlags.LEAVE) {
-
-            }
-        }
-    }
 
 }

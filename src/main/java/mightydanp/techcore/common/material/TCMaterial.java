@@ -26,6 +26,7 @@ import mightydanp.techapi.common.resources.data.data.LootTableData;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
@@ -42,6 +43,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
@@ -310,7 +312,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         denseOreList.add(denseOreBlock);
                         //--
                         RegistryObject<Item> denseOreItem = RegistryHandler.ITEMS.register("dense_" + stoneLayer.name + "_" + name + "_ore", () ->
-                                new BlockOreItem(denseOreBlock, new Item.Properties().tab(TCCreativeModeTab.ore_tab), boilingPoint, meltingPoint, symbol));
+                                new DenseOreBlockItem(denseOreBlock, new Item.Properties().tab(TCCreativeModeTab.ore_tab), boilingPoint, meltingPoint, symbol, denseOreDensity));
                         denseOreItemList.add(new TCMaterialHolders.itemStoneLayerColorHolder(denseOreItem, stoneLayer.color));
 //--//--//--//--//--//--//--//--//
                     }
@@ -408,6 +410,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     if (harvestLevel != null) {
                         DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "harvest_level/" + harvestLevel)).add(rockBlock.get()));
                     }
+
                     //--LootTables
                     DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, name + "_rock")).setLootTable(
                             LootTable.lootTable().withPool(
@@ -705,7 +708,13 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                             DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores")).add(object.item().get()));
                         });
                         //--LootTable
+                        for(int i = 0; i < denseOreItemList.size(); i++){
+                            DenseOreBlockItem denseOreBlockItem = (DenseOreBlockItem)denseOreItemList.get(i).item().get();
+                            DenseOreBlock denseOreBlock = (DenseOreBlock)denseOreBlockItem.getBlock();
 
+                            DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(denseOreItemList.get(i).item().getId()).setLootTable(LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(rawOreItemList.get(i).item().get()))).build()));
+                            //DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(denseOreItemList.get(i).item().getId()).setLootTable(LootTable.lootTable().withPool(LootPool.lootPool().setRolls(UniformGenerator.between(1, denseOreBlock.getDensity())).add(LootItem.lootTableItem(rawOreItemList.get(i).item().get()))).build()));
+                        }
 //--//--//--//--//--//--//--//--//
                     }
                 }

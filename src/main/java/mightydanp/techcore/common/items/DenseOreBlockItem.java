@@ -6,6 +6,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -15,14 +16,17 @@ import java.util.List;
  */
 public class DenseOreBlockItem extends BlockItem {
     public String element;
-    public int meltingPoint;
-    public int boilingPoint;
+    public Integer meltingPoint;
+    public Integer boilingPoint;
 
-    public DenseOreBlockItem(Block blockIn, Properties builder, int boilingPointIn, int meltingPointIn, String elementIn) {
-        super(blockIn, builder);
+    public Integer density;
+
+    public DenseOreBlockItem(RegistryObject<Block> blockIn, Properties builder, Integer boilingPointIn, Integer meltingPointIn, String elementIn, Integer densityIn) {
+        super(blockIn.get(), builder);
         meltingPoint = meltingPointIn;
         boilingPoint = boilingPointIn;
         element = elementIn;
+        density = densityIn;
     }
 
     @Override
@@ -32,11 +36,16 @@ public class DenseOreBlockItem extends BlockItem {
             tooltip.add(Component.nullToEmpty(element));
         }
 
-        if (meltingPoint != 0) {
+        if (meltingPoint != null && meltingPoint != 0) {
             tooltip.add(Component.nullToEmpty("Melting Point of" + " §5" + meltingPoint));
         }
-        if (boilingPoint != 0) {
+
+        if (boilingPoint != null && boilingPoint != 0) {
             tooltip.add(Component.nullToEmpty("Boiling Point of" + " §5" + boilingPoint));
+        }
+
+        if (density != null && density != 0) {
+            tooltip.add(Component.nullToEmpty("Density of " + density));
         }
     }
 
