@@ -13,6 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -32,8 +33,8 @@ public class TCTree {
     public Map<String, ResourceLocation> existingBlocks;
     public Map<String, ResourceLocation> existingItems;
 
-    public RegistryObject<Block> log, stripedLog, planks, leaves, sapling, slab, stair, button, fence, door, trapDoor, pressurePlate;
-    public RegistryObject<Item> stick, boat, sign, plank;
+    public RegistryObject<Block> log, stripedLog, planks, leaves, sapling, slab, stairs, button, fence, fenceGate, door, trapDoor, pressurePlate, sign;
+    public RegistryObject<Item> stick, plank;//boat- cant do because it requires plank block. If someone adds a plank that's not in this class then there is no plank for it to use because it cant grab it from registry.
 
 
 
@@ -59,7 +60,15 @@ public class TCTree {
 
     public void save(){
         //-- Item --\\
-
+        {
+            if (!existingItems.containsKey("stick")) {
+                stick = RegistryHandler.ITEMS.register(name, () -> new Item(new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+//--//--//--//--//--//--//--//--//
+            if (!existingItems.containsKey("stick")) {
+                stick = RegistryHandler.ITEMS.register(name, () -> new Item(new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
         //-- Blocks with Items -- \\
         {
             //--block
@@ -107,7 +116,7 @@ public class TCTree {
             String name = this.name + "_leaves";
             Block block = new LeavesBlock(BlockBehaviour.Properties.of(material).strength(0.2F  * destroyTimeMultiplier, 0.2F * explosionResistanceMultiplier).randomTicks().sound(soundType).noOcclusion().isValidSpawn(Blocks::ocelotOrParrot).isSuffocating(Blocks::never).isViewBlocking(Blocks::never));
             if (!existingBlocks.containsKey("leaves")) {
-                stripedLog = RegistryHandler.BLOCKS.register(name, () -> block);
+                leaves = RegistryHandler.BLOCKS.register(name, () -> block);
             }
 
             //--item
@@ -121,12 +130,137 @@ public class TCTree {
             String name = this.name + "_planks";
             Block block = new Block(BlockBehaviour.Properties.of(material).strength(2.0F * destroyTimeMultiplier, 2.0F * explosionResistanceMultiplier).sound(soundType));
             if (!existingItems.containsKey("planks")) {
-
                 planks = RegistryHandler.BLOCKS.register(name, () -> block);
             }
 
             //--item
             if (!existingItems.containsKey("planks")) {
+                RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_slab";
+            Block block = new SlabBlock(BlockBehaviour.Properties.of(material).strength(2.0F * destroyTimeMultiplier, 3.0F * explosionResistanceMultiplier).sound(soundType));
+            if (!existingItems.containsKey("slab")) {
+                slab = RegistryHandler.BLOCKS.register(name, () -> block);
+            }
+
+            //--item
+            if (!existingItems.containsKey("slab")) {
+                RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_stairs";
+            Block block = new StairBlock(()-> null, BlockBehaviour.Properties.of(material).strength(2.0F * destroyTimeMultiplier, 3.0F * explosionResistanceMultiplier).sound(soundType));
+            if (!existingItems.containsKey("stairs")) {
+                stairs = RegistryHandler.BLOCKS.register(name, () -> block);
+            }
+
+            //--item
+            if (!existingItems.containsKey("stairs")) {
+                RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_button";
+            Block block = new WoodButtonBlock(BlockBehaviour.Properties.of(material).noCollission().strength(0.5F * destroyTimeMultiplier, 0.5F * explosionResistanceMultiplier).sound(soundType));
+            if (!existingItems.containsKey("button")) {
+                button = RegistryHandler.BLOCKS.register(name, () -> block);
+            }
+
+            //--item
+            if (!existingItems.containsKey("button")) {
+                RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_fence";
+            Block block = new FenceBlock(BlockBehaviour.Properties.of(material).strength(2.0F * destroyTimeMultiplier, 3.0F * explosionResistanceMultiplier).sound(soundType));
+            if (!existingItems.containsKey("fence")) {
+                fence = RegistryHandler.BLOCKS.register(name, () -> block);
+            }
+
+            //--item
+            if (!existingItems.containsKey("fence")) {
+                RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_fence_gate";
+            Block block = new FenceGateBlock(BlockBehaviour.Properties.of(material).strength(2.0F * destroyTimeMultiplier, 3.0F * explosionResistanceMultiplier).sound(soundType));
+            if (!existingItems.containsKey("fence_gate")) {
+                fenceGate = RegistryHandler.BLOCKS.register(name, () -> block);
+            }
+
+            //--item
+            if (!existingItems.containsKey("fence_gate")) {
+                RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_door";
+            Block block = new DoorBlock(BlockBehaviour.Properties.of(material).noOcclusion().strength(3.0F * destroyTimeMultiplier, 3.0F * explosionResistanceMultiplier).sound(soundType));
+            if (!existingItems.containsKey("door")) {
+                door = RegistryHandler.BLOCKS.register(name, () -> block);
+            }
+
+            //--item
+            if (!existingItems.containsKey("door")) {
+                RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_trap_door";
+            Block block = new TrapDoorBlock(BlockBehaviour.Properties.of(material).strength(2.0F * destroyTimeMultiplier, 3.0F * explosionResistanceMultiplier).sound(soundType).noOcclusion().isValidSpawn(Blocks::never));
+            if (!existingItems.containsKey("trap_door")) {
+                trapDoor = RegistryHandler.BLOCKS.register(name, () -> block);
+            }
+
+            //--item
+            if (!existingItems.containsKey("trap_door")) {
+                RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_pressure_plate";
+            Block block = new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, BlockBehaviour.Properties.of(material).strength(0.5F * destroyTimeMultiplier, 0.5F * explosionResistanceMultiplier).sound(soundType).noCollission());
+            if (!existingItems.containsKey("pressure_plate")) {
+                pressurePlate = RegistryHandler.BLOCKS.register(name, () -> block);
+            }
+
+            //--item
+            if (!existingItems.containsKey("pressure_plate")) {
+                RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_sign";
+            Block block = new StandingSignBlock(BlockBehaviour.Properties.of(material).strength(destroyTimeMultiplier, explosionResistanceMultiplier).sound(soundType).noCollission(), WoodType.register(WoodType.create(name)));
+            if (!existingItems.containsKey("sign")) {
+                pressurePlate = RegistryHandler.BLOCKS.register(name, () -> block);
+            }
+
+            //--item
+            if (!existingItems.containsKey("sign")) {
                 RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
             }
         }
