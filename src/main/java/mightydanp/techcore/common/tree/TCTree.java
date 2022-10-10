@@ -34,7 +34,7 @@ public class TCTree {
     public Map<String, ResourceLocation> existingItems;
 
     public RegistryObject<Block> log, stripedLog, planks, leaves, sapling, slab, stairs, button, fence, fenceGate, door, trapDoor, pressurePlate, sign;
-    public RegistryObject<Item> stick, plank;//boat- cant do because it requires plank block. If someone adds a plank that's not in this class then there is no plank for it to use because it cant grab it from registry.
+    public RegistryObject<Item> stick, plank, resin;//boat-cant do because it requires plank block. If someone adds a plank that's not in this class then there is no plank for it to use because it cant grab it from registry.
 
 
 
@@ -58,17 +58,32 @@ public class TCTree {
         return this;
     }
 
-    public void save(){
+    public void save() {
         //-- Item --\\
         {
-            if (!existingItems.containsKey("stick")) {
-                stick = RegistryHandler.ITEMS.register(name, () -> new Item(new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
-            }
-//--//--//--//--//--//--//--//--//
+            String name = this.name + "_stick";
+
             if (!existingItems.containsKey("stick")) {
                 stick = RegistryHandler.ITEMS.register(name, () -> new Item(new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
             }
         }
+//--//--//--//--//--//--//--//--//
+        {
+            String name = this.name + "_plank";
+
+            if (!existingItems.containsKey("plank")) {
+                plank = RegistryHandler.ITEMS.register(name, () -> new Item(new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            String name = this.name + "_resin";
+
+            if (!existingItems.containsKey("resin")) {
+                plank = RegistryHandler.ITEMS.register(name, () -> new Item(new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+//--//--//--//--//--//--//--//--//
         //-- Blocks with Items -- \\
         {
             //--block

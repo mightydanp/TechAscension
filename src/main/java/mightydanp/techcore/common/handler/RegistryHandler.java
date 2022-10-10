@@ -21,20 +21,16 @@ import net.minecraftforge.registries.*;
 public class RegistryHandler extends RegisterHelper{
 
     public final RegistryManager registryManager = RegistryManager.ACTIVE;
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Ref.mod_id);
-    public static final DeferredRegister<Item> BLOCK_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
-    public static final DeferredRegister<BlockEntityType<?>> Block_Entities = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Ref.mod_id);
-    public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, Ref.mod_id);
-    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Ref.mod_id);
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Ref.mod_id);
-    public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(ForgeRegistries.FEATURES, Ref.mod_id);
-    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPE = DeferredRegister.create(Registry.RECIPE_TYPE.key(), Ref.mod_id);
+    public static final DeferredRegister<Item>                ITEMS             = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
+    public static final DeferredRegister<Block>               BLOCKS            = DeferredRegister.create(ForgeRegistries.BLOCKS, Ref.mod_id);
+    public static final DeferredRegister<Item>                BLOCK_ITEMS       = DeferredRegister.create(ForgeRegistries.ITEMS, Ref.mod_id);
+    public static final DeferredRegister<BlockEntityType<?>>  Block_Entities    = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Ref.mod_id);
+    public static final DeferredRegister<Fluid>               FLUIDS            = DeferredRegister.create(ForgeRegistries.FLUIDS, Ref.mod_id);
+    public static final DeferredRegister<MenuType<?>>         CONTAINERS        = DeferredRegister.create(ForgeRegistries.CONTAINERS, Ref.mod_id);
+    public static final DeferredRegister<EntityType<?>>       ENTITIES          = DeferredRegister.create(ForgeRegistries.ENTITIES, Ref.mod_id);
+    public static final DeferredRegister<Feature<?>>          FEATURES          = DeferredRegister.create(ForgeRegistries.FEATURES, Ref.mod_id);
+    public static final DeferredRegister<RecipeType<?>>       RECIPE_TYPE       = DeferredRegister.create(Registry.RECIPE_TYPE.key(), Ref.mod_id);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Ref.mod_id);
-
-    public void init(){
-
-    }
 
     public static void init(IEventBus IEventBus) {
         ITEMS.register(IEventBus);
@@ -48,4 +44,5 @@ public class RegistryHandler extends RegisterHelper{
         RECIPE_TYPE.register(IEventBus);
         RECIPE_SERIALIZER.register(IEventBus);
     }
+
 }
