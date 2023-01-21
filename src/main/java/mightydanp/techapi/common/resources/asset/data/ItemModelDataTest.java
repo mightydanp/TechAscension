@@ -3,12 +3,13 @@ package mightydanp.techapi.common.resources.asset.data;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
+import net.minecraftforge.client.model.generators.ModelBuilder;
 
 public class ItemModelDataTest {
 
     public final ResourceLocation name;
 
-    public ItemModelBuilder itemModel = new ItemModelBuilder(null, null);
+    public ModelBuilder<?> itemModel = new ItemModelBuilder(null, null);
 
 
     public ItemModelDataTest(ResourceLocation name) {

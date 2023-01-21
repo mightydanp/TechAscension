@@ -1,6 +1,7 @@
 package mightydanp.techcore.common.material;
 
 import com.mojang.datafixers.util.Pair;
+import mightydanp.techapi.common.resources.asset.data.*;
 import mightydanp.techcore.common.blocks.*;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.items.*;
@@ -15,18 +16,11 @@ import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.material.fluid.TCFluid;
 import mightydanp.techcore.common.material.fluid.TCFluidBlock;
 import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
-import mightydanp.techapi.common.resources.asset.data.BlockModelData;
-import mightydanp.techapi.common.resources.asset.data.BlockStateData;
-import mightydanp.techapi.common.resources.asset.data.ItemModelData;
-import mightydanp.techapi.common.resources.asset.data.LangData;
 import mightydanp.techapi.common.resources.data.DataPackRegistry;
 import mightydanp.techcore.common.holder.MCMaterialHolder;
 import mightydanp.techcore.common.jsonconfig.flag.IMaterialFlag;
-import mightydanp.techapi.common.resources.data.data.LootTableData;
-import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
@@ -38,13 +32,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.predicates.AlternativeLootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
+import net.minecraftforge.client.model.generators.ConfiguredModel;
+import net.minecraftforge.client.model.generators.ModelFile;
+import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -365,7 +356,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         return this;
     }
 
-    public void saveResources() {
+    public void saveResources() throws Exception {
         LangData enLang = AssetPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
         List<TCMaterial> stoneLayerList = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
         //--
@@ -384,75 +375,106 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
                     String stoneLayerBlock = stoneLayerTextureLocation.split(":")[1];
                     //String resourceID = useMinecraftResource ? "" : Ref.mod_id;
-                    AssetPackRegistry.blockModelDataMap.put(name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/ore"))
-                            .setParentFolder("ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
-                    AssetPackRegistry.blockModelDataMap.put("small_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/small_ore"))
-                            .setParentFolder("small_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
-                    AssetPackRegistry.blockModelDataMap.put("dense_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/dense_ore"))
-                            .setParentFolder("dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
-                    AssetPackRegistry.blockModelDataMap.put("dense_" + name + "_ore", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/ore/state/dense_ore"))
-                            .setParentFolder("dense_ore").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
-//--//--//--//--//--//--//--//--//
-
-                    //--Block--\\
-                    //--Resources
-                    AssetPackRegistry.blockStateDataMap.put(name + "_rock", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/stone_layer/rock/" + name + "_rock")));
-                    AssetPackRegistry.blockModelDataMap.put(name + "_rock", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/rock"))
-                                    .setParentFolder("stone_layer/rock").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
-                            //.setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
-                            //.setTexturesLocation("texture", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
-                    );
-                    enLang.addTranslation("block." + Ref.mod_id + "." + name + "_rock", LangData.translateUpperCase(name + "_rock"));
-                    //--Tags
-                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "rocks/" + name)).add(rockBlock.get()));
-                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "rocks")).add(rockBlock.get()));
-                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(rockBlock.get()));
-                    if (harvestLevel != null) {
-                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "harvest_level/" + harvestLevel)).add(rockBlock.get()));
+                    {
+                        String modelName = name + "_ore";
+                        ModelData model = new ModelData(modelName, ModelData.BLOCK_FOLDER, "ore");
+                        model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "block/ore/state/ore")))
+                                .texture("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).texture("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                        AssetPackRegistry.blockModelDataMap.put(modelName, model);
+                    }{
+                        String modelName = "small_" + name + "_ore";
+                        ModelData model = new ModelData(modelName, ModelData.BLOCK_FOLDER, "small_ore");
+                        model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "block/ore/state/small_ore")))
+                                .texture("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).texture("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                        AssetPackRegistry.blockModelDataMap.put(modelName, model);
+                    }{
+                        String modelName = "dense_" + name + "_ore";
+                        ModelData model = new ModelData(modelName, ModelData.BLOCK_FOLDER, "dense_ore");
+                        model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "block/ore/state/dense_ore")))
+                                .texture("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).texture("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                        AssetPackRegistry.blockModelDataMap.put(modelName, model);
                     }
-
-                    //--LootTables
-                    DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, name + "_rock")).setLootTable(
-                            LootTable.lootTable().withPool(
-                                    LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(Items.AIR).setWeight(100))
-                                            .setBonusRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(Items.FLINT).setWeight(10))).build()));
-
-                    //--Item--\\
-                    //--Resources
-                    AssetPackRegistry.itemModelDataHashMap.put(name + "_rock", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/rock")));
-                    AssetPackRegistry.itemModelDataHashMap.put(name + ":rock", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
-                            .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock"))
-                            .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock_overlay"))
-                    );
-                    enLang.addTranslation("item." + Ref.mod_id + "." + name + "_rock", LangData.translateUpperCase(name + "_rock"));
-                    //--Tags
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "rocks/" + name)).add(rockItemBlock.get()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "rocks")).add(rockItemBlock.get()));
-                    //--LootTable
-
 //--//--//--//--//--//--//--//--//
+                    {
+                        String objectName = name + "_rock";
+                        //--Block--\\
+                        //--Resources
+                        {
+                            BlockStateData data = new BlockStateData();
+                            VariantBlockStateBuilder builder = data.getVariantBuilder(rockBlock.get());
+                            ModelFile model = new TAModelBuilder(new ResourceLocation(Ref.mod_id, "block/stone_layer/rock/" + objectName));
+                            builder.partialState().setModels(new ConfiguredModel(model));
+                            data.setBlockState(builder);
+                            AssetPackRegistry.blockStateDataMap.put(objectName, data);
+                        }
+                        {
 
-                    //--Block--\\
-                    //--Resources
-                    AssetPackRegistry.blockStateDataMap.put("thin_" + name + "_slab", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/stone_layer/thin_slab/" + "thin_" + name + "_slab")));
-                    AssetPackRegistry.blockModelDataMap.put("thin_" + name + "_slab", new BlockModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/thin_slab"))
-                            .setParentFolder("stone_layer/thin_slab").setTexturesLocation("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).setTexturesLocation("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock))
-                            .setTexturesLocation("texture", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
-                    enLang.addTranslation("block." + Ref.mod_id + ".thin_" + name + "_slab", LangData.translateUpperCase("thin_" + name + "_slab"));
-                    //--Tags
-                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "thin_slabs/" + name)).add(rockBlock.get()));
-                    DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "thin_slabs")).add(rockBlock.get()));
-                    //--LootTables
+                            ModelData model = new ModelData(objectName, ModelData.BLOCK_FOLDER, "stone_layer/rock");
+                            model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/rock")))
+                                    .texture("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).texture("particle", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                            AssetPackRegistry.blockModelDataMap.put(objectName, model);
+                        }
+                        enLang.addTranslation("block." + Ref.mod_id + "." + objectName, LangData.translateUpperCase(objectName));
+                        //--Tags
+                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "rocks/" + name)).add(rockBlock.get()));
+                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "rocks")).add(rockBlock.get()));
+                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(rockBlock.get()));
+                        if (harvestLevel != null) {
+                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "harvest_level/" + harvestLevel)).add(rockBlock.get()));
+                        }
 
-                    //--Item--\\
-                    //--Resources
-                    AssetPackRegistry.itemModelDataHashMap.put("thin_" + name + "_slab", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/thin_slab/thin_" + name + "_slab")));
-                    enLang.addTranslation("item." + Ref.mod_id + ".thin_" + name + "_slab", LangData.translateUpperCase("thin_" + name + "_slab"));
-                    //--Tags
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "thin_slabs/" + name)).add(rockItemBlock.get()));
-                    DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "thin_slabs")).add(rockItemBlock.get()));
-                    //--LootTable
-                    //DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, "thin_" + name + "_slab")).setLootTable(LootTableData.standardDropTable(thinSlabBlock.get())));
+                        //--LootTables
+                        DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, objectName)).setLootTable(
+                                LootTable.lootTable().withPool(
+                                        LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(Items.AIR).setWeight(100))
+                                                .setBonusRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(Items.FLINT).setWeight(10))).build()));
+
+                        //--Item--\\
+                        //--Resources
+                        AssetPackRegistry.itemModelDataHashMap.put(name + "_rock", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/rock")));
+                        AssetPackRegistry.itemModelDataHashMap.put(name + ":rock", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                                .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock"))
+                                .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock_overlay"))
+                        );
+                        enLang.addTranslation("item." + Ref.mod_id + "." + name + "_rock", LangData.translateUpperCase(name + "_rock"));
+                        //--Tags
+                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "rocks/" + name)).add(rockItemBlock.get()));
+                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "rocks")).add(rockItemBlock.get()));
+                        //--LootTable
+                    }
+//--//--//--//--//--//--//--//--//
+                    {
+                        //--Block--\\
+                        //--Resources
+                        String objectName = "thin_" + name +  "_slab";
+                        {
+                            BlockStateData data = new BlockStateData();
+                            VariantBlockStateBuilder builder = data.getVariantBuilder(thinSlabBlock.get());
+                            ModelFile model = new TAModelBuilder(new ResourceLocation(Ref.mod_id, "block/stone_layer/thin_slab/" + objectName));
+                            builder.partialState().setModels(new ConfiguredModel(model));
+                            data.setBlockState(builder);
+                            AssetPackRegistry.blockStateDataMap.put(objectName, data);
+                        }{
+                            ModelData model = new ModelData(objectName, ModelData.BLOCK_FOLDER, "stone_layer/thin_slab");
+                            model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "block/stone_layer/state/thin_slab")))
+                                    .texture("sourceblock", new ResourceLocation(stoneLayerModId, stoneLayerBlock)).texture("texture", new ResourceLocation(stoneLayerModId, stoneLayerBlock)));
+                            AssetPackRegistry.blockModelDataMap.put(objectName, model);
+                        }
+                        //--Tags
+                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "thin_slabs/" + name)).add(rockBlock.get()));
+                        DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "thin_slabs")).add(rockBlock.get()));
+                        //--LootTables
+
+                        //--Item--\\
+                        //--Resources
+                        AssetPackRegistry.itemModelDataHashMap.put("thin_" + name + "_slab", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/stone_layer/thin_slab/thin_" + name + "_slab")));
+                        enLang.addTranslation("item." + Ref.mod_id + ".thin_" + name + "_slab", LangData.translateUpperCase("thin_" + name + "_slab"));
+                        //--Tags
+                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "thin_slabs/" + name)).add(rockItemBlock.get()));
+                        DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "thin_slabs")).add(rockItemBlock.get()));
+                        //--LootTable
+                        //DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(new ResourceLocation(Ref.mod_id, "thin_" + name + "_slab")).setLootTable(LootTableData.standardDropTable(thinSlabBlock.get())));
+                    }
 //--//--//--//--//--//--//--//--//
                         /*
                         Block leg_block = RegistryHandler.BLOCKS.register(name + "_leg", new LegBlock(AbstractBlock.Properties.of(Material.STONE), new ResourceLocation("textures/" + stoneLayer.getBlock())));
@@ -618,102 +640,134 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 for (TCMaterial stoneLayer : stoneLayerList) {
                     if (flag == ORE || flag == GEM) {
 //--//--//--//--//--//--//--//--//
-                        // -- Block --\\
-                        //--Resources
-                        AssetPackRegistry.blockStateDataMap.put(stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("block." + Ref.mod_id + "." + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase(stoneLayer.name + "_" + name + "_ore"));
-                        //--Tags
-                        oreList.forEach(object -> {
-                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "ores/" + name)).add(object.get()));
-                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "ores")).add(object.get()));
-                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(object.get()));
-                        });
-                        //--LootTable
+                        {
+                            String objectName = stoneLayer.name + "_" + name + "_ore";
+                            // -- Block --\\
+                            //--Resources
 
-                        // -- Item --\\
-                        //--Resources
-                        AssetPackRegistry.itemModelDataHashMap.put("raw_" + stoneLayer.name + "_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/raw_ore")));
-                        AssetPackRegistry.itemModelDataHashMap.put(stoneLayer.name + "_" + name + ":raw_ore", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
-                                .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore"))
-                                .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore_overlay")));
-                        enLang.addTranslation("item." + Ref.mod_id + "." + "raw_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("raw_" + stoneLayer.name + "_" + name + "_ore"));
-                        //--
-                        AssetPackRegistry.itemModelDataHashMap.put(stoneLayer.name + "_" + name + "_ore", new ItemModelData()
-                                .setParent(new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("item." + Ref.mod_id + "." + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase(stoneLayer.name + "_" + name + "_ore"));
-                        //--Tags
-                        rawOreItemList.forEach(object -> {
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "raw_ores/" + stoneLayer.name + "_" + name)).add(object.item().get()));
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "raw_ores")).add(object.item().get()));
-                        });
+                            {
+                                BlockStateData data = new BlockStateData();
+                                VariantBlockStateBuilder builder = data.getVariantBuilder(thinSlabBlock.get());
+                                ModelFile model = new TAModelBuilder(new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore"));
+                                builder.partialState().setModels(new ConfiguredModel(model));
+                                data.setBlockState(builder);
+                                AssetPackRegistry.blockStateDataMap.put(objectName, data);
+                            }
+                            enLang.addTranslation("block." + Ref.mod_id + "." + objectName, LangData.translateUpperCase(objectName));
+                            //--Tags
+                            oreList.forEach(object -> {
+                                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "ores/" + name)).add(object.get()));
+                                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "ores")).add(object.get()));
+                                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(object.get()));
+                            });
+                            //--LootTable
 
-                        oreItemList.forEach(object -> {
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "ores/" + name)).add(object.item().get()));
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "ores")).add(object.item().get()));
-                        });
-                        //--LootTable
-                        rawOreItemList.forEach(object -> {
+                            // -- Item --\\
+                            //--Resources
+                            AssetPackRegistry.itemModelDataHashMap.put("raw_" + objectName, new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/raw_ore")));
+                            AssetPackRegistry.itemModelDataHashMap.put(stoneLayer.name + "_" + name + ":raw_ore", new ItemModelData().setParentFolder("material_icons/" + textureIcon.getSecond().getName().toLowerCase()).setParent(new ResourceLocation("item/generated"))
+                                    .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore"))
+                                    .setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore_overlay")));
+                            enLang.addTranslation("item." + Ref.mod_id + "." + "raw_" + objectName, LangData.translateUpperCase("raw_" + objectName));
+                            //--
+                            AssetPackRegistry.itemModelDataHashMap.put(objectName, new ItemModelData()
+                                    .setParent(new ResourceLocation(Ref.mod_id, "block/ore/" + stoneLayer.name + "_ore")));
+                            enLang.addTranslation("item." + Ref.mod_id + "." + objectName, LangData.translateUpperCase(objectName));
+                            //--Tags
+                            rawOreItemList.forEach(object -> {
+                                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "raw_ores/" + stoneLayer.name + "_" + name)).add(object.item().get()));
+                                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "raw_ores")).add(object.item().get()));
+                            });
+
+                            oreItemList.forEach(object -> {
+                                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "ores/" + name)).add(object.item().get()));
+                                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "ores")).add(object.item().get()));
+                            });
+                            //--LootTable
+                            rawOreItemList.forEach(object -> {
                             /*DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(object.item().getId()).setLootTable(LootTable.lootTable()
                                     .withPool(LootPool.lootPool().when(new AlternativeLootItemCondition(new LootItemCondition[]{
                                             new MatchTool(new ItemPredicate())
                                     })))
                             ));
                              */
-                        });
+                            });
+                        }
 //--//--//--//--//--//--//--//--//
-                        // -- Block --\\
+                        {
+                            String objectName = "small_" + stoneLayer.name + "_" + name + "_ore";
+                            // -- Block --\\
 
-                        //--Resources
-                        AssetPackRegistry.blockStateDataMap.put("small_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("block." + Ref.mod_id + "." + "small_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("small_" + stoneLayer.name + "_" + name + "_ore"));
-                        //--Tags
-                        smallOreList.forEach(object -> {
-                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "small_ores/" + stoneLayer.name + "_" + name)).add(object.get()));
-                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "small_ores")).add(object.get()));
-                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(object.get()));
-                        });
-                        //--LootTable
+                            //--Resources
+                            {
+                                BlockStateData data = new BlockStateData();
+                                VariantBlockStateBuilder builder = data.getVariantBuilder(thinSlabBlock.get());
+                                ModelFile model = new TAModelBuilder(new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore"));
+                                builder.partialState().setModels(new ConfiguredModel(model));
+                                data.setBlockState(builder);
+                                AssetPackRegistry.blockStateDataMap.put(objectName, data);
+                            }
+                            enLang.addTranslation("block." + Ref.mod_id + "." + objectName, LangData.translateUpperCase(objectName));
+                            //--Tags
+                            smallOreList.forEach(object -> {
+                                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "small_ores/" + stoneLayer.name + "_" + name)).add(object.get()));
+                                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "small_ores")).add(object.get()));
+                                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(object.get()));
+                            });
+                            //--LootTable
 
-                        // -- Item --\\
+                            // -- Item --\\
 
-                        //--Resources
-                        AssetPackRegistry.itemModelDataHashMap.put("small_" + stoneLayer.name + "_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("item." + Ref.mod_id + "." + "small_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("small_" + stoneLayer.name + "_" + name + "_ore"));
-                        //--Tags
-                        smallOreItemList.forEach(object -> {
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_ores/" + stoneLayer.name + "_" + name)).add(object.item().get()));
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_ores")).add(object.item().get()));
-                        });
-                        //--LootTable
+                            //--Resources
+                            AssetPackRegistry.itemModelDataHashMap.put(objectName, new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/small_ore/" + "small_" + stoneLayer.name + "_ore")));
+                            enLang.addTranslation("item." + Ref.mod_id + "." + objectName, LangData.translateUpperCase(objectName));
+                            //--Tags
+                            smallOreItemList.forEach(object -> {
+                                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_ores/" + stoneLayer.name + "_" + name)).add(object.item().get()));
+                                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "small_ores")).add(object.item().get()));
+                            });
+                            //--LootTable
+                        }
 //--//--//--//--//--//--//--//--//
-                        // -- Block --\\
-                        //--Resources
-                        AssetPackRegistry.blockStateDataMap.put("dense_" + stoneLayer.name + "_" + name + "_ore", new BlockStateData().setBlockStateModelLocation("", new ResourceLocation(Ref.mod_id, "block/dense_ore/" + "dense_" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("block." + Ref.mod_id + "." + "dense_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("dense_" + stoneLayer.name + "_" + name + "_ore"));
-                        //--Tags
-                        denseOreList.forEach(object -> {
-                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "dense_ores/" + stoneLayer.name + "_" + name)).add(object.get()));
-                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "dense_ores")).add(object.get()));
-                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(object.get()));
-                        });
-                        //--LootTable
+                        {
+                            String objectName = "dense_" + stoneLayer.name + "_" + name + "_ore";
+                            // -- Block --\\
+                            //--Resources
 
-                        // -- Item --\\
-                        //--Resources
-                        AssetPackRegistry.itemModelDataHashMap.put("dense_" + stoneLayer.name + "_" + name + "_ore", new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/dense_ore/" + "dense_" + stoneLayer.name + "_ore")));
-                        enLang.addTranslation("item." + Ref.mod_id + "." + "dense_" + stoneLayer.name + "_" + name + "_ore", LangData.translateUpperCase("dense_" + stoneLayer.name + "_" + name + "_ore"));
-                        //--Tags
-                        denseOreItemList.forEach(object -> {
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores/" + stoneLayer.name + "_" + name)).add(object.item().get()));
-                            DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores")).add(object.item().get()));
-                        });
-                        //--LootTable
-                        for(int i = 0; i < denseOreItemList.size(); i++){
-                            DenseOreBlockItem denseOreBlockItem = (DenseOreBlockItem)denseOreItemList.get(i).item().get();
-                            DenseOreBlock denseOreBlock = (DenseOreBlock)denseOreBlockItem.getBlock();
+                            {
+                                BlockStateData data = new BlockStateData();
+                                VariantBlockStateBuilder builder = data.getVariantBuilder(thinSlabBlock.get());
+                                ModelFile model = new TAModelBuilder(new ResourceLocation(Ref.mod_id, "block/dense_ore/" + "dense_" + stoneLayer.name + "_ore"));
+                                builder.partialState().setModels(new ConfiguredModel(model));
+                                data.setBlockState(builder);
+                                AssetPackRegistry.blockStateDataMap.put(objectName, data);
+                            }
+                            enLang.addTranslation("block." + Ref.mod_id + "." + objectName, LangData.translateUpperCase(objectName));
+                            //--Tags
+                            denseOreList.forEach(object -> {
+                                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "dense_ores/" + stoneLayer.name + "_" + name)).add(object.get()));
+                                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "dense_ores")).add(object.get()));
+                                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("minecraft", "mineable/pickaxe")).add(object.get()));
+                            });
+                            //--LootTable
 
-                            DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(denseOreItemList.get(i).item().getId()).setLootTable(LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(rawOreItemList.get(i).item().get()))).build()));
-                            //DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(denseOreItemList.get(i).item().getId()).setLootTable(LootTable.lootTable().withPool(LootPool.lootPool().setRolls(UniformGenerator.between(1, denseOreBlock.getDensity())).add(LootItem.lootTableItem(rawOreItemList.get(i).item().get()))).build()));
+                            // -- Item --\\
+                            //--Resources
+                            AssetPackRegistry.itemModelDataHashMap.put(objectName, new ItemModelData().setParent(new ResourceLocation(Ref.mod_id, "block/dense_ore/" + "dense_" + stoneLayer.name + "_ore")));
+                            enLang.addTranslation("item." + Ref.mod_id + "." + objectName, LangData.translateUpperCase(objectName));
+                            //--Tags
+                            denseOreItemList.forEach(object -> {
+                                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores/" + stoneLayer.name + "_" + name)).add(object.item().get()));
+                                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "dense_ores")).add(object.item().get()));
+                            });
+                            //--LootTable
+                            for (int i = 0; i < denseOreItemList.size(); i++) {
+                                DenseOreBlockItem denseOreBlockItem = (DenseOreBlockItem) denseOreItemList.get(i).item().get();
+                                DenseOreBlock denseOreBlock = (DenseOreBlock) denseOreBlockItem.getBlock();
+
+                                DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(denseOreItemList.get(i).item().getId()).setLootTable(LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(rawOreItemList.get(i).item().get()))).build()));
+                                //DataPackRegistry.saveBlockLootTableDataMap(DataPackRegistry.getBlockLootTableData(denseOreItemList.get(i).item().getId()).setLootTable(LootTable.lootTable().withPool(LootPool.lootPool().setRolls(UniformGenerator.between(1, denseOreBlock.getDensity())).add(LootItem.lootTableItem(rawOreItemList.get(i).item().get()))).build()));
+                            }
                         }
 //--//--//--//--//--//--//--//--//
                     }

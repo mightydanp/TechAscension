@@ -32,15 +32,15 @@ public class ResourcePackEventHandler {
 
     @SubscribeEvent
     public static void addResourcePack(AddPackFindersEvent event){
-        ((MaterialRegistry) TCJsonConfigs.material.getFirst()).registryMap.forEach((modID, material) -> material.saveResources());
+        ((MaterialRegistry) TCJsonConfigs.material.getFirst()).registryMap.forEach((modID, material) -> {
+            try {
+                material.saveResources();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         itemResources.forEach(IItems::initResource);
-
-        //BlockStateVariantData campfireBlockState = new VariantBlockStateBuilder(ModBlocks.campfire_override.get());
-        //campfireBlockState.getBlockState().partialState().with(CampfireBlockOverride.FACING, Direction.DOWN).with(CampfireBlockOverride.LIT, false).addModels(new ConfiguredModel(new ModelFile.UncheckedModelFile(ModBlocks.campfire_override.get().getRegistryName())));
-        //campfireBlockState.getBlockState().partialState().with(CampfireBlockOverride.FACING, Direction.UP).with(CampfireBlockOverride.LIT, true).addModels(new ConfiguredModel(new ModelFile.UncheckedModelFile(ModBlocks.campfire_override.get().getRegistryName())));
-        //campfireBlockState.createBlockState(campfireBlockState.getBlockState());
-        //campfireBlockState.createJson();
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AssetPackRegistry::init);
 

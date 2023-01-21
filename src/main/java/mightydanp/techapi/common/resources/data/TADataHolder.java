@@ -40,7 +40,7 @@ public class TADataHolder implements PackResources {
 
     @Nullable
     @Override
-    public InputStream getRootResource(String location) throws IOException {
+    public InputStream getRootResource(String location) {
         if(!location.contains("/") && !location.contains("\\")) {
             JsonObject supplier = DATA_HOLDER.get(location);
 
@@ -51,7 +51,7 @@ public class TADataHolder implements PackResources {
     }
 
     @Override
-    public InputStream getResource(PackType packType, ResourceLocation location) throws IOException {
+    public @NotNull InputStream getResource(@NotNull PackType packType, @NotNull ResourceLocation location) throws IOException {
         if (packType == PackType.SERVER_DATA) {
             if (DATA_HOLDER.containsKey(location)) {
                 JsonObject stream = DATA_HOLDER.get(location);
@@ -67,7 +67,7 @@ public class TADataHolder implements PackResources {
 
 
     @Override
-    public Collection<ResourceLocation> getResources(PackType packType, String namespace, String directory, int depth, Predicate<String> predicate) {
+    public @NotNull Collection<ResourceLocation> getResources(@NotNull PackType packType, @NotNull String namespace, @NotNull String directory, int depth, @NotNull Predicate<String> predicate) {
         ArrayList<ResourceLocation> locations = new ArrayList<>();
         if (packType == PackType.SERVER_DATA) {
             for (ResourceLocation location : DATA_HOLDER.keySet()) {
