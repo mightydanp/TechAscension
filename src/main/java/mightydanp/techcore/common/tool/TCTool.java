@@ -1,7 +1,9 @@
 package mightydanp.techcore.common.tool;
 
 import com.mojang.datafixers.util.Pair;
+import mightydanp.techapi.common.resources.asset.data.ModelData;
 import mightydanp.techascension.common.TechAscension;
+import mightydanp.techascension.common.libs.ItemRef;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
@@ -10,7 +12,6 @@ import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.material.IMaterial;
 import mightydanp.techcore.common.material.TCMaterial;
 import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
-import mightydanp.techapi.common.resources.asset.data.ItemModelData;
 import mightydanp.techapi.common.resources.asset.data.LangData;
 import mightydanp.techapi.common.resources.data.DataPackRegistry;
 import mightydanp.techcore.common.tool.part.*;
@@ -18,7 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.Item;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -298,29 +299,48 @@ public class TCTool {
 
         TCMaterial.extraSaveResources.put(nameIn, (material) -> {
             LangData enLang = AssetPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
-            ItemModelData data = new ItemModelData().setParent(new ResourceLocation("minecraft", "item/generated"));
+
+            String objectName = toolName;
+            {
+                ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
+                model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
+                        .texture("layer0", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name))
+                        .texture("layer1", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name + "_overlay"))
+                );
+                AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
+            }
+            ModelData data = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
+            data.setParent(new ResourceLocation("item/generated"));
 
             if (material.materialFlags.contains(DefaultMaterialFlag.TOOL)) {
                 ((TCToolItem)toolItemIn.get()).parts = this.toolParts.size();
-
                 int i = toolParts.size();
+                {
+                    {
+                        ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
 
-                enLang.addTranslation("item." + Ref.mod_id + "." + toolName, LangData.translateUpperCase(toolName));
-
-                if (i == 3) {
-                    data.setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()));
-                    data.setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()));
-                    data.setTexturesLocation("layer2", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + binding.prefixAndSuffix().getFirst() + toolName + binding.prefixAndSuffix().getSecond()));
-                } else if (i == 2) {
-                    data.setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()));
-                    data.setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()));
-                } else if (i == 1) {
-                    data.setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName));
-                    data.setTexturesLocation("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName + "_overlay"));
+                        if (i == 3) {
+                            model.setModel(model.getModel()
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()))
+                                    .texture("layer2", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + binding.prefixAndSuffix().getFirst() + toolName + binding.prefixAndSuffix().getSecond()))
+                            );
+                        } else if (i == 2) {
+                            model.setModel(model.getModel()
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()))
+                            );
+                        } else if (i == 1) {
+                            model.setModel(model.getModel()
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName + "_overlay"))
+                            );
+                        }
+                        AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
+                    }
+                    enLang.addTranslation("item." + Ref.mod_id + "." + toolName, LangData.translateUpperCase(toolName));
                 }
-
-                AssetPackRegistry.itemModelDataHashMap.put(toolName, data);
-
+//-----------------------
                 if (handle != null && handle.generatePart()) {
                     if((material.toolPartWhiteList.isEmpty() && material.toolPartBlackList.isEmpty()) || material.toolPartWhiteList.contains(handle.prefixAndSuffix()) || !material.toolPartBlackList.contains(handle.prefixAndSuffix())) {
                         String materialPartName = handle.prefixAndSuffix().getFirst() + material.name + (handle.special() ? "_" + toolName : "") + handle.prefixAndSuffix().getSecond();
@@ -341,8 +361,15 @@ public class TCTool {
                                 HandleItem handleItem = (HandleItem) registryItem.get();
                                 //--Item--\\
                                 //--Resources
-                                AssetPackRegistry.itemModelDataHashMap.put(materialPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)));
+                                {
+                                    ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
+                                    model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
+                                    );
+
+                                    AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);
+                                }
+
                                 enLang.addTranslation("item." + Ref.mod_id + "." + materialPartName, LangData.translateUpperCase(materialPartName));
                                 //--Tags
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName + "/" + material.name)).add(handleItem));
@@ -393,8 +420,14 @@ public class TCTool {
 
                                     //--Item--\\
                                     //--Resources
-                                    AssetPackRegistry.itemModelDataHashMap.put(materialPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                                            .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)));
+                                    {
+                                        ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
+                                        model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
+                                        );
+
+                                        AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);
+                                    }
                                     enLang.addTranslation("item." + Ref.mod_id + "." + materialPartName, LangData.translateUpperCase(materialPartName));
                                     //--Tags
                                     DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName + "/" + material.name)).add(material.extraSaveItems.get(materialPartName).get()));
@@ -426,8 +459,14 @@ public class TCTool {
 
                                 //--Item--\\
                                 //--Resources
-                                AssetPackRegistry.itemModelDataHashMap.put(materialPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)));
+                                {
+                                    ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
+                                    model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
+                                    );
+
+                                    AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);
+                                }
                                 enLang.addTranslation("item." + Ref.mod_id + "." + materialPartName, LangData.translateUpperCase(materialPartName));
                                 //--Tags
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName + "/" + material.name)).add(material.extraSaveItems.get(materialPartName).get()));
@@ -476,8 +515,14 @@ public class TCTool {
 
                                 //--Item--\\
                                 //--Resources
-                                AssetPackRegistry.itemModelDataHashMap.put(materialPartName, new ItemModelData().setParent(new ResourceLocation("item/generated"))
-                                        .setTexturesLocation("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)));
+                                {
+                                    ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
+                                    model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
+                                    );
+
+                                    AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);
+                                }
                                 enLang.addTranslation("item." + Ref.mod_id + "." + materialPartName, LangData.translateUpperCase(materialPartName));
                                 //--Tags
                                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", partName + "/" + material.name)).add(material.extraSaveItems.get(materialPartName).get()));

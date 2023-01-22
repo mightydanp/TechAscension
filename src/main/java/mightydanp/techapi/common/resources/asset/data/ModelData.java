@@ -31,6 +31,10 @@ public class ModelData {
         return this;
     }
 
+    public String getModelFolder() {
+        return modelFolder;
+    }
+
     public String getParentFolder() {
         return parentFolder;
     }
