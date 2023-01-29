@@ -281,7 +281,227 @@ public class TCTree {
         }
     }
     public void saveResources(){
+        //-- Item --\\
+        {
+            String name = this.name + "_stick";
 
+            if (!existingItems.containsKey("stick")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            String name = this.name + "_plank";
+
+            if (!existingItems.containsKey("plank")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            String name = this.name + "_resin";
+
+            if (!existingItems.containsKey("resin")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        //-- Blocks with Items -- \\
+        {
+            //--block
+            String name = this.name + "_sapling";
+
+            if (!existingBlocks.containsKey("sapling")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("sapling")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_log";
+            if (!existingBlocks.containsKey("log")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("log")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = "striped_" + this.name + "_log";
+            if (!existingBlocks.containsKey("striped_log")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("striped_log")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_leaves";
+
+            if (!existingBlocks.containsKey("leaves")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("leaves")) {
+
+            }
+
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_planks";
+
+            if (!existingItems.containsKey("planks")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("planks")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_slab";
+
+            if (!existingItems.containsKey("slab")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("slab")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_stairs";
+
+            if (!existingItems.containsKey("stairs")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("stairs")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_button";
+
+            if (!existingItems.containsKey("button")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("button")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_fence";
+
+            if (!existingItems.containsKey("fence")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("fence")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_fence_gate";
+
+            if (!existingItems.containsKey("fence_gate")) {
+
+            }
+
+
+            //--item
+            if (!existingItems.containsKey("fence_gate")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_door";
+
+            if (!existingItems.containsKey("door")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("door")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_trap_door";
+
+            if (!existingItems.containsKey("trap_door")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("trap_door")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_pressure_plate";
+
+            if (!existingItems.containsKey("pressure_plate")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("pressure_plate")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_sign";
+
+            if (!existingItems.containsKey("sign")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("sign")) {
+
+            }
+        }
     }
 
     public void clientRenderLayerInit(){

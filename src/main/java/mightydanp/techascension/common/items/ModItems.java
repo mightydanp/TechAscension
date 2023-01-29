@@ -2,7 +2,6 @@ package mightydanp.techascension.common.items;
 
 import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
 import mightydanp.techapi.common.resources.asset.data.*;
-import mightydanp.techapi.common.resources.data.TADataHolder;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.items.BasicItem;
 import mightydanp.techcore.common.items.TCCreativeModeTab;
@@ -10,7 +9,6 @@ import mightydanp.techascension.common.blocks.ModBlocks;
 import mightydanp.techascension.common.libs.ItemRef;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.AssetIndex;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -76,7 +74,7 @@ public class ModItems implements IItems {
             String objectName = ItemRef.plant_fiber_name;
             {
                 ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
+                model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
                         .texture("layer0", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.plant_fiber_name))
                 );
                 AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
@@ -89,7 +87,7 @@ public class ModItems implements IItems {
             String objectName = ItemRef.twine_name;
             {
                 ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
+                model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
                         .texture("layer0", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name))
                         .texture("layer1", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name + "_overlay"))
                 );

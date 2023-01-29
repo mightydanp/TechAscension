@@ -26,7 +26,7 @@ public class ModelData {
         return model;
     }
 
-    public ModelData setModel(TAModelBuilder model) {
+    public ModelData overrideModel(TAModelBuilder model) {
         this.model = model;
         return this;
     }

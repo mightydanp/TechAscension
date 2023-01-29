@@ -303,7 +303,7 @@ public class TCTool {
             String objectName = toolName;
             {
                 ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
+                model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
                         .texture("layer0", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name))
                         .texture("layer1", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name + "_overlay"))
                 );
@@ -320,18 +320,18 @@ public class TCTool {
                         ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
 
                         if (i == 3) {
-                            model.setModel(model.getModel()
+                            model.overrideModel(model.getModel()
                                     .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()))
                                     .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()))
                                     .texture("layer2", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + binding.prefixAndSuffix().getFirst() + toolName + binding.prefixAndSuffix().getSecond()))
                             );
                         } else if (i == 2) {
-                            model.setModel(model.getModel()
+                            model.overrideModel(model.getModel()
                                     .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()))
                                     .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()))
                             );
                         } else if (i == 1) {
-                            model.setModel(model.getModel()
+                            model.overrideModel(model.getModel()
                                     .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName))
                                     .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName + "_overlay"))
                             );
@@ -363,7 +363,7 @@ public class TCTool {
                                 //--Resources
                                 {
                                     ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
-                                    model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                    model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
                                             .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
                                     );
 
@@ -422,7 +422,7 @@ public class TCTool {
                                     //--Resources
                                     {
                                         ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
-                                        model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                        model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
                                                 .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
                                         );
 
@@ -461,7 +461,7 @@ public class TCTool {
                                 //--Resources
                                 {
                                     ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
-                                    model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                    model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
                                             .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
                                     );
 
@@ -517,7 +517,7 @@ public class TCTool {
                                 //--Resources
                                 {
                                     ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
-                                    model.setModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                    model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
                                             .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
                                     );
 
