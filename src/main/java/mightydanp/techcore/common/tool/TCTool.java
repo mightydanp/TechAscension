@@ -2,6 +2,7 @@ package mightydanp.techcore.common.tool;
 
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.resources.asset.data.ModelData;
+import mightydanp.techapi.common.resources.asset.data.TAModelBuilder;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techascension.common.libs.ItemRef;
 import mightydanp.techcore.common.handler.RegistryHandler;
@@ -310,7 +311,7 @@ public class TCTool {
                 AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
             }
             ModelData data = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-            data.setParent(new ResourceLocation("item/generated"));
+            data.setParent(TAModelBuilder.ExistingItemModels.item_generated.model);
 
             if (material.materialFlags.contains(DefaultMaterialFlag.TOOL)) {
                 ((TCToolItem)toolItemIn.get()).parts = this.toolParts.size();

@@ -53,6 +53,17 @@ public class TAModelBuilder extends ModelFile {
         this.parent = parent;
         return this;
     }
+
+    public TAModelBuilder setParent(ResourceLocation resourceLocation) {
+        this.parent(new ModelFile.UncheckedModelFile(resourceLocation));
+        return this;
+    }
+
+    public TAModelBuilder setParent(ModelFile model) {
+        this.parent(model);
+        return this;
+    }
+
     public TAModelBuilder texture(String key, String texture) {
         Preconditions.checkNotNull(key, "Key must not be null");
         Preconditions.checkNotNull(texture, "Texture must not be null");
@@ -78,8 +89,8 @@ public class TAModelBuilder extends ModelFile {
         return transforms;
     }
 
-    public TAModelBuilder ao(boolean ao) {
-        this.ambientOcclusion = ao;
+    public TAModelBuilder ambientOcclusion(boolean ambientOcclusion) {
+        this.ambientOcclusion = ambientOcclusion;
         return this;
     }
 
@@ -406,7 +417,7 @@ public class TAModelBuilder extends ModelFile {
         public final TransformType vanillaType;
         final String name;
 
-        private Perspective(TransformType vanillaType, String name) {
+        Perspective(TransformType vanillaType, String name) {
             this.vanillaType = vanillaType;
             this.name = name;
         }
@@ -467,6 +478,24 @@ public class TAModelBuilder extends ModelFile {
             }
 
             public TAModelBuilder.TransformsBuilder end() { return TAModelBuilder.TransformsBuilder.this; }
+        }
+    }
+
+    public enum ExistingBlockModels {
+        cube_all(new TAModelBuilder(new ResourceLocation("block/cube_all")));
+
+        public final ModelFile model;
+        ExistingBlockModels(ModelFile model) {
+            this.model = model;
+        }
+    }
+
+    public enum ExistingItemModels {
+        item_generated(new TAModelBuilder(new ResourceLocation("item/generated")));
+        public final ModelFile model;
+
+        ExistingItemModels(ModelFile model) {
+            this.model = model;
         }
     }
 }

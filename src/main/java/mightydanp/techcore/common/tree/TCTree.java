@@ -1,12 +1,20 @@
 package mightydanp.techcore.common.tree;
 
+import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
+import mightydanp.techapi.common.resources.asset.data.BlockStateData;
+import mightydanp.techapi.common.resources.asset.data.LangData;
+import mightydanp.techapi.common.resources.asset.data.ModelData;
+import mightydanp.techapi.common.resources.asset.data.TAModelBuilder;
+import mightydanp.techapi.common.resources.data.DataPackRegistry;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.items.TCCreativeModeTab;
+import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.tree.blocks.TCLogBlock;
 import mightydanp.techcore.common.tree.blocks.items.TCLogBlockItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -15,13 +23,19 @@ import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.Material;
+import net.minecraftforge.client.model.generators.ConfiguredModel;
+import net.minecraftforge.client.model.generators.ModelFile;
+import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class TCTree {
     public String name;
-    public int color;
+    public int colorBark;
+
+    public int colorWood;
 
     public Material material;
     public SoundType soundType;
@@ -38,9 +52,10 @@ public class TCTree {
 
 
 
-    public TCTree(String name, int color, Material material, SoundType soundType, float destroyTimeMultiplier, float explosionResistanceMultiplier, AbstractTreeGrower treeGrower){
+    public TCTree(String name, int colorBark, int colorWood, Material material, SoundType soundType, float destroyTimeMultiplier, float explosionResistanceMultiplier, AbstractTreeGrower treeGrower){
         this.name = name;
-        this.color = color;
+        this.colorBark = colorBark;
+        this.colorWood = colorWood;
         this.material = material;
         this.soundType = soundType;
         this.destroyTimeMultiplier = destroyTimeMultiplier;
@@ -72,14 +87,6 @@ public class TCTree {
             String name = this.name + "_plank";
 
             if (!existingItems.containsKey("plank")) {
-                plank = RegistryHandler.ITEMS.register(name, () -> new Item(new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
-            }
-        }
-//--//--//--//--//--//--//--//--//
-        {
-            String name = this.name + "_resin";
-
-            if (!existingItems.containsKey("resin")) {
                 plank = RegistryHandler.ITEMS.register(name, () -> new Item(new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
             }
         }
@@ -271,7 +278,7 @@ public class TCTree {
             String name = this.name + "_sign";
             Block block = new StandingSignBlock(BlockBehaviour.Properties.of(material).strength(destroyTimeMultiplier, explosionResistanceMultiplier).sound(soundType).noCollission(), WoodType.register(WoodType.create(name)));
             if (!existingItems.containsKey("sign")) {
-                pressurePlate = RegistryHandler.BLOCKS.register(name, () -> block);
+                sign = RegistryHandler.BLOCKS.register(name, () -> block);
             }
 
             //--item
@@ -279,44 +286,99 @@ public class TCTree {
                 RegistryHandler.ITEMS.register(name, () -> new BlockItem(block, new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
             }
         }
-    }
-    public void saveResources(){
-        //-- Item --\\
-        {
-            String name = this.name + "_stick";
-
-            if (!existingItems.containsKey("stick")) {
-
-            }
-        }
-//--//--//--//--//--//--//--//--//
-        {
-            String name = this.name + "_plank";
-
-            if (!existingItems.containsKey("plank")) {
-
-            }
-        }
 //--//--//--//--//--//--//--//--//
         {
             String name = this.name + "_resin";
 
             if (!existingItems.containsKey("resin")) {
+                resin = RegistryHandler.ITEMS.register(name, () -> new Item(new Item.Properties().tab(TCCreativeModeTab.tree_tab)));
+            }
+        }
+    }
+    public void saveResources(){
+        LangData enLang = AssetPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
 
+        {
+            String category = "stick";
+            String name = this.name + "_" + category;
+
+            if (!existingItems.containsKey(category)) {
+                //--Resources
+                {
+                    ModelData model = new ModelData(name, ModelData.ITEM_FOLDER, null);
+                    model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("minecraft", "item/generated")))
+                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/tree_icons/" + "stick"))
+                    );
+
+                    AssetPackRegistry.itemModelDataHashMap.put(name, model);
+                }
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "rods/" + this.name)).add(stick.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "rods")).add(stick.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "rods/wooden")).add(stick.get()));
+                //--LootTable
             }
         }
 //--//--//--//--//--//--//--//--//
-        //-- Blocks with Items -- \\
+        /*
         {
+            String category = "plank";
+            String name = this.name + "_" + category;
+
+
+            if (!existingItems.containsKey(category)) {
+                //--Resources
+                {
+                    ModelData model = new ModelData(name, ModelData.ITEM_FOLDER, null);
+                    model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("minecraft", "item/generated")))
+                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/tree_icons/" + "plank"))
+                    );
+                    AssetPackRegistry.itemModelDataHashMap.put(name, model);
+                }
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "plank/" + this.name)).add(plank.get()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "plank")).add(plank.get()));
+                //--LootTable
+            }
+        }
+        */
+//--//--//--//--//--//--//--//--//
+        {
+            String category = "sapling";
+            String name = this.name + "_" + category;
+
             //--block
-            String name = this.name + "_sapling";
+            if (!existingBlocks.containsKey(category)) {
+                //--Resources
+                BlockStateData data = new BlockStateData();
+                VariantBlockStateBuilder builder;
+                try {
+                    builder = data.getVariantBuilder(sapling.get());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                {
+                    ModelData modelData = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name + "/" + category);
+                    modelData.overrideModel(modelData.taSaplingCross(new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"), new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_leaves")));
 
-            if (!existingBlocks.containsKey("sapling")) {
+                    AssetPackRegistry.blockModelDataMap.put(name, modelData);
 
+                    builder.partialState().setModels(new ConfiguredModel(modelData.getModel()));
+                    data.setBlockState(builder);
+                    AssetPackRegistry.blockStateDataMap.put(name, data);
+                }
+                enLang.addTranslation("block." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+
+                //--Tags
+                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "planks/" + this.name)).add(planks.get()));
+                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "planks/")).add(planks.get()));
             }
 
             //--item
-            if (!existingItems.containsKey("sapling")) {
+            if (!existingItems.containsKey(category)) {
+                //to do item for sapling and hex
 
             }
         }
@@ -363,16 +425,48 @@ public class TCTree {
         }
 //--//--//--//--//--//--//--//--//
         {
-            //--block
-            String name = this.name + "_planks";
+            String category = "planks";
+            String name = this.name + "_" + category;
 
-            if (!existingItems.containsKey("planks")) {
+            if (!existingBlocks.containsKey("planks")) {
+                //--Resources
+                BlockStateData data = new BlockStateData();
+                VariantBlockStateBuilder builder;
+                try {
+                    builder = data.getVariantBuilder(planks.get());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                {
+                    ModelData model = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name + "/" + category);
+                    model.getModel().setParent(TAModelBuilder.ExistingBlockModels.cube_all.model);
 
+                    builder.partialState().setModels(new ConfiguredModel(model.getModel()));
+                    data.setBlockState(builder);
+
+                    AssetPackRegistry.blockModelDataMap.put(name, model);
+                    AssetPackRegistry.blockStateDataMap.put(name, data);
+
+                }
+                enLang.addTranslation("block." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+
+                //--Tags
+                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "planks/" + this.name)).add(planks.get()));
+                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "planks/")).add(planks.get()));
             }
 
-            //--item
             if (!existingItems.containsKey("planks")) {
-
+                //--Resources
+                {
+                    ModelData model = new ModelData(name, ModelData.ITEM_FOLDER, "tree_icons/" + category);
+                    model.overrideModel(model.getModel().setParent(AssetPackRegistry.blockModelDataMap.get(name).getModel()));
+                    AssetPackRegistry.itemModelDataHashMap.put(name, model);
+                }
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "planks/" + this.name)).add(planks.get().asItem()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "planks")).add(planks.get().asItem()));
+                //--LootTable
             }
         }
 //--//--//--//--//--//--//--//--//
@@ -502,6 +596,16 @@ public class TCTree {
 
             }
         }
+//--//--//--//--//--//--//--//--//
+        {
+            String name = this.name + "_resin";
+
+            if (!existingItems.containsKey("resin")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        AssetPackRegistry.langDataMap.put("en_us", enLang);
     }
 
     public void clientRenderLayerInit(){
@@ -521,7 +625,7 @@ public class TCTree {
         Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
             if (tintIndex != 0)
                 return 0xFFFFFFFF;
-            return color;
+            return colorBark;
         }, block);
     }
 
@@ -529,7 +633,7 @@ public class TCTree {
         if (item != null) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 if (tintIndex <= layerNumberIn)
-                    return color;
+                    return colorBark;
                 else
                     return 0xFFFFFFFF;
             }, item);

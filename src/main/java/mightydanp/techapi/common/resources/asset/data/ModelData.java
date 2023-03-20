@@ -1,9 +1,14 @@
 package mightydanp.techapi.common.resources.asset.data;
 
 import com.google.gson.JsonObject;
+import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
 import mightydanp.techcore.common.libs.Ref;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.ModelFile;
+
+import java.util.Map;
 
 public class ModelData {
     public String modelName;
@@ -330,9 +335,70 @@ public class ModelData {
         return singleTexture(modelFolder + "/carpet", "wool", wool);
 
     }
+    public TAModelBuilder taSaplingCross(String modelName, String parentFolder){
+        TAModelBuilder model = new TAModelBuilder(new ResourceLocation(Ref.mod_id, "models/" + ModelData.BLOCK_FOLDER + "/" + (parentFolder == null ? "" : parentFolder + "/")  + modelName + ".json"));
+        model.ambientOcclusion(false);
+        //model.texture("particle", )
+        model.element()
+                .from(0.8F, 0F, 8F)
+                .to(15.2F, 16F, 8F)
+                .shade(false)
+                .face(Direction.NORTH).uvs( 0, 0, 16, 16).texture("#overlay_0").tintindex(0).end()
+                .face(Direction.SOUTH).uvs(0, 0, 16, 16).texture("#overlay_0").tintindex(0).end()
+                .rotation().origin(8, 8, 8)
+                .axis(Direction.Axis.Y).angle(45F).rescale(true);
+        model.element()
+                .from(0.8F, 0F, 8F)
+                .to(15.2F, 16F, 8F)
+                .shade(false)
+                .face(Direction.NORTH).uvs( 0, 0, 16, 16).texture("#overlay_1").tintindex(1).end()
+                .face(Direction.SOUTH).uvs(0, 0, 16, 16).texture("#overlay_1").tintindex(1).end()
+                .rotation().origin(8, 8, 8)
+                .axis(Direction.Axis.Y).angle(45F).rescale(true);
+        model.element()
+                .from(8F, 0F, 0.8F)
+                .to(8F, 16F, 15.2F)
+                .shade(false)
+                .face(Direction.WEST).uvs( 0, 0, 16, 16).texture("#overlay_0").tintindex(0).end()
+                .face(Direction.EAST).uvs(0, 0, 16, 16).texture("#overlay_0").tintindex(0).end()
+                .rotation().origin(8, 8, 8)
+                .axis(Direction.Axis.Y).angle(45F).rescale(true);
+        model.element()
+                .from(8F, 0F, 0.8F)
+                .to(8F, 16F, 15.2F)
+                .shade(false)
+                .face(Direction.WEST).uvs( 0, 0, 16, 16).texture("#overlay_1").tintindex(1).end()
+                .face(Direction.EAST).uvs(0, 0, 16, 16).texture("#overlay_1").tintindex(1).end()
+                .rotation().origin(8, 8, 8)
+                .axis(Direction.Axis.Y).angle(45F).rescale(true);
 
-    public TAModelBuilder setParent(ResourceLocation resourceLocation) {
-        model.parent(new ModelFile.UncheckedModelFile(resourceLocation));
         return model;
+    }
+
+    public TAModelBuilder taSaplingCross(ResourceLocation overlay_0, ResourceLocation overlay_1) {
+        return textureMap(getTASaplingCross().getModel().getUncheckedLocation(), Map.of("overlay_0", overlay_0, "overlay_1", overlay_1));
+
+    }
+
+    public TAModelBuilder textureMap(ResourceLocation parent, Map<String, ResourceLocation> map) {
+        TAModelBuilder model = withExistingParent(parent);
+
+
+        map.forEach(model::texture);
+
+        return model;
+    }
+    //to-do
+    //save somehow before resources starts to save.
+    public ModelData getTASaplingCross(){
+        String modelName = "ta_" + "sapling" + "_cross";
+        String parentFolder = "tree_icons/";
+
+        ModelData modelData = new ModelData(modelName, BLOCK_FOLDER, parentFolder);
+        modelData.overrideModel(modelData.taSaplingCross(modelName, parentFolder));
+
+        AssetPackRegistry.saveBlockModelDataMap("ta_" + "sapling" + "_cross", modelData, true);
+
+        return modelData;
     }
 }
