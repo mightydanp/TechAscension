@@ -383,7 +383,6 @@ public class ModelData {
     public TAModelBuilder textureMap(ResourceLocation parent, Map<String, ResourceLocation> map) {
         TAModelBuilder model = withExistingParent(parent);
 
-
         map.forEach(model::texture);
 
         return model;

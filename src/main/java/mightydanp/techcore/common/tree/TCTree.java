@@ -14,7 +14,6 @@ import mightydanp.techcore.common.tree.blocks.items.TCLogBlockItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -29,13 +28,13 @@ import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public class TCTree {
     public String name;
-    public int colorBark;
+    public int barkColor;
 
-    public int colorWood;
+    public int woodColor;
+    public int leavesColor;
 
     public Material material;
     public SoundType soundType;
@@ -52,10 +51,11 @@ public class TCTree {
 
 
 
-    public TCTree(String name, int colorBark, int colorWood, Material material, SoundType soundType, float destroyTimeMultiplier, float explosionResistanceMultiplier, AbstractTreeGrower treeGrower){
+    public TCTree(String name, int barkColor, int woodColor, int leavesColor, Material material, SoundType soundType, float destroyTimeMultiplier, float explosionResistanceMultiplier, AbstractTreeGrower treeGrower){
         this.name = name;
-        this.colorBark = colorBark;
-        this.colorWood = colorWood;
+        this.barkColor = barkColor;
+        this.woodColor = woodColor;
+        this.leavesColor = leavesColor;
         this.material = material;
         this.soundType = soundType;
         this.destroyTimeMultiplier = destroyTimeMultiplier;
@@ -306,7 +306,7 @@ public class TCTree {
                 //--Resources
                 {
                     ModelData model = new ModelData(name, ModelData.ITEM_FOLDER, null);
-                    model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("minecraft", "item/generated")))
+                    model.overrideModel(model.getModel().parent(TAModelBuilder.ExistingItemModels.item_generated.model)
                             .texture("layer0", new ResourceLocation(Ref.mod_id, "item/tree_icons/" + "stick"))
                     );
 
@@ -331,7 +331,7 @@ public class TCTree {
                 //--Resources
                 {
                     ModelData model = new ModelData(name, ModelData.ITEM_FOLDER, null);
-                    model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("minecraft", "item/generated")))
+                    model.overrideModel(model.getModel().parent(TAModelBuilder.ExistingItemModels.item_generated.model)
                             .texture("layer0", new ResourceLocation(Ref.mod_id, "item/tree_icons/" + "plank"))
                     );
                     AssetPackRegistry.itemModelDataHashMap.put(name, model);
@@ -378,7 +378,16 @@ public class TCTree {
 
             //--item
             if (!existingItems.containsKey(category)) {
-                //to do item for sapling and hex
+                //--Resources
+                ModelData modelData = new ModelData(name, ModelData.ITEM_FOLDER, null);
+                modelData.overrideModel(modelData.getModel().setParent(AssetPackRegistry.blockModelDataMap.get(name).getModel()));
+                AssetPackRegistry.itemModelDataHashMap.put(name, modelData);
+
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "planks/" + this.name)).add(planks.get().asItem()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "planks/")).add(planks.get().asItem()));
 
             }
         }
@@ -387,7 +396,15 @@ public class TCTree {
             //--block
             String name = this.name + "_log";
             if (!existingBlocks.containsKey("log")) {
+                BlockStateData data = new BlockStateData();
+                VariantBlockStateBuilder builder;
+                try {
+                    builder = data.getVariantBuilder(log.get());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
 
+                //todo work on copying acacia log block states and models
             }
 
             //--item
@@ -625,7 +642,7 @@ public class TCTree {
         Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
             if (tintIndex != 0)
                 return 0xFFFFFFFF;
-            return colorBark;
+            return barkColor;
         }, block);
     }
 
@@ -633,7 +650,7 @@ public class TCTree {
         if (item != null) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 if (tintIndex <= layerNumberIn)
-                    return colorBark;
+                    return barkColor;
                 else
                     return 0xFFFFFFFF;
             }, item);

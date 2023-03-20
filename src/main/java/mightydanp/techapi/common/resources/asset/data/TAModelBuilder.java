@@ -482,7 +482,9 @@ public class TAModelBuilder extends ModelFile {
     }
 
     public enum ExistingBlockModels {
-        cube_all(new TAModelBuilder(new ResourceLocation("block/cube_all")));
+        cube_all(new TAModelBuilder(new ResourceLocation("block/cube_all"))),
+        cube_column(new TAModelBuilder(new ResourceLocation("block/cube_column"))),
+        cube_column_horizontal(new TAModelBuilder(new ResourceLocation("block/cube_column_horizontal")));
 
         public final ModelFile model;
         ExistingBlockModels(ModelFile model) {
