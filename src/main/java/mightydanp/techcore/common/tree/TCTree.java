@@ -422,8 +422,6 @@ public class TCTree {
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"));
 
                 data.axisBlock((RotatedPillarBlock)log.get(), logModel.getModel(), logHorizontalModel.getModel());
-
-                //todo work on copying acacia log block states and models
             }
 
             //--item
@@ -432,6 +430,7 @@ public class TCTree {
             }
         }
 //--//--//--//--//--//--//--//--//
+        //todo work on copying acacia striped log block states and models
         {
             //--block
             String name = "striped_" + this.name + "_log";
