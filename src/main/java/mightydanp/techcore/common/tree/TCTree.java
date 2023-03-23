@@ -14,6 +14,7 @@ import mightydanp.techcore.common.tree.blocks.items.TCLogBlockItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -295,7 +296,7 @@ public class TCTree {
             }
         }
     }
-    public void saveResources(){
+    public void saveResources() throws Exception {
         LangData enLang = AssetPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
 
         {
@@ -360,7 +361,7 @@ public class TCTree {
                     throw new RuntimeException(e);
                 }
                 {
-                    ModelData modelData = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name + "/" + category);
+                    ModelData modelData = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
                     modelData.overrideModel(modelData.taSaplingCross(new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"), new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_leaves")));
 
                     AssetPackRegistry.blockModelDataMap.put(name, modelData);
@@ -388,13 +389,15 @@ public class TCTree {
                 //--Tags
                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "planks/" + this.name)).add(planks.get().asItem()));
                 DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "planks/")).add(planks.get().asItem()));
-
             }
         }
 //--//--//--//--//--//--//--//--//
         {
             //--block
-            String name = this.name + "_log";
+            String category = "log";
+            String name = this.name + "_" + category;
+            String nameHorizontal = this.name + "_" + category + "_horizontal";
+
             if (!existingBlocks.containsKey("log")) {
                 BlockStateData data = new BlockStateData();
                 VariantBlockStateBuilder builder;
@@ -403,6 +406,22 @@ public class TCTree {
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
+
+                ModelData logModel = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                logModel.taLog(logModel, false, new ResourceLocation(Ref.mod_id,
+                                "block/tree_icons/" + this.name + "/" + category + "side"),
+                        new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_bark"),
+                        new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"));
+
+
+                ModelData logHorizontalModel = new ModelData(nameHorizontal, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+
+                logHorizontalModel.taLog(logHorizontalModel, true, new ResourceLocation(Ref.mod_id,
+                                "block/tree_icons/" + this.name + "/" + category + "side"),
+                        new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_bark"),
+                        new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"));
+
+                data.axisBlock((RotatedPillarBlock)log.get(), logModel.getModel(), logHorizontalModel.getModel());
 
                 //todo work on copying acacia log block states and models
             }

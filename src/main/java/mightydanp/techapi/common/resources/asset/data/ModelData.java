@@ -5,7 +5,6 @@ import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.ModelFile;
 
 import java.util.Map;
@@ -335,6 +334,89 @@ public class ModelData {
         return singleTexture(modelFolder + "/carpet", "wool", wool);
 
     }
+
+    public TAModelBuilder singleTextureMap(ResourceLocation parent, Map<String, String> map) {
+        TAModelBuilder model = withExistingParent(parent);
+
+        map.forEach(model::texture);
+
+        return model;
+    }
+
+    public TAModelBuilder resourceTextureMap(ResourceLocation parent, Map<String, ResourceLocation> map) {
+        TAModelBuilder model = withExistingParent(parent);
+
+        map.forEach(model::texture);
+
+        return model;
+    }
+
+    public TAModelBuilder tintCube(String modelName, String parentFolder, int numberOfTints){
+        TAModelBuilder model = new TAModelBuilder(new ResourceLocation(Ref.mod_id, "models/" + ModelData.BLOCK_FOLDER + "/" + (parentFolder == null ? "" : parentFolder + "/")  + modelName + ".json"));
+        model.setParent(TAModelBuilder.ExistingBlockModels.block.model);
+
+        for(int i = 0; i < numberOfTints; i ++) {
+            model.element()
+                    .from(0F, 0F, 0F)
+                    .to(16F, 16F, 16F)
+                    .face(Direction.DOWN).texture("#down_" + i).cullface(Direction.DOWN).tintindex(i).end()
+                    .face(Direction.UP).texture("#up_" + i).cullface(Direction.UP).tintindex(i).end()
+                    .face(Direction.NORTH).texture("#north_" + i).cullface(Direction.NORTH).tintindex(i).end()
+                    .face(Direction.SOUTH).texture("#south_" + i).cullface(Direction.SOUTH).tintindex(i).end()
+                    .face(Direction.WEST).texture("#west_" + i).cullface(Direction.WEST).tintindex(i).end()
+                    .face(Direction.EAST).texture("#east_" + i).cullface(Direction.EAST).tintindex(i).end();
+        }
+        return model;
+    }
+
+    public ModelData taLogTintCube(ModelData model, int numberOfTints, boolean Horizontal){
+        model.getModel().setParent(TAModelBuilder.ExistingBlockModels.block.model);
+
+        for(int i = 0; i < numberOfTints; i ++) {
+            model.getModel().element()
+                    .from(0F, 0F, 0F)
+                    .to(16F, 16F, 16F)
+                    .face(Direction.DOWN).texture("#down_" + i).cullface(Direction.DOWN).tintindex(i).end()
+                    .face(Direction.UP).texture("#up_" + i).cullface(Direction.UP).rotation(Horizontal ? TAModelBuilder.FaceRotation.UPSIDE_DOWN : TAModelBuilder.FaceRotation.ZERO).tintindex(i).end()
+                    .face(Direction.NORTH).texture("#north").cullface(Direction.NORTH).tintindex(0).end()
+                    .face(Direction.SOUTH).texture("#south").cullface(Direction.SOUTH).tintindex(0).end()
+                    .face(Direction.WEST).texture("#west").cullface(Direction.WEST).tintindex(0).end()
+                    .face(Direction.EAST).texture("#east").cullface(Direction.EAST).tintindex(0).end();
+        }
+
+        return model;
+    }
+
+    public ModelData taLogCubeColumn(String modelName, String parentFolder, boolean Horizontal){
+        ModelData taCubeLogColumn = new ModelData(modelName, BLOCK_FOLDER, parentFolder);
+
+        String logTintCubeName = modelName + "_cube";
+
+        ModelData tintLogCube = taLogTintCube(new ModelData(logTintCubeName, BLOCK_FOLDER, "tree_icons/"), 2, Horizontal);
+
+        AssetPackRegistry.blockModelDataMap.put(logTintCubeName, tintLogCube);
+
+        return taCubeLogColumn;
+
+    }
+
+    public ModelData taLog(ModelData modelData, boolean Horizontal, ResourceLocation side, ResourceLocation end_0, ResourceLocation end_1){
+        String tintLogCubeName = modelName + "_cube_column" + (Horizontal ? "_horizontal" : "");
+
+        ModelData taCubeLogColumn = taLogCubeColumn(tintLogCubeName, "tree_icons/", Horizontal);
+
+        AssetPackRegistry.blockModelDataMap.put(tintLogCubeName, taCubeLogColumn);
+
+        modelData.resourceTextureMap(taCubeLogColumn.model.getUncheckedLocation(), Map.of(
+                "side", side,
+                "#end_0", end_0,
+                "#end_1", end_1
+        ));
+
+        return modelData;
+
+    }
+
     public TAModelBuilder taSaplingCross(String modelName, String parentFolder){
         TAModelBuilder model = new TAModelBuilder(new ResourceLocation(Ref.mod_id, "models/" + ModelData.BLOCK_FOLDER + "/" + (parentFolder == null ? "" : parentFolder + "/")  + modelName + ".json"));
         model.ambientOcclusion(false);
@@ -376,16 +458,8 @@ public class ModelData {
     }
 
     public TAModelBuilder taSaplingCross(ResourceLocation overlay_0, ResourceLocation overlay_1) {
-        return textureMap(getTASaplingCross().getModel().getUncheckedLocation(), Map.of("overlay_0", overlay_0, "overlay_1", overlay_1));
+        return resourceTextureMap(getTASaplingCross().getModel().getUncheckedLocation(), Map.of("overlay_0", overlay_0, "overlay_1", overlay_1));
 
-    }
-
-    public TAModelBuilder textureMap(ResourceLocation parent, Map<String, ResourceLocation> map) {
-        TAModelBuilder model = withExistingParent(parent);
-
-        map.forEach(model::texture);
-
-        return model;
     }
     //to-do
     //save somehow before resources starts to save.

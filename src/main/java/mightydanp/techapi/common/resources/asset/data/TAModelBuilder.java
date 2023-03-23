@@ -64,6 +64,11 @@ public class TAModelBuilder extends ModelFile {
         return this;
     }
 
+    public TAModelBuilder setParent(ModelData modelData) {
+        this.parent(modelData.getModel());
+        return this;
+    }
+
     public TAModelBuilder texture(String key, String texture) {
         Preconditions.checkNotNull(key, "Key must not be null");
         Preconditions.checkNotNull(texture, "Texture must not be null");
@@ -484,7 +489,8 @@ public class TAModelBuilder extends ModelFile {
     public enum ExistingBlockModels {
         cube_all(new TAModelBuilder(new ResourceLocation("block/cube_all"))),
         cube_column(new TAModelBuilder(new ResourceLocation("block/cube_column"))),
-        cube_column_horizontal(new TAModelBuilder(new ResourceLocation("block/cube_column_horizontal")));
+        cube_column_horizontal(new TAModelBuilder(new ResourceLocation("block/cube_column_horizontal"))),
+        block(new TAModelBuilder(new ResourceLocation("block/block")));
 
         public final ModelFile model;
         ExistingBlockModels(ModelFile model) {

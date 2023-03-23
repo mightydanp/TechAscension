@@ -118,23 +118,30 @@ public class BlockStateData {
         }
     }
 
-    public void axisBlock(RotatedPillarBlock block) throws Exception {
-        axisBlock(block, blockTexture(block));
+    public void axisBlockSave(RotatedPillarBlock block) throws Exception {
+        axisBlockSave(block, blockTexture(block));
     }
 
-    public void logBlock(RotatedPillarBlock block) throws Exception {
-        axisBlock(block, blockTexture(block), extend(blockTexture(block), "_top"));
+    public void logBlockSave(RotatedPillarBlock block) throws Exception {
+        axisBlockSave(block, blockTexture(block), extend(blockTexture(block), "_top"));
     }
 
-    public void axisBlock(RotatedPillarBlock block, ResourceLocation baseName) throws Exception {
-        axisBlock(block, extend(baseName, "_side"), extend(baseName, "_end"));
+    public void axisBlockSave(RotatedPillarBlock block, ResourceLocation baseName) throws Exception {
+        axisBlockSave(block, extend(baseName, "_side"), extend(baseName, "_end"));
+    }
+
+    public void axisBlockSave(RotatedPillarBlock block, ResourceLocation side, ResourceLocation end) throws Exception {
+        String blockName = name(block);
+        ModelData modelData = new ModelData(blockName, ModelData.BLOCK_FOLDER, "");
+
+        simpleBlockItem(block, modelData);
+
+        axisBlock(block, modelData.cubeColumn(side, end), modelData.cubeColumnHorizontal(side, end));
     }
 
     public void axisBlock(RotatedPillarBlock block, ResourceLocation side, ResourceLocation end) throws Exception {
         String blockName = name(block);
         ModelData modelData = new ModelData(blockName, ModelData.BLOCK_FOLDER, "");
-
-        simpleBlockItem(block, modelData);
 
         axisBlock(block, modelData.cubeColumn(side, end), modelData.cubeColumnHorizontal(side, end));
     }
