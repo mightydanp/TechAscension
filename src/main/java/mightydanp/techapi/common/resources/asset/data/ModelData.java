@@ -500,11 +500,11 @@ public class ModelData {
                 .from(0F, 8F, 0F)
                 .to(16F, 16F, 16F)
                 .face(Direction.DOWN).uvs(0, 0, 16, 16).texture("#bottom").tintindex(0).end()
-                .face(Direction.UP).uvs(0, 0, 16, 16).texture("#toptop").cullface(Direction.UP).tintindex(0).end()
-                .face(Direction.NORTH).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.NORTH).tintindex(0).end()
-                .face(Direction.SOUTH).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.SOUTH).tintindex(0).end()
-                .face(Direction.WEST).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.WEST).tintindex(0).end()
-                .face(Direction.EAST).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.EAST).tintindex(0).end();
+                .face(Direction.UP).uvs(0, 0, 16, 16).texture("#toptop").cullface(Direction.UP).tintindex(1).end()
+                .face(Direction.NORTH).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.NORTH).tintindex(2).end()
+                .face(Direction.SOUTH).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.SOUTH).tintindex(2).end()
+                .face(Direction.WEST).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.WEST).tintindex(2).end()
+                .face(Direction.EAST).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.EAST).tintindex(2).end();
 
         return modelData.overrideModel(model);
     }

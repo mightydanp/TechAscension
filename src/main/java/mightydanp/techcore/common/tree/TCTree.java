@@ -543,7 +543,7 @@ public class TCTree {
                 BlockStateData data = new BlockStateData();
                 VariantBlockStateBuilder builder = data.getVariantBuilder(planks.get());
                 {
-                    ModelData model = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name + "/" + category);
+                    ModelData model = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
                     model.getModel().setParent(TAModelBuilder.ExistingBlockModels.cube_all.model);
 
                     builder.partialState().setModels(new ConfiguredModel(model.getModel()));
@@ -576,19 +576,49 @@ public class TCTree {
         }
 //--//--//--//--//--//--//--//--//
         {
+            String category = "slab";
+            String name = this.name + "_" + category;
+            String topName = "top_" +  this.name + "_" + category;
+
             //--block
-            String name = this.name + "_slab";
+            if (!existingItems.containsKey(category)) {
+                ModelData modelDataSlab = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                TAModelBuilder slabModel = modelDataSlab.taTintSlab(
+                        new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"),
+                        new ResourceLocation(Ref.mod_id,"block/tree_icons/" + this.name +"/planks"),
+                        new ResourceLocation(Ref.mod_id,"block/tree_icons/" + this.name +"/planks"));
+                AssetPackRegistry.blockModelDataMap.put(name, modelDataSlab.overrideModel(slabModel));
 
-            if (!existingItems.containsKey("slab")) {
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+
+                ModelData modelDataTopSlab = new ModelData(topName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                TAModelBuilder topSlabModel = modelDataTopSlab.taTintSlab(
+                        new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"),
+                        new ResourceLocation(Ref.mod_id,"block/tree_icons/" + this.name +"/planks"),
+                        new ResourceLocation(Ref.mod_id,"block/tree_icons/" + this.name +"/planks"));
+                AssetPackRegistry.blockModelDataMap.put(topName, modelDataTopSlab.overrideModel(topSlabModel));
+
+                enLang.addTranslation("item." + Ref.mod_id + "." + topName, LangData.translateUpperCase(topName));
+
                 BlockStateData data = new BlockStateData();
-
-                //todo finish slab block. Work in ModelData is finished need to do work for the model in here but block state is not finished.
-                //data.slabBlock(slab.get(), );
+                //todo
+                data.slabBlock((SlabBlock)slab.get(), modelDataSlab.getModel(), modelDataTopSlab.getModel(), AssetPackRegistry.blockModelDataMap.get(this.name + "_" + category + "_planks").getModel());
             }
 
             //--item
-            if (!existingItems.containsKey("slab")) {
+            if (!existingItems.containsKey(category)) {
+                //--Resources
+                {
+                    ModelData model = new ModelData(name, ModelData.ITEM_FOLDER, "tree_icons/" + category);
+                    model.overrideModel(model.getModel().setParent(AssetPackRegistry.blockModelDataMap.get(name).getModel()));
 
+                    AssetPackRegistry.itemModelDataHashMap.put(name, model);
+                }
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "planks/" + this.name)).add(planks.get().asItem()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "planks")).add(planks.get().asItem()));
+                //--LootTable
             }
         }
 //--//--//--//--//--//--//--//--//
