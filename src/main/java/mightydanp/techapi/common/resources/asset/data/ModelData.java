@@ -5,7 +5,6 @@ import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.generators.ModelFile;
 
 import java.util.Map;
@@ -457,6 +456,71 @@ public class ModelData {
                 .axis(Direction.Axis.Y).angle(45F).rescale(true);
 
         return modelData.overrideModel(model);
+    }
+
+    public static ModelData tintSlab(ModelData modelData){
+        TAModelBuilder model =  modelData.model;
+
+        model.texture("particle", "#side");
+
+        model.element()
+                .from(0F, 0F, 0F)
+                .to(16F, 8F, 16F)
+                .face(Direction.DOWN).uvs(0, 0, 16, 16).texture("#bottom").tintindex(0).end()
+                .face(Direction.UP).uvs(0, 0, 16, 16).texture("#toptop").cullface(Direction.UP).tintindex(0).end()
+                .face(Direction.NORTH).uvs(0, 8, 16, 16).texture("#side").cullface(Direction.NORTH).tintindex(0).end()
+                .face(Direction.SOUTH).uvs(0, 8, 16, 16).texture("#side").cullface(Direction.SOUTH).tintindex(0).end()
+                .face(Direction.WEST).uvs(0, 8, 16, 16).texture("#side").cullface(Direction.WEST).tintindex(0).end()
+                .face(Direction.EAST).uvs(0, 8, 16, 16).texture("#side").cullface(Direction.EAST).tintindex(0).end();
+
+        return modelData.overrideModel(model);
+    }
+
+    public static ModelData getTintSlab(){
+        String slabModelName = "tint_slab";
+        ModelData slabModelData = new ModelData("tint_slab", BLOCK_FOLDER, "tree_icons/");
+        taTopTintSlab(slabModelData);
+
+        AssetPackRegistry.saveBlockModelDataMap(slabModelName, slabModelData, true);
+
+        return slabModelData;
+    }
+
+    public TAModelBuilder taTintSlab(ResourceLocation bottom, ResourceLocation top, ResourceLocation side) {
+        return resourceTextureMap(getTintSlab().getModel().getUncheckedLocation(), Map.of("bottom", bottom, "top", top, "side", side));
+    }
+
+
+    public static ModelData taTopTintSlab(ModelData modelData){
+        TAModelBuilder model =  modelData.model;
+
+        model.texture("particle", "#side");
+
+        model.element()
+                .from(0F, 8F, 0F)
+                .to(16F, 16F, 16F)
+                .face(Direction.DOWN).uvs(0, 0, 16, 16).texture("#bottom").tintindex(0).end()
+                .face(Direction.UP).uvs(0, 0, 16, 16).texture("#toptop").cullface(Direction.UP).tintindex(0).end()
+                .face(Direction.NORTH).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.NORTH).tintindex(0).end()
+                .face(Direction.SOUTH).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.SOUTH).tintindex(0).end()
+                .face(Direction.WEST).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.WEST).tintindex(0).end()
+                .face(Direction.EAST).uvs(0, 0, 16,  8).texture("#side").cullface(Direction.EAST).tintindex(0).end();
+
+        return modelData.overrideModel(model);
+    }
+
+    public static ModelData getTopTintSlab(){
+        String slabModelName = "top_tint_slab";
+        ModelData slabModelData = new ModelData("tint_slab", BLOCK_FOLDER, "tree_icons/");
+        taTopTintSlab(slabModelData);
+
+        AssetPackRegistry.saveBlockModelDataMap(slabModelName, slabModelData, true);
+
+        return slabModelData;
+    }
+
+    public TAModelBuilder taTopTintSlab(ResourceLocation bottom, ResourceLocation top, ResourceLocation side) {
+        return resourceTextureMap(getTintSlab().getModel().getUncheckedLocation(), Map.of("bottom", bottom, "top", top, "side", side));
     }
 
     public TAModelBuilder taSaplingCross(ResourceLocation overlay_0, ResourceLocation overlay_1) {

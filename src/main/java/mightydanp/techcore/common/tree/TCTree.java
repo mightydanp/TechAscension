@@ -541,12 +541,7 @@ public class TCTree {
             if (!existingBlocks.containsKey("planks")) {
                 //--Resources
                 BlockStateData data = new BlockStateData();
-                VariantBlockStateBuilder builder;
-                try {
-                    builder = data.getVariantBuilder(planks.get());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                VariantBlockStateBuilder builder = data.getVariantBuilder(planks.get());
                 {
                     ModelData model = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name + "/" + category);
                     model.getModel().setParent(TAModelBuilder.ExistingBlockModels.cube_all.model);
@@ -585,7 +580,10 @@ public class TCTree {
             String name = this.name + "_slab";
 
             if (!existingItems.containsKey("slab")) {
+                BlockStateData data = new BlockStateData();
 
+                //todo finish slab block. Work in ModelData is finished need to do work for the model in here but block state is not finished.
+                //data.slabBlock(slab.get(), );
             }
 
             //--item
