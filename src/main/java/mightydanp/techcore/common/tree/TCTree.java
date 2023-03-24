@@ -396,9 +396,9 @@ public class TCTree {
             //--block
             String category = "log";
             String name = this.name + "_" + category;
-            String nameHorizontal = this.name + "_" + category + "_horizontal";
+            String nameHorizontal = name + "_horizontal";
 
-            if (!existingBlocks.containsKey("log")) {
+            if (!existingBlocks.containsKey(category)) {
                 BlockStateData data = new BlockStateData();
                 VariantBlockStateBuilder builder;
                 try {
@@ -422,39 +422,114 @@ public class TCTree {
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"));
 
                 data.axisBlock((RotatedPillarBlock)log.get(), logModel.getModel(), logHorizontalModel.getModel());
+
+                enLang.addTranslation("block." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+
+                //--Tags
+                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "logs/" + this.name)).add(log.get()));
+                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "logs/")).add(log.get()));
+                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "logs_that_burn/")).add(log.get()));
             }
 
             //--item
-            if (!existingItems.containsKey("log")) {
+            if (!existingItems.containsKey(category)) {
+                ModelData modelData = new ModelData(name, ModelData.ITEM_FOLDER, null);
+                modelData.overrideModel(modelData.getModel().setParent(AssetPackRegistry.blockModelDataMap.get(name).getModel()));
+                AssetPackRegistry.itemModelDataHashMap.put(name, modelData);
 
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "logs/" + this.name)).add(log.get().asItem()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "logs/")).add(log.get().asItem()));
             }
         }
 //--//--//--//--//--//--//--//--//
-        //todo work on copying acacia striped log block states and models
         {
             //--block
-            String name = "striped_" + this.name + "_log";
-            if (!existingBlocks.containsKey("striped_log")) {
+            String categoryPrefix = "striped";
+            String categorySuffix = "log";
+            String category = categoryPrefix + "_" + categorySuffix;
 
+            String name = categoryPrefix + "_" + this.name + "_" + categorySuffix;
+            String nameHorizontal = name + "_horizontal";
+
+            if (!existingBlocks.containsKey(category)) {
+                BlockStateData data = new BlockStateData();
+                VariantBlockStateBuilder builder;
+                try {
+                    builder = data.getVariantBuilder(stripedLog.get());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+                ModelData logModel = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                logModel.taLog(logModel, false, new ResourceLocation(Ref.mod_id,
+                                "block/tree_icons/" + this.name + "/" + category + "side"),
+                        new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_bark"),
+                        new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"));
+
+
+                ModelData logHorizontalModel = new ModelData(nameHorizontal, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+
+                logHorizontalModel.taLog(logHorizontalModel, true, new ResourceLocation(Ref.mod_id,
+                                "block/tree_icons/" + this.name + "/" + category + "side"),
+                        new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_bark"),
+                        new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"));
+
+                data.axisBlock((RotatedPillarBlock)stripedLog.get(), logModel.getModel(), logHorizontalModel.getModel());
+
+                enLang.addTranslation("block." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+
+                //--Tags
+                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "logs/" + this.name)).add(stripedLog.get()));
+                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "logs/")).add(stripedLog.get()));
+                DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "logs_that_burn/")).add(stripedLog.get()));
             }
 
             //--item
-            if (!existingItems.containsKey("striped_log")) {
+            if (!existingItems.containsKey(category)) {
+                ModelData modelData = new ModelData(name, ModelData.ITEM_FOLDER, null);
+                modelData.overrideModel(modelData.getModel().setParent(AssetPackRegistry.blockModelDataMap.get(name).getModel()));
+                AssetPackRegistry.itemModelDataHashMap.put(name, modelData);
 
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "logs/" + this.name)).add(stripedLog.get().asItem()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", "logs/")).add(stripedLog.get().asItem()));
             }
         }
 //--//--//--//--//--//--//--//--//
         {
             //--block
-            String name = this.name + "_leaves";
 
-            if (!existingBlocks.containsKey("leaves")) {
+            String category = "leaves";
+            String name = this.name + "_" + category;
+
+            if (!existingBlocks.containsKey(category)) {
+                BlockStateData data = new BlockStateData();
+                VariantBlockStateBuilder builder = data.getVariantBuilder(log.get());
+                ModelData modelData = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+
+                modelData.overrideModel(modelData.getModel().setParent(TAModelBuilder.ExistingBlockModels.leaves.model).texture("all", new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category)));
+                builder.partialState().addModels(new ConfiguredModel(modelData.getModel()));
+
+                AssetPackRegistry.blockStateDataMap.put(name, data);
+                AssetPackRegistry.blockModelDataMap.put(name, modelData);
+
+                enLang.addTranslation("block." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+
 
             }
 
             //--item
-            if (!existingItems.containsKey("leaves")) {
+            if (!existingItems.containsKey(category)) {
+                ModelData modelData = new ModelData(name, ModelData.ITEM_FOLDER, null);
+                modelData.overrideModel(modelData.getModel().setParent(AssetPackRegistry.blockModelDataMap.get(name).getModel()));
+                AssetPackRegistry.itemModelDataHashMap.put(name, modelData);
 
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
             }
 
         }

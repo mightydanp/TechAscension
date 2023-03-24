@@ -490,7 +490,8 @@ public class TAModelBuilder extends ModelFile {
         cube_all(new TAModelBuilder(new ResourceLocation("block/cube_all"))),
         cube_column(new TAModelBuilder(new ResourceLocation("block/cube_column"))),
         cube_column_horizontal(new TAModelBuilder(new ResourceLocation("block/cube_column_horizontal"))),
-        block(new TAModelBuilder(new ResourceLocation("block/block")));
+        block(new TAModelBuilder(new ResourceLocation("block/block"))),
+        leaves(new TAModelBuilder(new ResourceLocation("block/leaves"))),;
 
         public final ModelFile model;
         ExistingBlockModels(ModelFile model) {

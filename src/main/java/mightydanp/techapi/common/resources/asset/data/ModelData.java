@@ -5,6 +5,7 @@ import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.generators.ModelFile;
 
 import java.util.Map;
@@ -417,8 +418,9 @@ public class ModelData {
 
     }
 
-    public TAModelBuilder taSaplingCross(String modelName, String parentFolder){
-        TAModelBuilder model = new TAModelBuilder(new ResourceLocation(Ref.mod_id, "models/" + ModelData.BLOCK_FOLDER + "/" + (parentFolder == null ? "" : parentFolder + "/")  + modelName + ".json"));
+    public static ModelData taSaplingCross(ModelData modelData){
+        TAModelBuilder model =  modelData.model;
+
         model.ambientOcclusion(false);
         //model.texture("particle", )
         model.element()
@@ -454,7 +456,7 @@ public class ModelData {
                 .rotation().origin(8, 8, 8)
                 .axis(Direction.Axis.Y).angle(45F).rescale(true);
 
-        return model;
+        return modelData.overrideModel(model);
     }
 
     public TAModelBuilder taSaplingCross(ResourceLocation overlay_0, ResourceLocation overlay_1) {
@@ -467,8 +469,7 @@ public class ModelData {
         String modelName = "ta_" + "sapling" + "_cross";
         String parentFolder = "tree_icons/";
 
-        ModelData modelData = new ModelData(modelName, BLOCK_FOLDER, parentFolder);
-        modelData.overrideModel(modelData.taSaplingCross(modelName, parentFolder));
+        ModelData modelData = ModelData.taSaplingCross(new ModelData(modelName, BLOCK_FOLDER, parentFolder));
 
         AssetPackRegistry.saveBlockModelDataMap("ta_" + "sapling" + "_cross", modelData, true);
 
