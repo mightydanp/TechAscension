@@ -304,14 +304,14 @@ public class TCTool {
             String objectName = toolName;
             {
                 ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
+                model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
                         .texture("layer0", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name))
-                        .texture("layer1", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name + "_overlay"))
+                        .texture("layer1", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name + "_overlay")
                 );
                 AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
             }
             ModelData data = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-            data.setParent(TAModelBuilder.ExistingItemModels.item_generated.model);
+            data.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model);
 
             if (material.materialFlags.contains(DefaultMaterialFlag.TOOL)) {
                 ((TCToolItem)toolItemIn.get()).parts = this.toolParts.size();
@@ -321,20 +321,20 @@ public class TCTool {
                         ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
 
                         if (i == 3) {
-                            model.overrideModel(model.getModel()
+                            model.getModel()
                                     .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()))
                                     .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()))
-                                    .texture("layer2", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + binding.prefixAndSuffix().getFirst() + toolName + binding.prefixAndSuffix().getSecond()))
+                                    .texture("layer2", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + binding.prefixAndSuffix().getFirst() + toolName + binding.prefixAndSuffix().getSecond())
                             );
                         } else if (i == 2) {
-                            model.overrideModel(model.getModel()
+                            model.getModel()
                                     .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond()))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + handle.prefixAndSuffix().getFirst() + toolName + handle.prefixAndSuffix().getSecond())
                             );
                         } else if (i == 1) {
-                            model.overrideModel(model.getModel()
+                            model.getModel()
                                     .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName + "_overlay"))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + toolName + "_overlay")
                             );
                         }
                         AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
@@ -364,8 +364,8 @@ public class TCTool {
                                 //--Resources
                                 {
                                     ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
-                                    model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
-                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
+                                    model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)
                                     );
 
                                     AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);
@@ -423,8 +423,8 @@ public class TCTool {
                                     //--Resources
                                     {
                                         ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
-                                        model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
-                                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
+                                        model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)
                                         );
 
                                         AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);
@@ -462,8 +462,8 @@ public class TCTool {
                                 //--Resources
                                 {
                                     ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
-                                    model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
-                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
+                                    model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)
                                     );
 
                                     AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);
@@ -518,8 +518,8 @@ public class TCTool {
                                 //--Resources
                                 {
                                     ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
-                                    model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
-                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName))
+                                    model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
+                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)
                                     );
 
                                     AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);

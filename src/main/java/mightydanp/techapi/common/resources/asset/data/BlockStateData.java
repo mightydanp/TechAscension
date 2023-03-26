@@ -97,11 +97,11 @@ public class BlockStateData {
         if(block.getRegistryName() != null) {
             String blockName = block.getRegistryName().getPath();
 
-            ModelData blockModelData = new ModelData(blockName, ModelData.BLOCK_FOLDER, "").overrideModel(model);
+            ModelData blockModelData = new ModelData(blockName, ModelData.BLOCK_FOLDER, "");
             AssetPackRegistry.blockModelDataMap.put(blockName, blockModelData);
 
             ModelData itemModelData = new ModelData(blockName, ModelData.ITEM_FOLDER, "");
-            itemModelData.overrideModel(itemModelData.getModel().parent(blockModelData.getModel()));
+            itemModelData.getModel().parent(blockModelData.getModel());
 
             AssetPackRegistry.itemModelDataHashMap.put(blockName, itemModelData);
         }
@@ -112,7 +112,7 @@ public class BlockStateData {
             String blockName = block.getRegistryName().getPath();
 
             ModelData itemModelData = new ModelData(blockName, ModelData.ITEM_FOLDER, "");
-            itemModelData.overrideModel(itemModelData.getModel().parent(model.getModel()));
+            itemModelData.getModel().parent(model.getModel());
 
             AssetPackRegistry.itemModelDataHashMap.put(blockName, itemModelData);
         }
@@ -323,13 +323,11 @@ public class BlockStateData {
         String name = name(block);
         ModelData slabModel = new ModelData(name, ModelData.BLOCK_FOLDER, "");
         TAModelBuilder slab = slabModel.slab(side, bottom, top);
-        slabModel.overrideModel(slab);
 
         simpleBlockWithItem(block, slabModel.getModel());
 
         ModelData slabTopModel = new ModelData(name + "_top", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder slabTop = slabTopModel.slab(side, bottom, top);
-        slabTopModel.overrideModel(slabTop);
 
         simpleBlockWithItem(block, slabTopModel.getModel());
 
@@ -353,13 +351,11 @@ public class BlockStateData {
 
         ModelData buttonModel = new ModelData(name, ModelData.BLOCK_FOLDER, "");
         TAModelBuilder button = buttonModel.button(texture);
-        buttonModel.overrideModel(button);
 
         simpleBlockWithItem(block, buttonModel.getModel());
 
         ModelData buttonPressedModel = new ModelData(name + "_pressed", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder buttonPressed = buttonPressedModel.buttonPressed(texture);
-        buttonPressedModel.overrideModel(buttonPressed);
 
         simpleBlockWithItem(block, buttonPressedModel.getModel());
 
@@ -390,13 +386,11 @@ public class BlockStateData {
 
         ModelData pressurePlateModel = new ModelData(name, ModelData.BLOCK_FOLDER, "");
         TAModelBuilder pressurePlate = pressurePlateModel.button(texture);
-        pressurePlateModel.overrideModel(pressurePlate);
 
         simpleBlockWithItem(block, pressurePlateModel.getModel());
 
         ModelData pressurePlateDownModel = new ModelData(name + "_down", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder pressurePlateDown = pressurePlateDownModel.button(texture);
-        pressurePlateDownModel.overrideModel(pressurePlateDown);
 
         simpleBlockWithItem(block, pressurePlateDownModel.getModel());
 
@@ -419,7 +413,6 @@ public class BlockStateData {
 
         ModelData model = new ModelData(name, ModelData.BLOCK_FOLDER, "");
         TAModelBuilder builder = model.sign(texture);
-        model.overrideModel(builder);
 
         simpleBlockWithItem(block, model.getModel());
 
@@ -457,13 +450,11 @@ public class BlockStateData {
 
         ModelData fencePostModel = new ModelData(name + "_post", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder fencePostBuilder = fencePostModel.fencePost(texture);
-        fencePostModel.overrideModel(fencePostBuilder);
 
         simpleBlockWithItem(block, fencePostModel.getModel());
 
         ModelData fenceSideModel = new ModelData(name + "_side", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder fenceSideBuilder = fenceSideModel.fenceSide(texture);
-        fenceSideModel.overrideModel(fenceSideBuilder);
 
         simpleBlockWithItem(block, fenceSideModel.getModel());
 
@@ -473,13 +464,11 @@ public class BlockStateData {
     public void fenceBlock(FenceBlock block, String name, ResourceLocation texture) throws Exception {
         ModelData fencePostModel = new ModelData(name + "_fence_post", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder fencePostBuilder = fencePostModel.fencePost(texture);
-        fencePostModel.overrideModel(fencePostBuilder);
 
         simpleBlockWithItem(block, fencePostModel.getModel());
 
         ModelData fenceSideModel = new ModelData(name + "_fence_side", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder fenceSideBuilder = fenceSideModel.fenceSide(texture);
-        fenceSideModel.overrideModel(fenceSideBuilder);
 
         simpleBlockWithItem(block, fenceSideModel.getModel());
 
@@ -500,25 +489,21 @@ public class BlockStateData {
 
         ModelData fenceGateModel = new ModelData(name, ModelData.BLOCK_FOLDER, "");
         TAModelBuilder fenceGateBuilder = fenceGateModel.fenceGate(texture);
-        fenceGateModel.overrideModel(fenceGateBuilder);
 
         simpleBlockWithItem(block, fenceGateModel.getModel());
 
         ModelData fenceGateOpenModel = new ModelData(name + "_open", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder fenceGateOpenBuilder = fenceGateOpenModel.fenceGateOpen(texture);
-        fenceGateOpenModel.overrideModel(fenceGateOpenBuilder);
 
         simpleBlockWithItem(block, fenceGateOpenModel.getModel());
 
         ModelData fenceGateWallModel = new ModelData(name + "_wall", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder fenceGateWallBuilder = fenceGateWallModel.fenceGateWall(texture);
-        fenceGateWallModel.overrideModel(fenceGateWallBuilder);
 
         simpleBlockWithItem(block, fenceGateWallModel.getModel());
 
         ModelData fenceGateWallOpenModel = new ModelData(name + "_wall_open", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder fenceGateWallOpenBuilder = fenceGateWallOpenModel.fenceGateWallOpen(texture);
-        fenceGateWallOpenModel.overrideModel(fenceGateWallOpenBuilder);
 
         simpleBlockWithItem(block, fenceGateWallOpenModel.getModel());
 
@@ -561,19 +546,16 @@ public class BlockStateData {
 
         ModelData wallPostModel = new ModelData(name + "_post", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder wallPostBuilder = wallPostModel.wallPost(texture);
-        wallPostModel.overrideModel(wallPostBuilder);
 
         simpleBlockWithItem(block, wallPostModel.getModel());
 
         ModelData wallSideModel = new ModelData(name + "_side", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder wallSideBuilder = wallSideModel.wallSide(texture);
-        wallSideModel.overrideModel(wallSideBuilder);
 
         simpleBlockWithItem(block, wallSideModel.getModel());
 
         ModelData wallSideTallModel = new ModelData(name + "_side_tall", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder wallSideTallBuilder = wallSideTallModel.wallSideTall(texture);
-        wallSideTallModel.overrideModel(wallSideTallBuilder);
 
         simpleBlockWithItem(block, wallSideTallModel.getModel());
 
@@ -628,31 +610,26 @@ public class BlockStateData {
 
         ModelData panePostModel = new ModelData(name + "_post", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder panePostBuilder = panePostModel.panePost(pane, edge);
-        panePostModel.overrideModel(panePostBuilder);
 
         simpleBlockWithItem(block, panePostModel.getModel());
 
         ModelData paneSideModel = new ModelData(name + "_side", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder paneSideBuilder = paneSideModel.paneSide(pane, edge);
-        paneSideModel.overrideModel(paneSideBuilder);
 
         simpleBlockWithItem(block, paneSideModel.getModel());
 
         ModelData paneSideAltModel = new ModelData(name + "_side_alt", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder paneSideAltBuilder = paneSideAltModel.paneSideAlt(pane, edge);
-        paneSideAltModel.overrideModel(paneSideAltBuilder);
 
         simpleBlockWithItem(block, paneSideAltModel.getModel());
 
         ModelData paneNoSideModel = new ModelData(name + "_noside", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder paneNoSideBuilder = paneNoSideModel.paneNoSide(pane);
-        paneNoSideModel.overrideModel(paneNoSideBuilder);
 
         simpleBlockWithItem(block, paneNoSideModel.getModel());
 
         ModelData paneNoSideAltModel = new ModelData(name + "_noside_alt", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder paneNoSideAltBuilder = paneNoSideAltModel.paneNoSideAlt(pane);
-        paneNoSideAltModel.overrideModel(paneNoSideAltBuilder);
 
         simpleBlockWithItem(block, paneNoSideAltModel.getModel());
 
@@ -693,25 +670,21 @@ public class BlockStateData {
 
         ModelData doorBottomLeftModel = new ModelData(name + "_bottom", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder doorBottomLeftBuilder = doorBottomLeftModel.doorBottomLeft(bottom, top);
-        doorBottomLeftModel.overrideModel(doorBottomLeftBuilder);
 
         simpleBlockWithItem(block, doorBottomLeftModel.getModel());
 
         ModelData doorBottomRightModel = new ModelData(name + "_bottom_hinge", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder doorBottomRightBuilder = doorBottomRightModel.doorBottomRight(bottom, top);
-        doorBottomRightModel.overrideModel(doorBottomRightBuilder);
 
         simpleBlockWithItem(block, doorBottomRightModel.getModel());
 
         ModelData doorTopLeftModel = new ModelData(name + "_top", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder doorTopLeftBuilder = doorTopLeftModel.doorTopLeft(bottom, top);
-        doorTopLeftModel.overrideModel(doorTopLeftBuilder);
 
         simpleBlockWithItem(block, doorTopLeftModel.getModel());
 
         ModelData doorTopRightModel = new ModelData(name + "_top_hinge", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder doorTopRightBuilder = doorTopRightModel.doorTopRight(bottom, top);
-        doorTopRightModel.overrideModel(doorTopRightBuilder);
 
         simpleBlockWithItem(block, doorTopRightModel.getModel());
 
@@ -756,37 +729,31 @@ public class BlockStateData {
 
         ModelData trapdoorOrientableBottomModel = new ModelData(name + "_bottom", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder trapdoorOrientableBottomBuilder = trapdoorOrientableBottomModel.trapdoorOrientableBottom(texture);
-        trapdoorOrientableBottomModel.overrideModel(trapdoorOrientableBottomBuilder);
 
         simpleBlockWithItem(block, trapdoorOrientableBottomModel.getModel());
 
         ModelData trapdoorBottomModel = new ModelData(name + "_bottom", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder trapdoorBottomBuilder = trapdoorBottomModel.trapdoorBottom(texture);
-        trapdoorBottomModel.overrideModel(trapdoorBottomBuilder);
 
         simpleBlockWithItem(block, trapdoorBottomModel.getModel());
 
         ModelData trapdoorOrientableTopModel = new ModelData(name + "_top", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder trapdoorOrientableTopBuilder = trapdoorOrientableTopModel.trapdoorOrientableTop(texture);
-        trapdoorOrientableTopModel.overrideModel(trapdoorOrientableTopBuilder);
 
         simpleBlockWithItem(block, trapdoorOrientableTopModel.getModel());
 
         ModelData trapdoorTopModel = new ModelData(name + "_top", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder trapdoorTopBuilder = trapdoorTopModel.trapdoorTop(texture);
-        trapdoorTopModel.overrideModel(trapdoorTopBuilder);
 
         simpleBlockWithItem(block, trapdoorTopModel.getModel());
 
         ModelData trapdoorOrientableOpenModel = new ModelData(name + "_open", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder trapdoorOrientableOpenBuilder = trapdoorOrientableOpenModel.trapdoorOrientableOpen(texture);
-        trapdoorOrientableOpenModel.overrideModel(trapdoorOrientableOpenBuilder);
 
         simpleBlockWithItem(block, trapdoorOrientableOpenModel.getModel());
 
         ModelData trapdoorOpenModel = new ModelData(name + "_open", ModelData.BLOCK_FOLDER, "");
         TAModelBuilder trapdoorOpenBuilder = trapdoorOpenModel.trapdoorOpen(texture);
-        trapdoorOpenModel.overrideModel(trapdoorOpenBuilder);
 
         simpleBlockWithItem(block, trapdoorOpenModel.getModel());
 

@@ -74,8 +74,8 @@ public class ModItems implements IItems {
             String objectName = ItemRef.plant_fiber_name;
             {
                 ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
-                        .texture("layer0", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.plant_fiber_name))
+                model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
+                        .texture("layer0", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.plant_fiber_name)
                 );
                 AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
             }
@@ -87,9 +87,9 @@ public class ModItems implements IItems {
             String objectName = ItemRef.twine_name;
             {
                 ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                model.overrideModel(model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
+                model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/handheld")))
                         .texture("layer0", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name))
-                        .texture("layer1", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name + "_overlay"))
+                        .texture("layer1", new ResourceLocation(Ref.mod_id, "item/iconsets/" + ItemRef.twine_name + "_overlay")
                 );
                 AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
             }
