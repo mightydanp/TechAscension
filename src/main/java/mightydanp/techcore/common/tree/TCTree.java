@@ -402,18 +402,20 @@ public class TCTree {
                 BlockStateData data = new BlockStateData();
 
                 ModelData logModel = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
-                logModel.taLog(logModel, false, new ResourceLocation(Ref.mod_id,
+                logModel.taLog( false, new ResourceLocation(Ref.mod_id,
                                 "block/tree_icons/" + this.name + "/" + category + "side"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_bark"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"));
-
+                AssetPackRegistry.blockModelDataMap.put(name, logModel);
 
                 ModelData logHorizontalModel = new ModelData(nameHorizontal, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
 
-                logHorizontalModel.taLog(logHorizontalModel, true, new ResourceLocation(Ref.mod_id,
+                logHorizontalModel.taLog(true, new ResourceLocation(Ref.mod_id,
                                 "block/tree_icons/" + this.name + "/" + category + "side"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_bark"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"));
+
+                AssetPackRegistry.blockModelDataMap.put(nameHorizontal, logHorizontalModel);
 
                 data.axisBlock((RotatedPillarBlock)log.get(), logModel.getModel(), logHorizontalModel.getModel());
 
@@ -452,18 +454,21 @@ public class TCTree {
                 BlockStateData data = new BlockStateData();
 
                 ModelData logModel = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
-                logModel.taLog(logModel, false, new ResourceLocation(Ref.mod_id,
+                logModel.taLog(false, new ResourceLocation(Ref.mod_id,
                                 "block/tree_icons/" + this.name + "/" + category + "side"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_bark"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"));
 
+                AssetPackRegistry.blockModelDataMap.put(name, logModel);
 
                 ModelData logHorizontalModel = new ModelData(nameHorizontal, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
 
-                logHorizontalModel.taLog(logHorizontalModel, true, new ResourceLocation(Ref.mod_id,
+                logHorizontalModel.taLog(true, new ResourceLocation(Ref.mod_id,
                                 "block/tree_icons/" + this.name + "/" + category + "side"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_bark"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category + "_wood"));
+
+                AssetPackRegistry.blockModelDataMap.put(nameHorizontal, logHorizontalModel);
 
                 data.axisBlock((RotatedPillarBlock)stripedLog.get(), logModel.getModel(), logHorizontalModel.getModel());
 
@@ -503,8 +508,8 @@ public class TCTree {
                 modelData.getModel().setParent(TAModelBuilder.ExistingBlockModels.leaves.model).texture("all", new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category));
                 builder.partialState().addModels(new ConfiguredModel(modelData.getModel()));
 
-                AssetPackRegistry.blockStateDataMap.put(name, data);
                 AssetPackRegistry.blockModelDataMap.put(name, modelData);
+                AssetPackRegistry.blockStateDataMap.put(name, data);
 
                 enLang.addTranslation("block." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
 
@@ -571,7 +576,7 @@ public class TCTree {
             //--block
             if (!existingItems.containsKey(category)) {
                 ModelData modelDataSlab = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
-                TAModelBuilder slabModel = modelDataSlab.taTintSlab(
+                modelDataSlab.taTintSlab(
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"),
                         new ResourceLocation(Ref.mod_id,"block/tree_icons/" + this.name +"/planks"),
                         new ResourceLocation(Ref.mod_id,"block/tree_icons/" + this.name +"/planks"));
@@ -580,7 +585,7 @@ public class TCTree {
                 enLang.addTranslation("block." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
 
                 ModelData modelDataTopSlab = new ModelData(topName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
-                TAModelBuilder topSlabModel = modelDataTopSlab.taTintSlab(
+                modelDataTopSlab.taTopTintSlab(
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"),
                         new ResourceLocation(Ref.mod_id,"block/tree_icons/" + this.name +"/planks"),
                         new ResourceLocation(Ref.mod_id,"block/tree_icons/" + this.name +"/planks"));
@@ -614,8 +619,8 @@ public class TCTree {
             //--block
             String category = "stairs";
             String name = this.name + "_" + category;
-            String innerName = "inner_" +  name;
-            String outerName = "outer_" + name;
+            String innerName = "inner_" + this.name + "_" + category;
+            String outerName = "outer" + this.name + "_" + category;
 
             if (!existingItems.containsKey(category)) {
                 BlockStateData blockStateData = new BlockStateData();
@@ -626,17 +631,23 @@ public class TCTree {
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"));
 
+                AssetPackRegistry.blockModelDataMap.put(name, stairsModel);
+
                 ModelData innerStairsModel = new ModelData(innerName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
                 innerStairsModel.taInnerStairs(1,
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"));
 
-                ModelData outerStairsModel = new ModelData(outerName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
-                outerStairsModel.taInnerStairs(1,
+                AssetPackRegistry.blockModelDataMap.put(innerName, innerStairsModel);
+
+                ModelData outerStairsModel = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                outerStairsModel.taOuterStairs(1,
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"),
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"));
+
+                AssetPackRegistry.blockModelDataMap.put(outerName, outerStairsModel);
 
                 blockStateData.stairsBlock((StairBlock) stairs.get(), stairsModel.getModel(), innerStairsModel.getModel(), outerStairsModel.getModel());
 
@@ -661,15 +672,41 @@ public class TCTree {
 //--//--//--//--//--//--//--//--//
         {
             //--block
-            String name = this.name + "_button";
+            String category = "button";
+            String name = this.name + "_" + category;
+            String pressedName = "pressed_" + name;
 
-            if (!existingItems.containsKey("button")) {
+            if (!existingItems.containsKey(category)) {
+                BlockStateData blockStateData = new BlockStateData();
+                ModelData button = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                button.taButton(new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"));
 
+                AssetPackRegistry.blockModelDataMap.put(name, button);
+
+                ModelData buttonPressed = new ModelData(pressedName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                buttonPressed.taButtonPressed(new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"));
+
+                AssetPackRegistry.blockModelDataMap.put(pressedName, buttonPressed);
+
+                blockStateData.buttonBlock((ButtonBlock)this.button.get(), button.getModel(), buttonPressed.getModel());
             }
 
             //--item
-            if (!existingItems.containsKey("button")) {
+            if (!existingItems.containsKey(category)) {
+                //--Resources
+                {
+                    ModelData buttonInventory = new ModelData(name + "_inventory", ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                    buttonInventory.taButtonInventory(new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"));
 
+                    ModelData model = new ModelData(name, ModelData.ITEM_FOLDER, "tree_icons/" + category);
+                    model.getModel().setParent(buttonInventory.getModel());
+
+                    AssetPackRegistry.itemModelDataHashMap.put(name, model);
+                }
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", category + "/" + this.name)).add(button.get().asItem()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", category)).add(button.get().asItem()));
             }
         }
 //--//--//--//--//--//--//--//--//
@@ -698,34 +735,6 @@ public class TCTree {
 
             //--item
             if (!existingItems.containsKey("fence_gate")) {
-
-            }
-        }
-//--//--//--//--//--//--//--//--//
-        {
-            //--block
-            String name = this.name + "_door";
-
-            if (!existingItems.containsKey("door")) {
-
-            }
-
-            //--item
-            if (!existingItems.containsKey("door")) {
-
-            }
-        }
-//--//--//--//--//--//--//--//--//
-        {
-            //--block
-            String name = this.name + "_trap_door";
-
-            if (!existingItems.containsKey("trap_door")) {
-
-            }
-
-            //--item
-            if (!existingItems.containsKey("trap_door")) {
 
             }
         }
@@ -762,6 +771,34 @@ public class TCTree {
             String name = this.name + "_resin";
 
             if (!existingItems.containsKey("resin")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_door";
+
+            if (!existingItems.containsKey("door")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("door")) {
+
+            }
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            //--block
+            String name = this.name + "_trap_door";
+
+            if (!existingItems.containsKey("trap_door")) {
+
+            }
+
+            //--item
+            if (!existingItems.containsKey("trap_door")) {
 
             }
         }
