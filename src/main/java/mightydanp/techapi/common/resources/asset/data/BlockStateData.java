@@ -475,6 +475,11 @@ public class BlockStateData {
         fourWayBlock(block, fencePostBuilder, fenceSideBuilder);
     }
 
+    public void fenceBlock(CrossCollisionBlock block, ModelData post, ModelData side) throws Exception {
+        fourWayBlock(block, post.getModel(), side.getModel());
+    }
+
+
     public void fenceGateBlock(FenceGateBlock block, ResourceLocation texture) throws Exception {
         String name = name(block);
         fenceGateBlockInternal(block, name, texture);
