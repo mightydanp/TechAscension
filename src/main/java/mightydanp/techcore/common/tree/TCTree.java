@@ -675,6 +675,7 @@ public class TCTree {
             String category = "button";
             String name = this.name + "_" + category;
             String pressedName = "pressed_" + name;
+            String inventoryName = name + "_inventory";
 
             if (!existingItems.containsKey(category)) {
                 BlockStateData blockStateData = new BlockStateData();
@@ -695,8 +696,10 @@ public class TCTree {
             if (!existingItems.containsKey(category)) {
                 //--Resources
                 {
-                    ModelData buttonInventory = new ModelData(name + "_inventory", ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                    ModelData buttonInventory = new ModelData(inventoryName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
                     buttonInventory.taButtonInventory(new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"));
+
+                    AssetPackRegistry.blockModelDataMap.put(inventoryName, buttonInventory);
 
                     ModelData model = new ModelData(name, ModelData.ITEM_FOLDER, "tree_icons/" + category);
                     model.getModel().setParent(buttonInventory.getModel());
@@ -712,15 +715,46 @@ public class TCTree {
 //--//--//--//--//--//--//--//--//
         {
             //--block
-            String name = this.name + "_fence";
+            String category = "fence";
+            String name = this.name + "_" + category;
+            String inventoryName = name + "_inventory";
+            String postName = name + "_post";
+            String sideName = name + "_side";
 
-            if (!existingItems.containsKey("fence")) {
 
+            if (!existingItems.containsKey(category)) {
+                BlockStateData blockStateData = new BlockStateData();
+
+                ModelData fencePost = new ModelData(postName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                fencePost.taFencePost(1, new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"));
+
+                AssetPackRegistry.blockModelDataMap.put(postName, fencePost);
+
+                ModelData fenceSide = new ModelData(sideName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                fenceSide.taFenceSide(1, new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"));
+
+                AssetPackRegistry.blockModelDataMap.put(sideName, fenceSide);
+
+                blockStateData.fenceBlock((FenceBlock)fence.get(), fencePost, fenceSide);
             }
 
             //--item
-            if (!existingItems.containsKey("fence")) {
+            if (!existingItems.containsKey(category)) {
+                {
+                    ModelData fenceInventory = new ModelData(inventoryName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                    fenceInventory.taFencePost(1, new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"));
 
+                    ModelData model = new ModelData(name, ModelData.ITEM_FOLDER, "tree_icons/" + category);
+                    model.getModel().parent(fenceInventory.getModel());
+
+                    AssetPackRegistry.blockModelDataMap.put(inventoryName, fenceInventory);
+
+                    AssetPackRegistry.itemModelDataHashMap.put(name, model);
+                }
+                enLang.addTranslation("item." + Ref.mod_id + "." + name, LangData.translateUpperCase(name));
+                //--Tags
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", category + "/" + this.name)).add(button.get().asItem()));
+                DataPackRegistry.saveItemTagData(DataPackRegistry.getItemTagData(new ResourceLocation("forge", category)).add(button.get().asItem()));
             }
         }
 //--//--//--//--//--//--//--//--//
