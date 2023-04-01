@@ -356,7 +356,7 @@ public class ModelData {
                 .translation(0, -3, -6)
                 .scale(1, 1, 1).end();
 
-        model.texture("particle", "#texture");
+        model.texture("particle", "#texture_0");
 
         for(int i = 0; i < numberOfTints; i ++){
             model.element()
@@ -432,6 +432,106 @@ public class ModelData {
                     .face(Direction.SOUTH).uvs(10, 1, 14, 4).texture("#texture_" + i).tintindex(i).end();
 
             /*
+            model.element()
+                    .from()
+                    .to()
+                    .face(Direction.DOWN).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.DOWN).end()
+                    .face(Direction.UP).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.UP).end()
+                    .face(Direction.NORTH).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.NORTH).end()
+                    .face(Direction.SOUTH).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.SOUTH).end()
+                    .face(Direction.WEST).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.WEST).end()
+                    .face(Direction.EAST).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.EAST).end();
+             */
+        }
+    }
+
+    public void tintFenceGateOpen(int numberOfTints){
+        model.texture("particle", "#texture_0");
+
+        for(int i = 0; i < numberOfTints; i ++){
+            model.element()
+                    .from(0, 5, 7)
+                    .to(2, 16, 9)
+                    .face(Direction.DOWN).uvs(0, 7, 2,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(0, 7, 2,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(0, 0, 2, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(0, 0, 2, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 0, 9, 11).texture("#texture_" + i).tintindex(i).cullface(Direction.WEST).end()
+                    .face(Direction.EAST).uvs(7, 0, 9, 11).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(14, 5, 7)
+                    .to(16, 16, 9)
+                    .face(Direction.DOWN).uvs(14, 7, 16,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(14, 7, 16,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(14, 0, 16, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(14, 0, 16, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 0,  9, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(7, 0,  9, 11).texture("#texture_" + i).tintindex(i).cullface(Direction.EAST).end();
+
+            model.element()
+                    .from(0, 6, 13)
+                    .to(2, 15, 15)
+                    .face(Direction.DOWN).uvs(0, 13,  2, 15).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(0, 13,  2, 15 ).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(0,  1,  2, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(0,  1,  2, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13,  1, 15, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13,  1, 15, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(14, 6, 13)
+                    .to(16, 15, 15)
+                    .face(Direction.DOWN).uvs(14, 13, 16, 15).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(14, 13, 16, 15).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(14,  1, 16, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(14,  1, 16, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13,  1, 15, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13,  1, 15, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(0, 6, 9)
+                    .to(2, 9, 13)
+                    .face(Direction.DOWN).uvs(0, 9,  2, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(0, 9,  2, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13, 7, 15, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13, 7, 15, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(0, 12, 9)
+                    .to(2, 15, 13)
+                    .face(Direction.DOWN).uvs(0, 9,  2, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(0, 9,  2, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13, 1, 15,  4).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13, 1, 15,  4).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(14, 6, 9)
+                    .to(16, 9, 13)
+                    .face(Direction.DOWN).uvs(14, 9, 16, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(14, 9, 16, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13, 7, 15, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13, 7, 15, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(14, 12, 9)
+                    .to(16, 15, 13)
+                    .face(Direction.DOWN).uvs(14, 9, 16, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(14, 9, 16, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13, 1, 15,  4).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13, 1, 15,  4).texture("#texture_" + i).tintindex(i).end();
+
+            /*
+            model.element()
+                    .from()
+                    .to()
+                    .face(Direction.DOWN).uvs().texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs().texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs().texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs().texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs().texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs().texture("#texture_" + i).tintindex(i).end();
+
             model.element()
                     .from()
                     .to()
