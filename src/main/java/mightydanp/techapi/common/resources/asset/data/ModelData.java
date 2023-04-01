@@ -343,6 +343,108 @@ public class ModelData {
         map.forEach(model::texture);
     }
 
+    public void tintFenceGate(int numberOfTints){
+        model.setParent(TAModelBuilder.ExistingBlockModels.block.model);
+
+        model.transforms.transform(TAModelBuilder.Perspective.GUI)
+                .rotation(30, 45, 0)
+                .translation(0, -1, 0)
+                .scale(0.8F, 0.8F, 0.8F).end();
+
+        model.transforms.transform(TAModelBuilder.Perspective.HEAD)
+                .rotation(0, 0, 0)
+                .translation(0, -3, -6)
+                .scale(1, 1, 1).end();
+
+        model.texture("particle", "#texture");
+
+        for(int i = 0; i < numberOfTints; i ++){
+            model.element()
+                    .from(0, 5, 7)
+                    .to(2, 16, 9)
+                    .face(Direction.DOWN).uvs(0, 7, 2,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(0, 7, 2,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(0, 0, 2, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(0, 0, 2, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 0, 9, 11).texture("#texture_" + i).tintindex(i).cullface(Direction.WEST).end()
+                    .face(Direction.EAST).uvs(7, 0, 9, 11).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(14, 5, 7)
+                    .to(16, 16, 9)
+                    .face(Direction.DOWN).uvs(14, 7, 16,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(14, 7, 16,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(14, 0, 16, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(14, 0, 16, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 0,  9, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(7, 0,  9, 11).texture("#texture_" + i).tintindex(i).cullface(Direction.EAST).end();
+
+            model.element()
+                    .from(6, 6, 7)
+                    .to(8, 15, 9)
+                    .face(Direction.DOWN).uvs(6, 7, 8,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(6, 7, 8,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(6, 1, 8, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(6, 1, 8, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 1, 9, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(7, 1, 9, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(8, 6, 7)
+                    .to(10, 15, 9)
+                    .face(Direction.DOWN).uvs(8, 7, 10,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(8, 7, 10,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(8, 1, 10, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(8, 1, 10, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 1,  9, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(7, 1,  9, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(2, 6, 7)
+                    .to(6, 9, 9)
+                    .face(Direction.DOWN).uvs(2, 7, 6,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(2, 7, 6,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(2, 7, 6, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(2, 7, 6, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(2, 12, 7)
+                    .to(6, 15, 9)
+                    .face(Direction.DOWN).uvs(2, 7, 6, 9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(2, 7, 6, 9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(2, 1, 6, 4).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(2, 1, 6, 4).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(10, 6, 7)
+                    .to(14, 9, 9)
+                    .face(Direction.DOWN).uvs(10, 7, 14,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(10, 7, 14,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(10, 7, 14, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(10, 7, 14, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(10, 12, 7)
+                    .to(14, 15, 9)
+                    .face(Direction.DOWN).uvs(10, 7, 14, 9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(10, 7, 14, 9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(10, 1, 14, 4).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(10, 1, 14, 4).texture("#texture_" + i).tintindex(i).end();
+
+            /*
+            model.element()
+                    .from()
+                    .to()
+                    .face(Direction.DOWN).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.DOWN).end()
+                    .face(Direction.UP).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.UP).end()
+                    .face(Direction.NORTH).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.NORTH).end()
+                    .face(Direction.SOUTH).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.SOUTH).end()
+                    .face(Direction.WEST).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.WEST).end()
+                    .face(Direction.EAST).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.EAST).end();
+             */
+        }
+    }
+
     public void tintFenceInventory(int numberOfTints){
         model.setParent(TAModelBuilder.ExistingBlockModels.block.model);
         model.transforms.transform(TAModelBuilder.Perspective.GUI)
