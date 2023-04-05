@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.ModelFile;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ModelData {
@@ -430,19 +431,20 @@ public class ModelData {
                     .face(Direction.UP).uvs(10, 7, 14, 9).texture("#texture_" + i).tintindex(i).end()
                     .face(Direction.NORTH).uvs(10, 1, 14, 4).texture("#texture_" + i).tintindex(i).end()
                     .face(Direction.SOUTH).uvs(10, 1, 14, 4).texture("#texture_" + i).tintindex(i).end();
-
-            /*
-            model.element()
-                    .from()
-                    .to()
-                    .face(Direction.DOWN).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.DOWN).end()
-                    .face(Direction.UP).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.UP).end()
-                    .face(Direction.NORTH).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.NORTH).end()
-                    .face(Direction.SOUTH).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.SOUTH).end()
-                    .face(Direction.WEST).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.WEST).end()
-                    .face(Direction.EAST).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.EAST).end();
-             */
         }
+    }
+
+    public void taFenceGate(Map<Integer, ResourceLocation> textureMap){
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintFenceGate(textureMap.size());
+
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
+
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> {
+            model.texture("texture_" + integer, resourceLocation);
+        });
     }
 
     public void tintFenceGateOpen(int numberOfTints){
@@ -520,7 +522,188 @@ public class ModelData {
                     .face(Direction.UP).uvs(14, 9, 16, 13).texture("#texture_" + i).tintindex(i).end()
                     .face(Direction.WEST).uvs(13, 1, 15,  4).texture("#texture_" + i).tintindex(i).end()
                     .face(Direction.EAST).uvs(13, 1, 15,  4).texture("#texture_" + i).tintindex(i).end();
+        }
+    }
 
+    public void taFenceGateOpen(Map<Integer, ResourceLocation> textureMap){
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintFenceGateOpen(textureMap.size());
+
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
+
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> model.texture("texture_" + integer, resourceLocation));
+    }
+
+    public void tintFenceGateWall(int numberOfTints){
+        model.ambientOcclusion(false);
+        model.texture("particle", "#texture_0");
+
+        for(int i = 0; i < numberOfTints; i ++){
+            model.element()
+                    .from(0, 2, 7)
+                    .to(2, 13, 9)
+                    .face(Direction.DOWN).uvs(0, 7, 2,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(0, 7, 2,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(0, 0, 2, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(0, 0, 2, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 0, 9, 11).texture("#texture_" + i).tintindex(i).cullface(Direction.WEST).end()
+                    .face(Direction.EAST).uvs(7, 0, 9, 11).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(14, 2, 7)
+                    .to(16, 13, 9)
+                    .face(Direction.DOWN).uvs(14, 7, 16,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(14, 7, 16,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(14, 0, 16, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(14, 0, 16, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 0,  9, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(7, 0,  9, 11).texture("#texture_" + i).tintindex(i).cullface(Direction.EAST).end();
+
+            model.element()
+                    .from(6, 3, 7)
+                    .to(8, 12, 9)
+                    .face(Direction.DOWN).uvs(6, 7, 8,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(6, 7, 8,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(6, 1, 8, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(6, 1, 8, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 1, 9, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(7, 1, 9, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(8, 3, 7)
+                    .to(10, 12, 9)
+                    .face(Direction.DOWN).uvs(8, 7, 10,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(8, 7, 10,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(8, 1, 10, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(8, 1, 10, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 1,  9, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(7, 1,  9, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(2, 3, 7)
+                    .to(6, 6, 9)
+                    .face(Direction.DOWN).uvs(2, 7, 6,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(2, 7, 6,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(2, 7, 6, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(2, 7, 6, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(2, 9, 7)
+                    .to(6, 12, 9)
+                    .face(Direction.DOWN).uvs(2, 7, 6, 9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(2, 7, 6, 9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(2, 1, 6, 4).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(2, 1, 6, 4).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(10, 3, 7)
+                    .to(14, 6, 9)
+                    .face(Direction.DOWN).uvs(10, 7, 14,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(10, 7, 14,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(10, 7, 14, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(10, 7, 14, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(10, 9, 7)
+                    .to(14, 12, 9)
+                    .face(Direction.DOWN).uvs(10, 7, 14, 9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(10, 7, 14, 9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(10, 1, 14, 4).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(10, 1, 14, 4).texture("#texture_" + i).tintindex(i).end();
+        }
+    }
+
+    public void taFenceGateWall(Map<Integer, ResourceLocation> textureMap){
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintFenceGateWall(textureMap.size());
+
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
+
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> {
+            model.texture("texture_" + integer, resourceLocation);
+        });
+    }
+
+    public void tintFenceGateWallOpen(int numberOfTints) {
+        model.ambientOcclusion(false);
+        model.texture("particle", "#texture_0");
+
+        for (int i = 0; i < numberOfTints; i++){
+            model.element()
+                    .from(0, 2, 7)
+                    .to(2, 13, 9)
+                    .face(Direction.DOWN).uvs(0, 7, 2,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(0, 7, 2,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(0, 0, 2, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(0, 0, 2, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 0, 9, 11).texture("#texture_" + i).tintindex(i).cullface(Direction.WEST).end()
+                    .face(Direction.EAST).uvs(7, 0, 9, 11).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(14, 2, 7)
+                    .to(16, 13, 9)
+                    .face(Direction.DOWN).uvs(14, 7, 16,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(14, 7, 16,  9).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(14, 0, 16, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(14, 0, 16, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(7, 0,  9, 11).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(7, 0,  9, 11).texture("#texture_" + i).tintindex(i).cullface(Direction.EAST).end();
+
+            model.element()
+                    .from(0, 3, 13)
+                    .to(2, 12, 15)
+                    .face(Direction.DOWN).uvs(0, 13,  2, 15).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(0, 13,  2, 15).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(0,  1,  2, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(0,  1,  2, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13,  1, 15, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13,  1, 15, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(14, 3, 13)
+                    .to(16, 12, 15)
+                    .face(Direction.DOWN).uvs(14, 13, 16, 15).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(14, 13, 16, 15).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(14,  1, 16, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(14,  1, 16, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13,  1, 15, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13,  1, 15, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(0, 3, 9)
+                    .to(2, 6, 13)
+                    .face(Direction.DOWN).uvs(0, 9,  2, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(0, 9,  2, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13, 7, 15, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13, 7, 15, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(0, 9, 9)
+                    .to(2, 12, 13)
+                    .face(Direction.DOWN).uvs(0, 9,  2, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(0, 9,  2, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13, 1, 15,  4).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13, 1, 15,  4).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(14, 3, 9)
+                    .to(16, 6, 13)
+                    .face(Direction.DOWN).uvs(14, 9, 16, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(14, 9, 16, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13, 7, 15, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13, 7, 15, 10).texture("#texture_" + i).tintindex(i).end();
+
+            model.element()
+                    .from(14, 9, 9)
+                    .to(16, 12, 13)
+                    .face(Direction.DOWN).uvs(14, 9, 16, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(14, 9, 16, 13).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(13, 1, 15,  4).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(13, 1, 15,  4).texture("#texture_" + i).tintindex(i).end();
             /*
             model.element()
                     .from()
@@ -531,18 +714,21 @@ public class ModelData {
                     .face(Direction.SOUTH).uvs().texture("#texture_" + i).tintindex(i).end()
                     .face(Direction.WEST).uvs().texture("#texture_" + i).tintindex(i).end()
                     .face(Direction.EAST).uvs().texture("#texture_" + i).tintindex(i).end();
-
-            model.element()
-                    .from()
-                    .to()
-                    .face(Direction.DOWN).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.DOWN).end()
-                    .face(Direction.UP).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.UP).end()
-                    .face(Direction.NORTH).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.NORTH).end()
-                    .face(Direction.SOUTH).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.SOUTH).end()
-                    .face(Direction.WEST).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.WEST).end()
-                    .face(Direction.EAST).uvs().texture("#texture_" + i).tintindex(i).cullface(Direction.EAST).end();
              */
         }
+    }
+
+    public void taFenceGateWallOpen(Map<Integer, ResourceLocation> textureMap){
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintFenceGateWallOpen(textureMap.size());
+
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
+
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> {
+            model.texture("texture_" + integer, resourceLocation);
+        });
     }
 
     public void tintFenceInventory(int numberOfTints){
@@ -557,7 +743,7 @@ public class ModelData {
                 .scale(0.5F, 0.5F, 0.5F).end();
 
         model.ambientOcclusion(false);
-        model.texture("particle", "#texture");
+        model.texture("particle", "#texture_0");
 
         for(int i = 0; i < numberOfTints; i ++) {
             model.element()
@@ -602,20 +788,21 @@ public class ModelData {
         }
     }
 
-    public void taFenceInventory(int numberOfTints, ResourceLocation texture){
-        ModelData model = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
-        model.tintFenceInventory(numberOfTints);
+    public void taFenceInventory(Map<Integer, ResourceLocation> textureMap){
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintFenceInventory(textureMap.size());
 
-        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, model, true);
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
 
-        getModel().setParent(model);
-        resourceTextureMap(model.getModel().getUncheckedLocation(), Map.of(
-                "texture", texture
-        ));
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> {
+            model.texture("texture_" + integer, resourceLocation);
+        });
     }
 
     public void tintFencePost(int numberOfTints){
-        model.texture("particle", "#texture");
+        model.texture("particle", "#texture_0");
 
         for(int i = 0; i < numberOfTints; i ++) {
             model.element()
@@ -630,20 +817,18 @@ public class ModelData {
         }
     }
 
-    public void taFencePost(int numberOfTints, ResourceLocation texture){
-        ModelData model = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
-        model.tintFencePost(numberOfTints);
+    public void taFencePost(Map<Integer, ResourceLocation> textureMap){
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintFencePost(textureMap.size());
 
-        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, model, true);
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
 
-        getModel().setParent(model);
-        resourceTextureMap(model.getModel().getUncheckedLocation(), Map.of(
-                "texture", texture
-        ));
+        model.setParent(modelData);
+        textureMap.forEach((integer, resourceLocation) -> model.texture("texture_" + integer, resourceLocation));
     }
 
     public void tintFenceSide(int numberOfTints){
-        model.texture("particle", "#texture");
+        model.texture("particle", "#texture_0");
 
         for(int i = 0; i < numberOfTints; i ++) {
             model.element()
@@ -666,29 +851,28 @@ public class ModelData {
         }
     }
 
-    public void taFenceSide(int numberOfTints, ResourceLocation texture){
-        ModelData model = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
-        model.tintFenceSide(numberOfTints);
+    public void taFenceSide(Map<Integer, ResourceLocation> textureMap){
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintFenceSide(textureMap.size());
 
-        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, model, true);
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
 
-        getModel().setParent(model);
-        resourceTextureMap(model.getModel().getUncheckedLocation(), Map.of(
-                "texture", texture
-        ));
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> model.texture("texture_" + integer, resourceLocation));
     }
+    public record stairsRecord(ResourceLocation bottom, ResourceLocation top, ResourceLocation side){}
 
-
-
-    public void tintStairs(int numberOfTints){
+    public void tintStairs(int numberOfTints) {
         model.setParent(TAModelBuilder.ExistingBlockModels.block.model);
+
         model.transforms().transform(TAModelBuilder.Perspective.GUI).rotation(30, 135, 0).translation(0F, 0F, 0F).scale(0.625F, 0.625F, 0.625F).build();
         model.transforms().transform(TAModelBuilder.Perspective.HEAD).rotation(0, -90, 0).translation(0F, 0F, 0F).scale(1F, 1F, 1F).build();
         model.transforms().transform(TAModelBuilder.Perspective.THIRDPERSON_LEFT).rotation(75, -135, 0).translation(0F, 2.5F, 0F).scale(0.375F, 0.375F, 0.375F).build();
 
-        model.texture("particle", "#side");
+        model.texture("particle", "#side_0");
 
-        for(int i = 0; i < numberOfTints; i ++) {
+        for (int i = 0; i < numberOfTints; i++) {
             model.element()
                     .from(0, 0, 0)
                     .to(16, 8, 16)
@@ -711,23 +895,24 @@ public class ModelData {
 
     }
 
-    public void taStairs(int numberOfTints, ResourceLocation bottom, ResourceLocation top, ResourceLocation side){
+    public void taStairs(Map<Integer, stairsRecord> assetMap){
         //todo separate resources for tinting
-        ModelData stairsModel = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
-        stairsModel.tintStairs(numberOfTints);
-        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, stairsModel, true);
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintStairs(assetMap.size());
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
 
-        getModel().setParent(stairsModel);
-        resourceTextureMap(stairsModel.model.getUncheckedLocation(), Map.of(
-                "bottom_0", bottom,
-                "top_0", top,
-                "side_0",side
-        ));
+        model.setParent(modelData);
+
+        assetMap.forEach((integer, record) -> {
+            model.texture("bottom_" + integer, record.bottom);
+            model.texture("top_" + integer, record.top);
+            model.texture("side_" + integer, record.side);
+        });
     }
 
-    public ModelData tintInnerStairs(int numberOfTints){
+    public void tintInnerStairs(int numberOfTints){
         TAModelBuilder model = getModel();
-        model.texture("particle", "#side");
+        model.texture("particle", "#side_0");
 
         for(int i = 0; i < numberOfTints; i ++) {
             model.element()
@@ -758,26 +943,26 @@ public class ModelData {
                     .face(Direction.WEST).uvs(8, 0, 16,  8).texture("#side_" + i).tintindex(i).cullface(Direction.WEST).end();
         }
 
-        return this;
     }
 
-    public void taInnerStairs(int numberOfTints, ResourceLocation bottom, ResourceLocation top, ResourceLocation side){
+    public void taInnerStairs(Map<Integer, stairsRecord> assetMap){
         //todo separate resources for tinting
-        ModelData model = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
-        model.tintInnerStairs(numberOfTints);
-        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, model, true);
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintInnerStairs(assetMap.size());
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
 
-        getModel().setParent(model);
-        resourceTextureMap(model.getModel().getUncheckedLocation(), Map.of(
-                "bottom_0", bottom,
-                "top_0", top,
-                "side_0",side
-        ));
+        model.setParent(modelData);
+
+        assetMap.forEach((integer, record) -> {
+            model.texture("bottom_" + integer, record.bottom);
+            model.texture("top_" + integer, record.top);
+            model.texture("side_" + integer, record.side);
+        });
     }
 
-    public ModelData tintOuterStairs(int numberOfTints){
+    public void tintOuterStairs(int numberOfTints){
         TAModelBuilder model = getModel();
-        model.texture("particle", "#side");
+        model.texture("particle", "#side_0");
 
         for(int i = 0; i < numberOfTints; i ++) {
             model.element()
@@ -800,25 +985,25 @@ public class ModelData {
                     .face(Direction.EAST).uvs(0, 0,  8,  8).texture("#side_" + i).tintindex(i).cullface(Direction.EAST).end();
         }
 
-        return this;
     }
 
-    public void taOuterStairs(int numberOfTints, ResourceLocation bottom, ResourceLocation top, ResourceLocation side){
-        //todo separate resources for tinting
-        ModelData model = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
-        model.tintOuterStairs(numberOfTints);
-        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, model, true);
 
-        getModel().setParent(model);
-        resourceTextureMap(model.getModel().getUncheckedLocation(), Map.of(
-                "bottom_0", bottom,
-                "top_0", top,
-                "side_0",side
-        ));
+
+    public void taOuterStairs(Map<Integer, stairsRecord> assetMap){
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintOuterStairs(assetMap.size());
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
+
+        model.setParent(modelData);
+
+        assetMap.forEach((integer, record) -> {
+            model.texture("bottom_" + integer, record.bottom);
+            model.texture("top_" + integer, record.top);
+            model.texture("side_" + integer, record.side);
+        });
     }
 
-    public ModelData tintCube(ModelData modelData, int numberOfTints){
-        TAModelBuilder model = modelData.getModel();
+    public void tintCube(int numberOfTints){
         model.setParent(TAModelBuilder.ExistingBlockModels.block.model);
 
         for(int i = 0; i < numberOfTints; i ++) {
@@ -832,7 +1017,6 @@ public class ModelData {
                     .face(Direction.WEST).texture("#west_" + i).cullface(Direction.WEST).tintindex(i).end()
                     .face(Direction.EAST).texture("#east_" + i).cullface(Direction.EAST).tintindex(i).end();
         }
-        return modelData;
     }
 
     public void tintButton(int numberOfTints){
@@ -840,13 +1024,28 @@ public class ModelData {
             model.element()
                     .from(5F, 0F, 6F)
                     .to(11F, 2F, 10F)
-                    .face(Direction.DOWN).uvs(5,  6, 11, 10).texture("#texture" + i).cullface(Direction.DOWN).tintindex(i).end()
-                    .face(Direction.UP).uvs(5, 10, 11,  6).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.NORTH).uvs(5, 14, 11, 16).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.SOUTH).uvs(5, 14, 11, 16).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.WEST).uvs(6, 14, 10, 16).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.EAST).uvs(6, 14, 10, 16).texture("#texture" + i).tintindex(i).end();
+                    .face(Direction.DOWN).uvs(5,  6, 11, 10).texture("#texture_" + i).cullface(Direction.DOWN).tintindex(i).end()
+                    .face(Direction.UP).uvs(5, 10, 11,  6).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(5, 14, 11, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(5, 14, 11, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(6, 14, 10, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(6, 14, 10, 16).texture("#texture_" + i).tintindex(i).end();
         }
+    }
+
+    public void taButton(Map<Integer, ResourceLocation> textureMap){
+        String name = "tint_" + modelName;
+
+        ModelData modelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintButton(textureMap.size());
+
+        AssetPackRegistry.saveBlockModelDataMap(name, modelData, true);
+
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> {
+            model.texture("texture_" + integer, resourceLocation);
+        });
     }
 
     public void tintButtonInventory(int numberOfTints){
@@ -856,13 +1055,28 @@ public class ModelData {
             model.element()
                     .from(5F, 6F, 6F)
                     .to(11F, 10F, 100F)
-                    .face(Direction.DOWN).uvs(5,  6, 11, 10).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.UP).uvs(5, 10, 11,  6).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.NORTH).uvs(5, 12, 11, 16).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.SOUTH).uvs(5, 12, 11, 16).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.WEST).uvs(6, 12, 10, 16).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.EAST).uvs(6, 12, 10, 16).texture("#texture" + i).tintindex(i).end();
+                    .face(Direction.DOWN).uvs(5,  6, 11, 10).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.UP).uvs(5, 10, 11,  6).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(5, 12, 11, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(5, 12, 11, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(6, 12, 10, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(6, 12, 10, 16).texture("#texture_" + i).tintindex(i).end();
         }
+    }
+
+    public void taButtonInventory(Map<Integer, ResourceLocation> textureMap){
+        String name = "tint_" + modelName;
+
+        ModelData modelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintButtonInventory(textureMap.size());
+
+        AssetPackRegistry.saveBlockModelDataMap(name, modelData, true);
+
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> {
+            model.texture("texture_" + integer, resourceLocation);
+        });
     }
 
     public void tintButtonPressed(int numberOfTints){
@@ -870,16 +1084,29 @@ public class ModelData {
             model.element()
                     .from(5F, 0F, 6F)
                     .to(11F, 1F, 10F)
-                    .face(Direction.DOWN).uvs(5,  6, 11, 10).texture("#texture" + i).cullface(Direction.DOWN).tintindex(i).end()
-                    .face(Direction.UP).uvs(5, 10, 11,  6).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.NORTH).uvs(5, 14, 11, 16).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.SOUTH).uvs(5, 14, 11, 16).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.WEST).uvs(6, 14, 10, 16).texture("#texture" + i).tintindex(i).end()
-                    .face(Direction.EAST).uvs(6, 14, 10, 16).texture("#texture" + i).tintindex(i).end();
+                    .face(Direction.DOWN).uvs(5,  6, 11, 10).texture("#texture_" + i).cullface(Direction.DOWN).tintindex(i).end()
+                    .face(Direction.UP).uvs(5, 10, 11,  6).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(5, 14, 11, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(5, 14, 11, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(6, 14, 10, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(6, 14, 10, 16).texture("#texture_" + i).tintindex(i).end();
         }
     }
 
+    public void taButtonPressed(Map<Integer, ResourceLocation> textureMap){
+        String name = "tint_" + modelName;
 
+        ModelData modelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintButtonPressed(textureMap.size());
+
+        AssetPackRegistry.saveBlockModelDataMap(name, modelData, true);
+
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> {
+            model.texture("texture_" + integer, resourceLocation);
+        });
+    }
 
     public void taLogTintCube(int numberOfTints, boolean Horizontal){
         model.setParent(TAModelBuilder.ExistingBlockModels.block.model);
@@ -890,78 +1117,50 @@ public class ModelData {
                     .to(16F, 16F, 16F)
                     .face(Direction.DOWN).texture("#down_" + i).cullface(Direction.DOWN).tintindex(i).end()
                     .face(Direction.UP).texture("#up_" + i).cullface(Direction.UP).rotation(Horizontal ? TAModelBuilder.FaceRotation.UPSIDE_DOWN : TAModelBuilder.FaceRotation.ZERO).tintindex(i).end()
-                    .face(Direction.NORTH).texture("#north").cullface(Direction.NORTH).tintindex(0).end()
-                    .face(Direction.SOUTH).texture("#south").cullface(Direction.SOUTH).tintindex(0).end()
-                    .face(Direction.WEST).texture("#west").cullface(Direction.WEST).tintindex(0).end()
-                    .face(Direction.EAST).texture("#east").cullface(Direction.EAST).tintindex(0).end();
+                    .face(Direction.NORTH).texture("#north_" + i).cullface(Direction.NORTH).tintindex(0).end()
+                    .face(Direction.SOUTH).texture("#south_" + i).cullface(Direction.SOUTH).tintindex(0).end()
+                    .face(Direction.WEST).texture("#west_" + i).cullface(Direction.WEST).tintindex(0).end()
+                    .face(Direction.EAST).texture("#east_" + i).cullface(Direction.EAST).tintindex(0).end();
         }
     }
 
-    public void taButton(ResourceLocation texture){
-        //todo make other people have control of tinting
-        String name = "tint_" + modelName;
+    public record logAssetRecord(ResourceLocation side, ResourceLocation end){}
 
-        ModelData button = new ModelData(modelName, BLOCK_FOLDER, parentFolder);
-
-        ModelData tintButton = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
-        tintButton.tintButton(1);
-
-        AssetPackRegistry.saveBlockModelDataMap(name, tintButton, true);
-
-        this.resourceTextureMap(tintButton.model.getUncheckedLocation(), Map.of(
-                "texture", texture
-        ));
-    }
-
-    public void taButtonInventory(ResourceLocation texture){
-        //todo make other people have control of tinting
-        String name = "tint_" + modelName;
-
-        ModelData tintButton = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
-        tintButton.tintButtonInventory(1);
-
-        AssetPackRegistry.saveBlockModelDataMap(name, tintButton, true);
-
-        this.resourceTextureMap(tintButton.model.getUncheckedLocation(), Map.of(
-                "texture", texture
-        ));
-    }
-
-    public void taButtonPressed(ResourceLocation texture){
-        //todo make other people have control of tinting
-        String name = "tint_" + modelName;
-
-        ModelData tintButton = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
-        tintButton.tintButtonPressed(1);
-
-        AssetPackRegistry.saveBlockModelDataMap(name, tintButton, true);
-
-        this.resourceTextureMap(tintButton.model.getUncheckedLocation(), Map.of(
-                "texture", texture
-        ));
-    }
-
-    public void taLogCubeColumn(int numberOfTints, boolean Horizontal){
+    public void taLogCubeColumn(Map<Integer, logAssetRecord> assetMap, boolean Horizontal){
         String name = modelName + "_cube";
 
-        ModelData tintLogCube = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
-        tintLogCube.taLogTintCube(numberOfTints, Horizontal);
-        AssetPackRegistry.saveBlockModelDataMap(name, tintLogCube, true);
+        ModelData modelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
+        modelData.taLogTintCube(assetMap.size(), Horizontal);
+        AssetPackRegistry.saveBlockModelDataMap(name, modelData, true);
+
+        model.setParent(modelData);
+
+        model.texture("particle", "#side_0");
+
+        assetMap.forEach((integer, resourceLocation) -> {
+            model.texture("down_" + integer, "#end_" + integer);
+            model.texture("up_" + integer, "#end_" + integer);
+            model.texture("north_" + integer, "#side_" + integer);
+            model.texture("east_" + integer, "#side_" + integer);
+            model.texture("south_" + integer, "#side_" + integer);
+            model.texture("west_" + integer, "#side_" + integer);
+        });
     }
 
-    public void taLog(boolean Horizontal, ResourceLocation side, ResourceLocation end_0, ResourceLocation end_1){
+    public void taLog(boolean Horizontal,  Map<Integer, logAssetRecord> assetMap){
         String name = modelName + "_cube_column";
 
-        ModelData taCubeLogColumn = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
-        taCubeLogColumn.taLogCubeColumn(2, Horizontal);
-        AssetPackRegistry.saveBlockModelDataMap(name, taCubeLogColumn, true);
+        ModelData modelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
+        modelData.taLogCubeColumn(assetMap, Horizontal);
+        AssetPackRegistry.saveBlockModelDataMap(name, modelData, true);
 
-        this.resourceTextureMap(taCubeLogColumn.model.getUncheckedLocation(), Map.of(
-                "side", side,
-                "#end_0", end_0,
-                "#end_1", end_1
-        ));
+        Map<String, ResourceLocation> resourceLocationMap = new HashMap<>();
+        assetMap.forEach((integer, logAssets) -> {
+            resourceLocationMap.put("#side_" + integer, logAssets.side);
+            resourceLocationMap.put("#end_" + integer, logAssets.end);
+        });
 
+        this.resourceTextureMap(modelData.model.getUncheckedLocation(), resourceLocationMap);
     }
 
     public void taSaplingCross(){
@@ -1001,11 +1200,8 @@ public class ModelData {
                 .axis(Direction.Axis.Y).angle(45F).rescale(true);
     }
 
-    public void tintSlab(ModelData modelData){
-        TAModelBuilder model =  modelData.model;
-
+    public void tintSlab(){
         model.texture("particle", "#side");
-
         model.element()
                 .from(0F, 0F, 0F)
                 .to(16F, 8F, 16F)
@@ -1019,19 +1215,17 @@ public class ModelData {
     }
 
     public void taTintSlab(ResourceLocation bottom, ResourceLocation top, ResourceLocation side){
-        String name = "tint_" + modelName + "_slab";
-        ModelData slabModelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
-        tintSlab(slabModelData);
+        String name = "tint_" + modelName;
+        ModelData modelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintSlab();
 
-        AssetPackRegistry.saveBlockModelDataMap(name, slabModelData, true);
+        AssetPackRegistry.saveBlockModelDataMap(name, modelData, true);
 
-        this.resourceTextureMap(slabModelData.getModel().getUncheckedLocation(), Map.of("bottom", bottom, "top", top, "side", side));
+        this.resourceTextureMap(modelData.getModel().getUncheckedLocation(), Map.of("bottom", bottom, "top", top, "side", side));
     }
 
 
-    public void taTopTintSlab(ModelData modelData){
-        TAModelBuilder model =  modelData.model;
-
+    public void taTopTintSlab(){
         model.texture("particle", "#side");
 
         model.element()
@@ -1047,22 +1241,23 @@ public class ModelData {
     }
 
     public void taTopTintSlab(ResourceLocation bottom, ResourceLocation top, ResourceLocation side){
-        String name = "top_tint" + modelName + "_slab";
+        String name = "top_tint" + modelName;
 
-        ModelData slabModelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
-        taTopTintSlab(slabModelData);
-        AssetPackRegistry.saveBlockModelDataMap(name, slabModelData, true);
+        ModelData modelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
+        modelData.taTopTintSlab();
+        AssetPackRegistry.saveBlockModelDataMap(name, modelData, true);
 
-        this.resourceTextureMap(slabModelData.getModel().getUncheckedLocation(), Map.of("bottom", bottom, "top", top, "side", side));
+        this.resourceTextureMap(modelData.getModel().getUncheckedLocation(), Map.of("bottom", bottom, "top", top, "side", side));
     }
 
     public void taSaplingCross(ResourceLocation overlay_0, ResourceLocation overlay_1) {
         String name = "ta_" + modelName + "_cross";
 
-        ModelData tintModelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
-        tintModelData.taSaplingCross();
-        AssetPackRegistry.saveBlockModelDataMap(name, tintModelData, true);
+        ModelData modelData = new ModelData(name, BLOCK_FOLDER, "tree_icons/");
+        modelData.taSaplingCross();
 
-        this.resourceTextureMap(tintModelData.getModel().getUncheckedLocation(), Map.of("overlay_0", overlay_0, "overlay_1", overlay_1));
+        AssetPackRegistry.saveBlockModelDataMap(name, modelData, true);
+
+        this.resourceTextureMap(modelData.getModel().getUncheckedLocation(), Map.of("overlay_0", overlay_0, "overlay_1", overlay_1));
     }
 }
