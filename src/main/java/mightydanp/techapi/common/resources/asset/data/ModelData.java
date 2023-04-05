@@ -344,6 +344,66 @@ public class ModelData {
         map.forEach(model::texture);
     }
 
+    public void tintPressurePlateUp(int numberOfTints){
+        model.setParent(TAModelBuilder.ExistingBlockModels.thin_block.model);
+        model.texture("particle", "#texture_0");
+
+        for(int i = 0; i < numberOfTints; i ++){
+            model.element()
+                    .from(1, 0, 1)
+                    .to(15, 1, 15)
+                    .face(Direction.DOWN).uvs(1,  1, 15, 15).texture("#texture_" + i).tintindex(i).cullface(Direction.DOWN).end()
+                    .face(Direction.UP).uvs(1,  1, 15, 15).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(1, 15, 15, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(1, 15, 15, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(1, 15, 15, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(1, 15, 15, 16).texture("#texture_" + i).tintindex(i).end();
+        }
+    }
+
+    public void taPressurePlateUp(Map<Integer, ResourceLocation> textureMap){
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintPressurePlateUp(textureMap.size());
+
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
+
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> {
+            model.texture("texture_" + integer, resourceLocation);
+        });
+    }
+
+    public void tintPressurePlateDown(int numberOfTints){
+        model.setParent(TAModelBuilder.ExistingBlockModels.thin_block.model);
+        model.texture("particle", "#texture_0");
+
+        for(int i = 0; i < numberOfTints; i ++){
+            model.element()
+                    .from(1, 0, 1)
+                    .to(15, 0.5F, 15)
+                    .face(Direction.DOWN).uvs(1,  1, 15, 15).texture("#texture_" + i).tintindex(i).cullface(Direction.DOWN).end()
+                    .face(Direction.UP).uvs(1,  1, 15, 15).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.NORTH).uvs(1, 15, 15, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.SOUTH).uvs(1, 15, 15, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.WEST).uvs(1, 15, 15, 16).texture("#texture_" + i).tintindex(i).end()
+                    .face(Direction.EAST).uvs(1, 15, 15, 16).texture("#texture_" + i).tintindex(i).end();
+        }
+    }
+
+    public void taPressurePlateDown(Map<Integer, ResourceLocation> textureMap){
+        ModelData modelData = new ModelData("tint_" + modelName, BLOCK_FOLDER, "tree_icons/");
+        modelData.tintPressurePlateDown(textureMap.size());
+
+        AssetPackRegistry.saveBlockModelDataMap("tint_" + modelName, modelData, true);
+
+        model.setParent(modelData);
+
+        textureMap.forEach((integer, resourceLocation) -> {
+            model.texture("texture_" + integer, resourceLocation);
+        });
+    }
+
     public void tintFenceGate(int numberOfTints){
         model.setParent(TAModelBuilder.ExistingBlockModels.block.model);
 

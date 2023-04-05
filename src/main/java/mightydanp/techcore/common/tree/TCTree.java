@@ -590,7 +590,7 @@ public class TCTree {
             String topName = "top_" +  this.name + "_" + category;
 
             //--block
-            if (!existingItems.containsKey(category)) {
+            if (!existingBlocks.containsKey(category)) {
                 ModelData modelDataSlab = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
                 modelDataSlab.taTintSlab(
                         new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks"),
@@ -638,7 +638,7 @@ public class TCTree {
             String innerName = "inner_" + this.name + "_" + category;
             String outerName = "outer" + this.name + "_" + category;
 
-            if (!existingItems.containsKey(category)) {
+            if (!existingBlocks.containsKey(category)) {
                 BlockStateData blockStateData = new BlockStateData();
 
                 ModelData stairsModel = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
@@ -695,7 +695,7 @@ public class TCTree {
             String pressedName = "pressed_" + name;
             String inventoryName = name + "_inventory";
 
-            if (!existingItems.containsKey(category)) {
+            if (!existingBlocks.containsKey(category)) {
                 BlockStateData blockStateData = new BlockStateData();
                 ModelData button = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
                 button.taButton(Map.of(0, new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks")));
@@ -740,7 +740,7 @@ public class TCTree {
             String sideName = name + "_side";
 
 
-            if (!existingItems.containsKey(category)) {
+            if (!existingBlocks.containsKey(category)) {
                 BlockStateData blockStateData = new BlockStateData();
 
                 ModelData fencePost = new ModelData(postName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
@@ -785,9 +785,9 @@ public class TCTree {
             String wallName = name + "_wall";
             String wallOpenName = name + "_wall_open";
 
-            if (!existingItems.containsKey("fence_gate")) {
+            if (!existingBlocks.containsKey("fence_gate")) {
                 BlockStateData blockStateData = new BlockStateData();
-                //ModelFile gateOpen, ModelFile gateWall, ModelFile gateWallOpen
+
                 ModelData gate = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
                 gate.taFenceGate(Map.of(0, new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks")));
                 AssetPackRegistry.blockModelDataMap.put(name, gate);
@@ -819,23 +819,43 @@ public class TCTree {
 //--//--//--//--//--//--//--//--//
         {
             //--block
-            String name = this.name + "_pressure_plate";
+            String category = "pressure_plate";
+            String name = this.name + "_" + category;
+            String upName = name + "_up";
+            String downName = name + "_down";
 
-            if (!existingItems.containsKey("pressure_plate")) {
+            if (!existingBlocks.containsKey("pressure_plate")) {
+                BlockStateData blockStateData = new BlockStateData();
 
+                ModelData pressurePlateUp = new ModelData(upName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                pressurePlateUp.taPressurePlateUp(Map.of(0, new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks")));
+                AssetPackRegistry.blockModelDataMap.put(upName, pressurePlateUp);
+
+                ModelData pressurePlateDown = new ModelData(downName, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
+                pressurePlateDown.taPressurePlateDown(Map.of(0, new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name +"/planks")));
+                AssetPackRegistry.blockModelDataMap.put(downName, pressurePlateDown);
+
+                blockStateData.pressurePlateBlock((PressurePlateBlock)pressurePlate.get(), pressurePlateUp.getModel(), pressurePlateDown.getModel());
             }
+
 
             //--item
             if (!existingItems.containsKey("pressure_plate")) {
+                ModelData model = new ModelData(name, ModelData.ITEM_FOLDER, "tree_icons/" + category);
+                model.getModel().setParent(AssetPackRegistry.blockModelDataMap.get(upName));
 
+                AssetPackRegistry.itemModelDataHashMap.put(name, model);
             }
         }
 //--//--//--//--//--//--//--//--//
+        //todo make own version of it since minecraft makes it there own and cant make it there way
+        /*
         {
+
             //--block
             String name = this.name + "_sign";
 
-            if (!existingItems.containsKey("sign")) {
+            if (!existingBlocks.containsKey("sign")) {
 
             }
 
@@ -844,20 +864,15 @@ public class TCTree {
 
             }
         }
+         */
 //--//--//--//--//--//--//--//--//
-        {
-            String name = this.name + "_resin";
-
-            if (!existingItems.containsKey("resin")) {
-
-            }
-        }
-//--//--//--//--//--//--//--//--//
+        //todo make own version of door will be added in the future feature
+        /*
         {
             //--block
             String name = this.name + "_door";
 
-            if (!existingItems.containsKey("door")) {
+            if (!existingBlocks.containsKey("door")) {
 
             }
 
@@ -866,17 +881,30 @@ public class TCTree {
 
             }
         }
+         */
 //--//--//--//--//--//--//--//--//
+        //todo make own version of door will be added in the future feature
+        /*
         {
             //--block
             String name = this.name + "_trap_door";
 
-            if (!existingItems.containsKey("trap_door")) {
+            if (!existingBlocks.containsKey("trap_door")) {
 
             }
 
             //--item
             if (!existingItems.containsKey("trap_door")) {
+
+            }
+        }
+         */
+//--//--//--//--//--//--//--//--//
+        //todo needs liquid and item form
+        {
+            String name = this.name + "_resin";
+
+            if (!existingItems.containsKey("resin")) {
 
             }
         }
