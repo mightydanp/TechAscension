@@ -14,7 +14,6 @@ import mightydanp.techcore.common.tree.blocks.items.TCLogBlockItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -24,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
-import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -48,7 +46,8 @@ public class TCTree {
     public Map<String, ResourceLocation> existingItems;
 
     public RegistryObject<Block> log, stripedLog, planks, leaves, sapling, slab, stairs, button, fence, fenceGate, door, trapDoor, pressurePlate, sign;
-    public RegistryObject<Item> stick, plank, resin;//boat-cant do because it requires plank block. If someone adds a plank that's not in this class then there is no plank for it to use because it cant grab it from registry.
+    public RegistryObject<Item> stick, plank, resin;
+    //boat-cant do because it requires plank block. If someone adds a plank that's not in this class then there is no plank for it to use because it cant grab it from registry.
 
 
 
@@ -518,7 +517,7 @@ public class TCTree {
 
             if (!existingBlocks.containsKey(category)) {
                 BlockStateData data = new BlockStateData();
-                VariantBlockStateBuilder builder = data.getVariantBuilder(log.get());
+                VariantBlockStateBuilder builder = data.getVariantBuilder(leaves.get());
                 ModelData modelData = new ModelData(name, ModelData.BLOCK_FOLDER, "tree_icons/" + this.name);
 
                 modelData.getModel().setParent(TAModelBuilder.ExistingBlockModels.leaves.model).texture("all", new ResourceLocation(Ref.mod_id, "block/tree_icons/" + this.name + "/" + category));
@@ -901,6 +900,7 @@ public class TCTree {
          */
 //--//--//--//--//--//--//--//--//
         //todo needs liquid and item form
+        /*
         {
             String name = this.name + "_resin";
 
@@ -908,41 +908,186 @@ public class TCTree {
 
             }
         }
+        */
 //--//--//--//--//--//--//--//--//
         AssetPackRegistry.langDataMap.put("en_us", enLang);
     }
 
-    public void clientRenderLayerInit(){
-
-    }
-
-    public void registerColorForBlock(){
-
-    }
-
-    public void registerColorForItem(){
-
-    }
-
-    public void setupABlockColor(Block block) {
+    public void registerABlockColor(Block block, int layerNumberIn, int color) {
         ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout());
         Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
-            if (tintIndex != 0)
+            if (tintIndex <= layerNumberIn)
                 return 0xFFFFFFFF;
-            return barkColor;
+            return color;
         }, block);
     }
 
-    public void registerAItemColor(Item item, int layerNumberIn) {
+    public void registerAItemColor(Item item, int layerNumberIn, int color) {
         if (item != null) {
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 if (tintIndex <= layerNumberIn)
-                    return barkColor;
+                    return color;
                 else
                     return 0xFFFFFFFF;
             }, item);
         }
     }
 
+    public void clientRenderLayerInit(){
 
+    }
+
+    public void registerColorForBlock() {
+//--//--//--//--//--//--//--//--//
+        {
+            Block block = log.get();
+            ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout());
+            Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
+                if (tintIndex == 0)
+                    return barkColor;
+                if (tintIndex == 1)
+                    return woodColor;
+                else return 0xFFFFFFFF;
+            }, block);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            Block block = stripedLog.get();
+            ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout());
+            Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
+                if (tintIndex == 0)
+                    return woodColor;
+                if (tintIndex == 1)
+                    return woodColor;
+                else return 0xFFFFFFFF;
+            }, block);
+        }
+//--//--//--//--//--//--//--//--//
+        registerABlockColor(planks.get(), 0, woodColor);
+//--//--//--//--//--//--//--//--//
+        {
+            Block block = leaves.get();
+            ItemBlockRenderTypes.setRenderLayer(block, RenderType.translucent());
+            Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
+                if (tintIndex <= 0)
+                    return leavesColor;
+                else return 0xFFFFFFFF;
+            }, block);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            Block block = sapling.get();
+            ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout());
+            Minecraft.getInstance().getBlockColors().register((state, world, pos, tintIndex) -> {
+                if (tintIndex == 0)
+                    return woodColor;
+                if (tintIndex == 1)
+                    return leavesColor;
+                else return 0xFFFFFFFF;
+            }, block);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerABlockColor(slab.get(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerABlockColor(stairs.get(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerABlockColor(button.get(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerABlockColor(fence.get(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerABlockColor(fenceGate.get(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerABlockColor(pressurePlate.get(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        //todo door, trapDoor, sign
+
+    }
+
+    public void registerColorForItem(){
+//--//--//--//--//--//--//--//--//
+        {
+            Item item = log.get().asItem();
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return barkColor;
+                if (tintIndex == 1)
+                    return woodColor;
+                else return 0xFFFFFFFF;
+            }, item);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            Item item = stripedLog.get().asItem();
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return woodColor;
+                if (tintIndex == 1)
+                    return woodColor;
+                else return 0xFFFFFFFF;
+            }, item);
+        }
+//--//--//--//--//--//--//--//--//
+        registerAItemColor(planks.get().asItem(), 0, woodColor);
+//--//--//--//--//--//--//--//--//
+        {
+            Item item = leaves.get().asItem();
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex <= 0)
+                    return leavesColor;
+                else return 0xFFFFFFFF;
+            }, item);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            Item item = sapling.get().asItem();
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                if (tintIndex == 0)
+                    return woodColor;
+                if (tintIndex == 1)
+                    return leavesColor;
+                else return 0xFFFFFFFF;
+            }, item);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerAItemColor(slab.get().asItem(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerAItemColor(stairs.get().asItem(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerAItemColor(button.get().asItem(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerAItemColor(fence.get().asItem(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerAItemColor(fenceGate.get().asItem(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        {
+            registerAItemColor(pressurePlate.get().asItem(), 0, woodColor);
+        }
+//--//--//--//--//--//--//--//--//
+        registerAItemColor(stick.get(), 0, woodColor);
+//--//--//--//--//--//--//--//--//
+
+        //todo door, trapDoor, sign, plank, resin
+    }
 }
