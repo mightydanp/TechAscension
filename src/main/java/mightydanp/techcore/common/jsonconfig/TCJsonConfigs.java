@@ -4,6 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.IJsonConfig;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
+import mightydanp.techcore.common.jsonconfig.definedstructure.DefinedStructureRegistry;
+import mightydanp.techcore.common.jsonconfig.definedstructure.DefinedStructureServer;
 import mightydanp.techcore.common.jsonconfig.flag.MaterialFlagRegistry;
 import mightydanp.techcore.common.jsonconfig.flag.MaterialFlagServer;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateRegistry;
@@ -55,6 +57,7 @@ public class TCJsonConfigs extends ConfigSync {
     public static int itemTraitID = 13;
 
     public static int handCraftingID = 14;
+    public static int definedStructureID = 15;
 
 
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> materialFlag = configs.getOrDefault(materialFlagID, new Pair<>(new MaterialFlagRegistry(),  new MaterialFlagServer()));
@@ -72,6 +75,7 @@ public class TCJsonConfigs extends ConfigSync {
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  blockTrait = configs.getOrDefault(blockTraitID, new Pair<>(new BlockTraitRegistry(),  new BlockTraitServer()));
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  itemTrait = configs.getOrDefault(itemTraitID, new Pair<>(new ItemTraitRegistry(),  new ItemTraitServer()));
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  handCrafting = configs.getOrDefault(handCraftingID, new Pair<>(new HandCraftingRegistry(),  new HandCraftingServer()));
+    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  definedStructure = configs.getOrDefault(definedStructureID, new Pair<>(new DefinedStructureRegistry(),  new DefinedStructureServer()));
 
     public static void init() {
         configs.put(materialFlagID, materialFlag);
@@ -89,5 +93,6 @@ public class TCJsonConfigs extends ConfigSync {
         configs.put(blockTraitID, blockTrait);
         configs.put(itemTraitID, itemTrait);
         configs.put(handCraftingID, handCrafting);
+        configs.put(definedStructureID, definedStructure);
     }
 }
