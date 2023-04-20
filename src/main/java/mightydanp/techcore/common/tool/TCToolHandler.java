@@ -13,6 +13,7 @@ import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -66,7 +67,7 @@ public class TCToolHandler {
                 handToolCrafting(tool, event, 1, tool.getAssembleItems());
             }
 
-            List<IHandCrafting> handCraftingList = (List<IHandCrafting>) TCJsonConfigs.handCrafting.getFirst().registryMap.values();
+            List<IHandCrafting> handCraftingList = (List<IHandCrafting>)(TCJsonConfigs.handCrafting.getFirst().registryMap.values().stream().toList());
 
             for(IHandCrafting handCrafting : handCraftingList) {
                 List<Ingredient> offhandRecipeItem = handCrafting.getInput1().stream().filter(ingredient -> Arrays.stream(ingredient.getItems()).anyMatch(itemStack -> itemStack.equals(event.getPlayer().getMainHandItem()) || itemStack.equals(event.getPlayer().getOffhandItem()))).toList();
@@ -106,14 +107,14 @@ public class TCToolHandler {
         return map;
     }
 
-    public static Set<ItemStack> checkAssembleItems(ItemStack mainHand, ItemStack offHand, List<Set<Set<ItemStack>>> setIn){
+    public static Set<ItemStack> checkAssembleItems(Inventory inventory, ItemStack mainHand, ItemStack offHand, List<Set<Set<ItemStack>>> setIn){
         Set<ItemStack> map = new HashSet<>();
 
         for(Set<Set<ItemStack>> combination : setIn){
             for(Set<ItemStack> itemStacks : combination){
                 ItemStack itemStackAccepted = null;
                 for(ItemStack itemStack : itemStacks){
-                    if(itemStack.equals(mainHand) || itemStack.equals(offHand)){
+                    if(itemStack.equals(mainHand) || itemStack.equals(offHand) || inventory.contains(itemStack)){
                         if(itemStackAccepted == null) {
                             itemStackAccepted = itemStack;
                         } else {
@@ -151,7 +152,7 @@ public class TCToolHandler {
             if (mainHandCheck != null && offHandCheck != null) {
                 if (mainHandCheck.getCount() == 1 && (mainHandCheck.getDamageValue() != mainHandCheck.getMaxDamage() || !mainHandCheck.isDamageableItem()) && offHandCheck.getCount() == 1 && (offHandCheck.getDamageValue() != offHandCheck.getMaxDamage() || !offHandCheck.isDamageableItem())) {
 
-                    Set<ItemStack> stepSet = checkAssembleItems(mainHand, offHand, convertAssembleItems(2, toolNeededIn));
+                    Set<ItemStack> stepSet = checkAssembleItems(playerEntity.getInventory(), mainHand, offHand, convertAssembleItems(2, toolNeededIn));
 
                     if (stepSet.size() != 0 && inventoryToolCheck(playerEntity, stepSet)) {
                         ItemStack headItemStack = mainHandCheck.getItem() instanceof HeadItem ? mainHandCheck : offHandCheck.getItem() instanceof HeadItem ? offHandCheck : null;
@@ -228,7 +229,7 @@ public class TCToolHandler {
             if(itemStackHandler != null) {
                 if (mainHandCheck != null && offHandCheck != null){
                     if (mainHandCheck.getCount() == 1 && (mainHandCheck.getDamageValue() != mainHandCheck.getMaxDamage() || !mainHandCheck.isDamageableItem()) && offHandCheck.getCount() == 1 && (offHandCheck.getDamageValue() != offHandCheck.getMaxDamage() || !offHandCheck.isDamageableItem())) {
-                        Set<ItemStack> stepSet = checkAssembleItems(mainHand, offHand, convertAssembleItems(3, toolNeededIn));
+                        Set<ItemStack> stepSet = checkAssembleItems(playerEntity.getInventory(), mainHand, offHand, convertAssembleItems(3, toolNeededIn));
 
                         if (stepSet.size() != 0 && inventoryToolCheck(playerEntity, stepSet)) {
                             ItemStack handleItemStack = mainHandCheck.getItem() instanceof HandleItem ? mainHandCheck : offHandCheck.getItem() instanceof HandleItem ? offHandCheck : null;

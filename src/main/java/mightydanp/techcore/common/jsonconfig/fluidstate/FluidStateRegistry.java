@@ -80,6 +80,7 @@ public class FluidStateRegistry extends JsonConfigMultiFile<FluidStateCodec> {
     @Override
     public FluidStateCodec fromJsonObject(JsonObject jsonObjectIn){
         return FluidStateCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your fluid states, please fix this"))).getFirst();
+
     }
 
     public JsonObject toJsonObject(FluidStateCodec fluidState) {

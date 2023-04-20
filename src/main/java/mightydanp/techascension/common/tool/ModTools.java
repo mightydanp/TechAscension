@@ -86,12 +86,16 @@ public class ModTools extends TCTools{
             List<Ingredient> bindingPartItems = List.of();
 
             Map<Integer, List<Map<Ingredient, Integer>>> assembleItems =
-                    new HashMap<>(Map.of(1, List.of(
-                                    Map.of(Ingredient.of(hammer.toolItem.get()), 1)
-                            ),
-                            2, List.of(Map.of(Ingredient.of(hammer.toolItem.get()), 1)),
-                            3, List.of(Map.of(Ingredient.of(hammer.toolItem.get()), 1))
-                    ));
+                    new HashMap<>();
+
+            List<Map<Ingredient, Integer>> step1 = assembleItems.getOrDefault(1, List.of());
+            List<Map<Ingredient, Integer>> step2 = assembleItems.getOrDefault(2, List.of());
+            List<Map<Ingredient, Integer>> step3 = assembleItems.getOrDefault(3, List.of());
+
+            step1.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step2.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step3.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+
 
             List<Map<Ingredient, Integer>> disassembleItems =
                     new ArrayList<>(List.of(
@@ -100,17 +104,18 @@ public class ModTools extends TCTools{
                             )));
 
             for (TCMaterial material : stoneLayers) {
-                assembleItems.put(1, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
-                assembleItems.put(2, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
-                assembleItems.put(3, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
+                step1.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step2.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step3.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
 
                 disassembleItems.add(new HashMap<>(Map.of(Ingredient.of(material.rockItemBlock.get()), 1,
                         Ingredient.of(chisel.toolItem.get()), 1
                 )));
             }
+
+            assembleItems.put(1, step1);
+            assembleItems.put(2, step2);
+            assembleItems.put(3, step3);
 
             ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegisterTool(toITool(pickaxeName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
         }
@@ -123,12 +128,15 @@ public class ModTools extends TCTools{
             List<Ingredient> bindingPartItems = List.of();
 
             Map<Integer, List<Map<Ingredient, Integer>>> assembleItems =
-                    new HashMap<>(Map.of(1, List.of(
-                                    Map.of(Ingredient.of(hammer.toolItem.get()), 1)
-                            ),
-                            2, List.of(Map.of(Ingredient.of(hammer.toolItem.get()), 1)),
-                            3, List.of(Map.of(Ingredient.of(hammer.toolItem.get()), 1))
-                    ));
+                    new HashMap<>();
+
+            List<Map<Ingredient, Integer>> step1 = assembleItems.getOrDefault(1, List.of());
+            List<Map<Ingredient, Integer>> step2 = assembleItems.getOrDefault(2, List.of());
+            List<Map<Ingredient, Integer>> step3 = assembleItems.getOrDefault(3, List.of());
+
+            step1.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step2.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step3.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
 
             List<Map<Ingredient, Integer>> disassembleItems =
                     new ArrayList<>(List.of(
@@ -137,17 +145,18 @@ public class ModTools extends TCTools{
                             )));
 
             for (TCMaterial material : stoneLayers) {
-                assembleItems.put(1, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
-                assembleItems.put(2, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
-                assembleItems.put(3, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
+                step1.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step2.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step3.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
 
                 disassembleItems.add(new HashMap<>(Map.of(Ingredient.of(material.rockItemBlock.get()), 1,
                         Ingredient.of(chisel.toolItem.get()), 1
                 )));
             }
+
+            assembleItems.put(1, step1);
+            assembleItems.put(2, step2);
+            assembleItems.put(3, step3);
 
             ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegisterTool(toITool(knifeName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
         }
@@ -160,12 +169,15 @@ public class ModTools extends TCTools{
             List<Ingredient> bindingPartItems = List.of();
 
             Map<Integer, List<Map<Ingredient, Integer>>> assembleItems =
-                    new HashMap<>(Map.of(1, List.of(
-                                    Map.of(Ingredient.of(hammer.toolItem.get()), 1)
-                            ),
-                            2, List.of(Map.of(Ingredient.of(hammer.toolItem.get()), 1)),
-                            3, List.of(Map.of(Ingredient.of(hammer.toolItem.get()), 1))
-                    ));
+                    new HashMap<>();
+
+            List<Map<Ingredient, Integer>> step1 = assembleItems.getOrDefault(1, List.of());
+            List<Map<Ingredient, Integer>> step2 = assembleItems.getOrDefault(2, List.of());
+            List<Map<Ingredient, Integer>> step3 = assembleItems.getOrDefault(3, List.of());
+
+            step1.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step2.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step3.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
 
             List<Map<Ingredient, Integer>> disassembleItems =
                     new ArrayList<>(List.of(
@@ -174,17 +186,18 @@ public class ModTools extends TCTools{
                             )));
 
             for (TCMaterial material : stoneLayers) {
-                assembleItems.put(1, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
-                assembleItems.put(2, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
-                assembleItems.put(3, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
+                step1.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step2.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step3.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
 
                 disassembleItems.add(new HashMap<>(Map.of(Ingredient.of(material.rockItemBlock.get()), 1,
                         Ingredient.of(chisel.toolItem.get()), 1
                 )));
             }
+
+            assembleItems.put(1, step1);
+            assembleItems.put(2, step2);
+            assembleItems.put(3, step3);
 
             ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegisterTool(toITool(hammerName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
         }
@@ -197,12 +210,15 @@ public class ModTools extends TCTools{
             List<Ingredient> bindingPartItems = List.of();
 
             Map<Integer, List<Map<Ingredient, Integer>>> assembleItems =
-                    new HashMap<>(Map.of(1, List.of(
-                                    Map.of(Ingredient.of(hammer.toolItem.get()), 1)
-                            ),
-                            2, List.of(Map.of(Ingredient.of(hammer.toolItem.get()), 1)),
-                            3, List.of(Map.of(Ingredient.of(hammer.toolItem.get()), 1))
-                    ));
+                    new HashMap<>();
+
+            List<Map<Ingredient, Integer>> step1 = assembleItems.getOrDefault(1, List.of());
+            List<Map<Ingredient, Integer>> step2 = assembleItems.getOrDefault(2, List.of());
+            List<Map<Ingredient, Integer>> step3 = assembleItems.getOrDefault(3, List.of());
+
+            step1.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step2.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step3.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
 
             List<Map<Ingredient, Integer>> disassembleItems =
                     new ArrayList<>(List.of(
@@ -211,17 +227,18 @@ public class ModTools extends TCTools{
                             )));
 
             for (TCMaterial material : stoneLayers) {
-                assembleItems.put(1, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
-                assembleItems.put(2, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
-                assembleItems.put(3, List.of(
-                        Map.of(Ingredient.of(material.rockItemBlock.get()), 1)));
+                step1.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step2.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step3.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
 
                 disassembleItems.add(new HashMap<>(Map.of(Ingredient.of(material.rockItemBlock.get()), 1,
                         Ingredient.of(chisel.toolItem.get()), 1
                 )));
             }
+
+            assembleItems.put(1, step1);
+            assembleItems.put(2, step2);
+            assembleItems.put(3, step3);
 
             ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegisterTool(toITool(chiselName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
         }

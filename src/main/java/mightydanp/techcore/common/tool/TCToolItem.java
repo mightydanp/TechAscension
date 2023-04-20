@@ -115,7 +115,7 @@ public class TCToolItem extends Item {
     }
 
     public Map<String, ItemStack> getHeads() {
-        Map<String, ItemStack> map = handles;
+        Map<String, ItemStack> map = heads;
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
             ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
