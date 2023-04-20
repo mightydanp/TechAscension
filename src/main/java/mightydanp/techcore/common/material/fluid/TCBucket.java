@@ -2,7 +2,7 @@ package mightydanp.techcore.common.material.fluid;
 
 import mightydanp.techcore.common.material.TCMaterials;
 import mightydanp.techcore.common.material.TCMaterial;
-import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
+import mightydanp.techcore.common.jsonconfig.materialflag.DefaultMaterialFlag;
 import mightydanp.techcore.common.items.TCCreativeModeTab;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.Entity;

@@ -7,10 +7,7 @@ import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateRegistry;
-import mightydanp.techcore.common.jsonconfig.fluidstate.IFluidState;
-import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.techcore.common.jsonconfig.icons.TextureIconRegistry;
-import mightydanp.techcore.common.jsonconfig.material.ore.IOreType;
 import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeRegistry;
 import mightydanp.techcore.common.material.TCMaterial;
 import net.minecraft.CrashReport;
@@ -177,7 +174,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         JsonObject fluidProperties = new JsonObject();
         {
             if (materialIn.fluidState != null) {
-                fluidProperties.addProperty("fluid_state", materialIn.fluidState.getName());
+                fluidProperties.addProperty("fluid_state", materialIn.fluidState.name());
             }
 
             if (materialIn.fluidAcceleration != null) {
@@ -334,7 +331,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
             JsonObject fluidProperties = jsonObject.get("fluid_properties").getAsJsonObject();{
                 if (fluidProperties.has("fluid_state") && fluidProperties.has("fluid_acceleration") && fluidProperties.has("fluid_density") && fluidProperties.has("fluid_luminosity") && fluidProperties.has("fluid_viscosity")) {
                     material.setFluidProperties(
-                            ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidProperties.get("fluid_state").getAsString()),
+                            ((FluidStateRegistry)TCJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidProperties.get("fluid_state").getAsString()),
                             fluidProperties.get("fluid_acceleration").getAsFloat(),
                             fluidProperties.get("fluid_density").getAsInt(),
                             fluidProperties.get("fluid_luminosity").getAsInt(),

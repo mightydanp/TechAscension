@@ -3,18 +3,17 @@ package mightydanp.techcore.common.jsonconfig.fluidstate;
 /**
  * Created by MightyDanp on 11/28/2021.
  */
-public enum DefaultFluidState implements IFluidState {
-    FLUID("fluid"),
-    GAS("gas");
+public enum DefaultFluidState {
+    FLUID(new FluidStateCodec("fluid")),
+    GAS(new FluidStateCodec("gas"));
 
-    public String name;
+    public final FluidStateCodec fluidState;
 
-    DefaultFluidState(String nameIn){
-        name = nameIn;
+    DefaultFluidState(FluidStateCodec fluidState){
+        this.fluidState = fluidState;
     }
 
-    @Override
-    public String getName() {
-        return name;
+    public FluidStateCodec getFluidState() {
+        return fluidState;
     }
 }

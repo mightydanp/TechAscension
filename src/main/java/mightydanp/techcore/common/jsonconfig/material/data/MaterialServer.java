@@ -7,8 +7,8 @@ import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateRegistry;
-import mightydanp.techcore.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.techcore.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.techcore.common.jsonconfig.material.ore.IOreType;
@@ -206,7 +206,7 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
         buffer.writeInt(Objects.requireNonNullElse(material.denseOreDensity, -1));
 
         if(material.fluidState != null){
-            buffer.writeUtf(material.fluidState.getName());
+            buffer.writeUtf(material.fluidState.name());
         }else {
             buffer.writeUtf("");
         }
@@ -307,7 +307,7 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
         int fluidViscosity = buffer.readInt();
 
         if(!fluidStateString.equals("") && fluidAcceleration != -1 && fluidDensity != -1 && fluidLuminosity != -1 && fluidViscosity != -1){
-            IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidStateString);
+            FluidStateCodec fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidStateString);
             material.setFluidProperties(fluidState, fluidAcceleration, fluidDensity, fluidLuminosity, fluidViscosity);
         }
 

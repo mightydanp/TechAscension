@@ -4,8 +4,8 @@ import com.mojang.datafixers.util.Pair;
 
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.material.TCMaterial;
-import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
-import mightydanp.techcore.common.jsonconfig.flag.IMaterialFlag;
+import mightydanp.techcore.common.jsonconfig.materialflag.DefaultMaterialFlag;
+import mightydanp.techcore.common.jsonconfig.materialflag.IMaterialFlag;
 import mightydanp.techascension.common.datagen.ModBlockLootTable;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;

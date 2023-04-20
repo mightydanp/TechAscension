@@ -36,7 +36,7 @@ public class IJsonConfig<T> {
         return new ArrayList<>(registryMap.values());
     }
 
-    public void register(T fluidStateIn){
+    public void register(T objectIn){
 
     }
 

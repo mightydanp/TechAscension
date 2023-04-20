@@ -1,10 +1,9 @@
 package mightydanp.techcore.common.datagen;
 
 import mightydanp.techcore.common.material.TCMaterial;
-import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
-import mightydanp.techcore.common.libs.EnumTreeFlags;
+import mightydanp.techcore.common.jsonconfig.materialflag.DefaultMaterialFlag;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techcore.common.jsonconfig.flag.IMaterialFlag;
+import mightydanp.techcore.common.jsonconfig.materialflag.IMaterialFlag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.client.model.generators.*;

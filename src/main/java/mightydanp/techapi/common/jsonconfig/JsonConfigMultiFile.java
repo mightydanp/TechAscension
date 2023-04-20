@@ -15,6 +15,7 @@ import java.nio.file.Paths;
  * Created by MightyDanp on 1/18/2022.
  */
 public class JsonConfigMultiFile<T> extends IJsonConfig<T> {
+
     @Override
     public void saveJsonObject(String name, JsonObject jsonConfig) {
         Path file = Paths.get(getJsonFolderLocation() + "/" + jsonFolderName + "/" + name + ".json");

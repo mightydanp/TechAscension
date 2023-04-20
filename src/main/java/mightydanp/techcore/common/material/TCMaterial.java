@@ -9,9 +9,9 @@ import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.holder.MCMaterialHolder;
 import mightydanp.techcore.common.items.*;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
-import mightydanp.techcore.common.jsonconfig.flag.IMaterialFlag;
+import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
+import mightydanp.techcore.common.jsonconfig.materialflag.IMaterialFlag;
 import mightydanp.techcore.common.jsonconfig.fluidstate.DefaultFluidState;
-import mightydanp.techcore.common.jsonconfig.fluidstate.IFluidState;
 import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.techcore.common.jsonconfig.material.ore.DefaultOreType;
@@ -43,7 +43,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.*;
 
-import static mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag.*;
+import static mightydanp.techcore.common.jsonconfig.materialflag.DefaultMaterialFlag.*;
 
 /**
  * Created by MightyDanp on 12/1/2021.
@@ -75,7 +75,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public Integer boilingPoint = null;
 
     public Float fluidAcceleration = 0.014F;
-    public IFluidState fluidState = null;
+    public FluidStateCodec fluidState = null;
     public Integer fluidDensity = null;
     public Integer fluidViscosity = null;
     public Integer fluidLuminosity = null;
@@ -164,18 +164,18 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         return this;
     }
 
-    public TCMaterial setFluidProperties(IFluidState stateIn, float accelerationIn, Integer densityIn, Integer luminosityIn, Integer viscosityIn) {
+    public TCMaterial setFluidProperties(FluidStateCodec stateIn, float accelerationIn, Integer densityIn, Integer luminosityIn, Integer viscosityIn) {
         fluidState = stateIn;
         fluidAcceleration = accelerationIn;
         if (densityIn != null) fluidDensity = densityIn;
         if (luminosityIn != null) fluidLuminosity = luminosityIn;
         if (viscosityIn != null) fluidViscosity = viscosityIn;
 
-        if (stateIn == DefaultFluidState.FLUID) {
+        if (stateIn == DefaultFluidState.FLUID.fluidState) {
             materialFlags.add(FLUID);
         }
 
-        if (stateIn == DefaultFluidState.GAS) {
+        if (stateIn == DefaultFluidState.GAS.fluidState) {
             materialFlags.add(GAS);
         }
 

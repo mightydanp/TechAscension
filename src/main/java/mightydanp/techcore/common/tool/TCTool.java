@@ -7,7 +7,7 @@ import mightydanp.techascension.common.TechAscension;
 import mightydanp.techascension.common.libs.ItemRef;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
-import mightydanp.techcore.common.jsonconfig.flag.DefaultMaterialFlag;
+import mightydanp.techcore.common.jsonconfig.materialflag.DefaultMaterialFlag;
 import mightydanp.techcore.common.jsonconfig.tool.ITool;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.material.IMaterial;

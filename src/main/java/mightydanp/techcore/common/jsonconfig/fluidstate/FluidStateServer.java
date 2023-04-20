@@ -6,6 +6,7 @@ import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.definedstructure.DefinedStructureCodec;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -22,26 +23,26 @@ import java.util.stream.Collectors;
 /**
  * Created by MightyDanp on 1/25/2022.
  */
-public class FluidStateServer extends JsonConfigServer<IFluidState> {
+public class FluidStateServer extends JsonConfigServer<FluidStateCodec> {
 
     @Override
-    public Map<String, IFluidState> getServerMapFromList(List<IFluidState> fluidStatesIn) {
-        Map<String, IFluidState> fluidStatesList = new LinkedHashMap<>();
-        fluidStatesIn.forEach(fluidState -> fluidStatesList.put(fluidState.getName(), fluidState));
+    public Map<String, FluidStateCodec> getServerMapFromList(List<FluidStateCodec> fluidStatesIn) {
+        Map<String, FluidStateCodec> fluidStatesList = new LinkedHashMap<>();
+        fluidStatesIn.forEach(fluidState -> fluidStatesList.put(fluidState.name(), fluidState));
 
         return fluidStatesList;
     }
 
     @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
-        List<IFluidState> list = message.getConfig(TCJsonConfigs.fluidStateID).stream()
-                .filter(IFluidState.class::isInstance)
-                .map(IFluidState.class::cast).toList();
+        List<FluidStateCodec> clientList = message.getConfig(TCJsonConfigs.fluidStateID).stream()
+                .filter(FluidStateCodec.class::isInstance)
+                .map(FluidStateCodec.class::cast).toList();
 
         AtomicBoolean sync = new AtomicBoolean(true);
 
 
-        if(list.size() != getServerMap().size()){
+        if(clientList.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("fluid_state", sync.get());
@@ -50,22 +51,20 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
         }
 
         getServerMap().forEach((name, fluidState) -> {
-            sync.set(list.stream().anyMatch(o -> o.getName().equals(name)));
+            sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<IFluidState> optional = list.stream().filter(o -> o.getName().equals(name)).findFirst();
+                Optional<FluidStateCodec> client = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
-                if(optional.isPresent()) {
-                    IFluidState serverFluidState = optional.get();
-                    JsonObject jsonMaterial = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(fluidState);
-                    JsonObject materialJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(serverFluidState);
+                if(client.isPresent()) {
+                    FluidStateCodec clientFluidState = client.get();
+                    JsonObject serverJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(fluidState);
+                    JsonObject clientJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(clientFluidState);
 
-                    sync.set(materialJson.equals(jsonMaterial));
+                    sync.set(clientJson.equals(serverJson));
                 }
             }
         });
-
-        sync.set(false);
 
         ConfigSync.syncedJson.put("fluid_state", sync.get());
 
@@ -75,7 +74,7 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
     @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, IFluidState> clientFluidStates = new HashMap<>();
+        Map<String, FluidStateCodec> clientFluidStates = new HashMap<>();
 
         Path configs = Paths.get(singlePlayerConfigs + "/fluid_state");
         File[] files = configs.toFile().listFiles();
@@ -90,19 +89,19 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
             if(files.length > 0){
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.fluidState.getFirst().getJsonObject(file.getName());
-                    IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).fromJsonObject(jsonObject);
-                    clientFluidStates.put(fluidState.getName(), fluidState);
+                    FluidStateCodec fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).fromJsonObject(jsonObject);
+                    clientFluidStates.put(fluidState.name(), fluidState);
                 }
 
                 getServerMap().values().forEach(serverFluidState -> {
-                    sync.set(clientFluidStates.containsKey(serverFluidState.getName()));
+                    sync.set(clientFluidStates.containsKey(serverFluidState.name()));
 
                     if(sync.get()) {
-                        IFluidState clientFluidState = getServerMap().get(serverFluidState.getName());
-                        JsonObject jsonMaterial = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(serverFluidState);
-                        JsonObject materialJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(clientFluidState);
+                        FluidStateCodec clientFluidState = getServerMap().get(serverFluidState.name());
+                        JsonObject serverJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(serverFluidState);
+                        JsonObject clientJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(clientFluidState);
 
-                        sync.set(materialJson.equals(jsonMaterial));
+                        sync.set(clientJson.equals(serverJson));
                     }
 
                 });
@@ -132,15 +131,15 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
             }
         }
 
-        for (IFluidState fluidState : getServerMap().values()) {
-            String name = fluidState.getName();
-            Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
+        for (FluidStateCodec fluidState : getServerMap().values()) {
+            String name = fluidState.name();
+            Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
             JsonObject jsonObject = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(fluidState);
             String s = GSON.toJson(jsonObject);
-            if (!Files.exists(materialFile)) {
-                Files.createDirectories(materialFile.getParent());
+            if (!Files.exists(filePath)) {
+                Files.createDirectories(filePath.getParent());
 
-                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                     bufferedwriter.write(s);
                 }
             }
@@ -157,15 +156,15 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.fluidState.getFirst().getJsonObject(file.getName());
-                    IFluidState fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).fromJsonObject(jsonObject);
+                    FluidStateCodec fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = fluidState.getName();
+                    String name = fluidState.name();
 
-                    Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
-                    if (!Files.exists(materialFile)) {
-                        Files.createDirectories(materialFile.getParent());
+                    Path filePath = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
+                    if (!Files.exists(filePath)) {
+                        Files.createDirectories(filePath.getParent());
 
-                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                             String s = GSON.toJson(jsonObject);
                             bufferedwriter.write(s);
                         }
@@ -177,12 +176,12 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IFluidState> list = message.getConfig(TCJsonConfigs.fluidStateID).stream()
-                .filter(IFluidState.class::isInstance)
-                .map(IFluidState.class::cast).toList();
+        List<FluidStateCodec> list = message.getConfig(TCJsonConfigs.fluidStateID).stream()
+                .filter(FluidStateCodec.class::isInstance)
+                .map(FluidStateCodec.class::cast).toList();
 
-        Map<String, IFluidState> fluidStates = list.stream()
-                .collect(Collectors.toMap(IFluidState::getName, s -> s));
+        Map<String, FluidStateCodec> fluidStates = list.stream()
+                .collect(Collectors.toMap(FluidStateCodec::name, s -> s));
 
         serverMap.clear();
         serverMap.putAll(fluidStates);
@@ -191,15 +190,15 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, IFluidState fluidState) {
-        buffer.writeUtf(fluidState.getName());
+    public void singleToBuffer(FriendlyByteBuf buffer, FluidStateCodec fluidState) {
+        buffer.writeWithCodec(FluidStateCodec.CODEC, fluidState);
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IFluidState> list = message.getConfig(TCJsonConfigs.fluidStateID).stream()
-                .filter(IFluidState.class::isInstance)
-                .map(IFluidState.class::cast).toList();
+        List<FluidStateCodec> list = message.getConfig(TCJsonConfigs.fluidStateID).stream()
+                .filter(FluidStateCodec.class::isInstance)
+                .map(FluidStateCodec.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -209,20 +208,18 @@ public class FluidStateServer extends JsonConfigServer<IFluidState> {
     }
 
     @Override
-    public IFluidState singleFromBuffer(FriendlyByteBuf buffer) {
-        String name = buffer.readUtf();
-
-        return () -> name;
+    public FluidStateCodec singleFromBuffer(FriendlyByteBuf buffer) {
+        return buffer.readWithCodec(FluidStateCodec.CODEC);
     }
 
     @Override
-    public List<IFluidState> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<IFluidState> fluidStates = new ArrayList<>();
+    public List<FluidStateCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
+        List<FluidStateCodec> fluidStates = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            IFluidState fluidState = singleFromBuffer(buffer);
+            FluidStateCodec fluidState = singleFromBuffer(buffer);
 
             fluidStates.add(fluidState);
         }

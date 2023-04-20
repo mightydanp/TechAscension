@@ -1,4 +1,4 @@
-package mightydanp.techcore.common.jsonconfig.flag;
+package mightydanp.techcore.common.jsonconfig.materialflag;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
