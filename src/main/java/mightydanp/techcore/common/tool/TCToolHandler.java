@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class TCToolHandler {
@@ -307,7 +308,7 @@ public class TCToolHandler {
 
     @SuppressWarnings("ALL")
     public static boolean inventoryToolCheck(Player playerIn, Set<ItemStack> toolNeededIn){
-        List<Item> toolNeededList = toolNeededIn.stream().map(itemStack -> itemStack.getItem()).toList();
+        List<Item> toolNeededList = toolNeededIn.stream().map(itemStack -> itemStack.getItem()).collect(Collectors.toCollection(ArrayList::new));
         boolean debug = true;
 
         for(int i = 0; i <= 35; i++){
