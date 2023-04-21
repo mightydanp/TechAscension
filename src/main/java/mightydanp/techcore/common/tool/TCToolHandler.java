@@ -87,20 +87,17 @@ public class TCToolHandler {
         }
     }
 
-    public static List<Set<Set<ItemStack>>> convertAssembleItems(Integer step, Map<Integer, List<Map<Ingredient, Integer>>> toolNeededIn){
-        List<Set<Set<ItemStack>>> map = new ArrayList<>();
+    public static List<Set<ItemStack>> convertAssembleItems(Integer step, Map<Integer, List<Map<Ingredient, Integer>>> toolNeededIn){
+        List<Set<ItemStack>> map = new ArrayList<>();
 
         for(Map<Ingredient, Integer> stepMap : toolNeededIn.get(step)) {
-            Set<Set<ItemStack>> itemStackSet = new HashSet<>();
+            Set<ItemStack> itemStackSet = new HashSet<>();
             stepMap.forEach((ingredient, count) -> {
-                Set<ItemStack> oreDict = new HashSet<>();
                 for(ItemStack itemStack : ingredient.getItems()) {
 
                     itemStack.setCount(count);
-                    oreDict.add(itemStack);
+                    itemStackSet.add(itemStack);
                 }
-
-                itemStackSet.add(oreDict);
             });
             map.add(itemStackSet);
         }
@@ -108,30 +105,39 @@ public class TCToolHandler {
         return map;
     }
 
-    public static Set<ItemStack> checkAssembleItems(Inventory inventory, ItemStack mainHand, ItemStack offHand, List<Set<Set<ItemStack>>> setIn){
-        Set<ItemStack> map = new HashSet<>();
+    public static Set<ItemStack> checkAssembleItems(Inventory inventory, ItemStack mainHand, ItemStack offHand, List<Set<ItemStack>> setIn){
+        List<Set<ItemStack>> filtered = new ArrayList<>();
 
-        for(Set<Set<ItemStack>> combination : setIn){
-            for(Set<ItemStack> itemStacks : combination){
-                ItemStack itemStackAccepted = null;
-                for(ItemStack itemStack : itemStacks){
+        Set<ItemStack> firstFound = new HashSet<>();
+
+        for(Set<ItemStack> combinations : setIn){
+            for(ItemStack itemStack : combinations){
                     if(itemStack.equals(mainHand) || itemStack.equals(offHand) || inventory.contains(itemStack)){
-                        if(itemStackAccepted == null) {
-                            itemStackAccepted = itemStack;
-                        } else {
-                            break;
-                        }
+                        filtered.add(combinations);
+                    }
+                }
+        }
+
+        for(Set<ItemStack> set : filtered) {
+            Set<ItemStack> dummy = new HashSet<>();
+            for (int i = 0; i <= 45; i++) {
+                ItemStack itemStack = inventory.getItem(i);
+
+                if(!itemStack.isEmpty()) {
+                    //todo the item stacks does not match because the tag from the set is null and the slots tag is "{}"
+                    if (set.contains((itemStack))) {
+                        dummy.add(itemStack);
                     }
                 }
 
-                if(itemStackAccepted != null){
-                    map.add(itemStackAccepted);
+                if(dummy.equals(set)){
+                    firstFound.addAll(set);
                     break;
                 }
             }
         }
 
-        return map;
+        return firstFound;
     }
 
     @SuppressWarnings("ALL")
@@ -311,7 +317,7 @@ public class TCToolHandler {
         List<Item> toolNeededList = toolNeededIn.stream().map(itemStack -> itemStack.getItem()).collect(Collectors.toCollection(ArrayList::new));
         boolean debug = true;
 
-        for(int i = 0; i <= 35; i++){
+        for(int i = 0; i <= 45; i++){
             ItemStack toolNeeded = playerIn.getInventory().getItem(i);
             if(toolNeededList.stream().anyMatch(itemStack -> itemStack == toolNeeded.getItem())){
                 if(toolNeeded.getItem() instanceof TCToolItem){

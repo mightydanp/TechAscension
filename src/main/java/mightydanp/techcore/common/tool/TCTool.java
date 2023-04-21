@@ -320,6 +320,8 @@ public class TCTool {
                     {
                         ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
 
+                        model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model);
+
                         if (i == 3) {
                             model.getModel()
                                     .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/none/" + head.prefixAndSuffix().getFirst() + toolName + head.prefixAndSuffix().getSecond()))

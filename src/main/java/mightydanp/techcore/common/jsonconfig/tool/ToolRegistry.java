@@ -146,21 +146,23 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
 
                 JsonObject assembleSteps = jsonObjectIn.getAsJsonObject("assemble_steps");
 
-                List<Map<Ingredient, Integer>> combinationsList = new ArrayList<>();
+
                 for(int i = 0; i < assembleSteps.size(); i++){
                     JsonArray combinations = assembleSteps.get(String.valueOf(i + 1)).getAsJsonArray();
-                    Map<Ingredient, Integer> ingredientsList = new HashMap<>();
+                    List<Map<Ingredient, Integer>> combinationsList = new ArrayList<>();
 
                     for(int j = 0; j < combinations.size(); j++) {
                         JsonArray combination = combinations.get(j).getAsJsonArray();
+                        Map<Ingredient, Integer> ingredientsList = new HashMap<>();
                         for(int k = 0; k < combination.size(); k++) {
                             Ingredient ingredient = Ingredient.fromJson(combination.get(k).getAsJsonObject());
                             int amount = combination.get(k).getAsJsonObject().get("amount").getAsInt();
                             ingredientsList.put(ingredient, amount);
                         }
+                        combinationsList.add(ingredientsList);
                     }
 
-                    combinationsList.add(ingredientsList);
+
 
                     map.put(i + 1, combinationsList);
                 }
