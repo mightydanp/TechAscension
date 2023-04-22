@@ -14,6 +14,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraftforge.common.world.BiomeGenerationSettingsBuilder;
@@ -43,47 +44,28 @@ public class PlantGenerationHandler {
 
     public static void addRegistryBlockInWaterGenerate(BlocksInWaterGenFeatureConfig config){
 
-        Holder<ConfiguredFeature<BlocksInWaterGenFeatureConfig, ?>> featureHolder = register(config.name, new ConfiguredFeature<>(blockInWater.get(), config));
+        Holder<ConfiguredFeature<BlocksInWaterGenFeatureConfig, ?>> featureHolder = register(config.name(), new ConfiguredFeature<>(blockInWater.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         //list.add(CountPlacement.of(config.rarity));
 
 
         //Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
-        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
+        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), featureHolder, list.toArray(new PlacementModifier[0]));
         ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).register(config);
-        blockInWaterGenerationList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.invalidBiomes, config.invalidBiomes));
+        blockInWaterGenerationList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
         //Registry.register(registry, new ResourceLocation(Ref.mod_id, config.name), topWaterCropFeature);;
     }
 
-    public static void addBlockInWaterGenerate(String nameIn, int rarityIn, int heightIn, boolean shallowWaterIn, boolean goesAboveWaterIn, List<String> dimensions, List<String> validBiomes, List<String> invalidBiomes, List<Block>  validBlocksIn, Block topStateIn, Block bellowStateIn){
-        List<String> validBlocks = new ArrayList<>();
+    public static void addBlockInWaterGenerate(String nameIn, int rarityIn, int heightIn, boolean shallowWaterIn, boolean goesAboveWaterIn, List<String> dimensions, List<String> validBiomes, List<String> invalidBiomes, List<BlockState>  validBlockStatesIn, BlockState topStateIn, BlockState bellowStateIn){
+        BlocksInWaterGenFeatureConfig config = new BlocksInWaterGenFeatureConfig(nameIn, rarityIn, heightIn, shallowWaterIn, goesAboveWaterIn, dimensions, validBiomes, invalidBiomes, validBlockStatesIn, topStateIn, bellowStateIn);
 
-        String topState = "";
-        String bellowState = "";
-
-        validBlocksIn.forEach((block) -> {
-            if (block.getRegistryName() != null) {
-                validBlocks.add(block.getRegistryName().toString());
-            }
-        });
-
-        if (topStateIn.getRegistryName() != null) {
-            topState = topStateIn.getRegistryName().toString();
-        }
-
-        if (bellowStateIn.getRegistryName() != null) {
-            bellowState = bellowStateIn.getRegistryName().toString();
-        }
-
-        BlocksInWaterGenFeatureConfig config = new BlocksInWaterGenFeatureConfig(nameIn, rarityIn, heightIn, shallowWaterIn, goesAboveWaterIn, dimensions, validBiomes, invalidBiomes, validBlocks, topState, bellowState);
-
-        Holder<ConfiguredFeature<BlocksInWaterGenFeatureConfig, ?>> featureHolder = register(config.name, new ConfiguredFeature<>(blockInWater.get(), config));
+        Holder<ConfiguredFeature<BlocksInWaterGenFeatureConfig, ?>> featureHolder = register(config.name(), new ConfiguredFeature<>(blockInWater.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         //list.add(CountPlacement.of(config.rarity));
 
-        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
+        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), featureHolder, list.toArray(new PlacementModifier[0]));
         ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).register(config);
-        blockInWaterGenerationList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.invalidBiomes, config.invalidBiomes));
+        blockInWaterGenerationList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
     }
 
     public static void addRegistryRandomSurfaceGenerate(RandomSurfaceGenFeatureConfig config){

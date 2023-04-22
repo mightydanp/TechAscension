@@ -50,7 +50,7 @@ public class FluidStateServer extends JsonConfigServer<FluidStateCodec> {
             }
         }
 
-        getServerMap().forEach((name, fluidState) -> {
+        getServerMap().forEach((name, serverFluidState) -> {
             sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
@@ -58,7 +58,7 @@ public class FluidStateServer extends JsonConfigServer<FluidStateCodec> {
 
                 if(client.isPresent()) {
                     FluidStateCodec clientFluidState = client.get();
-                    JsonObject serverJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(fluidState);
+                    JsonObject serverJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(serverFluidState);
                     JsonObject clientJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(clientFluidState);
 
                     sync.set(clientJson.equals(serverJson));

@@ -46,7 +46,7 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
             }
         }
 
-        getServerMap().forEach((name, definedStructure) -> {
+        getServerMap().forEach((name, serverDefinedStructure) -> {
             sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
@@ -54,7 +54,7 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
 
                 if(client.isPresent()) {
                     DefinedStructureCodec clientDefinedStructure = client.get();
-                    JsonObject serverJson = ((DefinedStructureRegistry)TCJsonConfigs.definedStructure.getFirst()).toJsonObject(definedStructure);
+                    JsonObject serverJson = ((DefinedStructureRegistry)TCJsonConfigs.definedStructure.getFirst()).toJsonObject(serverDefinedStructure);
                     JsonObject clientJson = ((DefinedStructureRegistry)TCJsonConfigs.definedStructure.getFirst()).toJsonObject(clientDefinedStructure);
 
                     sync.set(clientJson.equals(serverJson));

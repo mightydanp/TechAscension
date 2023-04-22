@@ -25,7 +25,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     @Override
     public Map<String, BlocksInWaterGenFeatureConfig> getServerMapFromList(List<BlocksInWaterGenFeatureConfig> blocksInWatersIn) {
         Map<String, BlocksInWaterGenFeatureConfig> BlocksInWatersList = new LinkedHashMap<>();
-        blocksInWatersIn.forEach(blocksInWater -> BlocksInWatersList.put(blocksInWater.name, blocksInWater));
+        blocksInWatersIn.forEach(blocksInWater -> BlocksInWatersList.put(blocksInWater.name(), blocksInWater));
 
         return BlocksInWatersList;
     }
@@ -46,18 +46,18 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
             }
         }
 
-        getServerMap().forEach((name, BlocksInWater) -> {
-            sync.set(list.stream().anyMatch(o -> o.name.equals(name)));
+        getServerMap().forEach((name, serverBlocksInWater) -> {
+            sync.set(list.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<BlocksInWaterGenFeatureConfig> optional = list.stream().filter(o -> o.name.equals(name)).findFirst();
+                Optional<BlocksInWaterGenFeatureConfig> optional = list.stream().filter(o -> o.name().equals(name)).findFirst();
 
                 if(optional.isPresent()) {
-                    BlocksInWaterGenFeatureConfig serverBlocksInWater = optional.get();
-                    JsonObject jsonMaterial = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(BlocksInWater);
-                    JsonObject materialJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
+                    BlocksInWaterGenFeatureConfig clientBlocksInWater = optional.get();
+                    JsonObject serverJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
+                    JsonObject clientJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientBlocksInWater);
 
-                    sync.set(materialJson.equals(jsonMaterial));
+                    sync.set(clientJson.equals(serverJson));
                 }
             }
         });
@@ -87,18 +87,18 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
                     BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).fromJsonObject(jsonObject);
-                    clientBlocksInWaters.put(blocksInWater.name, blocksInWater);
+                    clientBlocksInWaters.put(blocksInWater.name(), blocksInWater);
                 }
 
                 getServerMap().values().forEach(serverBlocksInWater -> {
-                    sync.set(clientBlocksInWaters.containsKey(serverBlocksInWater.name));
+                    sync.set(clientBlocksInWaters.containsKey(serverBlocksInWater.name()));
 
                     if(sync.get()) {
-                        BlocksInWaterGenFeatureConfig clientBlocksInWater = getServerMap().get(serverBlocksInWater.name);
-                        JsonObject jsonMaterial = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
-                        JsonObject materialJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientBlocksInWater);
+                        BlocksInWaterGenFeatureConfig clientBlocksInWater = getServerMap().get(serverBlocksInWater.name());
+                        JsonObject serverJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
+                        JsonObject clientJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientBlocksInWater);
 
-                        sync.set(materialJson.equals(jsonMaterial));
+                        sync.set(clientJson.equals(serverJson));
                     }
 
                 });
@@ -128,14 +128,14 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         }
 
         for (BlocksInWaterGenFeatureConfig blocksInWater : getServerMap().values()) {
-            String name = blocksInWater.name;
-            Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
+            String name = blocksInWater.name();
+            Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
             JsonObject jsonObject = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(blocksInWater);
             String s = GSON.toJson(jsonObject);
-            if (!Files.exists(materialFile)) {
-                Files.createDirectories(materialFile.getParent());
+            if (!Files.exists(filePath)) {
+                Files.createDirectories(filePath.getParent());
 
-                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                     bufferedwriter.write(s);
                 }
             }
@@ -154,13 +154,13 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
                     JsonObject jsonObject = TCJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
                     BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = blocksInWater.name;
+                    String name = blocksInWater.name();
 
-                    Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
-                    if (!Files.exists(materialFile)) {
-                        Files.createDirectories(materialFile.getParent());
+                    Path filePath = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
+                    if (!Files.exists(filePath)) {
+                        Files.createDirectories(filePath.getParent());
 
-                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                             String s = GSON.toJson(jsonObject);
                             bufferedwriter.write(s);
                         }
@@ -177,7 +177,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
                 .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
 
         Map<String, BlocksInWaterGenFeatureConfig> BlocksInWaters = list.stream()
-                .collect(Collectors.toMap(s -> s.name, s -> s));
+                .collect(Collectors.toMap(BlocksInWaterGenFeatureConfig::name, s -> s));
 
         serverMap.clear();
         serverMap.putAll(BlocksInWaters);
@@ -186,27 +186,8 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, BlocksInWaterGenFeatureConfig config) {//friendlybotbuff
-        buffer.writeUtf(config.name);
-        buffer.writeInt(config.rarity);
-        buffer.writeInt(config.height);
-        buffer.writeBoolean(config.shallowWater);
-        buffer.writeBoolean(config.goAboveWater);
-
-        buffer.writeInt(config.dimensions.size());
-        config.dimensions.forEach(buffer::writeUtf);
-
-        buffer.writeInt(config.validBiomes.size());
-        config.validBiomes.forEach(buffer::writeUtf);
-
-        buffer.writeInt(config.invalidBiomes.size());
-        config.invalidBiomes.forEach(buffer::writeUtf);
-
-        buffer.writeInt(config.validBlocks.size());
-        config.validBlocks.forEach(buffer::writeUtf);
-
-        buffer.writeUtf(config.topState);
-        buffer.writeUtf(config.bellowState);
+    public void singleToBuffer(FriendlyByteBuf buffer, BlocksInWaterGenFeatureConfig config) {
+        buffer.writeWithCodec(BlocksInWaterGenFeatureConfig.CODEC, config);
 
     }
 
@@ -223,45 +204,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
     @Override
     public BlocksInWaterGenFeatureConfig singleFromBuffer(FriendlyByteBuf buffer) {
-        String name = buffer.readUtf();
-        int rarity = buffer.readInt();
-        int height = buffer.readInt();
-        boolean shallowWater = buffer.readBoolean();
-        boolean goAboveWater = buffer.readBoolean();
-
-        int dimensions = buffer.readInt();
-        List<String> dimensionsList = new ArrayList<>();
-        for(int i = 0; i < dimensions; i++){
-            String dimension = buffer.readUtf();
-            dimensionsList.add(dimension);
-        }
-
-        int validBiomes = buffer.readInt();
-        List<String> validBiomesList = new ArrayList<>();
-        for(int i = 0; i < validBiomes; i++){
-            String validBiome = buffer.readUtf();
-            validBiomesList.add(validBiome);
-        }
-
-        int invalidBiomes = buffer.readInt();
-        List<String> invalidBiomesList = new ArrayList<>();
-        for(int i = 0; i < invalidBiomes; i++){
-            String invalidBiome = buffer.readUtf();
-            invalidBiomesList.add(invalidBiome);
-        }
-
-        List<String> validBlocks = new ArrayList<>();
-
-        int validBlocksSize = buffer.readInt();
-        for(int i = 0; i < validBlocksSize; i++){
-            String block = buffer.readUtf();
-            validBlocks.add(block);
-        }
-
-        String topState = buffer.readUtf();
-        String bellowState = buffer.readUtf();
-
-        return new BlocksInWaterGenFeatureConfig(name, rarity, height, shallowWater, goAboveWater, dimensionsList, validBiomesList, invalidBiomesList, validBlocks, topState, bellowState);
+        return buffer.readWithCodec(BlocksInWaterGenFeatureConfig.CODEC);
     }
 
     public List<BlocksInWaterGenFeatureConfig> multipleFromBuffer(FriendlyByteBuf buffer) {
