@@ -75,12 +75,9 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     @Override
     public BlocksInWaterGenFeatureConfig fromJsonObject(JsonObject jsonObjectIn) {
         return BlocksInWaterGenFeatureConfig.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your blocks in water, please fix this"))).getFirst();
-
-
     }
 
     public JsonObject toJsonObject(BlocksInWaterGenFeatureConfig config) {
         return BlocksInWaterGenFeatureConfig.CODEC.encodeStart(JsonOps.INSTANCE, config).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your blocks in water with name [" + config.name() + "], please fix this"))).getAsJsonObject();
-
     }
 }

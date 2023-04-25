@@ -1,5 +1,6 @@
 package mightydanp.techcore.common.world.gen.feature;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import mightydanp.techcore.common.blocks.DenseOreBlock;
@@ -22,9 +23,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
     public OreVeinGenFeature(Codec<OreVeinGenFeatureConfig> p_i231976_1_) {
@@ -44,7 +43,7 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
     }
 
     private static BlockPos getVeinAtChunk(long seed, int chunkX, int chunkZ, Random rand, OreVeinGenFeatureConfig oreVeinGenFeatureConfig) {
-        rand.setSeed(seed + chunkX * 341873128712L + chunkZ * 132897987541L);
+        rand.setSeed(seed + chunkX + chunkZ);
         //rand.setSeed(worldSeed);
         int chance = rand.nextInt(20);
         if (chance == 0) {
@@ -61,9 +60,9 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
         context.chunkGenerator().withSeed(context.level().getSeed() + chunkPos.x * 341873128712L + chunkPos.z * 132897987541L);
         boolean canSpawn = false;
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
-        int radius = context.config().minRadius;//24;
+        int radius = context.config().minRadius();//24;
         int diameter = radius * 2;
-        int maxSmallOreBlocksExtend = context.config().minNumberOfSmallOreLayers;//3;
+        int maxSmallOreBlocksExtend = context.config().minNumberOfSmallOreLayers();//3;
         int x = context.origin().getX() + 8;
         int y = context.origin().getY();
         int z = context.origin().getZ() + 8;
@@ -76,7 +75,7 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
         BlockState block = context.level().getBlockState(context.origin());
         if(y > groundHeight){
             BlockPos pos = new BlockPos(x, y, z);
-            y = context.config().minHeight + maxHeight + maxHeight/2;
+            y = context.config().minHeight() + maxHeight + maxHeight/2;
         }
 
         BlockPos upperLeft = new BlockPos(x, maxHeight, z);
@@ -127,7 +126,7 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
         */
 
         //to-do fix the getVeinAtChunk and getNearbyVeins to make sure veins do not overlap.\\
-        if (context.random().nextInt(context.config().rarity) == 0) {
+        if (context.random().nextInt(context.config().rarity()) == 0) {
             /*
             if(y > groundHeight){
                 y = chunkGeneratorIn.getSpawnHeight() - maxHeight;
@@ -142,7 +141,7 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
             context.level().setBlockState(new BlockPos(maxX, maxY, minZ), Blocks.OBSIDIAN.getDefaultState(), 2);
             context.level().setBlockState(new BlockPos(maxX, maxY, maxZ), Blocks.DIAMOND_BLOCK.getDefaultState(), 2);
             */
-            System.out.println(x + " " + y + " " + z + " " + "/" + context.config().name);
+            System.out.println(x + " " + y + " " + z + " " + "/" + context.config().name());
 
 
             for (BlockPos pos : cubePos) {
@@ -205,86 +204,86 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
     public BlockState replacementStoneLayerOre(Random rand, OreVeinGenFeatureConfig config, BlockState blockToBeReplacedIn, String oreType) {
         BlockState blockToBePlaced = Blocks.AIR.defaultBlockState();
 
-        List<Pair<String, Integer>> veinBlocksAndChances = config.blocksAndChances;
+        Map<Either<BlockState, String>, Integer> veinBlockStatesAndChances = config.blockStatesAndChances();
 
-        List<Pair<Block, Integer>> veinBlocksAndChancesThatCanReplace = new ArrayList<>();
+        List<Pair<BlockState, Integer>> veinBlocksAndChancesThatCanReplace = new ArrayList<>();
 
-        for (Pair<String, Integer> veinBlocksAndChance : veinBlocksAndChances) {
+        veinBlockStatesAndChances.forEach((either, rarity) -> {
+            Optional<BlockState> blockStateOptional = either.left();
+            Optional<String> stringOptional = either.right();
 
-            TCMaterial material = (TCMaterial) TCJsonConfigs.material.getFirst().registryMap.get(veinBlocksAndChance.getFirst());
-            int rarity = veinBlocksAndChance.getSecond();
 
-            if (material != null) {
-                if (oreType.equals("small_ore")) {
-                    if (material.smallOreList != null) {
-                        for (RegistryObject<Block> block : material.smallOreList) {
-                            if (block.get() instanceof SmallOreBlock ore) {
-                                String modID = ore.stoneLayerBlock.split(":")[0];
-                                String blockLocalization = ore.stoneLayerBlock.split(":")[1];
-                                Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, blockLocalization));
-                                if (replaceableBlock != null && blockToBeReplacedIn.getBlock() == replaceableBlock) {
-                                    veinBlocksAndChancesThatCanReplace.add(new Pair<>(ore, rarity));
+            stringOptional.ifPresent(materialName -> {
+                TCMaterial material = (TCMaterial) TCJsonConfigs.material.getFirst().registryMap.get(materialName);
+                if (material != null) {
+                    if (oreType.equals("small_ore")) {
+                        if (material.smallOreList != null) {
+                            for (RegistryObject<Block> block : material.smallOreList) {
+                                if (block.get() instanceof SmallOreBlock ore) {
+                                    String modID = ore.stoneLayerBlock.split(":")[0];
+                                    String blockLocalization = ore.stoneLayerBlock.split(":")[1];
+                                    Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, blockLocalization));
+                                    if (replaceableBlock != null && blockToBeReplacedIn.getBlock() == replaceableBlock) {
+                                        veinBlocksAndChancesThatCanReplace.add(new Pair<>(ore.defaultBlockState(), rarity));
+                                    }
                                 }
                             }
+                        } else {
+                            Minecraft.crash(new CrashReport("Your material, (" + material.name + "), is not set for ores", new Throwable()));
                         }
-                    } else {
-                        Minecraft.crash(new CrashReport("Your material, (" + material.name + "), is not set for ores", new Throwable()));
-                        return null;
                     }
-                }
 
-                if (oreType.equals("ore")) {
-                    if (material.oreList != null) {
-                        for (RegistryObject<Block> block : material.oreList) {
-                            if (block.get() instanceof OreBlock ore) {
-                                String modID = ore.stoneLayerBlock.split(":")[0];
-                                String blockLocalization = ore.stoneLayerBlock.split(":")[1];
-                                Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, blockLocalization));
-                                if (replaceableBlock != null && blockToBeReplacedIn.getBlock() == replaceableBlock) {
-                                    veinBlocksAndChancesThatCanReplace.add(new Pair<>(ore, rarity));
+                    if (oreType.equals("ore")) {
+                        if (material.oreList != null) {
+                            for (RegistryObject<Block> block : material.oreList) {
+                                if (block.get() instanceof OreBlock ore) {
+                                    String modID = ore.stoneLayerBlock.split(":")[0];
+                                    String blockLocalization = ore.stoneLayerBlock.split(":")[1];
+                                    Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, blockLocalization));
+                                    if (replaceableBlock != null && blockToBeReplacedIn.getBlock() == replaceableBlock) {
+                                        veinBlocksAndChancesThatCanReplace.add(new Pair<>(ore.defaultBlockState(), rarity));
+                                    }
                                 }
                             }
+                        } else {
+                            Minecraft.crash(new CrashReport("Your material, (" + material.name + "), is not set for ores", new Throwable()));
                         }
-                    } else {
-                        Minecraft.crash(new CrashReport("Your material, (" + material.name + "), is not set for ores", new Throwable()));
-                        return null;
                     }
-                }
 
-                if (oreType.equals("dense_ore")) {
-                    if (material.denseOreList != null) {
-                        for (RegistryObject<Block> block : material.denseOreList) {
-                            if (block.get() instanceof DenseOreBlock ore) {
-                                String modID = ore.stoneLayerBlock.split(":")[0];
-                                String blockLocalization = ore.stoneLayerBlock.split(":")[1];
-                                Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, blockLocalization));
-                                if (replaceableBlock != null && blockToBeReplacedIn.getBlock() == replaceableBlock) {
-                                    veinBlocksAndChancesThatCanReplace.add(new Pair<>(ore, rarity));
+                    if (oreType.equals("dense_ore")) {
+                        if (material.denseOreList != null) {
+                            for (RegistryObject<Block> block : material.denseOreList) {
+                                if (block.get() instanceof DenseOreBlock ore) {
+                                    String modID = ore.stoneLayerBlock.split(":")[0];
+                                    String blockLocalization = ore.stoneLayerBlock.split(":")[1];
+                                    Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(modID, blockLocalization));
+                                    if (replaceableBlock != null && blockToBeReplacedIn.getBlock() == replaceableBlock) {
+                                        veinBlocksAndChancesThatCanReplace.add(new Pair<>(ore.defaultBlockState(), rarity));
+                                    }
                                 }
                             }
+                        } else {
+                            Minecraft.crash(new CrashReport("Your material, (" + material.name + "), is not set for ores", new Throwable()));
                         }
-                    } else {
-                        Minecraft.crash(new CrashReport("Your material, (" + material.name + "), is not set for ores", new Throwable()));
-                        return null;
                     }
                 }
-            } else {
-                Block replaceableBlock = ForgeRegistries.BLOCKS.getValue(ResourceLocation.tryParse(veinBlocksAndChance.getFirst()));
-                if (replaceableBlock != null && blockToBeReplacedIn.getBlock() == replaceableBlock) {
-                    veinBlocksAndChancesThatCanReplace.add(new Pair<>(replaceableBlock, rarity));
-                }
+            });
+
+            blockStateOptional.ifPresent(blockState -> veinBlocksAndChancesThatCanReplace.add(new Pair<>(blockState, rarity)));
+
+            if(blockStateOptional.isEmpty() && stringOptional.isEmpty()){
+                Minecraft.crash(new CrashReport("block state and material name is empty fix ore vein [" + config.name() + "]", new Throwable()));
             }
-        }
+        });
 
         while (blockToBePlaced == Blocks.AIR.defaultBlockState()) {
             int randomInt = rand.nextInt(veinBlocksAndChancesThatCanReplace.size());
 
             if (rand.nextInt(20) <= veinBlocksAndChancesThatCanReplace.get(randomInt).getSecond()) {
-                blockToBePlaced = veinBlocksAndChancesThatCanReplace.get(randomInt).getFirst().defaultBlockState();
+                blockToBePlaced = veinBlocksAndChancesThatCanReplace.get(randomInt).getFirst();
                 return blockToBePlaced;
             }
         }
-
         return null;
     }
 }

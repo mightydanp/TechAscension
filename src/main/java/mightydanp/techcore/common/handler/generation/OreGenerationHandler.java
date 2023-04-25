@@ -1,6 +1,7 @@
 package mightydanp.techcore.common.handler.generation;
 
 import com.google.common.base.Preconditions;
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
@@ -16,6 +17,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.placement.*;
@@ -45,38 +47,30 @@ public class OreGenerationHandler {
     private static final Map<String, MapWrapper> smallOreGenList = new HashMap<>();
 
     public static void addRegistryOreGeneration(OreVeinGenFeatureConfig config) {
-        Holder<ConfiguredFeature<OreVeinGenFeatureConfig, ?>> featureHolder = register(config.name, new ConfiguredFeature<>(ore_vein.get(), config));
+        Holder<ConfiguredFeature<OreVeinGenFeatureConfig, ?>> featureHolder = register(config.name(), new ConfiguredFeature<>(ore_vein.get(), config));
 
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
-        list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight), VerticalAnchor.absolute(config.maxHeight)));
+        list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight()), VerticalAnchor.absolute(config.maxHeight())));
         //list.add(CountPlacement.of(config.rarity));
 
-        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
+        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), featureHolder, list.toArray(new PlacementModifier[0]));
         ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).register(config);
-        oreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
+        oreGenList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
     }
 
-    public static void addOreGeneration(String veinNameIn, int minRadiusIn, int numberOfSmallOreLayers, int minHeightIn, int maxHeightIn, int rarityIn, List<String> dimensions, List<String> validBiomes, List<String> invalidBiomes, Map<Block, Integer> materialOreIn) {
-        List<Pair<String, Integer>> veinBlocksAndChances = new ArrayList<>();
-        materialOreIn.forEach(((block, integer) -> {
-            if (block.getRegistryName() != null) {
-                Pair<String, Integer> veinBlockAndChance = new Pair<>(block.getRegistryName().toString(), integer);
-                veinBlocksAndChances.add(veinBlockAndChance);
-            }
-        }));
-
+    public static void addOreGeneration(String veinNameIn, int minRadiusIn, int numberOfSmallOreLayers, int minHeightIn, int maxHeightIn, int rarityIn, List<String> dimensions, List<String> validBiomes, List<String> invalidBiomes, Map<Either<BlockState, String>, Integer> veinBlocksAndChances) {
         OreVeinGenFeatureConfig config = new OreVeinGenFeatureConfig(veinNameIn, rarityIn, minHeightIn, maxHeightIn, minRadiusIn, numberOfSmallOreLayers, dimensions, validBiomes, invalidBiomes, veinBlocksAndChances);
 
-        Holder<ConfiguredFeature<OreVeinGenFeatureConfig, ?>> oreVeinFeature = register(config.name, new ConfiguredFeature<>(ore_vein.get(), config));
+        Holder<ConfiguredFeature<OreVeinGenFeatureConfig, ?>> oreVeinFeature = register(config.name(), new ConfiguredFeature<>(ore_vein.get(), config));
 
 
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
-        list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight), VerticalAnchor.absolute(config.maxHeight)));
+        list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight()), VerticalAnchor.absolute(config.maxHeight())));
         //list.add(CountPlacement.of(config.rarity));
 
-        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, oreVeinFeature, list.toArray(new PlacementModifier[0]));
+        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), oreVeinFeature, list.toArray(new PlacementModifier[0]));
         ((OreVeinRegistry) TCJsonConfigs.oreVein.getFirst()).register(config);
-        oreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
+        oreGenList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
     }
 
     public static void addRegistrySmallOreVeinGeneration(SmallOreVeinGenFeatureConfig config) {
