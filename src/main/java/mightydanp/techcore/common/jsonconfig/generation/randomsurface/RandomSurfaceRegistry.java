@@ -2,9 +2,11 @@ package mightydanp.techcore.common.jsonconfig.generation.randomsurface;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeatureConfig;
 import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
 import net.minecraft.CrashReport;
 
@@ -27,18 +29,18 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
 
     @Override
     public void register(RandomSurfaceGenFeatureConfig feature) {
-        if (registryMap.containsKey(feature.name)) {
-            throw new IllegalArgumentException("random surface with name(" + feature.name + "), already exists.");
+        if (registryMap.containsKey(feature.name())) {
+            throw new IllegalArgumentException("random surface with name(" + feature.name() + "), already exists.");
         } else {
-            registryMap.put(feature.name, feature);
+            registryMap.put(feature.name(), feature);
         }
     }
 
     public void buildJson() {
         for (RandomSurfaceGenFeatureConfig randomSurface : registryMap.values()) {
-            JsonObject jsonObject = getJsonObject(randomSurface.name);
+            JsonObject jsonObject = getJsonObject(randomSurface.name());
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(randomSurface.name, toJsonObject(randomSurface));
+                this.saveJsonObject(randomSurface.name(), toJsonObject(randomSurface));
             }
         }
     }
@@ -54,7 +56,7 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
                         RandomSurfaceGenFeatureConfig randomSurface = fromJsonObject(jsonObject);
 
-                        registryMap.put(randomSurface.name, randomSurface);
+                        registryMap.put(randomSurface.name(), randomSurface);
                         PlantGenerationHandler.addRegistryRandomSurfaceGenerate(randomSurface);
                     } else {
                         TechAscension.LOGGER.fatal("[{}] could not be added to random surface list because a random surface already exist!!", file.getAbsolutePath());
@@ -68,69 +70,11 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
 
     @Override
     public RandomSurfaceGenFeatureConfig fromJsonObject(JsonObject jsonObjectIn) {
-        JsonArray dimensionsJson = jsonObjectIn.getAsJsonArray("dimensions");
-        List<String> dimensionsList = new ArrayList<>();
-        dimensionsJson.forEach(jsonElement -> dimensionsList.add(jsonElement.getAsString()));
-
-        JsonArray validBiomesJson = jsonObjectIn.getAsJsonArray("valid_biomes");
-        List<String> validBiomesList = new ArrayList<>();
-        validBiomesJson.forEach(jsonElement -> validBiomesList.add(jsonElement.getAsString()));
-
-        JsonArray invalidBiomesJson = jsonObjectIn.getAsJsonArray("invalid_biomes");
-        List<String> invalidBiomesList = new ArrayList<>();
-        invalidBiomesJson.forEach(jsonElement -> invalidBiomesList.add(jsonElement.getAsString()));
-
-        JsonArray validBlocksJson = jsonObjectIn.getAsJsonArray("valid_blocks");
-        List<String> validBlocks = new ArrayList<>();
-
-        validBlocksJson.forEach((jsonElement) -> {
-            validBlocks.add(jsonElement.getAsString());
-        });
-
-        JsonArray blocksJson = jsonObjectIn.getAsJsonArray("blocks");
-        List<String> blocks = new ArrayList<>();
-
-        blocksJson.forEach((jsonElement) -> {
-            blocks.add(jsonElement.getAsString());
-        });
-
-        return new RandomSurfaceGenFeatureConfig(jsonObjectIn.get("name").getAsString(), jsonObjectIn.get("rarity").getAsInt(), dimensionsList, validBiomesList, invalidBiomesList, validBlocks, blocks);
+        return RandomSurfaceGenFeatureConfig.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your random surface, please fix this"))).getFirst();
     }
 
     public JsonObject toJsonObject(RandomSurfaceGenFeatureConfig config) {
-        JsonObject jsonObject = new JsonObject();
+        return RandomSurfaceGenFeatureConfig.CODEC.encodeStart(JsonOps.INSTANCE, config).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your random surface with name [" + config.name() + "], please fix this"))).getAsJsonObject();
 
-        jsonObject.addProperty("name", config.name);
-        jsonObject.addProperty("rarity", config.rarity);
-
-        JsonArray dimensions = new JsonArray();
-        {
-            config.dimensions.forEach(dimensions::add);
-        }
-        jsonObject.add("dimensions", dimensions);
-
-        JsonArray validBiomes = new JsonArray();
-        {
-            config.validBiomes.forEach(validBiomes::add);
-        }
-        jsonObject.add("valid_biomes", validBiomes);
-
-        JsonArray invalid_biomes = new JsonArray();
-        {
-            config.invalidBiomes.forEach(invalid_biomes::add);
-        }
-        jsonObject.add("invalid_biomes", invalid_biomes);
-
-        JsonArray validBlocks = new JsonArray();
-        {
-            config.validBlocks.forEach(validBlocks::add);
-        }
-
-        JsonArray blocks = new JsonArray();
-        {
-            config.blocks.forEach(blocks::add);
-        }
-
-        return jsonObject;
     }
 }

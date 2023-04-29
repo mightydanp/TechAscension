@@ -6,6 +6,7 @@ import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.definedstructure.DefinedStructureCodec;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
 import net.minecraft.network.FriendlyByteBuf;
@@ -26,7 +27,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     @Override
     public Map<String, RandomSurfaceGenFeatureConfig> getServerMapFromList(List<RandomSurfaceGenFeatureConfig> randomSurfacesIn) {
         Map<String, RandomSurfaceGenFeatureConfig> RandomSurfacesList = new LinkedHashMap<>();
-        randomSurfacesIn.forEach(randomSurface -> RandomSurfacesList.put(randomSurface.name, randomSurface));
+        randomSurfacesIn.forEach(randomSurface -> RandomSurfacesList.put(randomSurface.name(), randomSurface));
 
         return RandomSurfacesList;
     }
@@ -35,11 +36,11 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<RandomSurfaceGenFeatureConfig> list = message.getConfig(TCJsonConfigs.randomSurfaceID).stream()
+        List<RandomSurfaceGenFeatureConfig> clientList = message.getConfig(TCJsonConfigs.randomSurfaceID).stream()
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
                 .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
         
-        if(list.size() != getServerMap().size()){
+        if(clientList.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
                 ConfigSync.syncedJson.put("random_surface", sync.get());
@@ -47,18 +48,18 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
             }
         }
 
-        getServerMap().forEach((name, RandomSurface) -> {
-            sync.set(list.stream().anyMatch(o -> o.name.equals(name)));
+        getServerMap().forEach((name, serverCodec) -> {
+            sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<RandomSurfaceGenFeatureConfig> optional = list.stream().filter(o -> o.name.equals(name)).findFirst();
+                Optional<RandomSurfaceGenFeatureConfig> optionalClientCodec = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
-                if(optional.isPresent()) {
-                    RandomSurfaceGenFeatureConfig serverRandomSurface = optional.get();
-                    JsonObject jsonMaterial = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(RandomSurface);
-                    JsonObject materialJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
+                if(optionalClientCodec.isPresent()) {
+                    RandomSurfaceGenFeatureConfig clientCodec = optionalClientCodec.get();
+                    JsonObject serverJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(serverCodec);
+                    JsonObject clientJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(clientCodec);
 
-                    sync.set(materialJson.equals(jsonMaterial));
+                    sync.set(clientJson.equals(serverJson));
                 }
             }
         });
@@ -71,7 +72,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, RandomSurfaceGenFeatureConfig> clientRandomSurfaces = new HashMap<>();
+        Map<String, RandomSurfaceGenFeatureConfig> clientMap = new HashMap<>();
 
         Path configs = Paths.get(singlePlayerConfigs + "/random_surface");
         File[] files = configs.toFile().listFiles();
@@ -87,19 +88,19 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
-                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).fromJsonObject(jsonObject);
-                    clientRandomSurfaces.put(randomSurface.name, randomSurface);
+                    RandomSurfaceGenFeatureConfig codec = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).fromJsonObject(jsonObject);
+                    clientMap.put(codec.name(), codec);
                 }
 
-                getServerMap().values().forEach(serverRandomSurface -> {
-                    sync.set(clientRandomSurfaces.containsKey(serverRandomSurface.name));
+                getServerMap().values().forEach(serverCodec -> {
+                    sync.set(clientMap.containsKey(serverCodec.name()));
 
                     if(sync.get()) {
-                        RandomSurfaceGenFeatureConfig clientRandomSurface = getServerMap().get(serverRandomSurface.name);
-                        JsonObject jsonMaterial = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(serverRandomSurface);
-                        JsonObject materialJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(clientRandomSurface);
+                        RandomSurfaceGenFeatureConfig clientCodec = getServerMap().get(serverCodec.name());
+                        JsonObject serverJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(serverCodec);
+                        JsonObject clientJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(clientCodec);
 
-                        sync.set(materialJson.equals(jsonMaterial));
+                        sync.set(clientJson.equals(serverJson));
                     }
 
                 });
@@ -130,14 +131,14 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         }
 
         for (RandomSurfaceGenFeatureConfig randomSurface : getServerMap().values()) {
-            String name = randomSurface.name;
-            Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
+            String name = randomSurface.name();
+            Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
             JsonObject jsonObject = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(randomSurface);
             String s = GSON.toJson(jsonObject);
-            if (!Files.exists(materialFile)) {
-                Files.createDirectories(materialFile.getParent());
+            if (!Files.exists(filePath)) {
+                Files.createDirectories(filePath.getParent());
 
-                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                     bufferedwriter.write(s);
                 }
             }
@@ -154,15 +155,15 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.randomSurface.getFirst().getJsonObject(file.getName());
-                    RandomSurfaceGenFeatureConfig randomSurface = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).fromJsonObject(jsonObject);
+                    RandomSurfaceGenFeatureConfig client = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = randomSurface.name;
+                    String name = client.name();
 
-                    Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
-                    if (!Files.exists(materialFile)) {
-                        Files.createDirectories(materialFile.getParent());
+                    Path filePath = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
+                    if (!Files.exists(filePath)) {
+                        Files.createDirectories(filePath.getParent());
 
-                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                             String s = GSON.toJson(jsonObject);
                             bufferedwriter.write(s);
                         }
@@ -178,34 +179,18 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
                 .filter(RandomSurfaceGenFeatureConfig.class::isInstance)
                 .map(RandomSurfaceGenFeatureConfig.class::cast).toList();
 
-        Map<String, RandomSurfaceGenFeatureConfig> RandomSurfaces = list.stream()
-                .collect(Collectors.toMap(s -> s.name, s -> s));
+        Map<String, RandomSurfaceGenFeatureConfig> map = list.stream()
+                .collect(Collectors.toMap(RandomSurfaceGenFeatureConfig::name, s -> s));
 
         serverMap.clear();
-        serverMap.putAll(RandomSurfaces);
+        serverMap.putAll(map);
 
-        TechAscension.LOGGER.info("Loaded {} random surfaces from the server", RandomSurfaces.size());
+        TechAscension.LOGGER.info("Loaded {} random surfaces from the server", map.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, RandomSurfaceGenFeatureConfig config) {//friendlybotbuff
-        buffer.writeUtf(config.name);
-        buffer.writeInt(config.rarity);
-
-        buffer.writeInt(config.dimensions.size());
-        config.dimensions.forEach(buffer::writeUtf);
-
-        buffer.writeInt(config.validBiomes.size());
-        config.validBiomes.forEach(buffer::writeUtf);
-
-        buffer.writeInt(config.invalidBiomes.size());
-        config.invalidBiomes.forEach(buffer::writeUtf);
-
-        buffer.writeInt(config.validBlocks.size());
-        config.validBlocks.forEach(buffer::writeUtf);
-
-        buffer.writeInt(config.blocks.size());
-        config.blocks.forEach(buffer::writeUtf);
+    public void singleToBuffer(FriendlyByteBuf buffer, RandomSurfaceGenFeatureConfig config) {
+        buffer.writeWithCodec(RandomSurfaceGenFeatureConfig.CODEC, config);
 
     }
 
@@ -222,62 +207,22 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
     @Override
     public RandomSurfaceGenFeatureConfig singleFromBuffer(FriendlyByteBuf buffer) {
-        String name = buffer.readUtf();
-        int rarity = buffer.readInt();
-
-        int dimensions = buffer.readInt();
-        List<String> dimensionsList = new ArrayList<>();
-        for(int i = 0; i < dimensions; i++){
-            String dimension = buffer.readUtf();
-            dimensionsList.add(dimension);
-        }
-
-        int validBiomes = buffer.readInt();
-        List<String> validBiomesList = new ArrayList<>();
-        for(int i = 0; i < validBiomes; i++){
-            String validBiome = buffer.readUtf();
-            validBiomesList.add(validBiome);
-        }
-
-        int invalidBiomes = buffer.readInt();
-        List<String> invalidBiomesList = new ArrayList<>();
-        for(int i = 0; i < invalidBiomes; i++){
-            String invalidBiome = buffer.readUtf();
-            invalidBiomesList.add(invalidBiome);
-        }
-
-        List<String> validBlocks = new ArrayList<>();
-
-        int validBlocksSize = buffer.readInt();
-        for(int i = 0; i < validBlocksSize; i++){
-            String block = buffer.readUtf();
-            validBlocks.add(block);
-        }
-
-        List<String> blocks = new ArrayList<>();
-
-        int blocksSize = buffer.readInt();
-        for(int i = 0; i < blocksSize; i++){
-            String block = buffer.readUtf();
-            blocks.add(block);
-        }
-
-        return new RandomSurfaceGenFeatureConfig(name, rarity, dimensionsList, validBiomesList, invalidBiomesList, validBlocks, blocks);
+        return buffer.readWithCodec(RandomSurfaceGenFeatureConfig.CODEC);
     }
 
     @Override
     public List<RandomSurfaceGenFeatureConfig> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<RandomSurfaceGenFeatureConfig> randomSurfaces = new ArrayList<>();
+        List<RandomSurfaceGenFeatureConfig> codecs = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            RandomSurfaceGenFeatureConfig randomSurface = singleFromBuffer(buffer);
+            RandomSurfaceGenFeatureConfig codec = singleFromBuffer(buffer);
 
-            randomSurfaces.add(randomSurface);
+            codecs.add(codec);
         }
 
-        return randomSurfaces;
+        return codecs;
     }
 
 }

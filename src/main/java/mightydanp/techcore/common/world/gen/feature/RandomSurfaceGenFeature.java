@@ -40,10 +40,10 @@ public class RandomSurfaceGenFeature extends Feature<RandomSurfaceGenFeatureConf
                 BlockState blockStateDown = context.level().getBlockState(blockpos$mutable.below());
                 //BlockState blockThatCanBePlace = canReplaceStone(randomlyOnSurfaceGenFeatureConfigIn, blockStateDown);
                 if (0 == context.random().nextInt(context.config().rarity)) {
-                    List<BlockState> validBlocks = getBlockStates(context.config().validBlocks);
+                    List<BlockState> validBlocks = getBlockStates(context.config().validBlockStates);
 
                     if (validBlocks.contains(blockStateDown) && blockState == Blocks.AIR.defaultBlockState()) {
-                        List<BlockState> blocks = getBlockStates(context.config().blocks);
+                        List<BlockState> blocks = getBlockStates(context.config().blockStates);
                         for (int a = 0; a < blocks.size(); a++) {
                             context.level().setBlock(blockpos$mutable, blocks.get(a), 2);
                             canSpawn = true;

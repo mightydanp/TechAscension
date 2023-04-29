@@ -69,40 +69,25 @@ public class PlantGenerationHandler {
     }
 
     public static void addRegistryRandomSurfaceGenerate(RandomSurfaceGenFeatureConfig config){
-        Holder<ConfiguredFeature<RandomSurfaceGenFeatureConfig, ?>> featureHolder = register(config.name, new ConfiguredFeature<>(randomSurface.get(), config));
+        Holder<ConfiguredFeature<RandomSurfaceGenFeatureConfig, ?>> featureHolder = register(config.name(), new ConfiguredFeature<>(randomSurface.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         //list.add(CountPlacement.of(config.rarity));
 
-        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, featureHolder, list.toArray(new PlacementModifier[0]));
+        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), featureHolder, list.toArray(new PlacementModifier[0]));
         ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).register(config);
-        randomSurfaceGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
+        randomSurfaceGenList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
     }
 
-    public static void addRandomSurfaceGenerate(String nameIn, int rarityIn, List<String> dimensions, List<String> validBiomes, List<String> invalidBiomes, List<Block>  validBlocksIn, List<Block> blocksIn){
-        List<String> validBlocks = new ArrayList<>();
-        List<String> blocks = new ArrayList<>();
+    public static void addRandomSurfaceGenerate(String nameIn, int rarityIn, List<String> dimensions, List<String> validBiomes, List<String> invalidBiomes, List<BlockState>  validBlockStatesIn, List<BlockState> blockStatesIn){
+        RandomSurfaceGenFeatureConfig config = new RandomSurfaceGenFeatureConfig(nameIn, rarityIn, dimensions, validBiomes, invalidBiomes, validBlockStatesIn, blockStatesIn);
 
-        validBlocksIn.forEach((block) -> {
-            if (block.getRegistryName() != null) {
-                validBlocks.add(block.getRegistryName().toString());
-            }
-        });
-
-        blocksIn.forEach((block) -> {
-            if (block.getRegistryName() != null) {
-                blocks.add(block.getRegistryName().toString());
-            }
-        });
-
-        RandomSurfaceGenFeatureConfig config = new RandomSurfaceGenFeatureConfig(nameIn, rarityIn, dimensions, validBiomes, invalidBiomes, blocks, validBlocks);
-
-        Holder<ConfiguredFeature<RandomSurfaceGenFeatureConfig, ?>> oreVeinFeature = register(config.name, new ConfiguredFeature<>(randomSurface.get(), config));
+        Holder<ConfiguredFeature<RandomSurfaceGenFeatureConfig, ?>> oreVeinFeature = register(config.name(), new ConfiguredFeature<>(randomSurface.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         //list.add(CountPlacement.of(config.rarity));
 
-        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, oreVeinFeature, list.toArray(new PlacementModifier[0]));
+        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), oreVeinFeature, list.toArray(new PlacementModifier[0]));
         ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).register(config);
-        randomSurfaceGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
+        randomSurfaceGenList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
     }
 
     @SubscribeEvent(priority= EventPriority.HIGH)

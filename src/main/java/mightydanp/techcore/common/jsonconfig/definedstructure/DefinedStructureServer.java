@@ -23,10 +23,10 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
 
     @Override
     public Map<String, DefinedStructureCodec> getServerMapFromList(List<DefinedStructureCodec> definedStructureIn) {
-        Map<String, DefinedStructureCodec> definedStructuresList = new LinkedHashMap<>();
-        definedStructureIn.forEach(DefinedStructure -> definedStructuresList.put(DefinedStructure.name(), DefinedStructure));
+        Map<String, DefinedStructureCodec> codecMap = new LinkedHashMap<>();
+        definedStructureIn.forEach(codec -> codecMap.put(codec.name(), codec));
 
-        return definedStructuresList;
+        return codecMap;
     }
 
     @Override
@@ -41,28 +41,28 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
         if(clientList.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("defined_structure", sync.get());
+                ConfigSync.syncedJson.put(DefinedStructureCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        getServerMap().forEach((name, serverDefinedStructure) -> {
+        getServerMap().forEach((name, serverCodec) -> {
             sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<DefinedStructureCodec> client = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
+                Optional<DefinedStructureCodec> optionalClientCodec = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
-                if(client.isPresent()) {
-                    DefinedStructureCodec clientDefinedStructure = client.get();
-                    JsonObject serverJson = ((DefinedStructureRegistry)TCJsonConfigs.definedStructure.getFirst()).toJsonObject(serverDefinedStructure);
-                    JsonObject clientJson = ((DefinedStructureRegistry)TCJsonConfigs.definedStructure.getFirst()).toJsonObject(clientDefinedStructure);
+                if(optionalClientCodec.isPresent()) {
+                    DefinedStructureCodec clientCodec = optionalClientCodec.get();
+                    JsonObject serverJson = ((DefinedStructureRegistry)TCJsonConfigs.definedStructure.getFirst()).toJsonObject(serverCodec);
+                    JsonObject clientJson = ((DefinedStructureRegistry)TCJsonConfigs.definedStructure.getFirst()).toJsonObject(clientCodec);
 
                     sync.set(clientJson.equals(serverJson));
                 }
             }
         });
 
-        ConfigSync.syncedJson.put("defined_structure", sync.get());
+        ConfigSync.syncedJson.put(DefinedStructureCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -70,32 +70,32 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
     @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, DefinedStructureCodec> clientDefinedStructures = new HashMap<>();
+        Map<String, DefinedStructureCodec> clientMap = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/defined_structure");
+        Path configs = Paths.get(singlePlayerConfigs + "/" + DefinedStructureCodec.codecName);
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                ConfigSync.syncedJson.put("defined_structure", sync.get());
+                ConfigSync.syncedJson.put(DefinedStructureCodec.codecName, sync.get());
                 return false;
             }
 
             if(files.length > 0){
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.definedStructure.getFirst().getJsonObject(file.getName());
-                    DefinedStructureCodec definedStructure = ((DefinedStructureRegistry) TCJsonConfigs.definedStructure.getFirst()).fromJsonObject(jsonObject);
-                    clientDefinedStructures.put(definedStructure.name(), definedStructure);
+                    DefinedStructureCodec codec = ((DefinedStructureRegistry) TCJsonConfigs.definedStructure.getFirst()).fromJsonObject(jsonObject);
+                    clientMap.put(codec.name(), codec);
                 }
 
-                getServerMap().values().forEach(serverDefinedStructure -> {
-                    sync.set(clientDefinedStructures.containsKey(serverDefinedStructure.name()));
+                getServerMap().values().forEach(serverCodec -> {
+                    sync.set(clientMap.containsKey(serverCodec.name()));
 
                     if(sync.get()) {
-                        DefinedStructureCodec clientDefinedStructure = getServerMap().get(serverDefinedStructure.name());
-                        JsonObject serverJson = ((DefinedStructureRegistry) TCJsonConfigs.definedStructure.getFirst()).toJsonObject(serverDefinedStructure);
-                        JsonObject clientJson = ((DefinedStructureRegistry) TCJsonConfigs.definedStructure.getFirst()).toJsonObject(clientDefinedStructure);
+                        DefinedStructureCodec clientCodec = clientMap.get(serverCodec.name());
+                        JsonObject serverJson = ((DefinedStructureRegistry) TCJsonConfigs.definedStructure.getFirst()).toJsonObject(serverCodec);
+                        JsonObject clientJson = ((DefinedStructureRegistry) TCJsonConfigs.definedStructure.getFirst()).toJsonObject(clientCodec);
 
                         sync.set(clientJson.equals(serverJson));
                     }
@@ -106,20 +106,19 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("defined_structure", sync.get());
+                ConfigSync.syncedJson.put(DefinedStructureCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        ConfigSync.syncedJson.put("defined_structure", sync.get());
+        ConfigSync.syncedJson.put(DefinedStructureCodec.codecName, sync.get());
 
         return sync.get();
     }
 
     @Override
     public void syncClientWithServer(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/defined_structure");
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/" + DefinedStructureCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -127,10 +126,10 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
             }
         }
 
-        for (DefinedStructureCodec definedStructure : getServerMap().values()) {
-            String name = definedStructure.name();
+        for (DefinedStructureCodec serverCodec : getServerMap().values()) {
+            String name = serverCodec.name();
             Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((DefinedStructureRegistry) TCJsonConfigs.definedStructure.getFirst()).toJsonObject(definedStructure);
+            JsonObject jsonObject = ((DefinedStructureRegistry) TCJsonConfigs.definedStructure.getFirst()).toJsonObject(serverCodec);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(filePath)) {
                 Files.createDirectories(filePath.getParent());
@@ -145,16 +144,16 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
     @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/defined_structure");
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/defined_structure");
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/" + DefinedStructureCodec.codecName);
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/" + DefinedStructureCodec.codecName);
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.definedStructure.getFirst().getJsonObject(file.getName());
-                    DefinedStructureCodec definedStructure = ((DefinedStructureRegistry) TCJsonConfigs.definedStructure.getFirst()).fromJsonObject(jsonObject);
+                    DefinedStructureCodec client = ((DefinedStructureRegistry) TCJsonConfigs.definedStructure.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = definedStructure.name();
+                    String name = client.name();
 
                     Path filePath = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
                     if (!Files.exists(filePath)) {
@@ -176,18 +175,18 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
                 .filter(DefinedStructureCodec.class::isInstance)
                 .map(DefinedStructureCodec.class::cast).toList();
 
-        Map<String, DefinedStructureCodec> definedStructures = list.stream()
+        Map<String, DefinedStructureCodec> map = list.stream()
                 .collect(Collectors.toMap(DefinedStructureCodec::name, s -> s));
 
         serverMap.clear();
-        serverMap.putAll(definedStructures);
+        serverMap.putAll(map);
 
-        TechAscension.LOGGER.info("Loaded {} fluid states from the server", definedStructures.size());
+        TechAscension.LOGGER.info("Loaded {} fluid states from the server", map.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, DefinedStructureCodec definedStructure) {
-        buffer.writeWithCodec(DefinedStructureCodec.CODEC, definedStructure);
+    public void singleToBuffer(FriendlyByteBuf buffer, DefinedStructureCodec codec) {
+        buffer.writeWithCodec(DefinedStructureCodec.CODEC, codec);
     }
 
     @Override
@@ -198,9 +197,7 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
 
         buffer.writeVarInt(list.size());
 
-        list.forEach((DefinedStructure) -> {
-            singleToBuffer(buffer, DefinedStructure);
-        });
+        list.forEach((codec) -> singleToBuffer(buffer, codec));
     }
 
     @Override
@@ -210,17 +207,17 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
 
     @Override
     public List<DefinedStructureCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<DefinedStructureCodec> definedStructures = new ArrayList<>();
+        List<DefinedStructureCodec> codecs = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            DefinedStructureCodec definedStructure = singleFromBuffer(buffer);
+            DefinedStructureCodec codec = singleFromBuffer(buffer);
 
-            definedStructures.add(definedStructure);
+            codecs.add(codec);
         }
 
-        return definedStructures;
+        return codecs;
     }
 
 }

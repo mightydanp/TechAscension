@@ -8,6 +8,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.Map;
 
 public record DefinedStructureCodec(String name, Map<BlockPos, BlockState> blockPosBlockStateMap) {
+    public static String codecName = "defined_structure";
+
     public static final Codec<DefinedStructureCodec> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
             Codec.STRING.fieldOf("name").forGetter(DefinedStructureCodec::name),
             CodecHelpers.blockPosBlockStateUnboundedMapCodec.fieldOf("block_state_of_block_pos").forGetter(DefinedStructureCodec::blockPosBlockStateMap)

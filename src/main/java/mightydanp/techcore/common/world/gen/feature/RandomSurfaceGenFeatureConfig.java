@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
@@ -14,10 +15,7 @@ import java.util.List;
 /**
  * Created by MightyDanp on 3/3/2021.
  */
-public class RandomSurfaceGenFeatureConfig implements FeatureConfiguration {
-    public String name;
-    public Integer rarity;
-    public List<String> dimensions, validBiomes, invalidBiomes, validBlocks, blocks;
+public record RandomSurfaceGenFeatureConfig(String name, int rarity, List<String> dimensions, List<String> validBiomes, List<String> invalidBiomes, List<BlockState> validBlockStates, List<BlockState> blockStates) implements FeatureConfiguration {
 
     public static final Codec<RandomSurfaceGenFeatureConfig> CODEC = RecordCodecBuilder.create((p_236568_0_) -> p_236568_0_.group(
             Codec.STRING.fieldOf("name").forGetter(z -> z.name),
@@ -25,23 +23,7 @@ public class RandomSurfaceGenFeatureConfig implements FeatureConfiguration {
             Codec.STRING.listOf().fieldOf("dimension").forGetter((config) -> config.dimensions),
             Codec.STRING.listOf().fieldOf("biomeTypesID").forGetter((config) -> config.validBiomes),
             Codec.STRING.listOf().fieldOf("invalidBiomeTypesID").forGetter((config) -> config.invalidBiomes),
-            Codec.STRING.listOf().fieldOf("valid_blocks").forGetter((a) -> a.validBlocks),
-            Codec.STRING.listOf().fieldOf("blocks").forGetter((a) -> a.blocks)
+            BlockState.CODEC.listOf().fieldOf("valid_blocks").forGetter((a) -> a.validBlockStates),
+            BlockState.CODEC.listOf().fieldOf("blocks").forGetter((a) -> a.blockStates)
     ).apply(p_236568_0_, RandomSurfaceGenFeatureConfig::new));
-
-    public RandomSurfaceGenFeatureConfig(String nameIn, int rarityIn, List<String> dimensionsIn, List<String> validBiomesIn, List<String> invalidBiomesIn, List<String> validBlocksIn, List<String> blocksIn) {
-        name = nameIn;
-        rarity = rarityIn;
-        dimensions = dimensionsIn;
-        validBiomes = validBiomesIn;
-        invalidBiomes = invalidBiomesIn;
-        validBlocks = validBlocksIn;
-        blocks = blocksIn;
-    }
-
-    public static final class FillerBlockType {
-        public static final RuleTest NATURAL_STONE = new TagMatchTest(BlockTags.BASE_STONE_OVERWORLD);
-        public static final RuleTest NETHERRACK = new BlockMatchTest(Blocks.NETHERRACK);
-        public static final RuleTest NETHER_ORE_REPLACEABLES = new TagMatchTest(BlockTags.BASE_STONE_NETHER);
-    }
 }

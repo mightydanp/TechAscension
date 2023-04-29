@@ -36,11 +36,11 @@ public class DefinedStructureRegistry extends JsonConfigMultiFile<DefinedStructu
     }
 
     public void buildJson(){
-        for(DefinedStructureCodec definedStructure : registryMap.values()) {
-            JsonObject jsonObject = getJsonObject(definedStructure.name());
+        for(DefinedStructureCodec codec : registryMap.values()) {
+            JsonObject jsonObject = getJsonObject(codec.name());
 
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(definedStructure.name(), toJsonObject(definedStructure));
+                this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }
     }
