@@ -7,7 +7,7 @@ import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
+import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureCodec;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -20,49 +20,49 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatureConfig> {
+public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatureCodec> {
 
     @Override
-    public Map<String, BlocksInWaterGenFeatureConfig> getServerMapFromList(List<BlocksInWaterGenFeatureConfig> blocksInWatersIn) {
-        Map<String, BlocksInWaterGenFeatureConfig> BlocksInWatersList = new LinkedHashMap<>();
-        blocksInWatersIn.forEach(blocksInWater -> BlocksInWatersList.put(blocksInWater.name(), blocksInWater));
+    public Map<String, BlocksInWaterGenFeatureCodec> getServerMapFromList(List<BlocksInWaterGenFeatureCodec> blocksInWatersIn) {
+        Map<String, BlocksInWaterGenFeatureCodec> codecMap = new LinkedHashMap<>();
+        blocksInWatersIn.forEach(blocksInWater -> codecMap.put(blocksInWater.name(), blocksInWater));
 
-        return BlocksInWatersList;
+        return codecMap;
     }
 
     @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(TCJsonConfigs.blocksInWaterID).stream()
-                .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
-                .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
+        List<BlocksInWaterGenFeatureCodec> clientList = message.getConfig(TCJsonConfigs.blocksInWaterID).stream()
+                .filter(BlocksInWaterGenFeatureCodec.class::isInstance)
+                .map(BlocksInWaterGenFeatureCodec.class::cast).toList();
 
-        if(list.size() != getServerMap().size()){
+        if(clientList.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("blocks_in_water", sync.get());
+                ConfigSync.syncedJson.put(BlocksInWaterGenFeatureCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        getServerMap().forEach((name, serverBlocksInWater) -> {
-            sync.set(list.stream().anyMatch(o -> o.name().equals(name)));
+        getServerMap().forEach((name, serverCodec) -> {
+            sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<BlocksInWaterGenFeatureConfig> optional = list.stream().filter(o -> o.name().equals(name)).findFirst();
+                Optional<BlocksInWaterGenFeatureCodec> optional = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
                 if(optional.isPresent()) {
-                    BlocksInWaterGenFeatureConfig clientBlocksInWater = optional.get();
-                    JsonObject serverJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
-                    JsonObject clientJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientBlocksInWater);
+                    BlocksInWaterGenFeatureCodec clientCodec = optional.get();
+                    JsonObject serverJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverCodec);
+                    JsonObject clientJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientCodec);
 
                     sync.set(clientJson.equals(serverJson));
                 }
             }
         });
 
-        ConfigSync.syncedJson.put("blocks_in_water", sync.get());
+        ConfigSync.syncedJson.put(BlocksInWaterGenFeatureCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -70,15 +70,15 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, BlocksInWaterGenFeatureConfig> clientBlocksInWaters = new HashMap<>();
+        Map<String, BlocksInWaterGenFeatureCodec> clientMap = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/blocks_in_water");
+        Path configs = Paths.get(singlePlayerConfigs + "/" + BlocksInWaterGenFeatureCodec.codecName);
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                ConfigSync.syncedJson.put("blocks_in_water", sync.get());
+                ConfigSync.syncedJson.put(BlocksInWaterGenFeatureCodec.codecName, sync.get());
                 return false;
             }
 
@@ -86,16 +86,16 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
-                    BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).fromJsonObject(jsonObject);
-                    clientBlocksInWaters.put(blocksInWater.name(), blocksInWater);
+                    BlocksInWaterGenFeatureCodec codec = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).fromJsonObject(jsonObject);
+                    clientMap.put(codec.name(), codec);
                 }
 
-                getServerMap().values().forEach(serverBlocksInWater -> {
-                    sync.set(clientBlocksInWaters.containsKey(serverBlocksInWater.name()));
+                getServerMap().values().forEach(serverCodec -> {
+                    sync.set(clientMap.containsKey(serverCodec.name()));
 
                     if(sync.get()) {
-                        BlocksInWaterGenFeatureConfig clientBlocksInWater = getServerMap().get(serverBlocksInWater.name());
-                        JsonObject serverJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverBlocksInWater);
+                        BlocksInWaterGenFeatureCodec clientBlocksInWater = getServerMap().get(serverCodec.name());
+                        JsonObject serverJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverCodec);
                         JsonObject clientJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientBlocksInWater);
 
                         sync.set(clientJson.equals(serverJson));
@@ -106,12 +106,12 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("blocks_in_water", sync.get());
+                ConfigSync.syncedJson.put(BlocksInWaterGenFeatureCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        ConfigSync.syncedJson.put("blocks_in_water", sync.get());
+        ConfigSync.syncedJson.put(BlocksInWaterGenFeatureCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -119,7 +119,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     @Override
     public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/generation"+ "/blocks_in_water");
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/generation"+ "/" + BlocksInWaterGenFeatureCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -127,10 +127,10 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
             }
         }
 
-        for (BlocksInWaterGenFeatureConfig blocksInWater : getServerMap().values()) {
-            String name = blocksInWater.name();
+        for (BlocksInWaterGenFeatureCodec serverCodec : getServerMap().values()) {
+            String name = serverCodec.name();
             Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(blocksInWater);
+            JsonObject jsonObject = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverCodec);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(filePath)) {
                 Files.createDirectories(filePath.getParent());
@@ -145,16 +145,16 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/blocks_in_water");
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation() + "/generation"  + "/blocks_in_water");
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/" + BlocksInWaterGenFeatureCodec.codecName);
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation() + "/generation"  + "/" + BlocksInWaterGenFeatureCodec.codecName);
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.blocksInWater.getFirst().getJsonObject(file.getName());
-                    BlocksInWaterGenFeatureConfig blocksInWater = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).fromJsonObject(jsonObject);
+                    BlocksInWaterGenFeatureCodec client = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = blocksInWater.name();
+                    String name = client.name();
 
                     Path filePath = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
                     if (!Files.exists(filePath)) {
@@ -172,30 +172,30 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(TCJsonConfigs.blocksInWaterID).stream()
-                .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
-                .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
+        List<BlocksInWaterGenFeatureCodec> list = message.getConfig(TCJsonConfigs.blocksInWaterID).stream()
+                .filter(BlocksInWaterGenFeatureCodec.class::isInstance)
+                .map(BlocksInWaterGenFeatureCodec.class::cast).toList();
 
-        Map<String, BlocksInWaterGenFeatureConfig> BlocksInWaters = list.stream()
-                .collect(Collectors.toMap(BlocksInWaterGenFeatureConfig::name, s -> s));
+        Map<String, BlocksInWaterGenFeatureCodec> map = list.stream()
+                .collect(Collectors.toMap(BlocksInWaterGenFeatureCodec::name, s -> s));
 
         serverMap.clear();
-        serverMap.putAll(BlocksInWaters);
+        serverMap.putAll(map);
 
-        TechAscension.LOGGER.info("Loaded {} blocks in waters from the server", BlocksInWaters.size());
+        TechAscension.LOGGER.info("Loaded {} " + BlocksInWaterGenFeatureCodec.codecName + " from the server", map.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, BlocksInWaterGenFeatureConfig config) {
-        buffer.writeWithCodec(BlocksInWaterGenFeatureConfig.CODEC, config);
+    public void singleToBuffer(FriendlyByteBuf buffer, BlocksInWaterGenFeatureCodec config) {
+        buffer.writeWithCodec(BlocksInWaterGenFeatureCodec.CODEC, config);
 
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<BlocksInWaterGenFeatureConfig> list = message.getConfig(TCJsonConfigs.blocksInWaterID).stream()
-                .filter(BlocksInWaterGenFeatureConfig.class::isInstance)
-                .map(BlocksInWaterGenFeatureConfig.class::cast).toList();
+        List<BlocksInWaterGenFeatureCodec> list = message.getConfig(TCJsonConfigs.blocksInWaterID).stream()
+                .filter(BlocksInWaterGenFeatureCodec.class::isInstance)
+                .map(BlocksInWaterGenFeatureCodec.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -203,22 +203,22 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
     }
 
     @Override
-    public BlocksInWaterGenFeatureConfig singleFromBuffer(FriendlyByteBuf buffer) {
-        return buffer.readWithCodec(BlocksInWaterGenFeatureConfig.CODEC);
+    public BlocksInWaterGenFeatureCodec singleFromBuffer(FriendlyByteBuf buffer) {
+        return buffer.readWithCodec(BlocksInWaterGenFeatureCodec.CODEC);
     }
 
-    public List<BlocksInWaterGenFeatureConfig> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<BlocksInWaterGenFeatureConfig> blocksInWaters = new ArrayList<>();
+    public List<BlocksInWaterGenFeatureCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
+        List<BlocksInWaterGenFeatureCodec> codecs = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            BlocksInWaterGenFeatureConfig blocksInWater = singleFromBuffer(buffer);
+            BlocksInWaterGenFeatureCodec codec = singleFromBuffer(buffer);
 
-            blocksInWaters.add(blocksInWater);
+            codecs.add(codec);
         }
 
-        return blocksInWaters;
+        return codecs;
     }
 
 }

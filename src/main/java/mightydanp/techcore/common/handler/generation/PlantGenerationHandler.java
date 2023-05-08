@@ -6,12 +6,11 @@ import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.generation.blocksinwater.BlocksInWaterRegistry;
 import mightydanp.techcore.common.jsonconfig.generation.randomsurface.RandomSurfaceRegistry;
 import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeature;
-import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
+import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureCodec;
 import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeature;
-import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
+import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureCodec;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.core.Holder;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,16 +34,16 @@ import net.minecraftforge.registries.RegistryObject;
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PlantGenerationHandler {
-    public static final RegistryObject<Feature<BlocksInWaterGenFeatureConfig>> blockInWater = RegistryHandler.createFeature("block_in_water", () -> new BlocksInWaterGenFeature(BlocksInWaterGenFeatureConfig.CODEC));
+    public static final RegistryObject<Feature<BlocksInWaterGenFeatureCodec>> blockInWater = RegistryHandler.createFeature("block_in_water", () -> new BlocksInWaterGenFeature(BlocksInWaterGenFeatureCodec.CODEC));
 
-    public static final RegistryObject<Feature<RandomSurfaceGenFeatureConfig>> randomSurface = RegistryHandler.createFeature("random_surface", () -> new RandomSurfaceGenFeature(RandomSurfaceGenFeatureConfig.CODEC));
+    public static final RegistryObject<Feature<RandomSurfaceGenFeatureCodec>> randomSurface = RegistryHandler.createFeature("random_surface", () -> new RandomSurfaceGenFeature(RandomSurfaceGenFeatureCodec.CODEC));
 
     private static final Map<String, MapWrapper> blockInWaterGenerationList = new HashMap<>();
     private static final Map<String, MapWrapper> randomSurfaceGenList = new HashMap<>();
 
-    public static void addRegistryBlockInWaterGenerate(BlocksInWaterGenFeatureConfig config){
+    public static void addRegistryBlockInWaterGenerate(BlocksInWaterGenFeatureCodec config){
 
-        Holder<ConfiguredFeature<BlocksInWaterGenFeatureConfig, ?>> featureHolder = register(config.name(), new ConfiguredFeature<>(blockInWater.get(), config));
+        Holder<ConfiguredFeature<BlocksInWaterGenFeatureCodec, ?>> featureHolder = register(config.name(), new ConfiguredFeature<>(blockInWater.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         //list.add(CountPlacement.of(config.rarity));
 
@@ -57,9 +56,9 @@ public class PlantGenerationHandler {
     }
 
     public static void addBlockInWaterGenerate(String nameIn, int rarityIn, int heightIn, boolean shallowWaterIn, boolean goesAboveWaterIn, List<String> dimensions, List<String> validBiomes, List<String> invalidBiomes, List<BlockState>  validBlockStatesIn, BlockState topStateIn, BlockState bellowStateIn){
-        BlocksInWaterGenFeatureConfig config = new BlocksInWaterGenFeatureConfig(nameIn, rarityIn, heightIn, shallowWaterIn, goesAboveWaterIn, dimensions, validBiomes, invalidBiomes, validBlockStatesIn, topStateIn, bellowStateIn);
+        BlocksInWaterGenFeatureCodec config = new BlocksInWaterGenFeatureCodec(nameIn, rarityIn, heightIn, shallowWaterIn, goesAboveWaterIn, dimensions, validBiomes, invalidBiomes, validBlockStatesIn, topStateIn, bellowStateIn);
 
-        Holder<ConfiguredFeature<BlocksInWaterGenFeatureConfig, ?>> featureHolder = register(config.name(), new ConfiguredFeature<>(blockInWater.get(), config));
+        Holder<ConfiguredFeature<BlocksInWaterGenFeatureCodec, ?>> featureHolder = register(config.name(), new ConfiguredFeature<>(blockInWater.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         //list.add(CountPlacement.of(config.rarity));
 
@@ -68,8 +67,8 @@ public class PlantGenerationHandler {
         blockInWaterGenerationList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
     }
 
-    public static void addRegistryRandomSurfaceGenerate(RandomSurfaceGenFeatureConfig config){
-        Holder<ConfiguredFeature<RandomSurfaceGenFeatureConfig, ?>> featureHolder = register(config.name(), new ConfiguredFeature<>(randomSurface.get(), config));
+    public static void addRegistryRandomSurfaceGenerate(RandomSurfaceGenFeatureCodec config){
+        Holder<ConfiguredFeature<RandomSurfaceGenFeatureCodec, ?>> featureHolder = register(config.name(), new ConfiguredFeature<>(randomSurface.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         //list.add(CountPlacement.of(config.rarity));
 
@@ -79,9 +78,9 @@ public class PlantGenerationHandler {
     }
 
     public static void addRandomSurfaceGenerate(String nameIn, int rarityIn, List<String> dimensions, List<String> validBiomes, List<String> invalidBiomes, List<BlockState>  validBlockStatesIn, List<BlockState> blockStatesIn){
-        RandomSurfaceGenFeatureConfig config = new RandomSurfaceGenFeatureConfig(nameIn, rarityIn, dimensions, validBiomes, invalidBiomes, validBlockStatesIn, blockStatesIn);
+        RandomSurfaceGenFeatureCodec config = new RandomSurfaceGenFeatureCodec(nameIn, rarityIn, dimensions, validBiomes, invalidBiomes, validBlockStatesIn, blockStatesIn);
 
-        Holder<ConfiguredFeature<RandomSurfaceGenFeatureConfig, ?>> oreVeinFeature = register(config.name(), new ConfiguredFeature<>(randomSurface.get(), config));
+        Holder<ConfiguredFeature<RandomSurfaceGenFeatureCodec, ?>> oreVeinFeature = register(config.name(), new ConfiguredFeature<>(randomSurface.get(), config));
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
         //list.add(CountPlacement.of(config.rarity));
 

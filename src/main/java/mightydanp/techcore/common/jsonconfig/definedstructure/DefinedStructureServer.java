@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCodec> {
 
     @Override
-    public Map<String, DefinedStructureCodec> getServerMapFromList(List<DefinedStructureCodec> definedStructureIn) {
+    public Map<String, DefinedStructureCodec> getServerMapFromList(List<DefinedStructureCodec> codecsIn) {
         Map<String, DefinedStructureCodec> codecMap = new LinkedHashMap<>();
-        definedStructureIn.forEach(codec -> codecMap.put(codec.name(), codec));
+        codecsIn.forEach(codec -> codecMap.put(codec.name(), codec));
 
         return codecMap;
     }
@@ -181,7 +181,7 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
         serverMap.clear();
         serverMap.putAll(map);
 
-        TechAscension.LOGGER.info("Loaded {} fluid states from the server", map.size());
+        TechAscension.LOGGER.info("Loaded {} " + DefinedStructureCodec.codecName + " from the server", map.size());
     }
 
     @Override

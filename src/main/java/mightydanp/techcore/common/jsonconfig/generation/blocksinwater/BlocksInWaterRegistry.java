@@ -1,13 +1,11 @@
 package mightydanp.techcore.common.jsonconfig.generation.blocksinwater;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
-import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureConfig;
+import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureCodec;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -15,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenFeatureConfig> {
+public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenFeatureCodec> {
 
     @Override
     public void initiate() {
@@ -27,12 +25,12 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     }
 
     @Override
-    public List<BlocksInWaterGenFeatureConfig> getAllValues() {
+    public List<BlocksInWaterGenFeatureCodec> getAllValues() {
         return new ArrayList<>(registryMap.values());
     }
 
     @Override
-    public void register(BlocksInWaterGenFeatureConfig feature) {
+    public void register(BlocksInWaterGenFeatureCodec feature) {
         if (registryMap.containsKey(feature.name())) {
             throw new IllegalArgumentException("blocks in water with name(" + feature.name() + "), already exists.");
         } else {
@@ -41,7 +39,7 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     }
 
     public void buildJson() {
-        for (BlocksInWaterGenFeatureConfig blocksInWater : registryMap.values()) {
+        for (BlocksInWaterGenFeatureCodec blocksInWater : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(blocksInWater.name());
             if (jsonObject.size() == 0) {
                 this.saveJsonObject(blocksInWater.name(), toJsonObject(blocksInWater));
@@ -58,7 +56,7 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        BlocksInWaterGenFeatureConfig blocksInWater = fromJsonObject(jsonObject);
+                        BlocksInWaterGenFeatureCodec blocksInWater = fromJsonObject(jsonObject);
 
                         registryMap.put(blocksInWater.name(), blocksInWater);
                         PlantGenerationHandler.addRegistryBlockInWaterGenerate(blocksInWater);
@@ -73,11 +71,11 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     }
 
     @Override
-    public BlocksInWaterGenFeatureConfig fromJsonObject(JsonObject jsonObjectIn) {
-        return BlocksInWaterGenFeatureConfig.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your blocks in water, please fix this"))).getFirst();
+    public BlocksInWaterGenFeatureCodec fromJsonObject(JsonObject jsonObjectIn) {
+        return BlocksInWaterGenFeatureCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your blocks in water, please fix this"))).getFirst();
     }
 
-    public JsonObject toJsonObject(BlocksInWaterGenFeatureConfig config) {
-        return BlocksInWaterGenFeatureConfig.CODEC.encodeStart(JsonOps.INSTANCE, config).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your blocks in water with name [" + config.name() + "], please fix this"))).getAsJsonObject();
+    public JsonObject toJsonObject(BlocksInWaterGenFeatureCodec config) {
+        return BlocksInWaterGenFeatureCodec.CODEC.encodeStart(JsonOps.INSTANCE, config).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your blocks in water with name [" + config.name() + "], please fix this"))).getAsJsonObject();
     }
 }

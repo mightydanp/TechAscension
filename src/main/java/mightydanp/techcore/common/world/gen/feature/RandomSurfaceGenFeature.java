@@ -17,13 +17,13 @@ import java.util.List;
 /**
  * Created by MightyDanp on 3/3/2021.
  */
-public class RandomSurfaceGenFeature extends Feature<RandomSurfaceGenFeatureConfig> {
-    public RandomSurfaceGenFeature(Codec<RandomSurfaceGenFeatureConfig> codec) {
+public class RandomSurfaceGenFeature extends Feature<RandomSurfaceGenFeatureCodec> {
+    public RandomSurfaceGenFeature(Codec<RandomSurfaceGenFeatureCodec> codec) {
         super(codec);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<RandomSurfaceGenFeatureConfig> context) {
+    public boolean place(FeaturePlaceContext<RandomSurfaceGenFeatureCodec> context) {
 
         boolean canSpawn = false;
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
@@ -39,11 +39,11 @@ public class RandomSurfaceGenFeature extends Feature<RandomSurfaceGenFeatureConf
                 BlockState blockState = context.level().getBlockState(blockpos$mutable);
                 BlockState blockStateDown = context.level().getBlockState(blockpos$mutable.below());
                 //BlockState blockThatCanBePlace = canReplaceStone(randomlyOnSurfaceGenFeatureConfigIn, blockStateDown);
-                if (0 == context.random().nextInt(context.config().rarity)) {
-                    List<BlockState> validBlocks = getBlockStates(context.config().validBlockStates);
+                if (0 == context.random().nextInt(context.config().rarity())) {
+                    List<BlockState> validBlocks = context.config().validBlockStates();
 
                     if (validBlocks.contains(blockStateDown) && blockState == Blocks.AIR.defaultBlockState()) {
-                        List<BlockState> blocks = getBlockStates(context.config().blockStates);
+                        List<BlockState> blocks = context.config().blockStates();
                         for (int a = 0; a < blocks.size(); a++) {
                             context.level().setBlock(blockpos$mutable, blocks.get(a), 2);
                             canSpawn = true;

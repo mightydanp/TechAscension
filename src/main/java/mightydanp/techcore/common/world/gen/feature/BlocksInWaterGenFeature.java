@@ -9,21 +9,20 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by MightyDanp on 2/19/2021.
  */
-public class BlocksInWaterGenFeature extends Feature<BlocksInWaterGenFeatureConfig> {
+public class BlocksInWaterGenFeature extends Feature<BlocksInWaterGenFeatureCodec> {
 
 
-    public BlocksInWaterGenFeature(Codec<BlocksInWaterGenFeatureConfig> codecIn) {
+    public BlocksInWaterGenFeature(Codec<BlocksInWaterGenFeatureCodec> codecIn) {
         super(codecIn);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<BlocksInWaterGenFeatureConfig> context)  {
+    public boolean place(FeaturePlaceContext<BlocksInWaterGenFeatureCodec> context)  {
         boolean canSpawn = false;
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
         int x = context.origin().getX();

@@ -1,13 +1,11 @@
 package mightydanp.techcore.common.jsonconfig.generation.randomsurface;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeatureConfig;
-import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureConfig;
+import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureCodec;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -15,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenFeatureConfig> {
+public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenFeatureCodec> {
 
     @Override
     public void initiate() {
@@ -28,7 +26,7 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
     }
 
     @Override
-    public void register(RandomSurfaceGenFeatureConfig feature) {
+    public void register(RandomSurfaceGenFeatureCodec feature) {
         if (registryMap.containsKey(feature.name())) {
             throw new IllegalArgumentException("random surface with name(" + feature.name() + "), already exists.");
         } else {
@@ -37,7 +35,7 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
     }
 
     public void buildJson() {
-        for (RandomSurfaceGenFeatureConfig randomSurface : registryMap.values()) {
+        for (RandomSurfaceGenFeatureCodec randomSurface : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(randomSurface.name());
             if (jsonObject.size() == 0) {
                 this.saveJsonObject(randomSurface.name(), toJsonObject(randomSurface));
@@ -54,7 +52,7 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        RandomSurfaceGenFeatureConfig randomSurface = fromJsonObject(jsonObject);
+                        RandomSurfaceGenFeatureCodec randomSurface = fromJsonObject(jsonObject);
 
                         registryMap.put(randomSurface.name(), randomSurface);
                         PlantGenerationHandler.addRegistryRandomSurfaceGenerate(randomSurface);
@@ -69,12 +67,12 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
     }
 
     @Override
-    public RandomSurfaceGenFeatureConfig fromJsonObject(JsonObject jsonObjectIn) {
-        return RandomSurfaceGenFeatureConfig.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your random surface, please fix this"))).getFirst();
+    public RandomSurfaceGenFeatureCodec fromJsonObject(JsonObject jsonObjectIn) {
+        return RandomSurfaceGenFeatureCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your random surface, please fix this"))).getFirst();
     }
 
-    public JsonObject toJsonObject(RandomSurfaceGenFeatureConfig config) {
-        return RandomSurfaceGenFeatureConfig.CODEC.encodeStart(JsonOps.INSTANCE, config).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your random surface with name [" + config.name() + "], please fix this"))).getAsJsonObject();
+    public JsonObject toJsonObject(RandomSurfaceGenFeatureCodec config) {
+        return RandomSurfaceGenFeatureCodec.CODEC.encodeStart(JsonOps.INSTANCE, config).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your random surface with name [" + config.name() + "], please fix this"))).getAsJsonObject();
 
     }
 }
