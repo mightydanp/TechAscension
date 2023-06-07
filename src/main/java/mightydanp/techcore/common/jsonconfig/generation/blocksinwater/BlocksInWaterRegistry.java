@@ -5,6 +5,7 @@ import com.mojang.serialization.JsonOps;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
 import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureCodec;
 import net.minecraft.CrashReport;
 
@@ -17,7 +18,7 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
 
     @Override
     public void initiate() {
-        setJsonFolderName("blocks_in_water");
+        setJsonFolderName(BlocksInWaterGenFeatureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
         loadExistJson();
@@ -30,19 +31,19 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     }
 
     @Override
-    public void register(BlocksInWaterGenFeatureCodec feature) {
-        if (registryMap.containsKey(feature.name())) {
-            throw new IllegalArgumentException("blocks in water wiath name(" + feature.name() + "), already exists.");
+    public void register(BlocksInWaterGenFeatureCodec codec) {
+        if (registryMap.containsKey(codec.name())) {
+            throw new IllegalArgumentException(BlocksInWaterGenFeatureCodec.codecName + " with name(" + codec.name() + "), already exists.");
         } else {
-            registryMap.put(feature.name(), feature);
+            registryMap.put(codec.name(), codec);
         }
     }
 
     public void buildJson() {
-        for (BlocksInWaterGenFeatureCodec blocksInWater : registryMap.values()) {
-            JsonObject jsonObject = getJsonObject(blocksInWater.name());
+        for (BlocksInWaterGenFeatureCodec codec : registryMap.values()) {
+            JsonObject jsonObject = getJsonObject(codec.name());
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(blocksInWater.name(), toJsonObject(blocksInWater));
+                this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }
     }
@@ -56,26 +57,26 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        BlocksInWaterGenFeatureCodec blocksInWater = fromJsonObject(jsonObject);
+                        BlocksInWaterGenFeatureCodec codec = fromJsonObject(jsonObject);
 
-                        registryMap.put(blocksInWater.name(), blocksInWater);
-                        PlantGenerationHandler.addRegistryBlockInWaterGenerate(blocksInWater);
+                        registryMap.put(codec.name(), codec);
+                        PlantGenerationHandler.addRegistryBlockInWaterGenerate(codec);
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to blocks in water list because a blocks in water already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to " + BlocksInWaterGenFeatureCodec.codecName + " list because it already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            TechAscension.LOGGER.warn(new CrashReport("blocks in water json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport(BlocksInWaterGenFeatureCodec.codecName + " json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
     @Override
     public BlocksInWaterGenFeatureCodec fromJsonObject(JsonObject jsonObjectIn) {
-        return BlocksInWaterGenFeatureCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your blocks in water, please fix this"))).getFirst();
+        return BlocksInWaterGenFeatureCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + BlocksInWaterGenFeatureCodec.codecName + ", please fix this"))).getFirst();
     }
 
-    public JsonObject toJsonObject(BlocksInWaterGenFeatureCodec config) {
-        return BlocksInWaterGenFeatureCodec.CODEC.encodeStart(JsonOps.INSTANCE, config).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your blocks in water with name [" + config.name() + "], please fix this"))).getAsJsonObject();
+    public JsonObject toJsonObject(BlocksInWaterGenFeatureCodec codec) {
+        return BlocksInWaterGenFeatureCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your " + BlocksInWaterGenFeatureCodec.codecName + " with name [" + codec.name() + "], please fix this"))).getAsJsonObject();
     }
 }

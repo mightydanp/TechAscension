@@ -26,20 +26,20 @@ import java.util.stream.Collectors;
 public class FluidStateServer extends JsonConfigServer<FluidStateCodec> {
 
     @Override
-    public Map<String, FluidStateCodec> getServerMapFromList(List<FluidStateCodec> codecsIn) {
+    public Map<String, FluidStateCodec> getServerMapFromList(List<FluidStateCodec> codecs) {
         Map<String, FluidStateCodec> codecMap = new LinkedHashMap<>();
-        codecsIn.forEach(fluidState -> codecMap.put(fluidState.name(), fluidState));
+        codecs.forEach(fluidState -> codecMap.put(fluidState.name(), fluidState));
 
         return codecMap;
     }
 
     @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
+        AtomicBoolean sync = new AtomicBoolean(true);
+
         List<FluidStateCodec> clientList = message.getConfig(TCJsonConfigs.fluidStateID).stream()
                 .filter(FluidStateCodec.class::isInstance)
                 .map(FluidStateCodec.class::cast).toList();
-
-        AtomicBoolean sync = new AtomicBoolean(true);
 
 
         if(clientList.size() != getServerMap().size()){
@@ -50,15 +50,15 @@ public class FluidStateServer extends JsonConfigServer<FluidStateCodec> {
             }
         }
 
-        getServerMap().forEach((name, serverFluidState) -> {
+        getServerMap().forEach((name, serverCodec) -> {
             sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<FluidStateCodec> client = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
+                Optional<FluidStateCodec> optionalClientCodec = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
-                if(client.isPresent()) {
-                    FluidStateCodec clientFluidState = client.get();
-                    JsonObject serverJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(serverFluidState);
+                if(optionalClientCodec.isPresent()) {
+                    FluidStateCodec clientFluidState = optionalClientCodec.get();
+                    JsonObject serverJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(serverCodec);
                     JsonObject clientJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(clientFluidState);
 
                     sync.set(clientJson.equals(serverJson));
@@ -122,7 +122,6 @@ public class FluidStateServer extends JsonConfigServer<FluidStateCodec> {
 
     @Override
     public void syncClientWithServer(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/" + FluidStateCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
@@ -131,10 +130,10 @@ public class FluidStateServer extends JsonConfigServer<FluidStateCodec> {
             }
         }
 
-        for (FluidStateCodec fluidState : getServerMap().values()) {
-            String name = fluidState.name();
+        for (FluidStateCodec serverCodec : getServerMap().values()) {
+            String name = serverCodec.name();
             Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(fluidState);
+            JsonObject jsonObject = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(serverCodec);
             String s = GSON.toJson(jsonObject);
             if (!Files.exists(filePath)) {
                 Files.createDirectories(filePath.getParent());

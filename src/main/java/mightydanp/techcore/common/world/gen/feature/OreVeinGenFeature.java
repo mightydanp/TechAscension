@@ -25,12 +25,12 @@ import net.minecraftforge.registries.RegistryObject;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
-public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
-    public OreVeinGenFeature(Codec<OreVeinGenFeatureConfig> p_i231976_1_) {
+public class OreVeinGenFeature extends Feature<OreVeinGenFeatureCodec> {
+    public OreVeinGenFeature(Codec<OreVeinGenFeatureCodec> p_i231976_1_) {
         super(p_i231976_1_);
     }
 
-    public static List<BlockPos> getNearbyVeins(long seed, int chunkX, int chunkZ, Random rand, int radius, OreVeinGenFeatureConfig oreVeinGenFeatureConfig) {
+    public static List<BlockPos> getNearbyVeins(long seed, int chunkX, int chunkZ, Random rand, int radius, OreVeinGenFeatureCodec oreVeinGenFeatureConfig) {
         List<BlockPos> veins = new ArrayList<>();
         for (int x = chunkX - radius; x <= chunkX + radius; x++) {
             for (int z = chunkZ - radius; z <= chunkZ + radius; z++) {
@@ -42,7 +42,7 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
         return veins;
     }
 
-    private static BlockPos getVeinAtChunk(long seed, int chunkX, int chunkZ, Random rand, OreVeinGenFeatureConfig oreVeinGenFeatureConfig) {
+    private static BlockPos getVeinAtChunk(long seed, int chunkX, int chunkZ, Random rand, OreVeinGenFeatureCodec oreVeinGenFeatureConfig) {
         rand.setSeed(seed + chunkX + chunkZ);
         //rand.setSeed(worldSeed);
         int chance = rand.nextInt(20);
@@ -54,7 +54,7 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
 
     @ParametersAreNonnullByDefault
     @Override
-    public boolean place(FeaturePlaceContext<OreVeinGenFeatureConfig> context){
+    public boolean place(FeaturePlaceContext<OreVeinGenFeatureCodec> context){
         ChunkPos chunkPos = new ChunkPos(context.origin());
         List<BlockPos> getValidVeins = getNearbyVeins(context.level().getSeed(), chunkPos.x, chunkPos.z, context.random(), 9, context.config());
         context.chunkGenerator().withSeed(context.level().getSeed() + chunkPos.x * 341873128712L + chunkPos.z * 132897987541L);
@@ -201,7 +201,7 @@ public class OreVeinGenFeature extends Feature<OreVeinGenFeatureConfig> {
         return canSpawn;
     }
 
-    public BlockState replacementStoneLayerOre(Random rand, OreVeinGenFeatureConfig config, BlockState blockToBeReplacedIn, String oreType) {
+    public BlockState replacementStoneLayerOre(Random rand, OreVeinGenFeatureCodec config, BlockState blockToBeReplacedIn, String oreType) {
         BlockState blockToBePlaced = Blocks.AIR.defaultBlockState();
 
         Map<Either<BlockState, String>, Integer> veinBlockStatesAndChances = config.blockStatesAndChances();

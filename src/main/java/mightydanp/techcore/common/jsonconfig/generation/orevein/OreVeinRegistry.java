@@ -5,7 +5,7 @@ import com.mojang.serialization.JsonOps;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.OreGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeatureConfig;
+import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeatureCodec;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig> {
+public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureCodec> {
 
     @Override
     public void initiate() {
@@ -25,7 +25,7 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig
     }
 
     @Override
-    public void register(OreVeinGenFeatureConfig config) {
+    public void register(OreVeinGenFeatureCodec config) {
         if (registryMap.containsKey(config.name())) {
             throw new IllegalArgumentException("ore vein with name(" + config.name() + "), already exists.");
         } else {
@@ -34,7 +34,7 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig
     }
 
     public void buildJson() {
-        for (OreVeinGenFeatureConfig oreVein : registryMap.values()) {
+        for (OreVeinGenFeatureCodec oreVein : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(oreVein.name());
             if (jsonObject.size() == 0) {
                 this.saveJsonObject(oreVein.name(), toJsonObject(oreVein));
@@ -51,7 +51,7 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        OreVeinGenFeatureConfig OreVein = fromJsonObject(jsonObject);
+                        OreVeinGenFeatureCodec OreVein = fromJsonObject(jsonObject);
 
                         registryMap.put(OreVein.name(), OreVein);
                         OreGenerationHandler.addRegistryOreGeneration(OreVein);
@@ -66,12 +66,12 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureConfig
     }
 
     @Override
-    public OreVeinGenFeatureConfig fromJsonObject(JsonObject jsonObjectIn) {
-        return OreVeinGenFeatureConfig.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your ore vein, please fix this"))).getFirst();
+    public OreVeinGenFeatureCodec fromJsonObject(JsonObject jsonObjectIn) {
+        return OreVeinGenFeatureCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your ore vein, please fix this"))).getFirst();
 
     }
 
-    public JsonObject toJsonObject(OreVeinGenFeatureConfig config) {
-        return OreVeinGenFeatureConfig.CODEC.encodeStart(JsonOps.INSTANCE, config).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your ore vein with name [" + config.name() + "], please fix this"))).getAsJsonObject();
+    public JsonObject toJsonObject(OreVeinGenFeatureCodec config) {
+        return OreVeinGenFeatureCodec.CODEC.encodeStart(JsonOps.INSTANCE, config).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your ore vein with name [" + config.name() + "], please fix this"))).getAsJsonObject();
     }
 }

@@ -31,11 +31,11 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
 
     @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
+        AtomicBoolean sync = new AtomicBoolean(true);
+
         List<DefinedStructureCodec> clientList = message.getConfig(TCJsonConfigs.definedStructureID).stream()
                 .filter(DefinedStructureCodec.class::isInstance)
                 .map(DefinedStructureCodec.class::cast).toList();
-
-        AtomicBoolean sync = new AtomicBoolean(true);
 
 
         if(clientList.size() != getServerMap().size()){
@@ -143,7 +143,6 @@ public class DefinedStructureServer extends JsonConfigServer<DefinedStructureCod
 
     @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/" + DefinedStructureCodec.codecName);
         Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/" + DefinedStructureCodec.codecName);
 

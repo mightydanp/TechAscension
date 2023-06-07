@@ -60,7 +60,7 @@ public class DefinedStructureRegistry extends JsonConfigMultiFile<DefinedStructu
                         registryMap.put(definedStructure.name(), definedStructure);
 
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to " + DefinedStructureCodec.codecName + " list because a defined structure already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to " + DefinedStructureCodec.codecName + " list because it already exist!!", file.getAbsolutePath());
                     }
                 }
             }
