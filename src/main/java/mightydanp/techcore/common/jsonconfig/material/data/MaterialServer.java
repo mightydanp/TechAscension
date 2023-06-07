@@ -307,7 +307,7 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
         int fluidViscosity = buffer.readInt();
 
         if(!fluidStateString.equals("") && fluidAcceleration != -1 && fluidDensity != -1 && fluidLuminosity != -1 && fluidViscosity != -1){
-            FluidStateCodec fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidStateString);
+            FluidStateCodec fluidState = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).getByName(fluidStateString);
             material.setFluidProperties(fluidState, fluidAcceleration, fluidDensity, fluidLuminosity, fluidViscosity);
         }
 

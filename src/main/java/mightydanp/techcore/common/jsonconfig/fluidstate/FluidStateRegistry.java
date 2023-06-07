@@ -17,7 +17,7 @@ import java.util.*;
 public class FluidStateRegistry extends JsonConfigMultiFile<FluidStateCodec> {
     @Override
     public void initiate() {
-        setJsonFolderName("fluid_state");
+        setJsonFolderName(FluidStateCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         for (DefaultFluidState fluidState : DefaultFluidState.values()) {
@@ -33,23 +33,23 @@ public class FluidStateRegistry extends JsonConfigMultiFile<FluidStateCodec> {
         return new ArrayList<>(registryMap.values());
     }
 
-    public FluidStateCodec getFluidStateByName(String name) {
+    public FluidStateCodec getByName(String name) {
         return registryMap.get(name);
     }
 
     @Override
-    public void register(FluidStateCodec fluidStateIn) {
-        String name = fluidStateIn.name();
-        if (registryMap.containsKey(fluidStateIn.name()))
-            throw new IllegalArgumentException("fluid state with name(" + name + "), already exists.");
-        registryMap.put(name, fluidStateIn);
+    public void register(FluidStateCodec codec) {
+        String name = codec.name();
+        if (registryMap.containsKey(codec.name()))
+            throw new IllegalArgumentException(FluidStateCodec.codecName + " with name(" + name + "), already exists.");
+        registryMap.put(name, codec);
     }
     public void buildJson(){
-        for(FluidStateCodec fluidState : registryMap.values()) {
-            JsonObject jsonObject = getJsonObject(fluidState.name());
+        for(FluidStateCodec codec : registryMap.values()) {
+            JsonObject jsonObject = getJsonObject(codec.name());
 
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(fluidState.name(), toJsonObject(fluidState));
+                this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }
     }
@@ -63,27 +63,27 @@ public class FluidStateRegistry extends JsonConfigMultiFile<FluidStateCodec> {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        FluidStateCodec fluidState = fromJsonObject(jsonObject);
+                        FluidStateCodec codec = fromJsonObject(jsonObject);
 
-                        registryMap.put(fluidState.name(), fluidState);
+                        registryMap.put(codec.name(), codec);
 
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to fluid state list because a fluid state already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to fluid state list because a " + FluidStateCodec.codecName + " already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            TechAscension.LOGGER.warn(new CrashReport("fluid state json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport(FluidStateCodec.codecName + " json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
     @Override
     public FluidStateCodec fromJsonObject(JsonObject jsonObjectIn){
-        return FluidStateCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your fluid states, please fix this"))).getFirst();
+        return FluidStateCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + FluidStateCodec.codecName + ", please fix this"))).getFirst();
 
     }
 
-    public JsonObject toJsonObject(FluidStateCodec fluidState) {
-        return FluidStateCodec.CODEC.encodeStart(JsonOps.INSTANCE, fluidState).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your fluid state with name [" + fluidState.name() + "], please fix this"))).getAsJsonObject();
+    public JsonObject toJsonObject(FluidStateCodec codec) {
+        return FluidStateCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your " + FluidStateCodec.codecName + " with name [" + codec.name() + "], please fix this"))).getAsJsonObject();
     }
 }

@@ -26,7 +26,7 @@ public class RandomSurfaceGenFeature extends Feature<RandomSurfaceGenFeatureCode
     public boolean place(FeaturePlaceContext<RandomSurfaceGenFeatureCodec> context) {
 
         boolean canSpawn = false;
-        BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         int x = context.origin().getX();
         int z = context.origin().getZ();
         for (int xx = 0; xx <= 16; xx++) {
@@ -35,9 +35,9 @@ public class RandomSurfaceGenFeature extends Feature<RandomSurfaceGenFeatureCode
                 int z2 = zz + z;
 
                 int groundHeight = context.level().getHeight(Heightmap.Types.WORLD_SURFACE, x2, z2);
-                blockpos$mutable.set(x2, groundHeight, z2);
-                BlockState blockState = context.level().getBlockState(blockpos$mutable);
-                BlockState blockStateDown = context.level().getBlockState(blockpos$mutable.below());
+                mutableBlockPos.set(x2, groundHeight, z2);
+                BlockState blockState = context.level().getBlockState(mutableBlockPos);
+                BlockState blockStateDown = context.level().getBlockState(mutableBlockPos.below());
                 //BlockState blockThatCanBePlace = canReplaceStone(randomlyOnSurfaceGenFeatureConfigIn, blockStateDown);
                 if (0 == context.random().nextInt(context.config().rarity())) {
                     List<BlockState> validBlocks = context.config().validBlockStates();
@@ -45,9 +45,9 @@ public class RandomSurfaceGenFeature extends Feature<RandomSurfaceGenFeatureCode
                     if (validBlocks.contains(blockStateDown) && blockState == Blocks.AIR.defaultBlockState()) {
                         List<BlockState> blocks = context.config().blockStates();
                         for (int a = 0; a < blocks.size(); a++) {
-                            context.level().setBlock(blockpos$mutable, blocks.get(a), 2);
+                            context.level().setBlock(mutableBlockPos, blocks.get(a), 2);
                             canSpawn = true;
-                            //System.out.println(blockpos$mutable.getX() + " " + blockpos$mutable.getY() + " " + blockpos$mutable.getZ() + " " + "/" + randomlyOnSurfaceGenFeatureConfigIn.blocks.getBlock().toString().split(":")[1]);
+                            //System.out.println(mutableBlockPos.getX() + " " + mutableBlockPos.getY() + " " + mutableBlockPos.getZ() + " " + "/" + randomlyOnSurfaceGenFeatureConfigIn.blocks.getBlock().toString().split(":")[1]);
                         }
                     }
                 }

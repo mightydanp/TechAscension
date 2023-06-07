@@ -32,7 +32,7 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     @Override
     public void register(BlocksInWaterGenFeatureCodec feature) {
         if (registryMap.containsKey(feature.name())) {
-            throw new IllegalArgumentException("blocks in water with name(" + feature.name() + "), already exists.");
+            throw new IllegalArgumentException("blocks in water wiath name(" + feature.name() + "), already exists.");
         } else {
             registryMap.put(feature.name(), feature);
         }

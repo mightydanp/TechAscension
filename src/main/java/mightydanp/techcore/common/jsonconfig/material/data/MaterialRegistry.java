@@ -331,7 +331,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
             JsonObject fluidProperties = jsonObject.get("fluid_properties").getAsJsonObject();{
                 if (fluidProperties.has("fluid_state") && fluidProperties.has("fluid_acceleration") && fluidProperties.has("fluid_density") && fluidProperties.has("fluid_luminosity") && fluidProperties.has("fluid_viscosity")) {
                     material.setFluidProperties(
-                            ((FluidStateRegistry)TCJsonConfigs.fluidState.getFirst()).getFluidStateByName(fluidProperties.get("fluid_state").getAsString()),
+                            ((FluidStateRegistry)TCJsonConfigs.fluidState.getFirst()).getByName(fluidProperties.get("fluid_state").getAsString()),
                             fluidProperties.get("fluid_acceleration").getAsFloat(),
                             fluidProperties.get("fluid_density").getAsInt(),
                             fluidProperties.get("fluid_luminosity").getAsInt(),

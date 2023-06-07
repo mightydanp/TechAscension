@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
+import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -15,7 +16,7 @@ public class DefinedStructureRegistry extends JsonConfigMultiFile<DefinedStructu
 
     @Override
     public void initiate() {
-        setJsonFolderName("defined_structure");
+        setJsonFolderName(DefinedStructureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
@@ -24,11 +25,11 @@ public class DefinedStructureRegistry extends JsonConfigMultiFile<DefinedStructu
     }
 
     @Override
-    public void register(DefinedStructureCodec definedStructureIn) {
-        String name = definedStructureIn.name();
-        if (registryMap.containsKey(definedStructureIn.name()))
-            throw new IllegalArgumentException("defined structure with name(" + name + "), already exists.");
-        registryMap.put(name, definedStructureIn);
+    public void register(DefinedStructureCodec codec) {
+        String name = codec.name();
+        if (registryMap.containsKey(codec.name()))
+            throw new IllegalArgumentException(DefinedStructureCodec.codecName + " with name(" + name + "), already exists.");
+        registryMap.put(name, codec);
     }
 
     public DefinedStructureCodec getByName(String name) {
@@ -59,21 +60,21 @@ public class DefinedStructureRegistry extends JsonConfigMultiFile<DefinedStructu
                         registryMap.put(definedStructure.name(), definedStructure);
 
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to defined structure list because a defined structure already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to " + DefinedStructureCodec.codecName + " list because a defined structure already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            TechAscension.LOGGER.warn(new CrashReport("defined structure json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport(DefinedStructureCodec.codecName + " json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
     @Override
     public DefinedStructureCodec fromJsonObject(JsonObject jsonObjectIn){
-        return DefinedStructureCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your defined structures, please fix this"))).getFirst();
+        return DefinedStructureCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your" + DefinedStructureCodec.codecName + ", please fix this"))).getFirst();
     }
 
-    public JsonObject toJsonObject(DefinedStructureCodec definedStructure) {
-        return DefinedStructureCodec.CODEC.encodeStart(JsonOps.INSTANCE, definedStructure).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your defined structure with name [" + definedStructure.name() + "], please fix this"))).getAsJsonObject();
+    public JsonObject toJsonObject(DefinedStructureCodec codec) {
+        return DefinedStructureCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your " + DefinedStructureCodec.codecName + " with name [" + codec.name() + "], please fix this"))).getAsJsonObject();
     }
 }
