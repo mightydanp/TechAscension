@@ -17,7 +17,7 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureCodec>
 
     @Override
     public void initiate() {
-        setJsonFolderName("ore_vein");
+        setJsonFolderName(OreVeinGenFeatureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
         loadExistJson();
@@ -25,19 +25,19 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureCodec>
     }
 
     @Override
-    public void register(OreVeinGenFeatureCodec config) {
-        if (registryMap.containsKey(config.name())) {
-            throw new IllegalArgumentException("ore vein with name(" + config.name() + "), already exists.");
+    public void register(OreVeinGenFeatureCodec codec) {
+        if (registryMap.containsKey(codec.name())) {
+            throw new IllegalArgumentException(OreVeinGenFeatureCodec.codecName + " with name(" + codec.name() + "), already exists.");
         } else {
-            registryMap.put(config.name(), config);
+            registryMap.put(codec.name(), codec);
         }
     }
 
     public void buildJson() {
-        for (OreVeinGenFeatureCodec oreVein : registryMap.values()) {
-            JsonObject jsonObject = getJsonObject(oreVein.name());
+        for (OreVeinGenFeatureCodec codec : registryMap.values()) {
+            JsonObject jsonObject = getJsonObject(codec.name());
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(oreVein.name(), toJsonObject(oreVein));
+                this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }
     }
@@ -51,27 +51,27 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureCodec>
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        OreVeinGenFeatureCodec OreVein = fromJsonObject(jsonObject);
+                        OreVeinGenFeatureCodec codec = fromJsonObject(jsonObject);
 
-                        registryMap.put(OreVein.name(), OreVein);
-                        OreGenerationHandler.addRegistryOreGeneration(OreVein);
+                        registryMap.put(codec.name(), codec);
+                        OreGenerationHandler.addRegistryOreGeneration(codec);
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to ore vein list because a ore vein already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to " + OreVeinGenFeatureCodec.codecName + " list because a " + OreVeinGenFeatureCodec.codecName + " already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            TechAscension.LOGGER.warn(new CrashReport("ore vein json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport(OreVeinGenFeatureCodec.codecName + " json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
     @Override
     public OreVeinGenFeatureCodec fromJsonObject(JsonObject jsonObjectIn) {
-        return OreVeinGenFeatureCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your ore vein, please fix this"))).getFirst();
+        return OreVeinGenFeatureCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + OreVeinGenFeatureCodec.codecName + ", please fix this"))).getFirst();
 
     }
 
-    public JsonObject toJsonObject(OreVeinGenFeatureCodec config) {
-        return OreVeinGenFeatureCodec.CODEC.encodeStart(JsonOps.INSTANCE, config).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your ore vein with name [" + config.name() + "], please fix this"))).getAsJsonObject();
+    public JsonObject toJsonObject(OreVeinGenFeatureCodec codec) {
+        return OreVeinGenFeatureCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your " + OreVeinGenFeatureCodec.codecName + " with name [" + codec.name() + "], please fix this"))).getAsJsonObject();
     }
 }

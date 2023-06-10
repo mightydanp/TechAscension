@@ -207,17 +207,17 @@ public class OreVeinServer extends JsonConfigServer<OreVeinGenFeatureCodec> {
 
     @Override
     public List<OreVeinGenFeatureCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<OreVeinGenFeatureCodec> oreVeins = new ArrayList<>();
+        List<OreVeinGenFeatureCodec> codecs = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
             OreVeinGenFeatureCodec codec = singleFromBuffer(buffer);
 
-            oreVeins.add(codec);
+            codecs.add(codec);
         }
 
-        return oreVeins;
+        return codecs;
     }
 
 }
