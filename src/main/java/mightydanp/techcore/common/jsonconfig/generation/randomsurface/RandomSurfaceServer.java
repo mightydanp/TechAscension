@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatureCodec> {
 
     @Override
-    public Map<String, RandomSurfaceGenFeatureCodec> getServerMapFromList(List<RandomSurfaceGenFeatureCodec> randomSurfacesIn) {
-        Map<String, RandomSurfaceGenFeatureCodec> RandomSurfacesList = new LinkedHashMap<>();
-        randomSurfacesIn.forEach(randomSurface -> RandomSurfacesList.put(randomSurface.name(), randomSurface));
+    public Map<String, RandomSurfaceGenFeatureCodec> getServerMapFromList(List<RandomSurfaceGenFeatureCodec> codecs) {
+        Map<String, RandomSurfaceGenFeatureCodec> codecMap = new LinkedHashMap<>();
+        codecs.forEach(codec -> codecMap.put(codec.name(), codec));
 
-        return RandomSurfacesList;
+        return codecMap;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         if(clientList.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("random_surface", sync.get());
+                ConfigSync.syncedJson.put(RandomSurfaceGenFeatureCodec.codecName, sync.get());
                 return false;
             }
         }
@@ -51,10 +51,10 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
             sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<RandomSurfaceGenFeatureCodec> optionalClientCodec = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
+                Optional<RandomSurfaceGenFeatureCodec> optional = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
-                if(optionalClientCodec.isPresent()) {
-                    RandomSurfaceGenFeatureCodec clientCodec = optionalClientCodec.get();
+                if(optional.isPresent()) {
+                    RandomSurfaceGenFeatureCodec clientCodec = optional.get();
                     JsonObject serverJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(serverCodec);
                     JsonObject clientJson = ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).toJsonObject(clientCodec);
 
@@ -63,7 +63,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
             }
         });
 
-        ConfigSync.syncedJson.put("random_surface", sync.get());
+        ConfigSync.syncedJson.put(RandomSurfaceGenFeatureCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -73,13 +73,13 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, RandomSurfaceGenFeatureCodec> clientMap = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/random_surface");
+        Path configs = Paths.get(singlePlayerConfigs + "/" + RandomSurfaceGenFeatureCodec.codecName);
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                ConfigSync.syncedJson.put("random_surface", sync.get());
+                ConfigSync.syncedJson.put(RandomSurfaceGenFeatureCodec.codecName, sync.get());
                 return false;
             }
 
@@ -108,12 +108,12 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("random_surface", sync.get());
+                ConfigSync.syncedJson.put(RandomSurfaceGenFeatureCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        ConfigSync.syncedJson.put("random_surface", sync.get());
+        ConfigSync.syncedJson.put(RandomSurfaceGenFeatureCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -121,7 +121,7 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
     @Override
     public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/generation"+ "/random_surface");
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/generation"+ "/" + RandomSurfaceGenFeatureCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -146,9 +146,8 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
 
     @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/random_surface");
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation() + "/generation"  + "/random_surface");
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/" + RandomSurfaceGenFeatureCodec.codecName);
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation() + "/generation"  + "/" + RandomSurfaceGenFeatureCodec.codecName);
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
@@ -184,12 +183,12 @@ public class RandomSurfaceServer extends JsonConfigServer<RandomSurfaceGenFeatur
         serverMap.clear();
         serverMap.putAll(map);
 
-        TechAscension.LOGGER.info("Loaded {} random surfaces from the server", map.size());
+        TechAscension.LOGGER.info("Loaded {} " + RandomSurfaceGenFeatureCodec.codecName +" from the server", map.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, RandomSurfaceGenFeatureCodec config) {
-        buffer.writeWithCodec(RandomSurfaceGenFeatureCodec.CODEC, config);
+    public void singleToBuffer(FriendlyByteBuf buffer, RandomSurfaceGenFeatureCodec codec) {
+        buffer.writeWithCodec(RandomSurfaceGenFeatureCodec.CODEC, codec);
 
     }
 

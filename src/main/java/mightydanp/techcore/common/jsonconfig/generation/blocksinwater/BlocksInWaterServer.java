@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatureCodec> {
 
     @Override
-    public Map<String, BlocksInWaterGenFeatureCodec> getServerMapFromList(List<BlocksInWaterGenFeatureCodec> blocksInWatersIn) {
+    public Map<String, BlocksInWaterGenFeatureCodec> getServerMapFromList(List<BlocksInWaterGenFeatureCodec> codecs) {
         Map<String, BlocksInWaterGenFeatureCodec> codecMap = new LinkedHashMap<>();
-        blocksInWatersIn.forEach(blocksInWater -> codecMap.put(blocksInWater.name(), blocksInWater));
+        codecs.forEach(codec -> codecMap.put(codec.name(), codec));
 
         return codecMap;
     }
@@ -94,9 +94,9 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
                     sync.set(clientMap.containsKey(serverCodec.name()));
 
                     if(sync.get()) {
-                        BlocksInWaterGenFeatureCodec clientBlocksInWater = getServerMap().get(serverCodec.name());
+                        BlocksInWaterGenFeatureCodec clientCodec = getServerMap().get(serverCodec.name());
                         JsonObject serverJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(serverCodec);
-                        JsonObject clientJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientBlocksInWater);
+                        JsonObject clientJson = ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).toJsonObject(clientCodec);
 
                         sync.set(clientJson.equals(serverJson));
                     }
@@ -144,7 +144,6 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
     @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/" + BlocksInWaterGenFeatureCodec.codecName);
         Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation() + "/generation"  + "/" + BlocksInWaterGenFeatureCodec.codecName);
 
@@ -199,7 +198,7 @@ public class BlocksInWaterServer extends JsonConfigServer<BlocksInWaterGenFeatur
 
         buffer.writeVarInt(list.size());
 
-        list.forEach((blocksInWater) -> singleToBuffer(buffer, blocksInWater));
+        list.forEach((codec) -> singleToBuffer(buffer, codec));
     }
 
     @Override

@@ -10,7 +10,7 @@ import mightydanp.techcore.common.jsonconfig.generation.smallore.SmallOreVeinReg
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeatureCodec;
 import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeature;
-import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
+import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeatureCodec;
 import mightydanp.techcore.common.material.TCMaterial;
 import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeature;
 import net.minecraft.core.Holder;
@@ -41,7 +41,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class OreGenerationHandler {
 
     public static final RegistryObject<Feature<OreVeinGenFeatureCodec>> ore_vein = RegistryHandler.createFeature("ore_vein", () -> new OreVeinGenFeature(OreVeinGenFeatureCodec.CODEC));
-    public static final RegistryObject<Feature<SmallOreVeinGenFeatureConfig>> small_ore = RegistryHandler.createFeature("small_ore", () -> new SmallOreVeinGenFeature(SmallOreVeinGenFeatureConfig.CODEC));
+    public static final RegistryObject<Feature<SmallOreVeinGenFeatureCodec>> small_ore = RegistryHandler.createFeature("small_ore", () -> new SmallOreVeinGenFeature(SmallOreVeinGenFeatureCodec.CODEC));
 
     private static final Map<String, MapWrapper> oreGenList = new HashMap<>();
     private static final Map<String, MapWrapper> smallOreGenList = new HashMap<>();
@@ -73,20 +73,21 @@ public class OreGenerationHandler {
         oreGenList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
     }
 
-    public static void addRegistrySmallOreVeinGeneration(SmallOreVeinGenFeatureConfig config) {
-        Holder<ConfiguredFeature<SmallOreVeinGenFeatureConfig, ?>> smallOreFeature = register(config.name, new ConfiguredFeature<>(small_ore.get(), config));
+    public static void addRegistrySmallOreVeinGeneration(SmallOreVeinGenFeatureCodec config) {
+        Holder<ConfiguredFeature<SmallOreVeinGenFeatureCodec, ?>> smallOreFeature = register(config.name(), new ConfiguredFeature<>(small_ore.get(), config));
+
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
-        list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight), VerticalAnchor.absolute(config.maxHeight)));
+        list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight()), VerticalAnchor.absolute(config.maxHeight())));
         //list.add(CountPlacement.of(config.rarity));
 
-        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, smallOreFeature, list.toArray(new PlacementModifier[0]));
+        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), smallOreFeature, list.toArray(new PlacementModifier[0]));
         ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).register(config);
-        smallOreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
+        smallOreGenList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.biomeTypesID(), config.invalidBiomeTypesID()));
     }
 
     public static void addSmallOreVeinGeneration(String smallOreNameIn, int minHeightIn, int maxHeightIn, int rarityIn, List<String> dimensions, List<String> validBiomes, List<String> invalidBiomes, Map<Object, Integer> materialOreIn) {
         List<Pair<String, Integer>> veinBlocksAndChances = new ArrayList<>();
-        SmallOreVeinGenFeatureConfig config = new SmallOreVeinGenFeatureConfig(smallOreNameIn, rarityIn, minHeightIn, maxHeightIn, dimensions, validBiomes, invalidBiomes, veinBlocksAndChances);
+        SmallOreVeinGenFeatureCodec config = new SmallOreVeinGenFeatureCodec(smallOreNameIn, rarityIn, minHeightIn, maxHeightIn, dimensions, validBiomes, invalidBiomes, veinBlocksAndChances);
 
         materialOreIn.forEach(((object, integer) -> {
             if(object instanceof Block) {
@@ -105,15 +106,15 @@ public class OreGenerationHandler {
         }));
 
 
-        Holder<ConfiguredFeature<SmallOreVeinGenFeatureConfig, ?>> smallOreFeature = register(config.name, new ConfiguredFeature<>(small_ore.get(), config));
+        Holder<ConfiguredFeature<SmallOreVeinGenFeatureCodec, ?>> smallOreFeature = register(config.name(), new ConfiguredFeature<>(small_ore.get(), config));
 
         List<PlacementModifier> list = new ArrayList<>(List.of(BiomeFilter.biome(), InSquarePlacement.spread()));
-        list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight), VerticalAnchor.absolute(config.maxHeight)));
+        list.add(HeightRangePlacement.uniform(VerticalAnchor.absolute(config.minHeight()), VerticalAnchor.absolute(config.maxHeight())));
         //list.add(CountPlacement.of(config.rarity));
 
-        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name, smallOreFeature, list.toArray(new PlacementModifier[0]));
+        Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), smallOreFeature, list.toArray(new PlacementModifier[0]));
         ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).register(config);
-        smallOreGenList.put(config.name, new MapWrapper(placedFeature, config.dimensions, config.validBiomes, config.invalidBiomes));
+        smallOreGenList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.biomeTypesID(), config.invalidBiomeTypesID()));
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

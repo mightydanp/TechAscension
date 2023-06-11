@@ -24,13 +24,13 @@ import java.util.Random;
 /**
  * Created by MightyDanp on 3/1/2021.
  */
-public class SmallOreVeinGenFeature extends Feature<SmallOreVeinGenFeatureConfig> {
-    public SmallOreVeinGenFeature(Codec<SmallOreVeinGenFeatureConfig> codec) {
+public class SmallOreVeinGenFeature extends Feature<SmallOreVeinGenFeatureCodec> {
+    public SmallOreVeinGenFeature(Codec<SmallOreVeinGenFeatureCodec> codec) {
         super(codec);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<SmallOreVeinGenFeatureConfig> context)  {
+    public boolean place(FeaturePlaceContext<SmallOreVeinGenFeatureCodec> context)  {
         boolean canSpawn = false;
         BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
         int groundHeight = context.chunkGenerator().getSpawnHeight(context.level());
@@ -44,7 +44,7 @@ public class SmallOreVeinGenFeature extends Feature<SmallOreVeinGenFeatureConfig
                     blockpos$mutable.set(x2, yy, z2);
                     BlockState blockState = context.level().getBlockState(blockpos$mutable);
                     BlockState blockThatCanBePlace = replacementStoneLayer(context.random(), context.config(), blockState);
-                    if(context.random().nextInt(2000) < context.config().rarity) {
+                    if(context.random().nextInt(2000) < context.config().rarity()) {
                         context.level().setBlock(blockpos$mutable, blockThatCanBePlace, 2);
                         canSpawn = true;
                         if(blockThatCanBePlace.getBlock() instanceof SmallOreBlock) {
@@ -96,10 +96,10 @@ public class SmallOreVeinGenFeature extends Feature<SmallOreVeinGenFeatureConfig
 
      */
 
-    public BlockState replacementStoneLayer(Random rand, SmallOreVeinGenFeatureConfig config, BlockState blockToBeReplacedIn) {
+    public BlockState replacementStoneLayer(Random rand, SmallOreVeinGenFeatureCodec config, BlockState blockToBeReplacedIn) {
         BlockState blockToBePlaced = Blocks.AIR.defaultBlockState();
 
-        List<Pair<String, Integer>> veinBlocksAndChances = config.blocksAndChances;
+        List<Pair<String, Integer>> veinBlocksAndChances = config.blocksAndChances();
 
         List<Pair<Block, Integer>> veinBlocksAndChancesThatCanReplace = new ArrayList<>();
 

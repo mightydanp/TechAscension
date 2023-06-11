@@ -1,14 +1,13 @@
 package mightydanp.techcore.common.jsonconfig.generation.smallore;
 
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
-import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeatureConfig;
+import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeatureCodec;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.io.BufferedWriter;
@@ -22,49 +21,49 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 
-public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureConfig> {
+public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureCodec> {
 
     @Override
-    public Map<String, SmallOreVeinGenFeatureConfig> getServerMapFromList(List<SmallOreVeinGenFeatureConfig> oreVeinsIn) {
-        Map<String, SmallOreVeinGenFeatureConfig> SmallOreVeinsList = new LinkedHashMap<>();
-        oreVeinsIn.forEach(oreVein -> SmallOreVeinsList.put(oreVein.name, oreVein));
+    public Map<String, SmallOreVeinGenFeatureCodec> getServerMapFromList(List<SmallOreVeinGenFeatureCodec> codecs) {
+        Map<String, SmallOreVeinGenFeatureCodec> codecMap = new LinkedHashMap<>();
+        codecs.forEach(codec -> codecMap.put(codec.name(), codec));
 
-        return SmallOreVeinsList;
+        return codecMap;
     }
 
     @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(TCJsonConfigs.smallOreID).stream()
-                .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
-                .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
+        List<SmallOreVeinGenFeatureCodec> clientList = message.getConfig(TCJsonConfigs.smallOreID).stream()
+                .filter(SmallOreVeinGenFeatureCodec.class::isInstance)
+                .map(SmallOreVeinGenFeatureCodec.class::cast).toList();
 
-        if(list.size() != getServerMap().size()){
+        if(clientList.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("ore_vein", sync.get());
+                ConfigSync.syncedJson.put(SmallOreVeinGenFeatureCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        getServerMap().forEach((name, smallOreVein) -> {
-            sync.set(list.stream().anyMatch(o -> o.name.equals(name)));
+        getServerMap().forEach((name, serverCodec) -> {
+            sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<SmallOreVeinGenFeatureConfig> optional = list.stream().filter(o -> o.name.equals(name)).findFirst();
+                Optional<SmallOreVeinGenFeatureCodec> optional = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
                 if(optional.isPresent()) {
-                    SmallOreVeinGenFeatureConfig serverSmallOreVein = optional.get();
-                    JsonObject jsonMaterial = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(smallOreVein);
-                    JsonObject materialJson = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
+                    SmallOreVeinGenFeatureCodec clientCodec = optional.get();
+                    JsonObject jsonMaterial = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(serverCodec);
+                    JsonObject materialJson = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(clientCodec);
 
                     sync.set(materialJson.equals(jsonMaterial));
                 }
             }
         });
 
-        ConfigSync.syncedJson.put("ore_vein", sync.get());
+        ConfigSync.syncedJson.put(SmallOreVeinGenFeatureCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -72,15 +71,15 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
     @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, SmallOreVeinGenFeatureConfig> clientSmallOreVeins = new HashMap<>();
+        Map<String, SmallOreVeinGenFeatureCodec> clientMap = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/ore_vein");
+        Path configs = Paths.get(singlePlayerConfigs + "/" + SmallOreVeinGenFeatureCodec.codecName);
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                ConfigSync.syncedJson.put("ore_vein", sync.get());
+                ConfigSync.syncedJson.put(SmallOreVeinGenFeatureCodec.codecName, sync.get());
                 return false;
             }
 
@@ -88,19 +87,19 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
-                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).fromJsonObject(jsonObject);
-                    clientSmallOreVeins.put(oreVein.name, oreVein);
+                    SmallOreVeinGenFeatureCodec codec = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).fromJsonObject(jsonObject);
+                    clientMap.put(codec.name(), codec);
                 }
 
-                getServerMap().values().forEach(serverSmallOreVein -> {
-                    sync.set(clientSmallOreVeins.containsKey(serverSmallOreVein.name));
+                getServerMap().values().forEach(serverCodec -> {
+                    sync.set(clientMap.containsKey(serverCodec.name()));
 
                     if(sync.get()) {
-                        SmallOreVeinGenFeatureConfig clientSmallOreVein = getServerMap().get(serverSmallOreVein.name);
-                        JsonObject jsonMaterial = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(serverSmallOreVein);
-                        JsonObject materialJson = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(clientSmallOreVein);
+                        SmallOreVeinGenFeatureCodec clientCodec = getServerMap().get(serverCodec.name());
+                        JsonObject serverJson = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(serverCodec);
+                        JsonObject clientJson = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(clientCodec);
 
-                        sync.set(materialJson.equals(jsonMaterial));
+                        sync.set(clientJson.equals(serverJson));
                     }
 
                 });
@@ -109,12 +108,12 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("ore_vein", sync.get());
+                ConfigSync.syncedJson.put(SmallOreVeinGenFeatureCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        ConfigSync.syncedJson.put("ore_vein", sync.get());
+        ConfigSync.syncedJson.put(SmallOreVeinGenFeatureCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -122,7 +121,7 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
     @Override
     public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/generation"+ "/ore_vein");
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/generation"+ "/" + SmallOreVeinGenFeatureCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -130,15 +129,15 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
             }
         }
 
-        for (SmallOreVeinGenFeatureConfig oreVein : getServerMap().values()) {
-            String name = oreVein.name;
-            Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(oreVein);
+        for (SmallOreVeinGenFeatureCodec serverCodec : getServerMap().values()) {
+            String name = serverCodec.name();
+            Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
+            JsonObject jsonObject = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).toJsonObject(serverCodec);
             String s = GSON.toJson(jsonObject);
-            if (!Files.exists(materialFile)) {
-                Files.createDirectories(materialFile.getParent());
+            if (!Files.exists(filePath)) {
+                Files.createDirectories(filePath.getParent());
 
-                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                     bufferedwriter.write(s);
                 }
             }
@@ -147,23 +146,22 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
     @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/ore_vein");
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation() + "/generation"  + "/ore_vein");
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/generation" + "/" + SmallOreVeinGenFeatureCodec.codecName);
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation() + "/generation"  + "/" + SmallOreVeinGenFeatureCodec.codecName);
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.smallOre.getFirst().getJsonObject(file.getName());
-                    SmallOreVeinGenFeatureConfig oreVein = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).fromJsonObject(jsonObject);
+                    SmallOreVeinGenFeatureCodec client = ((SmallOreVeinRegistry) TCJsonConfigs.smallOre.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = oreVein.name;
+                    String name = client.name();
 
-                    Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
-                    if (!Files.exists(materialFile)) {
-                        Files.createDirectories(materialFile.getParent());
+                    Path filePath = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
+                    if (!Files.exists(filePath)) {
+                        Files.createDirectories(filePath.getParent());
 
-                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                             String s = GSON.toJson(jsonObject);
                             bufferedwriter.write(s);
                         }
@@ -175,105 +173,52 @@ public class SmallOreVeinServer extends JsonConfigServer<SmallOreVeinGenFeatureC
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(TCJsonConfigs.smallOreID).stream()
-                .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
-                .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
+        List<SmallOreVeinGenFeatureCodec> list = message.getConfig(TCJsonConfigs.smallOreID).stream()
+                .filter(SmallOreVeinGenFeatureCodec.class::isInstance)
+                .map(SmallOreVeinGenFeatureCodec.class::cast).toList();
 
-        Map<String, SmallOreVeinGenFeatureConfig> SmallOreVeins = list.stream()
-                .collect(Collectors.toMap(s -> s.name, s -> s));
+        Map<String, SmallOreVeinGenFeatureCodec> map = list.stream()
+                .collect(Collectors.toMap(SmallOreVeinGenFeatureCodec::name, s -> s));
 
         serverMap.clear();
-        serverMap.putAll(SmallOreVeins);
+        serverMap.putAll(map);
 
-        TechAscension.LOGGER.info("Loaded {} ore veins from the server", SmallOreVeins.size());
+        TechAscension.LOGGER.info("Loaded {} " + SmallOreVeinGenFeatureCodec.codecName +" from the server", map.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, SmallOreVeinGenFeatureConfig config) {
-        buffer.writeUtf(config.name);
-        buffer.writeInt(config.rarity);
-        buffer.writeInt(config.minHeight);
-        buffer.writeInt(config.maxHeight);
-
-        buffer.writeInt(config.dimensions.size());
-        config.dimensions.forEach(buffer::writeUtf);
-
-        buffer.writeInt(config.validBiomes.size());
-        config.validBiomes.forEach(buffer::writeUtf);
-
-        buffer.writeInt(config.invalidBiomes.size());
-        config.invalidBiomes.forEach(buffer::writeUtf);
-
-        buffer.writeInt(config.blocksAndChances.size());
-        config.blocksAndChances.forEach(stringIntegerPair -> {
-            buffer.writeUtf(stringIntegerPair.getFirst());
-            buffer.writeInt(stringIntegerPair.getSecond());
-        });
+    public void singleToBuffer(FriendlyByteBuf buffer, SmallOreVeinGenFeatureCodec config) {
+        buffer.writeWithCodec(SmallOreVeinGenFeatureCodec.CODEC, config);
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<SmallOreVeinGenFeatureConfig> list = message.getConfig(TCJsonConfigs.smallOreID).stream()
-                .filter(SmallOreVeinGenFeatureConfig.class::isInstance)
-                .map(SmallOreVeinGenFeatureConfig.class::cast).toList();
+        List<SmallOreVeinGenFeatureCodec> list = message.getConfig(TCJsonConfigs.smallOreID).stream()
+                .filter(SmallOreVeinGenFeatureCodec.class::isInstance)
+                .map(SmallOreVeinGenFeatureCodec.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
-        list.forEach(smallOreVein -> singleToBuffer(buffer, smallOreVein));
+        list.forEach(codec -> singleToBuffer(buffer, codec));
     }
 
     @Override
-    public SmallOreVeinGenFeatureConfig singleFromBuffer(FriendlyByteBuf buffer) {
-        String name = buffer.readUtf();
-        int rarity = buffer.readInt();
-        int minHeight = buffer.readInt();
-        int maxHeight = buffer.readInt();
-
-        int dimensions = buffer.readInt();
-        List<String> dimensionsList = new ArrayList<>();
-        for(int i = 0; i < dimensions; i++){
-            String dimension = buffer.readUtf();
-            dimensionsList.add(dimension);
-        }
-
-        int validBiomes = buffer.readInt();
-        List<String> validBiomesList = new ArrayList<>();
-        for(int i = 0; i < validBiomes; i++){
-            String validBiome = buffer.readUtf();
-            validBiomesList.add(validBiome);
-        }
-
-        int invalidBiomes = buffer.readInt();
-        List<String> invalidBiomesList = new ArrayList<>();
-        for(int i = 0; i < invalidBiomes; i++){
-            String invalidBiome = buffer.readUtf();
-            invalidBiomesList.add(invalidBiome);
-        }
-
-        List<Pair<String, Integer>> veinBlocksAndChances = new ArrayList<>();
-
-        int veinBlocksAndChancesSize = buffer.readInt();
-        for(int i = 0; i < veinBlocksAndChancesSize; i++){
-            String block = buffer.readUtf();
-            int chance = buffer.readInt();
-            veinBlocksAndChances.add(new Pair<>(block, chance));
-        }
-        return new SmallOreVeinGenFeatureConfig(name, rarity, minHeight, maxHeight, dimensionsList, validBiomesList, invalidBiomesList, veinBlocksAndChances);
-    }
+    public SmallOreVeinGenFeatureCodec singleFromBuffer(FriendlyByteBuf buffer) {
+        return buffer.readWithCodec(SmallOreVeinGenFeatureCodec.CODEC);}
 
     @Override
-    public List<SmallOreVeinGenFeatureConfig> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<SmallOreVeinGenFeatureConfig> oreVeins = new ArrayList<>();
+    public List<SmallOreVeinGenFeatureCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
+        List<SmallOreVeinGenFeatureCodec> codecs = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            SmallOreVeinGenFeatureConfig oreVein = singleFromBuffer(buffer);
+            SmallOreVeinGenFeatureCodec codec = singleFromBuffer(buffer);
 
-            oreVeins.add(oreVein);
+            codecs.add(codec);
         }
 
-        return oreVeins;
+        return codecs;
     }
 
 }
