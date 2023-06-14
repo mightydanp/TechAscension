@@ -6,7 +6,6 @@ import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
-import mightydanp.techcore.common.jsonconfig.definedstructure.DefinedStructureCodec;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -57,9 +56,9 @@ public class FluidStateServer extends JsonConfigServer<FluidStateCodec> {
                 Optional<FluidStateCodec> optionalClientCodec = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
                 if(optionalClientCodec.isPresent()) {
-                    FluidStateCodec clientFluidState = optionalClientCodec.get();
+                    FluidStateCodec clientCodec = optionalClientCodec.get();
                     JsonObject serverJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(serverCodec);
-                    JsonObject clientJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(clientFluidState);
+                    JsonObject clientJson = ((FluidStateRegistry) TCJsonConfigs.fluidState.getFirst()).toJsonObject(clientCodec);
 
                     sync.set(clientJson.equals(serverJson));
                 }

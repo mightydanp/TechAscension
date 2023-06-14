@@ -1,8 +1,10 @@
 package mightydanp.techcore.common.jsonconfig.icons;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
+import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -13,16 +15,16 @@ import java.util.*;
 /**
  * Created by MightyDanp on 1/20/2022.
  */
-public class TextureIconRegistry extends JsonConfigMultiFile<ITextureIcon> {
+public class TextureIconRegistry extends JsonConfigMultiFile<TextureIconCodec> {
 
     @Override
     public void initiate() {
-        setJsonFolderName("texture_icon");
+        setJsonFolderName(TextureIconCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
         for (DefaultTextureIcon textureIcon : DefaultTextureIcon.values()) {
-            register(textureIcon);
+            register(textureIcon.getCodec());
         }
         //
 
@@ -32,27 +34,27 @@ public class TextureIconRegistry extends JsonConfigMultiFile<ITextureIcon> {
     }
 
     @Override
-    public void register(ITextureIcon textureIconIn) {
-        String name = textureIconIn.getName();
-        if (registryMap.containsKey(textureIconIn.getName()))
-            throw new IllegalArgumentException("texture icon with name(" + name + "), already exists.");
-        registryMap.put(name, textureIconIn);
+    public void register(TextureIconCodec codec) {
+        String name = codec.name();
+        if (registryMap.containsKey(codec.name()))
+            throw new IllegalArgumentException(TextureIconCodec.codecName +  " with name(" + name + "), already exists.");
+        registryMap.put(name, codec);
     }
 
-    public ITextureIcon getTextureIconByName(String textureIcon) {
-        return registryMap.get(textureIcon);
+    public TextureIconCodec getTextureIconByName(String name) {
+        return registryMap.get(name);
     }
 
-    public Set<ITextureIcon> getAllTextureIcon() {
+    public Set<TextureIconCodec> getAllTextureIcon() {
         return new HashSet<>(registryMap.values());
     }
 
     public void buildJson(){
-        for(ITextureIcon textureIcon : registryMap.values()) {
-            JsonObject jsonObject = getJsonObject(textureIcon.getName());
+        for(TextureIconCodec codec : registryMap.values()) {
+            JsonObject jsonObject = getJsonObject(codec.name());
 
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(textureIcon.getName(), toJsonObject(textureIcon));
+                this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }
     }
@@ -66,35 +68,26 @@ public class TextureIconRegistry extends JsonConfigMultiFile<ITextureIcon> {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        ITextureIcon textureIcon = fromJsonObject(jsonObject);
+                        TextureIconCodec codec = fromJsonObject(jsonObject);
 
-                        registryMap.put(textureIcon.getName(), textureIcon);
+                        registryMap.put(codec.name(), codec);
 
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to texture icon list because a texture icon already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to " + TextureIconCodec.codecName +  " list because a " + TextureIconCodec.codecName +  " already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            TechAscension.LOGGER.warn(new CrashReport("texture icon json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport(TextureIconCodec.codecName +  " json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
     @Override
-    public ITextureIcon fromJsonObject(JsonObject jsonObjectIn){
-        return new ITextureIcon() {
-            @Override
-            public String getName() {
-                return jsonObjectIn.get("name").getAsString();
-            }
-        };
+    public TextureIconCodec fromJsonObject(JsonObject jsonObjectIn){
+        return TextureIconCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + TextureIconCodec.codecName + ", please fix this"))).getFirst();
     }
 
-    public JsonObject toJsonObject(ITextureIcon textureIcon) {
-        JsonObject jsonObject = new JsonObject();
-
-        jsonObject.addProperty("name", textureIcon.getName());
-
-        return jsonObject;
+    public JsonObject toJsonObject(TextureIconCodec codec) {
+        return TextureIconCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your " + TextureIconCodec.codecName + " with name [" + codec.name() + "], please fix this"))).getAsJsonObject();
     }
 }

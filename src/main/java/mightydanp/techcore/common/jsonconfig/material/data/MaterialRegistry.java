@@ -97,7 +97,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", materialIn.name);
         jsonObject.addProperty("color", materialIn.color);
-        jsonObject.addProperty("texture_icon", materialIn.textureIcon.getFirst() + ":" + materialIn.textureIcon.getSecond().getName());
+        jsonObject.addProperty("texture_icon", materialIn.textureIcon.getFirst() + ":" + materialIn.textureIcon.getSecond().name());
 
         JsonObject elementLocalization = new JsonObject();
         {

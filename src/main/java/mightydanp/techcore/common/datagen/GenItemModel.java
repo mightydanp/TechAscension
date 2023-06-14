@@ -183,8 +183,8 @@ public class GenItemModel extends ItemModelProvider {
         String suffix = itemName.split("_")[itemName.split("_").length - 1];
 
         final ModelFile parent = factory.apply(mcLoc("item/generated"));
-        final ResourceLocation itemIconTexture = new ResourceLocation(ITMaterialIn.textureIcon.getFirst(), ModelProvider.ITEM_FOLDER + "/material_icons/" + ITMaterialIn.textureIcon.getSecond().getName() + "/" + baseString(item, ITMaterialIn.name));
-        final ResourceLocation itemIconOverlayTexture = new ResourceLocation(ITMaterialIn.textureIcon.getFirst(), ModelProvider.ITEM_FOLDER + "/material_icons/" + ITMaterialIn.textureIcon.getSecond().getName() + "/" + baseString(item, ITMaterialIn.name) + "_overlay");
+        final ResourceLocation itemIconTexture = new ResourceLocation(ITMaterialIn.textureIcon.getFirst(), ModelProvider.ITEM_FOLDER + "/material_icons/" + ITMaterialIn.textureIcon.getSecond().name() + "/" + baseString(item, ITMaterialIn.name));
+        final ResourceLocation itemIconOverlayTexture = new ResourceLocation(ITMaterialIn.textureIcon.getFirst(), ModelProvider.ITEM_FOLDER + "/material_icons/" + ITMaterialIn.textureIcon.getSecond().name() + "/" + baseString(item, ITMaterialIn.name) + "_overlay");
         final ItemModelBuilder iconModel = factory.apply(itemIconTexture);
         iconModel.parent(parent);
         iconModel.texture("layer0", itemIconTexture);
@@ -248,7 +248,7 @@ public class GenItemModel extends ItemModelProvider {
     public void coloredToolPart(Item item, TCMaterial ITMaterialIn) {
         String modId = item.getRegistryName().toString().split(":")[0];
         String itemName = item.getRegistryName().toString().split(":")[1];
-        String textureFlag = ITMaterialIn.textureIcon.getSecond().getName();
+        String textureFlag = ITMaterialIn.textureIcon.getSecond().name();
 
         String materialName = itemName.replace(ITMaterialIn.name, "");
         String prefix = materialName.split("_")[0];

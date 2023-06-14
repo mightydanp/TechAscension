@@ -367,7 +367,7 @@ public class TCTool {
                                 {
                                     ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
                                     model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
-                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)
+                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().name() + "/" + partName)
                                     );
 
                                     AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);
@@ -426,7 +426,7 @@ public class TCTool {
                                     {
                                         ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
                                         model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
-                                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)
+                                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().name() + "/" + partName)
                                         );
 
                                         AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);
@@ -465,7 +465,7 @@ public class TCTool {
                                 {
                                     ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
                                     model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
-                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)
+                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().name() + "/" + partName)
                                     );
 
                                     AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);
@@ -521,7 +521,7 @@ public class TCTool {
                                 {
                                     ModelData model = new ModelData(materialPartName, ModelData.ITEM_FOLDER, null);
                                     model.getModel().parent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
-                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().getName() + "/" + partName)
+                                            .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + material.textureIcon.getSecond().name() + "/" + partName)
                                     );
 
                                     AssetPackRegistry.itemModelDataHashMap.put(materialPartName, model);

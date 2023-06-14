@@ -22,62 +22,64 @@ import java.util.stream.Collectors;
 /**
  * Created by MightyDanp on 1/25/2022.
  */
-public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
+public class TextureIconServer extends JsonConfigServer<TextureIconCodec> {
+    @Override
+    public Map<String, TextureIconCodec> getServerMapFromList(List<TextureIconCodec> codecs) {
+        Map<String, TextureIconCodec> codecMap = new LinkedHashMap<>();
+        codecs.forEach(textureIcon -> codecMap.put(textureIcon.name(), textureIcon));
 
-    public Map<String, ITextureIcon> getServerMapFromList(List<ITextureIcon> textureIconsIn) {
-        Map<String, ITextureIcon> textureIconsList = new LinkedHashMap<>();
-        textureIconsIn.forEach(textureIcon -> textureIconsList.put(textureIcon.getName(), textureIcon));
-
-        return textureIconsList;
+        return codecMap;
     }
 
+    @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<ITextureIcon> list = message.getConfig(TCJsonConfigs.textureIconID).stream()
-                .filter(ITextureIcon.class::isInstance)
-                .map(ITextureIcon.class::cast).toList();
+        List<TextureIconCodec> clientList = message.getConfig(TCJsonConfigs.textureIconID).stream()
+                .filter(TextureIconCodec.class::isInstance)
+                .map(TextureIconCodec.class::cast).toList();
         
-        if(list.size() != getServerMap().size()){
+        if(clientList.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("texture_icon", sync.get());
+                ConfigSync.syncedJson.put(TextureIconCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        getServerMap().forEach((name, textureIcon) -> {
-            sync.set(list.stream().anyMatch(o -> o.getName().equals(name)));
+        getServerMap().forEach((name, serverCodec) -> {
+            sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<ITextureIcon> optional = list.stream().filter(o -> o.getName().equals(name)).findFirst();
+                Optional<TextureIconCodec> optionalClientCodec = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
-                if(optional.isPresent()) {
-                    ITextureIcon serverTextureIcon = optional.get();
-                    JsonObject jsonMaterial = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(textureIcon);
-                    JsonObject materialJson = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
+                if(optionalClientCodec.isPresent()) {
+                    TextureIconCodec clientCodec = optionalClientCodec.get();
+                    JsonObject serverJson = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(serverCodec);
+                    JsonObject clientJson = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(clientCodec);
 
-                    sync.set(materialJson.equals(jsonMaterial));
+                    sync.set(clientJson.equals(serverJson));
                 }
             }
         });
 
-        ConfigSync.syncedJson.put("texture_icon", sync.get());
+        ConfigSync.syncedJson.put(TextureIconCodec.codecName, sync.get());
 
         return sync.get();
     }
 
+    @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, ITextureIcon> clientTextureIcons = new HashMap<>();
+        Map<String, TextureIconCodec> clientMap = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/texture_icon");
+        Path configs = Paths.get(singlePlayerConfigs + "/" + TextureIconCodec.codecName);
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                ConfigSync.syncedJson.put("texture_icon", sync.get());
+                ConfigSync.syncedJson.put(TextureIconCodec.codecName, sync.get());
                 return false;
             }
 
@@ -85,19 +87,19 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
-                    ITextureIcon textureIcon = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).fromJsonObject(jsonObject);
-                    clientTextureIcons.put(textureIcon.getName(), textureIcon);
+                    TextureIconCodec codec = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).fromJsonObject(jsonObject);
+                    clientMap.put(codec.name(), codec);
                 }
 
-                getServerMap().values().forEach(serverTextureIcon -> {
-                    sync.set(clientTextureIcons.containsKey(serverTextureIcon.getName()));
+                getServerMap().values().forEach(serverCodec -> {
+                    sync.set(clientMap.containsKey(serverCodec.name()));
 
                     if(sync.get()) {
-                        ITextureIcon clientTextureIcon = getServerMap().get(serverTextureIcon.getName());
-                        JsonObject jsonMaterial = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(serverTextureIcon);
-                        JsonObject materialJson = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(clientTextureIcon);
+                        TextureIconCodec clientCodec = getServerMap().get(serverCodec.name());
+                        JsonObject serverJson = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(serverCodec);
+                        JsonObject clientJson = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(clientCodec);
 
-                        sync.set(materialJson.equals(jsonMaterial));
+                        sync.set(clientJson.equals(serverJson));
                     }
 
                 });
@@ -106,19 +108,19 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("texture_icon", sync.get());
+                ConfigSync.syncedJson.put(TextureIconCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        ConfigSync.syncedJson.put("texture_icon", sync.get());
+        ConfigSync.syncedJson.put(TextureIconCodec.codecName, sync.get());
 
         return sync.get();
     }
 
+    @Override
     public void syncClientWithServer(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/texture_icon");
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/" + TextureIconCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -126,33 +128,33 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
             }
         }
 
-        for (ITextureIcon textureIcon : getServerMap().values()) {
-            String name = textureIcon.getName();
-            Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(textureIcon);
+        for (TextureIconCodec serverCodec : getServerMap().values()) {
+            String name = serverCodec.name();
+            Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
+            JsonObject jsonObject = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).toJsonObject(serverCodec);
             String s = GSON.toJson(jsonObject);
-            if (!Files.exists(materialFile)) {
-                Files.createDirectories(materialFile.getParent());
+            if (!Files.exists(filePath)) {
+                Files.createDirectories(filePath.getParent());
 
-                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                     bufferedwriter.write(s);
                 }
             }
         }
     }
-
+    @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/texture_icon");
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/texture_icon");
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/" + TextureIconCodec.codecName);
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/" + TextureIconCodec.codecName);
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.textureIcon.getFirst().getJsonObject(file.getName());
-                    ITextureIcon textureIcon = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).fromJsonObject(jsonObject);
+                    TextureIconCodec client = ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = textureIcon.getName();
+                    String name = client.name();
 
                     Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
                     if (!Files.exists(materialFile)) {
@@ -170,29 +172,29 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<ITextureIcon> list = message.getConfig(TCJsonConfigs.textureIconID).stream()
-                .filter(ITextureIcon.class::isInstance)
-                .map(ITextureIcon.class::cast).toList();
+        List<TextureIconCodec> list = message.getConfig(TCJsonConfigs.textureIconID).stream()
+                .filter(TextureIconCodec.class::isInstance)
+                .map(TextureIconCodec.class::cast).toList();
 
-        Map<String, ITextureIcon> textureIcons = list.stream()
-                .collect(Collectors.toMap(ITextureIcon::getName, s -> s));
+        Map<String, TextureIconCodec> map = list.stream()
+                .collect(Collectors.toMap(TextureIconCodec::name, s -> s));
 
         serverMap.clear();
-        serverMap.putAll(textureIcons);
+        serverMap.putAll(map);
 
-        TechAscension.LOGGER.info("Loaded {} texture icons from the server", textureIcons.size());
+        TechAscension.LOGGER.info("Loaded {} " + TextureIconCodec.codecName + " from the server", map.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, ITextureIcon textureIcon) {
-        buffer.writeUtf(textureIcon.getName());
+    public void singleToBuffer(FriendlyByteBuf buffer, TextureIconCodec codec) {
+        buffer.writeWithCodec(TextureIconCodec.CODEC, codec);
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<ITextureIcon> list = message.getConfig(TCJsonConfigs.textureIconID).stream()
-                .filter(ITextureIcon.class::isInstance)
-                .map(ITextureIcon.class::cast).toList();
+        List<TextureIconCodec> list = message.getConfig(TCJsonConfigs.textureIconID).stream()
+                .filter(TextureIconCodec.class::isInstance)
+                .map(TextureIconCodec.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -200,26 +202,18 @@ public class TextureIconServer extends JsonConfigServer<ITextureIcon> {
     }
 
     @Override
-    public ITextureIcon singleFromBuffer(FriendlyByteBuf buffer) {
-        String name = buffer.readUtf();
-
-        return new ITextureIcon() {
-
-            @Override
-            public String getName() {
-                return name;
-            }
-        };
+    public TextureIconCodec singleFromBuffer(FriendlyByteBuf buffer) {
+        return buffer.readWithCodec(TextureIconCodec.CODEC);
     }
 
     @Override
-    public List<ITextureIcon> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<ITextureIcon> textureIcons = new ArrayList<>();
+    public List<TextureIconCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
+        List<TextureIconCodec> textureIcons = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            ITextureIcon textureIcon = singleFromBuffer(buffer);
+            TextureIconCodec textureIcon = singleFromBuffer(buffer);
 
             textureIcons.add(textureIcon);
         }

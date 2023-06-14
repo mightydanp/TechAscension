@@ -1,7 +1,7 @@
 package mightydanp.techcore.common.tool.part;
 
 import com.mojang.datafixers.util.Pair;
-import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
+import mightydanp.techcore.common.jsonconfig.icons.TextureIconCodec;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +16,7 @@ public class ToolPart extends Item{
     public Integer durability;
     public String element;
     public Integer color;
-    public Pair<String, ITextureIcon> textureFlag;
+    public Pair<String, TextureIconCodec> textureFlag;
     public Integer temperature;
     public Integer meltingPoint;
     public Integer boilingPoint;
@@ -46,7 +46,7 @@ public class ToolPart extends Item{
         return this;
     }
 
-    public ToolPart setTextureFlag(Pair<String, ITextureIcon> textureFlag) {
+    public ToolPart setTextureFlag(Pair<String, TextureIconCodec> textureFlag) {
         this.textureFlag = textureFlag;
         return this;
     }

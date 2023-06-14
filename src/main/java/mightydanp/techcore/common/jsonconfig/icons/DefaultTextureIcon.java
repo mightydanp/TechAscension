@@ -3,55 +3,55 @@ package mightydanp.techcore.common.jsonconfig.icons;
 /**
  * Created by MightyDanp on 4/6/2021.
  */
-public enum DefaultTextureIcon implements ITextureIcon{
-    CUBE("cube"),
-    CUBE_SHINY("cube_shiny"),
-    DIAMOND("diamond"),
-    DULL("dull"),
-    EMERALD("emerald"),
-    FIERY("fiery"),
-    FINE("fine"),
-    FLINT("flint"),
-    FLUID("fluid"),
-    FOOD("food"),
-    GAS("gas"),
-    GEM_HORIZONTAL("gem_horizontal"),
-    GEM_VERTICAL("gem_vertical"),
-    GLASS("glass"),
-    HEX("hex"),
-    LAPIS("lapis"),
-    LEAF("leaf"),
-    LIGNITE("lignite"),
-    MAGNETIC("magnetic"),
-    METALLIC("metallic"),
-    NETHERSTAR("netherstar"),
-    NONE("none"),
-    OPAL("opal"),
-    PAPER("paper"),
-    PLASMA("plasma"),
-    POWDER("powder"),
-    PRISMARINE("prismarine"),
-    QUARTZ("quartz"),
-    RAD("rad"),
-    REDSTONE("redstone"),
-    ROUGH("rough"),
-    RUBBER("rubber"),
-    RUBY("ruby"),
-    SAND("sand"),
-    SHARDS("shards"),
-    SHINY("shiny"),
-    SPACE("space"),
-    STONE("stone"),
-    WOOD("wood");
+public enum DefaultTextureIcon {
+    CUBE(new TextureIconCodec("cube")),
+    CUBE_SHINY(new TextureIconCodec("cube_shiny")),
+    DIAMOND(new TextureIconCodec("diamond")),
+    DULL(new TextureIconCodec("dull")),
+    EMERALD(new TextureIconCodec("emerald")),
+    FIERY(new TextureIconCodec("fiery")),
+    FINE(new TextureIconCodec("fine")),
+    FLINT(new TextureIconCodec("flint")),
+    FLUID(new TextureIconCodec("fluid")),
+    FOOD(new TextureIconCodec("food")),
+    GAS(new TextureIconCodec("gas")),
+    GEM_HORIZONTAL(new TextureIconCodec("gem_horizontal")),
+    GEM_VERTICAL(new TextureIconCodec("gem_vertical")),
+    GLASS(new TextureIconCodec("glass")),
+    HEX(new TextureIconCodec("hex")),
+    LAPIS(new TextureIconCodec("lapis")),
+    LEAF(new TextureIconCodec("leaf")),
+    LIGNITE(new TextureIconCodec("lignite")),
+    MAGNETIC(new TextureIconCodec("magnetic")),
+    METALLIC(new TextureIconCodec("metallic")),
+    NETHERSTAR(new TextureIconCodec("netherstar")),
+    NONE(new TextureIconCodec("none")),
+    OPAL(new TextureIconCodec("opal")),
+    PAPER(new TextureIconCodec("paper")),
+    PLASMA(new TextureIconCodec("plasma")),
+    POWDER(new TextureIconCodec("powder")),
+    PRISMARINE(new TextureIconCodec("prismarine")),
+    QUARTZ(new TextureIconCodec("quartz")),
+    RAD(new TextureIconCodec("rad")),
+    REDSTONE(new TextureIconCodec("redstone")),
+    ROUGH(new TextureIconCodec("rough")),
+    RUBBER(new TextureIconCodec("rubber")),
+    RUBY(new TextureIconCodec("ruby")),
+    SAND(new TextureIconCodec("sand")),
+    SHARDS(new TextureIconCodec("shards")),
+    SHINY(new TextureIconCodec("shiny")),
+    SPACE(new TextureIconCodec("space")),
+    STONE(new TextureIconCodec("stone")),
+    WOOD(new TextureIconCodec("wood"));
 
-    private final String name;
+    private final TextureIconCodec codec;
 
-    DefaultTextureIcon(String nameIn) {
-        name = nameIn;
+    DefaultTextureIcon(TextureIconCodec codecIn) {
+        codec = codecIn;
     }
 
-    public String getName() {
-        return name;
+    public TextureIconCodec getCodec() {
+        return codec;
     }
 
 }

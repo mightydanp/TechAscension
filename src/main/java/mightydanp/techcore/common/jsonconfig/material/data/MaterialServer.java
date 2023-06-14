@@ -9,7 +9,7 @@ import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateRegistry;
-import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
+import mightydanp.techcore.common.jsonconfig.icons.TextureIconCodec;
 import mightydanp.techcore.common.jsonconfig.icons.TextureIconRegistry;
 import mightydanp.techcore.common.jsonconfig.material.ore.IOreType;
 import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeRegistry;
@@ -186,7 +186,7 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
     public void singleToBuffer(FriendlyByteBuf buffer, TCMaterial material) {
         buffer.writeUtf(material.name);
         buffer.writeInt(material.color);
-        String textureIconString = material.textureIcon.getFirst() + ":" + material.textureIcon.getSecond().getName();
+        String textureIconString = material.textureIcon.getFirst() + ":" + material.textureIcon.getSecond().name();
 
         buffer.writeUtf(textureIconString);
         buffer.writeUtf(Objects.requireNonNullElse(material.symbol, ""));
@@ -259,7 +259,7 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
         String name = buffer.readUtf();
         int color = buffer.readInt();
         String textureIconString = buffer.readUtf();
-        Pair<String, ITextureIcon> textureIcon = new Pair<>(textureIconString.split(":")[0], ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getTextureIconByName(textureIconString.split(":")[1]));
+        Pair<String, TextureIconCodec> textureIcon = new Pair<>(textureIconString.split(":")[0], ((TextureIconRegistry) TCJsonConfigs.textureIcon.getFirst()).getTextureIconByName(textureIconString.split(":")[1]));
         TCMaterial material = new TCMaterial(name, color, textureIcon);
 
         String symbol = buffer.readUtf();

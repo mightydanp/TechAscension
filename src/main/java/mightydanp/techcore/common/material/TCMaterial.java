@@ -12,7 +12,7 @@ import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
 import mightydanp.techcore.common.jsonconfig.materialflag.IMaterialFlag;
 import mightydanp.techcore.common.jsonconfig.fluidstate.DefaultFluidState;
-import mightydanp.techcore.common.jsonconfig.icons.ITextureIcon;
+import mightydanp.techcore.common.jsonconfig.icons.TextureIconCodec;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.techcore.common.jsonconfig.material.ore.DefaultOreType;
 import mightydanp.techcore.common.jsonconfig.material.ore.IOreType;
@@ -58,7 +58,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public final String name;
     public final int color;
 
-    public Pair<String, ITextureIcon> textureIcon;
+    public Pair<String, TextureIconCodec> textureIcon;
 
     public String symbol = null;
 
@@ -108,7 +108,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public RegistryObject<Item> layerItemBlock, rockItemBlock, thinSlabItemBlock;
 
 
-    public TCMaterial(String materialNameIn, int colorIn, Pair<String, ITextureIcon> textureIconLocationIn) {
+    public TCMaterial(String materialNameIn, int colorIn, Pair<String, TextureIconCodec> textureIconLocationIn) {
         name = materialNameIn;
         color = colorIn;
         textureIcon = textureIconLocationIn;
@@ -441,15 +441,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         //--Resources
                         {
                             ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/rock")));
+                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/rock")));
                             AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                         }
                         {
                             String modelName = name + ":rock";
-                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                             model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock"))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/rock_overlay")
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/rock"))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/rock_overlay")
                             );
                             AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                         }
@@ -514,15 +514,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         String objectName = "crushed_" + name + "_ore";
                         {
                             ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/crushed_ore")));
+                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/crushed_ore")));
                             AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                         }
                         {
                             String modelName = name + ":crushed_ore";
-                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                             model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/crushed_ore"))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/crushed_ore_overlay")
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/crushed_ore"))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/crushed_ore_overlay")
                             );
                             AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                         }
@@ -539,15 +539,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         String objectName = "purified_" + name + "_ore";
                         {
                             ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/purified_ore")));
+                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/purified_ore")));
                             AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                         }
                         {
                             String modelName = name + ":purified_ore";
-                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                             model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/purified_ore"))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/purified_ore_overlay")
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/purified_ore"))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/purified_ore_overlay")
                             );
                             AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                         }
@@ -565,15 +565,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         String objectName = "centrifuged_" + name + "_ore";
                         {
                             ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/centrifuged_ore")));
+                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/centrifuged_ore")));
                             AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                         }
                         {
                             String modelName = name + ":centrifuged_ore";
-                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                             model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/centrifuged_ore"))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/centrifuged_ore_overlay")
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/centrifuged_ore"))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/centrifuged_ore_overlay")
                             );
                             AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                         }
@@ -597,15 +597,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         String objectName = name + "_gem";
                         {
                             ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/gem")));
+                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/gem")));
                             AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                         }
                         {
                             String modelName = name + ":gem";
-                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                             model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/gem"))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/gem_overlay")
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/gem"))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/gem_overlay")
                             );
                             AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                         }
@@ -622,15 +622,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         String objectName = "chipped_" + name + "_gem";
                         {
                             ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/chipped_gem")));
+                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/chipped_gem")));
                             AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                         }
                         {
                             String modelName = name + ":chipped_gem";
-                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                             model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/chipped_gem"))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/chipped_gem_overlay")
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/chipped_gem"))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/chipped_gem_overlay")
                             );
                             AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                         }
@@ -647,15 +647,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         String objectName = "flawed_" + name + "_gem";
                         {
                             ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/flawed_gem")));
+                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/flawed_gem")));
                             AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                         }
                         {
                             String modelName = name + ":flawed_gem";
-                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                             model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawed_gem"))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawed_gem_overlay")
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/flawed_gem"))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/flawed_gem_overlay")
                             );
                             AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                         }
@@ -672,15 +672,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         String objectName = "flawless_" + name + "_gem";
                         {
                             ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/flawless_gem")));
+                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/flawless_gem")));
                             AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                         }
                         {
                             String modelName = name + ":flawless_gem";
-                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                             model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawless_gem"))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/flawless_gem_overlay")
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/flawless_gem"))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/flawless_gem_overlay")
                             );
                             AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                         }
@@ -697,15 +697,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                         String objectName = "legendary_" + name + "_gem";
                         {
                             ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/legendary_gem")));
+                            model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/legendary_gem")));
                             AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                         }
                         {
                             String modelName = name + ":legendary_gem";
-                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                            ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                             model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/legendary_gem"))
-                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/legendary_gem_overlay")
+                                    .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/legendary_gem"))
+                                    .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/legendary_gem_overlay")
                             );
                             AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                         }
@@ -725,15 +725,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     String objectName = name + "_dust";
                     {
                         ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                        model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/dust")));
+                        model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/dust")));
                         AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                     }
                     {
                         String modelName = name + ":dust";
-                        ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                        ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                         model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/dust"))
-                                .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/dust_overlay")
+                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/dust"))
+                                .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/dust_overlay")
                         );
                         AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                     }
@@ -750,15 +750,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     String objectName = "small_" + name + "_dust";
                     {
                         ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                        model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/small_dust")));
+                        model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/small_dust")));
                         AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                     }
                     {
                         String modelName = name + ":small_dust";
-                        ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                        ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                         model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/small_dust"))
-                                .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/small_dust_overlay")
+                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/small_dust"))
+                                .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/small_dust_overlay")
                         );
                         AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                     }
@@ -775,15 +775,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     String objectName = "tiny_" + name + "_dust";
                     {
                         ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
-                        model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/tiny_dust")));
+                        model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/tiny_dust")));
                         AssetPackRegistry.itemModelDataHashMap.put(objectName, model);
                     }
                     {
                         String modelName = name + ":tiny_dust";
-                        ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                        ModelData model = new ModelData(objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                         model.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model)
-                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/tiny_dust"))
-                                .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/tiny_dust_overlay")
+                                .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/tiny_dust"))
+                                .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/tiny_dust_overlay")
                         );
                         AssetPackRegistry.itemModelDataHashMap.put(modelName, model);
                     }
@@ -830,15 +830,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                             //--Resources
                             {
                                 ModelData model = new ModelData("raw_" + objectName, ModelData.ITEM_FOLDER, null);
-                                model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName() + "/raw_ore"))
+                                model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name() + "/raw_ore"))
                                 );
                                 AssetPackRegistry.itemModelDataHashMap.put("raw_" + objectName, model);
                             }{
 
-                                ModelData model = new ModelData("raw_" + objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().getName().toLowerCase());
+                                ModelData model = new ModelData("raw_" + objectName, ModelData.ITEM_FOLDER, "material_icons/" + textureIcon.getSecond().name().toLowerCase());
                                 model.getModel().setParent(new ModelFile.UncheckedModelFile(new ResourceLocation("item/generated")))
-                                        .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore"))
-                                        .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().getName().toLowerCase() + "/raw_ore_overlay")
+                                        .texture("layer0", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/raw_ore"))
+                                        .texture("layer1", new ResourceLocation(Ref.mod_id, "item/material_icons/" + textureIcon.getSecond().name().toLowerCase() + "/raw_ore_overlay")
                                 );
                                 AssetPackRegistry.itemModelDataHashMap.put(stoneLayer.name + "_" + name + ":raw_ore", model);
                             }
@@ -990,7 +990,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 //--//--//--//--//--//--//--//--//
                 // -- Item --\\
                 //--Resources
-                //AssetPackRegistry.itemModelDataHashMap.put(name + "_" + INGOT.name(), new ItemModelData().getModel().setParent(new ResourceLocation(Ref.mod_id, "/material_icons/" + textureIcon.getSecond().getName() + "/ingot")));
+                //AssetPackRegistry.itemModelDataHashMap.put(name + "_" + INGOT.name(), new ItemModelData().getModel().setParent(new ResourceLocation(Ref.mod_id, "/material_icons/" + textureIcon.getSecond().name() + "/ingot")));
                 //enLang.addTranslation("item." + Ref.mod_id + "." + name + "_" + INGOT.name(), LangData.translateUpperCase(name + "_" + INGOT.name()));
                 //--Tags
 
