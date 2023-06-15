@@ -91,7 +91,6 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<MaterialFlagCodec>
     @Override
     public MaterialFlagCodec fromJsonObject(JsonObject jsonObjectIn){
         return MaterialFlagCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + MaterialFlagCodec.codecName + ", please fix this"))).getFirst();
-
     }
 
     public JsonObject toJsonObject(MaterialFlagCodec codec) {

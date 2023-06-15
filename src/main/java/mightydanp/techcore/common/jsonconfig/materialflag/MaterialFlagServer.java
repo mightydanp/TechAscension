@@ -196,7 +196,7 @@ public class MaterialFlagServer extends JsonConfigServer<MaterialFlagCodec> {
 
         buffer.writeVarInt(list.size());
 
-        list.forEach((materialFlag) -> singleToBuffer(buffer, materialFlag));
+        list.forEach((codec) -> singleToBuffer(buffer, codec));
     }
 
     @Override

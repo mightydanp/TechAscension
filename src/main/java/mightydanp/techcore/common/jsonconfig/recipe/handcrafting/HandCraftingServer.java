@@ -7,9 +7,7 @@ import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,62 +22,65 @@ import java.util.stream.Collectors;
 /**
  * Created by MightyDanp on 1/3/2022.
  */
-public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
+public class HandCraftingServer extends JsonConfigServer<HandCraftingCodec> {
 
-    public Map<String, IHandCrafting> getServerMapFromList(List<IHandCrafting> handCraftingIn) {
-        Map<String, IHandCrafting> handCraftingList = new LinkedHashMap<>();
-        handCraftingIn.forEach(handCrafting -> handCraftingList.put(handCrafting.getName(), handCrafting));
+    @Override
+    public Map<String, HandCraftingCodec> getServerMapFromList(List<HandCraftingCodec> handCraftingIn) {
+        Map<String, HandCraftingCodec> codecMap = new LinkedHashMap<>();
+        handCraftingIn.forEach(handCrafting -> codecMap.put(handCrafting.name(), handCrafting));
 
-        return handCraftingList;
+        return codecMap;
     }
 
+    @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<IHandCrafting> list = message.getConfig(TCJsonConfigs.handCraftingID).stream()
-                .filter(IHandCrafting.class::isInstance)
-                .map(IHandCrafting.class::cast).toList();
+        List<HandCraftingCodec> clientList = message.getConfig(TCJsonConfigs.handCraftingID).stream()
+                .filter(HandCraftingCodec.class::isInstance)
+                .map(HandCraftingCodec.class::cast).toList();
 
-        if(list.size() != getServerMap().size()){
+        if(clientList.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("hand_crafting", sync.get());
+                ConfigSync.syncedJson.put(HandCraftingCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        getServerMap().forEach((name, handCrafting) -> {
-            sync.set(list.stream().anyMatch(o -> o.getName().equals(name)));
+        getServerMap().forEach((name, serverCodec) -> {
+            sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<IHandCrafting> optional = list.stream().filter(o -> o.getName().equals(name)).findFirst();
+                Optional<HandCraftingCodec> optionalClientCodec = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
-                if(optional.isPresent()) {
-                    IHandCrafting serverHandCrafting = optional.get();
-                    JsonObject json = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(handCrafting);
-                    JsonObject jsonServer = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(serverHandCrafting);
+                if(optionalClientCodec.isPresent()) {
+                    HandCraftingCodec clientCodec = optionalClientCodec.get();
+                    JsonObject serverJson = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(serverCodec);
+                    JsonObject clientJson = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(clientCodec);
 
-                    sync.set(jsonServer.equals(json));
+                    sync.set(clientJson.equals(serverJson));
                 }
             }
         });
 
-        ConfigSync.syncedJson.put("hand_crafting", sync.get());
+        ConfigSync.syncedJson.put(HandCraftingCodec.codecName, sync.get());
 
         return sync.get();
     }
 
+    @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, IHandCrafting> clientHandCraftingList = new HashMap<>();
+        Map<String, HandCraftingCodec> clientHandCraftingList = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/recipe" + "/hand_crafting");
+        Path configs = Paths.get(singlePlayerConfigs + "/recipe" + "/" + HandCraftingCodec.codecName);
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                ConfigSync.syncedJson.put("hand_crafting", sync.get());
+                ConfigSync.syncedJson.put(HandCraftingCodec.codecName, sync.get());
                 return false;
             }
 
@@ -87,19 +88,19 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.handCrafting.getFirst().getJsonObject(file.getName());
-                    IHandCrafting handCrafting = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).fromJsonObject(jsonObject);
-                    clientHandCraftingList.put(handCrafting.getName(), handCrafting);
+                    HandCraftingCodec codec = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).fromJsonObject(jsonObject);
+                    clientHandCraftingList.put(codec.name(), codec);
                 }
 
                 getServerMap().values().forEach(serverHandCrafting -> {
-                    sync.set(clientHandCraftingList.containsKey(serverHandCrafting.getName()));
+                    sync.set(clientHandCraftingList.containsKey(serverHandCrafting.name()));
 
                     if(sync.get()) {
-                        IHandCrafting clientHandCrafting = getServerMap().get(serverHandCrafting.getName());
-                        JsonObject jsonMaterial = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(serverHandCrafting);
-                        JsonObject materialJson = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(clientHandCrafting);
+                        HandCraftingCodec clientCodec = getServerMap().get(serverHandCrafting.name());
+                        JsonObject serverJson = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(serverHandCrafting);
+                        JsonObject clientJson = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(clientCodec);
 
-                        sync.set(materialJson.equals(jsonMaterial));
+                        sync.set(clientJson.equals(serverJson));
                     }
 
                 });
@@ -107,18 +108,19 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("hand_crafting", sync.get());
+                ConfigSync.syncedJson.put(HandCraftingCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        ConfigSync.syncedJson.put("hand_crafting", sync.get());
+        ConfigSync.syncedJson.put(HandCraftingCodec.codecName, sync.get());
 
         return sync.get();
     }
 
+    @Override
     public void syncClientWithServer(String folderName) throws IOException {
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/recipe" + "/hand_crafting");
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/recipe" + "/" + HandCraftingCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -126,32 +128,33 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
             }
         }
 
-        for (IHandCrafting handCrafting : getServerMap().values()) {
-            String name = handCrafting.getName();
-            Path file = Paths.get(serverConfigFolder + "/" + name + ".json");
+        for (HandCraftingCodec handCrafting : getServerMap().values()) {
+            String name = handCrafting.name();
+            Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
             JsonObject jsonObject = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).toJsonObject(handCrafting);
             String s = GSON.toJson(jsonObject);
-            if (!Files.exists(file)) {
-                Files.createDirectories(file.getParent());
+            if (!Files.exists(filePath)) {
+                Files.createDirectories(filePath.getParent());
 
-                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(file)) {
+                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                     bufferedwriter.write(s);
                 }
             }
         }
     }
 
+    @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName+ "/recipe" + "/hand_crafting");
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()+ "/recipe" + "/hand_crafting");
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName+ "/recipe" + "/" + HandCraftingCodec.codecName);
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()+ "/recipe" + "/" + HandCraftingCodec.codecName);
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.handCrafting.getFirst().getJsonObject(file.getName());
-                    IHandCrafting handCrafting = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).fromJsonObject(jsonObject);
+                    HandCraftingCodec codec = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = handCrafting.getName();
+                    String name = codec.name();
 
                     Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
                     if (!Files.exists(materialFile)) {
@@ -169,137 +172,53 @@ public class HandCraftingServer extends JsonConfigServer<IHandCrafting> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IHandCrafting> list = message.getConfig(TCJsonConfigs.handCraftingID).stream()
-                .filter(IHandCrafting.class::isInstance)
-                .map(IHandCrafting.class::cast).toList();
+        List<HandCraftingCodec> list = message.getConfig(TCJsonConfigs.handCraftingID).stream()
+                .filter(HandCraftingCodec.class::isInstance)
+                .map(HandCraftingCodec.class::cast).toList();
 
-        Map<String, IHandCrafting> handCrafting = list.stream()
-                .collect(Collectors.toMap(IHandCrafting::getName, s -> s));
+        Map<String, HandCraftingCodec> codecMap = list.stream()
+                .collect(Collectors.toMap(HandCraftingCodec::name, s -> s));
 
         serverMap.clear();
-        serverMap.putAll(handCrafting);
+        serverMap.putAll(codecMap);
 
-        TechAscension.LOGGER.info("Loaded {} hand crafting from the server", handCrafting.size());
+        TechAscension.LOGGER.info("Loaded {} " + HandCraftingCodec.codecName + " from the server", codecMap.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, IHandCrafting handCrafting) {
-        buffer.writeUtf(handCrafting.getName());
-
-        buffer.writeInt(handCrafting.getInput1Amount());
-
-        buffer.writeInt(handCrafting.getInput1().size());
-
-        for(Ingredient ingredient : handCrafting.getInput1()) {
-            ingredient.toNetwork(buffer);
-        }
-
-        buffer.writeInt(handCrafting.getInput2Amount());
-
-        buffer.writeInt(handCrafting.getInput2().size());
-
-        for(Ingredient ingredient : handCrafting.getInput2()) {
-            ingredient.toNetwork(buffer);
-        }
-
-        buffer.writeInt(handCrafting.getOutputAmount());
-
-        buffer.writeInt(handCrafting.getOutput().size());
-
-        for(Ingredient ingredient : handCrafting.getOutput()) {
-            ingredient.toNetwork(buffer);
-        }
+    public void singleToBuffer(FriendlyByteBuf buffer, HandCraftingCodec codec) {
+        buffer.writeWithCodec(HandCraftingCodec.CODEC, codec);
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IHandCrafting> list = message.getConfig(TCJsonConfigs.handCraftingID).stream()
-                .filter(IHandCrafting.class::isInstance)
-                .map(IHandCrafting.class::cast).toList();
+        List<HandCraftingCodec> list = message.getConfig(TCJsonConfigs.handCraftingID).stream()
+                .filter(HandCraftingCodec.class::isInstance)
+                .map(HandCraftingCodec.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
-        list.forEach((handCrafting) -> singleToBuffer(buffer, handCrafting));
+        list.forEach((codec) -> singleToBuffer(buffer, codec));
     }
 
     @Override
-    public IHandCrafting singleFromBuffer(FriendlyByteBuf buffer) {
-        String name = buffer.readUtf();
-
-        int inputAmount1 = buffer.readInt();
-        int inputSize1 = buffer.readInt();
-
-        NonNullList<Ingredient> inputs1 = NonNullList.withSize(inputSize1, Ingredient.EMPTY);
-
-        inputs1.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
-
-        int inputAmount2 = buffer.readInt();
-        int inputSize2 = buffer.readInt();
-
-        NonNullList<Ingredient> inputs2 = NonNullList.withSize(inputSize2, Ingredient.EMPTY);
-
-        inputs2.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
-
-        int outputAmount = buffer.readInt();
-
-        int outputSize = buffer.readInt();
-
-        NonNullList<Ingredient> outputs = NonNullList.withSize(outputSize, Ingredient.EMPTY);
-
-        outputs.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
-
-        return new IHandCrafting() {
-            @Override
-            public String getName() {
-                return name;
-            }
-
-            @Override
-            public Integer getInput1Amount() {
-                return inputAmount1;
-            }
-
-            @Override
-            public NonNullList<Ingredient> getInput1() {
-                return inputs1;
-            }
-
-
-            @Override
-            public Integer getInput2Amount() {
-                return inputAmount2;
-            }
-
-            @Override
-            public NonNullList<Ingredient> getInput2() {
-                return inputs2;
-            }
-
-            @Override
-            public NonNullList<Ingredient> getOutput() {
-                return outputs;
-            }
-
-            @Override
-            public Integer getOutputAmount() {
-                return outputAmount;
-            }
-        };
+    public HandCraftingCodec singleFromBuffer(FriendlyByteBuf buffer) {
+        return buffer.readWithCodec(HandCraftingCodec.CODEC);
     }
 
     @Override
-    public List<IHandCrafting> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<IHandCrafting> handCraftingList = new ArrayList<>();
+    public List<HandCraftingCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
+        List<HandCraftingCodec> codecs = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            IHandCrafting handCrafting = singleFromBuffer(buffer);
+            HandCraftingCodec codec = singleFromBuffer(buffer);
 
-            handCraftingList.add(handCrafting);
+            codecs.add(codec);
         }
 
-        return handCraftingList;
+        return codecs;
     }
 
 }

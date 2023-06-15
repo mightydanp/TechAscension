@@ -2,11 +2,11 @@ package mightydanp.techcore.common.jsonconfig.recipe.handcrafting;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 import net.minecraft.core.NonNullList;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -19,11 +19,11 @@ import java.util.*;
 /**
  * Created by MightyDanp on 12/4/2021.
  */
-public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
+public class HandCraftingRegistry extends JsonConfigMultiFile<HandCraftingCodec> {
 
     @Override
     public void initiate() {
-        setJsonFolderName("recipe/hand_crafting");
+        setJsonFolderName("recipe/" + HandCraftingCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
@@ -32,29 +32,29 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
     }
 
     @Override
-    public void register(IHandCrafting handCraftingIn) {
-        String name = handCraftingIn.getName();
+    public void register(HandCraftingCodec codec) {
+        String name = codec.name();
 
-        if (registryMap.containsKey(handCraftingIn.getName()))
-            throw new IllegalArgumentException("hand crafting with name(" + name + "), already exists.");
-        registryMap.put(name, handCraftingIn);
+        if (registryMap.containsKey(codec.name()))
+            throw new IllegalArgumentException(HandCraftingCodec.codecName + " with name(" + name + "), already exists.");
+        registryMap.put(name, codec);
     }
 
-    public IHandCrafting getHandCraftingByName(String hand_crafting) {
-        return registryMap.get(hand_crafting);
+    public HandCraftingCodec getHandCraftingByName(String name) {
+        return registryMap.get(name);
     }
 
-    public Set<IHandCrafting> getAllHandCrafting() {
+    public Set<HandCraftingCodec> getAllHandCrafting() {
         return new HashSet<>(registryMap.values());
     }
 
     public void buildJson(){
-        for(IHandCrafting handCrafting : registryMap.values()) {
-            JsonObject jsonObject = getJsonObject(handCrafting.getName());
+        for(HandCraftingCodec codec : registryMap.values()) {
+            JsonObject jsonObject = getJsonObject(codec.name());
 
             if (jsonObject.size() == 0) {
-                jsonObject = toJsonObject(handCrafting);
-                saveJsonObject(handCrafting.getName(), jsonObject);
+                jsonObject = toJsonObject(codec);
+                saveJsonObject(codec.name(), jsonObject);
             }
         }
     }
@@ -68,117 +68,43 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<IHandCrafting> {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        IHandCrafting handCrafting = fromJsonObject(jsonObject);
+                        HandCraftingCodec codec = fromJsonObject(jsonObject);
 
-                        registryMap.put(handCrafting.getName(), handCrafting);
+                        registryMap.put(codec.name(), codec);
 
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to hand crafting list because a hand crafting already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to " + HandCraftingCodec.codecName + " list because a " + HandCraftingCodec.codecName + " already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            TechAscension.LOGGER.warn(new CrashReport("hand crafting json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport(HandCraftingCodec.codecName + " json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
     @Override
-    public IHandCrafting fromJsonObject(JsonObject jsonObjectIn) {
-        return new IHandCrafting() {
-            @Override
-            public String getName() {
-                return jsonObjectIn.get("name").getAsString();
-            }
-
-            @Override
-            public Integer getInput1Amount() {
-                return jsonObjectIn.get("input_amount_1").getAsInt();
-            }
-
-            @Override
-            public NonNullList<Ingredient> getInput1() {
-                return itemsFromJson(GsonHelper.getAsJsonArray(jsonObjectIn, "input_ingredients_1"));
-            }
-
-            @Override
-            public Integer getInput2Amount() {
-                return jsonObjectIn.get("input_amount_2").getAsInt();
-            }
-
-            @Override
-            public NonNullList<Ingredient> getInput2() {
-                return itemsFromJson(GsonHelper.getAsJsonArray(jsonObjectIn, "input_ingredients_2"));
-            }
-
-            @Override
-            public Integer getOutputAmount() {
-                return jsonObjectIn.get("output_amount").getAsInt();
-            }
-
-            @Override
-            public NonNullList<Ingredient> getOutput() {
-                return itemsFromJson(GsonHelper.getAsJsonArray(jsonObjectIn, "output_ingredients"));
-            }
-        };
+    public HandCraftingCodec fromJsonObject(JsonObject jsonObjectIn) {
+        return HandCraftingCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + HandCraftingCodec.codecName + ", please fix this"))).getFirst();
     }
 
-    public JsonObject toJsonObject(IHandCrafting handCrafting) {
-        JsonObject jsonObject = new JsonObject();
+    public JsonObject toJsonObject(HandCraftingCodec codec) {
+        return HandCraftingCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + HandCraftingCodec.codecName + ", please fix this"))).getAsJsonObject();
+     }
 
-        jsonObject.addProperty("name", handCrafting.getName());
-
-        jsonObject.addProperty("input_amount", handCrafting.getInput1Amount());
-
-        JsonArray input1List = new JsonArray();
-
-        for(Ingredient ingredient : handCrafting.getInput1()){
-            input1List.add(ingredient.toJson());
-        }
-
-        if(input1List.size() > 0){
-            jsonObject.add("input_ingredients_1", input1List);
-        }
-
-        JsonArray input2List = new JsonArray();
-
-        for(Ingredient ingredient : handCrafting.getInput1()){
-            input2List.add(ingredient.toJson());
-        }
-
-        if(input2List.size() > 0){
-            jsonObject.add("input_ingredients_2", input2List);
-        }
-
-
-        jsonObject.addProperty("output_amount", handCrafting.getOutputAmount());
-
-        JsonArray outputList = new JsonArray();
-
-        for(Ingredient ingredient : handCrafting.getOutput()){
-            outputList.add(ingredient.toJson());
-        }
-
-        if(outputList.size() > 0){
-            jsonObject.add("output_ingredients", outputList);
-        }
-
-        return jsonObject;
+    public static ItemStack itemStackFromJson(JsonObject jsonObject) {
+        return CraftingHelper.getItemStack(jsonObject, true, true);
     }
 
-    public static ItemStack itemStackFromJson(JsonObject p_151275_) {
-        return CraftingHelper.getItemStack(p_151275_, true, true);
-    }
+    private static NonNullList<Ingredient> itemsFromJson(JsonArray json) {
+        NonNullList<Ingredient> ingredients = NonNullList.create();
 
-    private static NonNullList<Ingredient> itemsFromJson(JsonArray p_44276_) {
-        NonNullList<Ingredient> nonnulllist = NonNullList.create();
-
-        for(int i = 0; i < p_44276_.size(); ++i) {
-            Ingredient ingredient = Ingredient.fromJson(p_44276_.get(i));
+        for(int i = 0; i < json.size(); ++i) {
+            Ingredient ingredient = Ingredient.fromJson(json.get(i));
             if (!ingredient.isEmpty()) {
-                nonnulllist.add(ingredient);
+                ingredients.add(ingredient);
             }
         }
 
-        return nonnulllist;
+        return ingredients;
     }
 }
