@@ -198,7 +198,7 @@ public class TextureIconServer extends JsonConfigServer<TextureIconCodec> {
 
         buffer.writeVarInt(list.size());
 
-        list.forEach((textureIcon) -> singleToBuffer(buffer, textureIcon));
+        list.forEach((codec) -> singleToBuffer(buffer, codec));
     }
 
     @Override
@@ -208,17 +208,17 @@ public class TextureIconServer extends JsonConfigServer<TextureIconCodec> {
 
     @Override
     public List<TextureIconCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<TextureIconCodec> textureIcons = new ArrayList<>();
+        List<TextureIconCodec> codecs = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            TextureIconCodec textureIcon = singleFromBuffer(buffer);
+            TextureIconCodec codec = singleFromBuffer(buffer);
 
-            textureIcons.add(textureIcon);
+            codecs.add(codec);
         }
 
-        return textureIcons;
+        return codecs;
     }
 
 }

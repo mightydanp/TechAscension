@@ -11,7 +11,7 @@ import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateRegistry;
 import mightydanp.techcore.common.jsonconfig.icons.TextureIconCodec;
 import mightydanp.techcore.common.jsonconfig.icons.TextureIconRegistry;
-import mightydanp.techcore.common.jsonconfig.material.ore.IOreType;
+import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeCodec;
 import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeRegistry;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.material.TCMaterial;
@@ -198,7 +198,7 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
         buffer.writeInt(Objects.requireNonNullElse(material.harvestLevel, -1));
 
         if(material.oreType != null){
-            buffer.writeUtf(material.oreType.getName());
+            buffer.writeUtf(material.oreType.name());
         }else {
             buffer.writeUtf("");
         }
@@ -291,7 +291,7 @@ public class MaterialServer extends JsonConfigServer<TCMaterial> {
         String oreTypeString = buffer.readUtf();
 
         if(!oreTypeString.equals("")){
-            IOreType oreType =  ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getByName(oreTypeString);
+            OreTypeCodec oreType =  ((OreTypeRegistry) TCJsonConfigs.oreType.getFirst()).getByName(oreTypeString);
             material.setOreType(oreType);
         }
 

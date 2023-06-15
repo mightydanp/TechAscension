@@ -3,20 +3,19 @@ package mightydanp.techcore.common.jsonconfig.material.ore;
 /**
  * Created by MightyDanp on 11/27/2021.
  */
-public enum DefaultOreType implements IOreType{
-    ORE("ore"),
-    GEM("gem"),
-    CRYSTAL("crystal")
+public enum DefaultOreType {
+    ORE( new OreTypeCodec("ore")),
+    GEM( new OreTypeCodec("gem")),
+    CRYSTAL( new OreTypeCodec("crystal"))
     ;
-    public String name;
+    private final OreTypeCodec codec;
 
-    DefaultOreType(String nameIn){
-        name = nameIn;
+    DefaultOreType(OreTypeCodec codecIn){
+        codec = codecIn;
 
     }
-
-    @Override
-    public String getName() {
-        return name;
+    
+    public OreTypeCodec getCodec() {
+        return codec;
     }
 }

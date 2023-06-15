@@ -15,7 +15,7 @@ import mightydanp.techcore.common.jsonconfig.fluidstate.DefaultFluidState;
 import mightydanp.techcore.common.jsonconfig.icons.TextureIconCodec;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.techcore.common.jsonconfig.material.ore.DefaultOreType;
-import mightydanp.techcore.common.jsonconfig.material.ore.IOreType;
+import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeCodec;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.material.fluid.TCFluid;
 import mightydanp.techcore.common.material.fluid.TCFluidBlock;
@@ -63,7 +63,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public String symbol = null;
 
     public Integer denseOreDensity = 8;
-    public IOreType oreType = null;
+    public OreTypeCodec oreType = null;
 
     public Boolean isStoneLayer = null;
     public String stoneLayerBlock = null;
@@ -142,18 +142,18 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         return this;
     }
 
-    public TCMaterial setOreType(IOreType oreTypeIn) {
+    public TCMaterial setOreType(OreTypeCodec oreTypeIn) {
         oreType = oreTypeIn;
 
-        if (oreTypeIn == DefaultOreType.ORE) {
+        if (oreTypeIn == DefaultOreType.ORE.getCodec()) {
             materialFlags.add(ORE);
         }
 
-        if (oreTypeIn == DefaultOreType.GEM) {
+        if (oreTypeIn == DefaultOreType.GEM.getCodec()) {
             materialFlags.add(GEM);
         }
 
-        if (oreTypeIn == DefaultOreType.CRYSTAL) {
+        if (oreTypeIn == DefaultOreType.CRYSTAL.getCodec()) {
 
         }
         return this;

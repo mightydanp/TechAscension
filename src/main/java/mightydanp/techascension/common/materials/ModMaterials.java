@@ -60,8 +60,8 @@ public class ModMaterials extends TCMaterials {
         materialRegistry.register(stone = new TCMaterial("stone", 0x808080, new Pair<>(Ref.mod_id, DULL.getCodec())).setStoneLayerProperties(true, String.valueOf(Blocks.STONE.getRegistryName()), "minecraft:block/stone")
                 .setToolProperties( 40, 12, 40F, 1F, 4F, 2, List.of(), List.of()));
         //--//
-        materialRegistry.register(alexandrite = new TCMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL.getCodec())).setOreType(DefaultOreType.ORE).setDenseOreDensity(8));
-        materialRegistry.register(almandine = new TCMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH.getCodec())).setOreType(DefaultOreType.GEM).setDenseOreDensity(8));
+        materialRegistry.register(alexandrite = new TCMaterial("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL.getCodec())).setOreType(DefaultOreType.ORE.getCodec()).setDenseOreDensity(8));
+        materialRegistry.register(almandine = new TCMaterial("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH.getCodec())).setOreType(DefaultOreType.GEM.getCodec()).setDenseOreDensity(8));
 
         materialRegistry.register(flint = new TCMaterial("flint", 0x002040, new Pair<>(Ref.mod_id, CUBE.getCodec())).setToolProperties( 20, 10, 20F, 1F, 1F, 1, List.of(), List.of()));
 

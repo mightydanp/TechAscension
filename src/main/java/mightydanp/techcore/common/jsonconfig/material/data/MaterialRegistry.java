@@ -159,7 +159,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         JsonObject oreProperties = new JsonObject();
         {
             if (materialIn.oreType != null) {
-                oreProperties.addProperty("ore_type", materialIn.oreType.getName());
+                oreProperties.addProperty("ore_type", materialIn.oreType.name());
             }
 
             if (materialIn.denseOreDensity != null) {

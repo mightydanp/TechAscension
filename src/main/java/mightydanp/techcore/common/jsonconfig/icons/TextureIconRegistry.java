@@ -23,8 +23,8 @@ public class TextureIconRegistry extends JsonConfigMultiFile<TextureIconCodec> {
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
-        for (DefaultTextureIcon textureIcon : DefaultTextureIcon.values()) {
-            register(textureIcon.getCodec());
+        for (DefaultTextureIcon codecs : DefaultTextureIcon.values()) {
+            register(codecs.getCodec());
         }
         //
 
