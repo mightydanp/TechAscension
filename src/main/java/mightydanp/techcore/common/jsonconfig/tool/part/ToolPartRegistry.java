@@ -1,7 +1,6 @@
 package mightydanp.techcore.common.jsonconfig.tool.part;
 
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
@@ -10,6 +9,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
+import static mightydanp.techcore.common.jsonconfig.tool.part.IToolPart.fixesToName;
 
 /**
  * Created by MightyDanp on 1/20/2022.
@@ -37,7 +38,7 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
             throw new IllegalArgumentException("Tool Part with the prefix:(" + toolPartIn.getPrefix() + "), and the suffix:(" + toolPartIn.getSuffix() + "), already exists.");
         }
 
-        registryMap.put(fixesToName(new Pair<>(toolPartIn.getPrefix(), toolPartIn.getSuffix())), toolPartIn);
+        registryMap.put(fixesToName(toolPartIn), toolPartIn);
     }
 
     public IToolPart getByName(String fixesIn) {
@@ -46,7 +47,7 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
 
     public void buildJson() {
         for (IToolPart toolPart : registryMap.values()) {
-            String name = fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix()));
+            String name = fixesToName(toolPart);
 
             if (!name.equals("")) {
                 JsonObject jsonObject = getJsonObject(name);
@@ -70,7 +71,7 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
                         String toolPartName = jsonObject.get("name").getAsString();
                         IToolPart toolPart = fromJsonObject(jsonObject);
 
-                        registryMap.put(fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix())), toolPart);
+                        registryMap.put(fixesToName(toolPart), toolPart);
 
                     } else {
                         TechAscension.LOGGER.fatal("[{}] could not be added to tool part list because a tool part already exist!!", file.getAbsolutePath());
@@ -98,18 +99,13 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
             public String getSuffix() {
                 return suffix;
             }
-
-            @Override
-            public Pair<String, String> getFixes() {
-                return new Pair<>(prefix, suffix);
-            }
         };
     }
 
     public JsonObject toJsonObject(IToolPart toolPart) {
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("name", fixesToName(new Pair<>(toolPart.getPrefix(), toolPart.getSuffix())));
+        jsonObject.addProperty("name", fixesToName(toolPart));
         jsonObject.addProperty("prefix", toolPart.getPrefix());
         jsonObject.addProperty("suffix", toolPart.getSuffix());
 

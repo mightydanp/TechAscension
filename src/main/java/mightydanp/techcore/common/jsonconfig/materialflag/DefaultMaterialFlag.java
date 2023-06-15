@@ -1,44 +1,32 @@
 package mightydanp.techcore.common.jsonconfig.materialflag;
 
-import com.mojang.datafixers.util.Pair;
-
 /**
  * Created by MightyDanp on 9/18/2020.
  */
-public enum DefaultMaterialFlag implements IMaterialFlag {
-    DUST("", "_dust"),
-    INGOT("", "_ingot"),
-    HOT_INGOT("hot_", "_ingot"),
-    SOFTENED_INGOT("softened_", "_ingot"),
-    HARDENED_INGOT("hardened_", "_ingot"),
-    ORE("", "_ore"),
-    SMALL_ORE("", "_ore"),
-    GEM("", "_gem"),
-    FLUID("", "_fluid"),
-    GAS("", "_gas"),
-    BLOCK_METAL("", "_block"),
-    BLOCK_GEM("", "_block"),
-    STONE_LAYER("stone_","_layer"),
-    TOOL("","_tool");
+public enum DefaultMaterialFlag {
+    DUST(new MaterialFlagCodec("", "_dust")),
+    INGOT(new MaterialFlagCodec("", "_ingot")),
+    HOT_INGOT(new MaterialFlagCodec("hot_", "_ingot")),
+    SOFTENED_INGOT(new MaterialFlagCodec("softened_", "_ingot")),
+    HARDENED_INGOT(new MaterialFlagCodec("hardened_", "_ingot")),
+    ORE(new MaterialFlagCodec("", "_ore")),
+    SMALL_ORE(new MaterialFlagCodec("", "_ore")),
+    GEM(new MaterialFlagCodec("", "_gem")),
+    FLUID(new MaterialFlagCodec("", "_fluid")),
+    GAS(new MaterialFlagCodec("", "_gas")),
+    BLOCK_METAL(new MaterialFlagCodec("", "_block")),
+    BLOCK_GEM(new MaterialFlagCodec("", "_block")),
+    STONE_LAYER(new MaterialFlagCodec("stone_","_layer")),
+    TOOL(new MaterialFlagCodec("","_tool"));
 
-    private final String prefix;
-    private final String suffix;
+    private final MaterialFlagCodec codec;
+    
+    DefaultMaterialFlag(MaterialFlagCodec codec) {
+        this.codec = codec;
 
-    DefaultMaterialFlag(String prefixIn, String suffixIn) {
-        prefix = prefixIn;
-        suffix = suffixIn;
     }
-
-    public String getPrefix() {
-        return this.prefix;
-    }
-
-    public String getSuffix() {
-        return this.suffix;
-    }
-
-    public Pair<String, String> getFixes(){
-        return new Pair<>(prefix, suffix);
+        public MaterialFlagCodec getCodec() {
+        return this.codec;
     }
 }
 /*

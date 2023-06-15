@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -23,8 +22,8 @@ public class TextureIconRegistry extends JsonConfigMultiFile<TextureIconCodec> {
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
-        for (DefaultTextureIcon codecs : DefaultTextureIcon.values()) {
-            register(codecs.getCodec());
+        for (DefaultTextureIcon codec : DefaultTextureIcon.values()) {
+            register(codec.getCodec());
         }
         //
 

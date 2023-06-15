@@ -1,7 +1,6 @@
 package mightydanp.techcore.common.jsonconfig.tool.part;
 
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
@@ -222,11 +221,6 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
             @Override
             public String getSuffix() {
                 return suffix;
-            }
-
-            @Override
-            public Pair<String, String> getFixes() {
-                return new Pair<>(prefix, suffix);
             }
         };
     }

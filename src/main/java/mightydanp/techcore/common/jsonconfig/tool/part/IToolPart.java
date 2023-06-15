@@ -1,12 +1,29 @@
 package mightydanp.techcore.common.jsonconfig.tool.part;
 
-import com.mojang.datafixers.util.Pair;
-
 /**
  * Created by MightyDanp on 11/28/2021.
  */
 public interface IToolPart {
-    Pair<String, String> getFixes();
     String getPrefix();
     String getSuffix();
+
+    static String fixesToName(IToolPart codec){
+        String prefix = codec.getPrefix().replace("_", "");
+        String suffix = codec.getSuffix().replace("_", "");
+        String name = "";
+
+        if(!prefix.equals("") && !suffix.equals("")){
+            name = prefix + "_" + suffix;
+        }
+
+        if(prefix.equals("") && !suffix.equals("")){
+            name = suffix;
+        }
+
+        if(!prefix.equals("") && suffix.equals("")){
+            name = prefix;
+        }
+
+        return name;
+    }
 }

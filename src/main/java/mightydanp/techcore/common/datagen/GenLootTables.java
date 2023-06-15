@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.material.TCMaterial;
 import mightydanp.techcore.common.jsonconfig.materialflag.DefaultMaterialFlag;
-import mightydanp.techcore.common.jsonconfig.materialflag.IMaterialFlag;
+import mightydanp.techcore.common.jsonconfig.materialflag.MaterialFlagCodec;
 import mightydanp.techascension.common.datagen.ModBlockLootTable;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -36,6 +36,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by MightyDanp on 3/5/2021.
@@ -48,23 +49,23 @@ public class GenLootTables extends LootTableProvider {
         super(dataGeneratorIn);
     }
     @Override
-    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
+    protected @NotNull List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
         tables.clear();
 
         TCJsonConfigs.material.getFirst().registryMap.values().forEach(material -> {
 
-            for (IMaterialFlag flag : ((TCMaterial)material).materialFlags) {
-                if (flag == DefaultMaterialFlag.ORE) {
+            for (MaterialFlagCodec flag : ((TCMaterial)material).materialFlags) {
+                if (flag == DefaultMaterialFlag.ORE.getCodec()) {
                     for (RegistryObject<Block> blockRegistered : ((TCMaterial)material).oreList) {
                         standardDropTable(blockRegistered.get());
                     }
                 }
-                if (flag == DefaultMaterialFlag.GEM) {
+                if (flag == DefaultMaterialFlag.GEM.getCodec()) {
                     for (RegistryObject<Block> blockRegistered : ((TCMaterial)material).oreList) {
                         standardDropTable(blockRegistered.get());
                     }
                 }
-                if (flag == DefaultMaterialFlag.ORE || flag == DefaultMaterialFlag.GEM) {
+                if (flag == DefaultMaterialFlag.ORE.getCodec() || flag == DefaultMaterialFlag.GEM.getCodec()) {
                     for (RegistryObject<Block> blockRegistered : ((TCMaterial)material).smallOreList) {
                         standardDropTable(blockRegistered.get());
                     }
@@ -106,7 +107,7 @@ public class GenLootTables extends LootTableProvider {
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
-        map.forEach((loc, table) -> LootTables.validate(validationtracker, loc, table));
+    protected void validate(Map<ResourceLocation, LootTable> map, @NotNull ValidationContext validationTracker) {
+        map.forEach((loc, table) -> LootTables.validate(validationTracker, loc, table));
     }
 }

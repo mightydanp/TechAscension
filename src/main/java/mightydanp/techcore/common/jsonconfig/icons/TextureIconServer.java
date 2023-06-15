@@ -156,11 +156,11 @@ public class TextureIconServer extends JsonConfigServer<TextureIconCodec> {
 
                     String name = client.name();
 
-                    Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
-                    if (!Files.exists(materialFile)) {
-                        Files.createDirectories(materialFile.getParent());
+                    Path filePath = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
+                    if (!Files.exists(filePath)) {
+                        Files.createDirectories(filePath.getParent());
 
-                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                             String s = GSON.toJson(jsonObject);
                             bufferedwriter.write(s);
                         }
@@ -176,13 +176,13 @@ public class TextureIconServer extends JsonConfigServer<TextureIconCodec> {
                 .filter(TextureIconCodec.class::isInstance)
                 .map(TextureIconCodec.class::cast).toList();
 
-        Map<String, TextureIconCodec> map = list.stream()
+        Map<String, TextureIconCodec> codecMap = list.stream()
                 .collect(Collectors.toMap(TextureIconCodec::name, s -> s));
 
         serverMap.clear();
-        serverMap.putAll(map);
+        serverMap.putAll(codecMap);
 
-        TechAscension.LOGGER.info("Loaded {} " + TextureIconCodec.codecName + " from the server", map.size());
+        TechAscension.LOGGER.info("Loaded {} " + TextureIconCodec.codecName + " from the server", codecMap.size());
     }
 
     @Override

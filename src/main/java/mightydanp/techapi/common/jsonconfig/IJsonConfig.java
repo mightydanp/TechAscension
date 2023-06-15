@@ -3,7 +3,6 @@ package mightydanp.techapi.common.jsonconfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,25 +61,5 @@ public class IJsonConfig<T> {
 
     public Gson getGSON() {
         return GSON;
-    }
-
-    public String fixesToName(Pair<String, String> fixes){
-        String prefix = fixes.getFirst().replace("_", "");
-        String suffix = fixes.getSecond().replace("_", "");
-        String name = "";
-
-        if(!prefix.equals("") && !suffix.equals("")){
-            name = prefix + "_" + suffix;
-        }
-
-        if(prefix.equals("") && !suffix.equals("")){
-            name = suffix;
-        }
-
-        if(!prefix.equals("") && suffix.equals("")){
-            name = prefix;
-        }
-
-        return name;
     }
 }

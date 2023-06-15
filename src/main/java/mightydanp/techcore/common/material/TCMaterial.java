@@ -10,7 +10,7 @@ import mightydanp.techcore.common.holder.MCMaterialHolder;
 import mightydanp.techcore.common.items.*;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
-import mightydanp.techcore.common.jsonconfig.materialflag.IMaterialFlag;
+import mightydanp.techcore.common.jsonconfig.materialflag.MaterialFlagCodec;
 import mightydanp.techcore.common.jsonconfig.fluidstate.DefaultFluidState;
 import mightydanp.techcore.common.jsonconfig.icons.TextureIconCodec;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
@@ -88,7 +88,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public List<Pair<String, String>> toolPartWhiteList = new ArrayList<>();
     public List<Pair<String, String>> toolPartBlackList = new ArrayList<>();
 
-    public List<IMaterialFlag> materialFlags = new ArrayList<>();
+    public List<MaterialFlagCodec> materialFlags = new ArrayList<>();
     public List<RegistryObject<Block>> oreList = new ArrayList<>();
     public List<RegistryObject<Block>> smallOreList = new ArrayList<>();
     public List<RegistryObject<Block>> denseOreList = new ArrayList<>();
@@ -131,7 +131,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         stoneLayerTextureLocation = stoneLayerTextureLocationIn;
 
         if (isStoneLayerIn) {
-            materialFlags.add(STONE_LAYER);
+            materialFlags.add(STONE_LAYER.getCodec());
         }
 
         return this;
@@ -146,11 +146,11 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         oreType = oreTypeIn;
 
         if (oreTypeIn == DefaultOreType.ORE.getCodec()) {
-            materialFlags.add(ORE);
+            materialFlags.add(ORE.getCodec());
         }
 
         if (oreTypeIn == DefaultOreType.GEM.getCodec()) {
-            materialFlags.add(GEM);
+            materialFlags.add(GEM.getCodec());
         }
 
         if (oreTypeIn == DefaultOreType.CRYSTAL.getCodec()) {
@@ -172,11 +172,11 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         if (viscosityIn != null) fluidViscosity = viscosityIn;
 
         if (stateIn == DefaultFluidState.FLUID.fluidState) {
-            materialFlags.add(FLUID);
+            materialFlags.add(FLUID.getCodec());
         }
 
         if (stateIn == DefaultFluidState.GAS.fluidState) {
-            materialFlags.add(GAS);
+            materialFlags.add(GAS.getCodec());
         }
 
         return this;
@@ -191,7 +191,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         toolLevel = toolLevelIn;
         toolPartWhiteList = toolPartWhiteListIn;
         toolPartBlackList = toolPartBlackListIn;
-        materialFlags.add(TOOL);
+        materialFlags.add(TOOL.getCodec());
         return this;
     }
 
@@ -199,9 +199,9 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     public TCMaterial save() {
         List<TCMaterial> stoneLayerList = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
         //--
-        for (IMaterialFlag flag : materialFlags) {
-            if (flag == ORE || flag == GEM || flag == STONE_LAYER) {
-                if (flag == STONE_LAYER) {
+        for (MaterialFlagCodec flag : materialFlags) {
+            if (flag == ORE.getCodec() || flag == GEM.getCodec() || flag == STONE_LAYER.getCodec()) {
+                if (flag == STONE_LAYER.getCodec()) {
                     String stoneLayerBlockName = stoneLayerBlock.equals("") ? String.valueOf(layerBlock.get().getRegistryName()) : stoneLayerBlock;
                     String stoneLayerModId = stoneLayerTextureLocation.split(":")[0].equals("minecraft") ? "" : stoneLayerTextureLocation.split(":")[0];
 
@@ -225,7 +225,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
                 //-- Item --\\
 
-                if (flag == ORE || flag == GEM) {
+                if (flag == ORE.getCodec() || flag == GEM.getCodec()) {
 //--//--//--//--//--//--//--//--//
                     crushedOre = RegistryHandler.ITEMS.register("crushed_" + name + "_ore", () -> new OreProductsItem(new Item.Properties()
                             .tab(TCCreativeModeTab.ore_products_tab), boilingPoint, meltingPoint, symbol));
@@ -238,7 +238,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 //--//--//--//--//--//--//--//--//
                 }
 
-                if (flag == GEM) {
+                if (flag == GEM.getCodec()) {
 //--//--//--//--//--//--//--//--//
                     gem = RegistryHandler.ITEMS.register(name + "_gem", () -> new GemItem(new Item.Properties()
                             .tab(TCCreativeModeTab.gem_tab), symbol));
@@ -274,7 +274,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     String stoneLayerBlock = stoneLayer.stoneLayerTextureLocation.split(":")[1];
                     //String resourceID = stoneLayerModId.equals("resourceID") ? "" : Ref.mod_id;
 
-                    if (flag == ORE || flag == GEM) {
+                    if (flag == ORE.getCodec() || flag == GEM.getCodec()) {
                         String stoneLayerBlockName = stoneLayer.stoneLayerBlock.equals("") ? String.valueOf(layerBlock.get().getRegistryName()) : stoneLayer.stoneLayerBlock;
 //--//--//--//--//--//--//--//--//
                         RegistryObject<Block> ore = RegistryHandler.BLOCKS.register(stoneLayer.name + "_" + name + "_ore", () -> new OreBlock(name + "_ore", BlockBehaviour.Properties.of(net.minecraft.world.level.material.Material.STONE), stoneLayerBlockName));
@@ -309,10 +309,10 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 }
             }
 
-            if (flag == FLUID || flag == GAS) {
+            if (flag == FLUID.getCodec() || flag == GAS.getCodec()) {
                 FluidAttributes.Builder attributes;
 
-                if (flag == FLUID) {
+                if (flag == FLUID.getCodec()) {
                     attributes = FluidAttributes.builder(new ResourceLocation("fluid/" + name), new ResourceLocation("fluid/" + name + "_flowing")).temperature(meltingPoint).color(color);
                     if (fluidDensity != null) attributes.density(fluidDensity);
                     if (fluidLuminosity != null) attributes.luminosity(fluidLuminosity);
@@ -324,7 +324,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                     fluidBlock = RegistryHandler.BLOCKS.register(name, () -> new TCFluidBlock(() -> fluid.get(), fluidAcceleration, color));
                 }
 
-                if (flag == GAS) {
+                if (flag == GAS.getCodec()) {
                     attributes = FluidAttributes.builder(new ResourceLocation("fluid/" + name), new ResourceLocation("fluid/" + name)).temperature(boilingPoint).color(color).gaseous();
                     if (fluidDensity != null) attributes.density(fluidDensity);
                     if (fluidLuminosity != null) attributes.luminosity(fluidLuminosity);
@@ -337,7 +337,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 }
             }
 
-            if (flag == INGOT) {
+            if (flag == INGOT.getCodec()) {
 //--//--//--//--//--//--//--//--//
                 ingot = RegistryHandler.ITEMS.register(name + "_" + INGOT.name(), () -> new IngotItem(new Item.Properties().tab(TCCreativeModeTab.item_tab), boilingPoint, meltingPoint, symbol));
 //--//--//--//--//--//--//--//--//
@@ -360,9 +360,9 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         List<TCMaterial> stoneLayerList = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
         //--
 
-        for (IMaterialFlag flag : materialFlags) {
-            if (flag == ORE || flag == GEM || flag == STONE_LAYER) {
-                if (flag == STONE_LAYER) {
+        for (MaterialFlagCodec flag : materialFlags) {
+            if (flag == ORE.getCodec() || flag == GEM.getCodec() || flag == STONE_LAYER.getCodec()) {
+                if (flag == STONE_LAYER.getCodec()) {
                     Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(BlockTags.NEEDS_STONE_TOOL).stream().forEach(block ->
                             DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "tool_level/" + 1)).add(block)));
                     Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(BlockTags.NEEDS_STONE_TOOL).stream().forEach(block ->
@@ -506,7 +506,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
                 //-- Item --\\
 
-                if (flag == ORE || flag == GEM) {
+                if (flag == ORE.getCodec() || flag == GEM.getCodec()) {
 //--//--//--//--//--//--//--//--//
                     {
                         //-- Item --\\
@@ -589,7 +589,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 //--//--//--//--//--//--//--//--//
                 }
 
-                if (flag == GEM) {
+                if (flag == GEM.getCodec()) {
 //--//--//--//--//--//--//--//--//
                     {
                         // -- Item --\\
@@ -796,7 +796,7 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 //--//--//--//--//--//--//--//--//
 
                 for (TCMaterial stoneLayer : stoneLayerList) {
-                    if (flag == ORE || flag == GEM) {
+                    if (flag == ORE.getCodec() || flag == GEM.getCodec()) {
 //--//--//--//--//--//--//--//--//
                         {
                             String objectName = stoneLayer.name + "_" + name + "_ore";
@@ -975,23 +975,23 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 }
             }
 
-            if (flag == FLUID || flag == GAS) {
+            if (flag == FLUID.getCodec() || flag == GAS.getCodec()) {
 
-                if (flag == FLUID) {
+                if (flag == FLUID.getCodec()) {
 
                 }
 
-                if (flag == GAS) {
+                if (flag == GAS.getCodec()) {
 
                 }
             }
 
-            if (flag == INGOT) {
+            if (flag == INGOT.getCodec()) {
 //--//--//--//--//--//--//--//--//
                 // -- Item --\\
                 //--Resources
-                //AssetPackRegistry.itemModelDataHashMap.put(name + "_" + INGOT.name(), new ItemModelData().getModel().setParent(new ResourceLocation(Ref.mod_id, "/material_icons/" + textureIcon.getSecond().name() + "/ingot")));
-                //enLang.addTranslation("item." + Ref.mod_id + "." + name + "_" + INGOT.name(), LangData.translateUpperCase(name + "_" + INGOT.name()));
+                //AssetPackRegistry.itemModelDataHashMap.put(name + "_" + INGOT.getCodec().name(), new ItemModelData().getModel().setParent(new ResourceLocation(Ref.mod_id, "/material_icons/" + textureIcon.getSecond().name() + "/ingot")));
+                //enLang.addTranslation("item." + Ref.mod_id + "." + name + "_" + INGOT.getCodec().name(), LangData.translateUpperCase(name + "_" + INGOT.getCodec().name()));
                 //--Tags
 
                 //--LootTable

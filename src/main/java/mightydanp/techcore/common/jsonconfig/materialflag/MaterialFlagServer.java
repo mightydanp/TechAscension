@@ -1,7 +1,6 @@
 package mightydanp.techcore.common.jsonconfig.materialflag;
 
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
 import mightydanp.techapi.common.jsonconfig.sync.network.message.SyncMessage;
@@ -23,46 +22,46 @@ import java.util.stream.Collectors;
 /**
  * Created by MightyDanp on 1/23/2022.
  */
-public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
+public class MaterialFlagServer extends JsonConfigServer<MaterialFlagCodec> {
     @Override
-    public Map<String, IMaterialFlag> getServerMapFromList(List<IMaterialFlag> materialFlagsIn) {
-        Map<String, IMaterialFlag> materialFlagsList = new LinkedHashMap<>();
-        materialFlagsIn.forEach(materialFlag -> materialFlagsList.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag));
+    public Map<String, MaterialFlagCodec> getServerMapFromList(List<MaterialFlagCodec> materialFlagsIn) {
+        Map<String, MaterialFlagCodec> codecMap = new LinkedHashMap<>();
+        materialFlagsIn.forEach(materialFlag -> codecMap.put(fixesToName(materialFlag.prefix(), materialFlag.suffix()), materialFlag));
 
-        return materialFlagsList;
+        return codecMap;
     }
 
     @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<IMaterialFlag> list = message.getConfig(TCJsonConfigs.materialFlagID).stream()
-                .filter(IMaterialFlag.class::isInstance)
-                .map(IMaterialFlag.class::cast).toList();
+        List<MaterialFlagCodec> clientList = message.getConfig(TCJsonConfigs.materialFlagID).stream()
+                .filter(MaterialFlagCodec.class::isInstance)
+                .map(MaterialFlagCodec.class::cast).toList();
 
-        if(list.size() != getServerMap().size()){
+        if(clientList.size() != getServerMap().size()){
             sync.set(false);
-            ConfigSync.syncedJson.put("material_flag", sync.get());
+            ConfigSync.syncedJson.put(MaterialFlagCodec.codecName, sync.get());
             return false;
         }
 
-        getServerMap().forEach((name, materialFlag) -> {
-            sync.set(list.stream().anyMatch(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)));
+        getServerMap().forEach((name, serverCodec) -> {
+            sync.set(clientList.stream().anyMatch(o -> fixesToName(o.prefix(), o.suffix()).equals(name)));
 
             if(sync.get()) {
-                Optional<IMaterialFlag> optional = list.stream().filter(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)).findFirst();
+                Optional<MaterialFlagCodec> optionalClientCodec = clientList.stream().filter(o -> fixesToName(o.prefix(), o.suffix()).equals(name)).findFirst();
 
-                if(optional.isPresent()) {
-                    IMaterialFlag serverMaterialFlag = optional.get();
-                    JsonObject jsonMaterial = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(materialFlag);
-                    JsonObject materialJson = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
+                if(optionalClientCodec.isPresent()) {
+                    MaterialFlagCodec clientCodec = optionalClientCodec.get();
+                    JsonObject serverJson = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(serverCodec);
+                    JsonObject clientJson = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(clientCodec);
 
-                    sync.set(materialJson.equals(jsonMaterial));
+                    sync.set(clientJson.equals(serverJson));
                 }
             }
         });
 
-        ConfigSync.syncedJson.put("material_flag", sync.get());
+        ConfigSync.syncedJson.put(MaterialFlagCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -70,15 +69,15 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
     @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, IMaterialFlag> clientMaterialFlags = new HashMap<>();
+        Map<String, MaterialFlagCodec> clientMap = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/material_flag");
+        Path configs = Paths.get(singlePlayerConfigs + "/" + MaterialFlagCodec.codecName);
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                ConfigSync.syncedJson.put("material_flag", sync.get());
+                ConfigSync.syncedJson.put(MaterialFlagCodec.codecName, sync.get());
                 return false;
             }
 
@@ -86,19 +85,19 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
-                    IMaterialFlag materialFlag = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).fromJsonObject(jsonObject);
-                    clientMaterialFlags.put(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()), materialFlag);
+                    MaterialFlagCodec codec = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).fromJsonObject(jsonObject);
+                    clientMap.put(fixesToName(codec.prefix(), codec.suffix()), codec);
                 }
 
-                getServerMap().values().forEach(serverMaterialFlag -> {
-                    sync.set(clientMaterialFlags.containsKey(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix())));
+                getServerMap().values().forEach(serverCodec -> {
+                    sync.set(clientMap.containsKey(fixesToName(serverCodec.prefix(), serverCodec.suffix())));
 
                     if(sync.get()) {
-                        IMaterialFlag clientMaterialFlag = getServerMap().get(fixesToName(serverMaterialFlag.getPrefix(), serverMaterialFlag.getSuffix()));
-                        JsonObject jsonMaterial = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(serverMaterialFlag);
-                        JsonObject materialJson = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(clientMaterialFlag);
+                        MaterialFlagCodec clientCodec = getServerMap().get(fixesToName(serverCodec.prefix(), serverCodec.suffix()));
+                        JsonObject serverJson = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(serverCodec);
+                        JsonObject clientJson = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(clientCodec);
 
-                        sync.set(materialJson.equals(jsonMaterial));
+                        sync.set(clientJson.equals(serverJson));
                     }
 
                 });
@@ -106,11 +105,11 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
         }else{
             sync.set(false);
-            ConfigSync.syncedJson.put("material_flag", sync.get());
+            ConfigSync.syncedJson.put(MaterialFlagCodec.codecName, sync.get());
             return false;
         }
 
-        ConfigSync.syncedJson.put("material_flag", sync.get());
+        ConfigSync.syncedJson.put(MaterialFlagCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -119,7 +118,7 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
     @Override
     public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/material_flag");
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/" + MaterialFlagCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -127,15 +126,15 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
             }
         }
 
-        for (IMaterialFlag materialFlag : getServerMap().values()) {
-            String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
-            Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
-            JsonObject jsonObject = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(materialFlag);
+        for (MaterialFlagCodec serverCodec : getServerMap().values()) {
+            String name = fixesToName(serverCodec.prefix(), serverCodec.suffix());
+            Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
+            JsonObject jsonObject = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).toJsonObject(serverCodec);
             String s = GSON.toJson(jsonObject);
-            if (!Files.exists(materialFile)) {
-                Files.createDirectories(materialFile.getParent());
+            if (!Files.exists(filePath)) {
+                Files.createDirectories(filePath.getParent());
 
-                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                     bufferedwriter.write(s);
                 }
             }
@@ -144,23 +143,22 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
     @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/material_flag");
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/material_flag");
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/" + MaterialFlagCodec.codecName);
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/" + MaterialFlagCodec.codecName);
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.materialFlag.getFirst().getJsonObject(file.getName());
-                    IMaterialFlag materialFlag = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).fromJsonObject(jsonObject);
+                    MaterialFlagCodec codec = ((MaterialFlagRegistry) TCJsonConfigs.materialFlag.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix());
+                    String name = fixesToName(codec.prefix(), codec.suffix());
 
-                    Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
-                    if (!Files.exists(materialFile)) {
-                        Files.createDirectories(materialFile.getParent());
+                    Path filePath = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
+                    if (!Files.exists(filePath)) {
+                        Files.createDirectories(filePath.getParent());
 
-                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                             String s = GSON.toJson(jsonObject);
                             bufferedwriter.write(s);
                         }
@@ -172,71 +170,48 @@ public class MaterialFlagServer extends JsonConfigServer<IMaterialFlag> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IMaterialFlag> list = message.getConfig(TCJsonConfigs.materialFlagID).stream()
-                .filter(IMaterialFlag.class::isInstance)
-                .map(IMaterialFlag.class::cast).toList();
+        List<MaterialFlagCodec> list = message.getConfig(TCJsonConfigs.materialFlagID).stream()
+                .filter(MaterialFlagCodec.class::isInstance)
+                .map(MaterialFlagCodec.class::cast).toList();
 
-        Map<String, IMaterialFlag> materialFlags = list.stream()
-                .collect(Collectors.toMap(s -> fixesToName(s.getPrefix(), s.getSuffix()), s -> s));
+        Map<String, MaterialFlagCodec> codecMap = list.stream()
+                .collect(Collectors.toMap(s -> fixesToName(s.prefix(), s.suffix()), s -> s));
 
         getServerMap().clear();
-        getServerMap().putAll(materialFlags);
+        getServerMap().putAll(codecMap);
 
-        TechAscension.LOGGER.info("Loaded {} material flags from the server", materialFlags.size());
+        TechAscension.LOGGER.info("Loaded {} " + MaterialFlagCodec.codecName + " from the server", codecMap.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, IMaterialFlag materialFlag) {
-        buffer.writeUtf(fixesToName(materialFlag.getPrefix(), materialFlag.getSuffix()));
-        buffer.writeUtf(materialFlag.getPrefix());
-        buffer.writeUtf(materialFlag.getSuffix());
+    public void singleToBuffer(FriendlyByteBuf buffer, MaterialFlagCodec codec) {
+        buffer.writeWithCodec(MaterialFlagCodec.CODEC, codec);
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IMaterialFlag> list = message.getConfig(TCJsonConfigs.materialFlagID).stream()
-                .filter(IMaterialFlag.class::isInstance)
-                .map(IMaterialFlag.class::cast).toList();
+        List<MaterialFlagCodec> list = message.getConfig(TCJsonConfigs.materialFlagID).stream()
+                .filter(MaterialFlagCodec.class::isInstance)
+                .map(MaterialFlagCodec.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
-        list.forEach((materialFlag) -> {
-            singleToBuffer(buffer, materialFlag);
-        });
+        list.forEach((materialFlag) -> singleToBuffer(buffer, materialFlag));
     }
 
     @Override
-    public IMaterialFlag singleFromBuffer(FriendlyByteBuf buffer) {
-        String name = buffer.readUtf();
-        String prefix = buffer.readUtf();
-        String suffix = buffer.readUtf();
-
-        return new IMaterialFlag() {
-            @Override
-            public String getPrefix() {
-                return prefix;
-            }
-
-            @Override
-            public String getSuffix() {
-                return suffix;
-            }
-
-            @Override
-            public Pair<String, String> getFixes() {
-                return new Pair<>(prefix, suffix);
-            }
-        };
+    public MaterialFlagCodec singleFromBuffer(FriendlyByteBuf buffer) {
+        return buffer.readWithCodec(MaterialFlagCodec.CODEC);
     }
 
     @Override
-    public List<IMaterialFlag> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<IMaterialFlag> materialFlags = new ArrayList<>();
+    public List<MaterialFlagCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
+        List<MaterialFlagCodec> materialFlags = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            IMaterialFlag materialFlag = singleFromBuffer(buffer);
+            MaterialFlagCodec materialFlag = singleFromBuffer(buffer);
 
             materialFlags.add(materialFlag);
         }

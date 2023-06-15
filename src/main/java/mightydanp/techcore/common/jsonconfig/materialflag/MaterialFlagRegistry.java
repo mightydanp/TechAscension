@@ -1,7 +1,7 @@
 package mightydanp.techcore.common.jsonconfig.materialflag;
 
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
@@ -11,19 +11,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static mightydanp.techcore.common.jsonconfig.materialflag.MaterialFlagCodec.fixesToName;
+
 /**
  * Created by MightyDanp on 1/16/2022.
  */
-public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
+public class MaterialFlagRegistry extends JsonConfigMultiFile<MaterialFlagCodec> {
 
     @Override
     public void initiate() {
-        setJsonFolderName("material_flag");
+        setJsonFolderName(MaterialFlagCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
-        for (DefaultMaterialFlag materialFlag : DefaultMaterialFlag.values()) {
-            register(materialFlag);
+        for (DefaultMaterialFlag codec : DefaultMaterialFlag.values()) {
+            register(codec.getCodec());
         }
         //
 
@@ -33,41 +35,31 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
     }
 
     @Override
-    public void register(IMaterialFlag materialFlagIn) {
-        if (registryMap.containsValue(materialFlagIn)) {
-            throw new IllegalArgumentException("material flag with the prefix:(" + materialFlagIn.getPrefix() + "), and the suffix:(" + materialFlagIn.getSuffix() + "), already exists.");
+    public void register(MaterialFlagCodec codec) {
+        if (registryMap.containsValue(codec)) {
+            throw new IllegalArgumentException("" + MaterialFlagCodec.codecName + " with the prefix:(" + codec.prefix() + "), and the suffix:(" + codec.suffix() + "), already exists.");
         }
 
-        registryMap.put(fixesToName(materialFlagIn.getFixes()), materialFlagIn);
+        registryMap.put(fixesToName(codec), codec);
     }
 
-    public IMaterialFlag getMaterialFlagByFixes(Pair<String, String> fixesIn) {
-        Optional<IMaterialFlag> materialFlag = registryMap.values().stream().filter(o -> fixesToName(new Pair<>(o.getPrefix(), o.getSuffix())).equals(fixesToName(fixesIn))).findFirst();
+    public MaterialFlagCodec getMaterialFlagByName(String name){
+        Optional<MaterialFlagCodec> codec = registryMap.values().stream().filter(o -> fixesToName(o).equals(name)).findFirst();
 
-        if(materialFlag.isEmpty()) {
-            TechAscension.LOGGER.warn("(" + fixesToName(fixesIn) + "), does not exist as a material flag.");
+        if(codec.isEmpty()) {
+            TechAscension.LOGGER.warn("(" + name + "), does not exist as a " + MaterialFlagCodec.codecName + ".");
         }
 
-        return materialFlag.orElse(null);
-    }
-
-    public IMaterialFlag getMaterialFlagByName(String name){
-        Optional<IMaterialFlag> materialFlag = registryMap.values().stream().filter(o -> fixesToName(new Pair<>(o.getPrefix(), o.getSuffix())).equals(name)).findFirst();
-
-        if(materialFlag.isEmpty()) {
-            TechAscension.LOGGER.warn("(" + name + "), does not exist as a material flag.");
-        }
-
-        return materialFlag.orElse(null);
+        return codec.orElse(null);
     }
 
     public void buildJson(){
-        for(IMaterialFlag materialFlag : registryMap.values()) {
-            String name = fixesToName(materialFlag.getFixes());
+        for(MaterialFlagCodec codec : registryMap.values()) {
+            String name = fixesToName(codec);
             JsonObject jsonObject = getJsonObject(name);
 
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(name, toJsonObject(materialFlag));
+                this.saveJsonObject(name, toJsonObject(codec));
             }
         }
     }
@@ -81,52 +73,28 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<IMaterialFlag> {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        String materialFlagName = jsonObject.get("name").getAsString();
-                        IMaterialFlag materialFlag = fromJsonObject(jsonObject);
+                        String name = jsonObject.get("name").getAsString();
+                        MaterialFlagCodec codec = fromJsonObject(jsonObject);
 
-                        registryMap.put(materialFlagName, materialFlag);
+                        registryMap.put(name, codec);
 
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to material flag list because a material flag already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to " + MaterialFlagCodec.codecName + " list because a " + MaterialFlagCodec.codecName + " already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            TechAscension.LOGGER.warn(new CrashReport("material flag json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport("" + MaterialFlagCodec.codecName + " json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
     @Override
-    public IMaterialFlag fromJsonObject(JsonObject jsonObjectIn){
-            String name = jsonObjectIn.get("name").getAsString();
-            String prefix = jsonObjectIn.get("prefix").getAsString();
-            String suffix = jsonObjectIn.get("suffix").getAsString();
+    public MaterialFlagCodec fromJsonObject(JsonObject jsonObjectIn){
+        return MaterialFlagCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + MaterialFlagCodec.codecName + ", please fix this"))).getFirst();
 
-            return new IMaterialFlag() {
-
-                @Override
-                public String getPrefix() {
-                    return prefix;
-                }
-
-                @Override
-                public String getSuffix() {
-                    return suffix;
-                }
-
-                @Override
-                public Pair<String, String> getFixes() {
-                    return new Pair<>(prefix, suffix);
-                }
-            };
     }
 
-    public JsonObject toJsonObject(IMaterialFlag material) {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("name", fixesToName(new Pair<>(material.getPrefix(), material.getSuffix())));
-        jsonObject.addProperty("prefix", material.getPrefix());
-        jsonObject.addProperty("suffix", material.getSuffix());
-
-        return jsonObject;
+    public JsonObject toJsonObject(MaterialFlagCodec codec) {
+        return MaterialFlagCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + MaterialFlagCodec.codecName + ", please fix this"))).getAsJsonObject();
     }
 }
