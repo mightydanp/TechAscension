@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialServer;
-import mightydanp.techcore.common.jsonconfig.tool.part.IToolPart;
+import mightydanp.techcore.common.jsonconfig.tool.part.ToolPartCodec;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.material.TCMaterial;
 import mightydanp.techcore.common.material.TCMaterials;
@@ -37,7 +37,7 @@ public class ModMaterials extends TCMaterials {
 
     public static TCMaterial andesite, diorite, end_stone, granite, netherrack, stone;
     public static TCMaterial alexandrite, almandine;
-    public static List<IToolPart> flintToolParts;
+    public static List<ToolPartCodec> flintToolParts;
 
     public static TCMaterial flint;
 

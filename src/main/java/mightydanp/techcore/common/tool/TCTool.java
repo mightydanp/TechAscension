@@ -8,7 +8,7 @@ import mightydanp.techascension.common.libs.ItemRef;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.materialflag.DefaultMaterialFlag;
-import mightydanp.techcore.common.jsonconfig.tool.ITool;
+import mightydanp.techcore.common.jsonconfig.tool.ToolCodec;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.material.IMaterial;
 import mightydanp.techcore.common.material.TCMaterial;
@@ -68,7 +68,7 @@ public class TCTool {
         TCMaterial.extraSave.put(nameIn, new IMaterial() {
             @Override
             public void save(TCMaterial material) {
-                if (material.materialFlags.contains(DefaultMaterialFlag.TOOL)) {
+                if (material.materialFlags.contains(DefaultMaterialFlag.TOOL.getCodec())) {
                     if (handle != null && handle.generatePart()) {
                         if((material.toolPartWhiteList.isEmpty() && material.toolPartBlackList.isEmpty()) || material.toolPartWhiteList.contains(handle.prefixAndSuffix()) || !material.toolPartBlackList.contains(handle.prefixAndSuffix())) {
                             String partName = handle.prefixAndSuffix().getFirst() + material.name + (handle.special() ? "_" + toolName : "") + handle.prefixAndSuffix().getSecond();
@@ -200,7 +200,7 @@ public class TCTool {
 
             @Override
             public void registerColorForItem(TCMaterial material) {
-                if (material.materialFlags.contains(DefaultMaterialFlag.TOOL)) {
+                if (material.materialFlags.contains(DefaultMaterialFlag.TOOL.getCodec())) {
                     registerAToolItemColor(toolItemIn);
 
                     if (handle != null && handle.generatePart()) {
@@ -313,7 +313,7 @@ public class TCTool {
             ModelData data = new ModelData(objectName, ModelData.ITEM_FOLDER, null);
             data.getModel().setParent(TAModelBuilder.ExistingItemModels.item_generated.model);
 
-            if (material.materialFlags.contains(DefaultMaterialFlag.TOOL)) {
+            if (material.materialFlags.contains(DefaultMaterialFlag.TOOL.getCodec())) {
                 ((TCToolItem)toolItemIn.get()).parts = this.toolParts.size();
                 int i = toolParts.size();
                 {
@@ -383,10 +383,10 @@ public class TCTool {
                         }
 
                         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(toolName)) {
-                            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
+                            ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
 
-                            if(tool.getHandleItems().size() > 0){
-                                tool.getHandleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
+                            if(tool.handleItems().size() > 0){
+                                tool.handleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
                                     String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
                                     if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
                                         if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
@@ -480,10 +480,10 @@ public class TCTool {
                         }
 
                         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(toolName)) {
-                            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
+                            ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
 
-                            if(tool.getHandleItems().size() > 0){
-                                tool.getHandleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
+                            if(tool.handleItems().size() > 0){
+                                tool.handleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
                                     String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
                                     if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
                                         if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
@@ -536,10 +536,10 @@ public class TCTool {
                         }
 
                         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(toolName)) {
-                            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
+                            ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
 
-                            if(tool.getHandleItems().size() > 0){
-                                tool.getHandleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
+                            if(tool.handleItems().size() > 0){
+                                tool.handleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
                                     String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
                                     if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
                                         if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){

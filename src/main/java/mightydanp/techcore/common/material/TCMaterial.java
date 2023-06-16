@@ -355,6 +355,15 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
         return this;
     }
 
+    //to-do put all once one things in here.
+    public static void saveOnceResources() {
+        List<TCMaterial> stoneLayerList = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
+
+        for (TCMaterial stoneLayer : stoneLayerList) {
+
+        }
+    }
+
     public void saveResources() throws Exception {
         LangData enLang = AssetPackRegistry.langDataMap.getOrDefault("en_us", new LangData());
         List<TCMaterial> stoneLayerList = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
@@ -365,9 +374,6 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
                 if (flag == STONE_LAYER.getCodec()) {
                     Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(BlockTags.NEEDS_STONE_TOOL).stream().forEach(block ->
                             DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "tool_level/" + 1)).add(block)));
-                    Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(BlockTags.NEEDS_STONE_TOOL).stream().forEach(block ->
-                            DataPackRegistry.saveBlockTagData(DataPackRegistry.getBlockTagData(new ResourceLocation("forge", "tool_level/" + 1)).add(block)));
-
 
                     String stoneLayerBlockName = stoneLayerBlock.equals("") ? String.valueOf(layerBlock.get().getRegistryName()) : stoneLayerBlock;
                     String stoneLayerModId = stoneLayerTextureLocation.split(":")[0].equals("minecraft") ? "" : stoneLayerTextureLocation.split(":")[0];

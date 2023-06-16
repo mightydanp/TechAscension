@@ -1,11 +1,10 @@
 package mightydanp.techcore.common.jsonconfig.tool;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -15,11 +14,11 @@ import java.util.*;
 /**
  * Created by MightyDanp on 1/20/2022.
  */
-public class ToolRegistry extends JsonConfigMultiFile<ITool> {
+public class ToolRegistry extends JsonConfigMultiFile<ToolCodec> {
 
     @Override
     public void initiate() {
-        setJsonFolderName("tool");
+        setJsonFolderName(ToolCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
@@ -28,36 +27,36 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
     }
 
     @Override
-    public void register(ITool toolIn) {
-        String name = toolIn.getName();
-        if (registryMap.containsKey(toolIn.getName())) {
-            TechAscension.LOGGER.warn("tool with name(" + name + "), already exists.");
+    public void register(ToolCodec codec) {
+        String name = codec.name();
+        if (registryMap.containsKey(codec.name())) {
+            TechAscension.LOGGER.warn(ToolCodec.codecName + " with name(" + name + "), already exists.");
         } else {
-            registryMap.put(name, toolIn);
+            registryMap.put(name, codec);
         }
     }
 
-    public ITool getToolByName(String tool) {
-        return registryMap.get(tool);
+    public ToolCodec getToolByName(String name) {
+        return registryMap.get(name);
     }
 
-    public Set<ITool> getAllTool() {
+    public Set<ToolCodec> getAllTool() {
         return new HashSet<>(registryMap.values());
     }
 
     public void buildJson(){
-        for(ITool tool : registryMap.values()) {
-            JsonObject jsonObject = getJsonObject(tool.getName());
+        for(ToolCodec tool : registryMap.values()) {
+            JsonObject jsonObject = getJsonObject(tool.name());
 
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(tool.getName(), toJsonObject(tool));
+                this.saveJsonObject(tool.name(), toJsonObject(tool));
             }
         }
     }
 
-    public void buildAndRegisterTool(ITool tool){
-        this.register(tool);
-        this.saveJsonObject(tool.getName(), toJsonObject(tool));
+    public void buildAndRegisterTool(ToolCodec codec){
+        this.register(codec);
+        this.saveJsonObject(codec.name(), toJsonObject(codec));
     }
 
     public void loadExistJson(){
@@ -69,214 +68,27 @@ public class ToolRegistry extends JsonConfigMultiFile<ITool> {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        ITool tool = fromJsonObject(jsonObject);
+                        ToolCodec codec = fromJsonObject(jsonObject);
 
-                        registryMap.put(tool.getName(), tool);
+                        registryMap.put(codec.name(), codec);
 
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to tool list because a tool already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to " + ToolCodec.codecName + " because a tool already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            TechAscension.LOGGER.warn(new CrashReport("tool json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport(ToolCodec.codecName + " json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
     @Override
-    public ITool fromJsonObject(JsonObject jsonObjectIn){
-        return new ITool() {
-            @Override
-            public String getName() {
-                return jsonObjectIn.get("name").getAsString();
-            }
-
-            @Override
-            public Integer getUseDamage() {
-                return jsonObjectIn.get("use_damage").getAsInt();
-            }
-
-            @Override
-            public List<String> getEffectiveOn() {
-                List<String> registry = new ArrayList<>();
-                JsonArray array = jsonObjectIn.get("effective_on").getAsJsonArray();
-                array.forEach(jsonElement -> registry.add(jsonElement.getAsString()));
-
-                return registry;
-            }
-
-            @Override
-            public List<Ingredient> getHandleItems() {
-                List<Ingredient> items = new ArrayList<>();
-                JsonArray array = jsonObjectIn.get("handle_items").getAsJsonArray();
-                for(int i = 0; i < array.size(); i++) {
-                    items.add(Ingredient.fromJson(array.get(i).getAsJsonObject().get("item")));
-                }
-
-                return items;
-            }
-
-            @Override
-            public List<Ingredient> getHeadItems() {
-                List<Ingredient> items = new ArrayList<>();
-
-                JsonArray array = jsonObjectIn.get("head_items").getAsJsonArray();
-                for(int i = 0; i < array.size(); i++) {
-                    items.add(Ingredient.fromJson(array.get(i).getAsJsonObject().get("item")));
-                }
-
-                return items;
-            }
-
-            @Override
-            public List<Ingredient> getBindingItems() {
-                List<Ingredient> items = new ArrayList<>();
-
-                JsonArray array = jsonObjectIn.get("binding_items").getAsJsonArray();
-                for(int i = 0; i < array.size(); i++) {
-                    items.add(Ingredient.fromJson(array.get(i).getAsJsonObject().get("item")));
-                }
-
-                return items;
-            }
-
-            @Override
-            public Map<Integer, List<Map<Ingredient, Integer>>> getAssembleStepsItems() {
-                Map<Integer, List<Map<Ingredient, Integer>>> map = new HashMap<>();
-
-                JsonObject assembleSteps = jsonObjectIn.getAsJsonObject("assemble_steps");
-
-
-                for(int i = 0; i < assembleSteps.size(); i++){
-                    JsonArray combinations = assembleSteps.get(String.valueOf(i + 1)).getAsJsonArray();
-                    List<Map<Ingredient, Integer>> combinationsList = new ArrayList<>();
-
-                    for(int j = 0; j < combinations.size(); j++) {
-                        JsonArray combination = combinations.get(j).getAsJsonArray();
-                        Map<Ingredient, Integer> ingredientsList = new HashMap<>();
-                        for(int k = 0; k < combination.size(); k++) {
-                            Ingredient ingredient = Ingredient.fromJson(combination.get(k).getAsJsonObject());
-                            int amount = combination.get(k).getAsJsonObject().get("amount").getAsInt();
-                            ingredientsList.put(ingredient, amount);
-                        }
-                        combinationsList.add(ingredientsList);
-                    }
-
-
-
-                    map.put(i + 1, combinationsList);
-                }
-
-                return map;
-            }
-
-            @Override
-            public List<Map<Ingredient, Integer>> getDisassembleItems() {
-                JsonArray disassembleItems = jsonObjectIn.getAsJsonArray("disassemble_items");
-
-                List<Map<Ingredient, Integer>> list = new ArrayList<>();
-
-                for(int i = 0; i < disassembleItems.size(); i++){
-                    Map<Ingredient, Integer> combinationsList = new HashMap<>();
-
-                    JsonArray combinations = disassembleItems.get(i).getAsJsonArray();
-
-                    for(int j = 0; j < combinations.size(); j++) {
-                        JsonArray combination = combinations.get(j).getAsJsonArray();
-                        for(int k = 0; k < combination.size(); k++) {
-                            Ingredient ingredient = Ingredient.fromJson(combination.get(k).getAsJsonObject());
-                            int amount = combination.get(k).getAsJsonObject().get("amount").getAsInt();
-                            combinationsList.put(ingredient, amount);
-                        }
-                    }
-                    list.add(combinationsList);
-                }
-
-                return list;
-            }
-        };
+    public ToolCodec fromJsonObject(JsonObject jsonObjectIn){
+        return ToolCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + ToolCodec.codecName + ", please fix this"))).getFirst();
     }
 
-    public JsonObject toJsonObject(ITool tool) {
-        JsonObject jsonObject = new JsonObject();
+    public JsonObject toJsonObject(ToolCodec codec) {
+        return ToolCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your " + ToolCodec.codecName + " with name [" + codec.name() + "], please fix this"))).getAsJsonObject();
 
-        jsonObject.addProperty("name", tool.getName());
-
-        jsonObject.addProperty("use_damage", tool.getUseDamage());
-
-        JsonArray array = new JsonArray();
-
-        tool.getEffectiveOn().forEach(array::add);
-
-        if(array.size() > 0) {
-            jsonObject.add("effective_on", array);
-        }
-
-        {
-            JsonArray items = new JsonArray();
-            tool.getHandleItems().forEach(ingredient -> items.add(ingredient.toJson()));
-
-            jsonObject.add("handle_items", items);
-        }
-
-        {
-            JsonArray items = new JsonArray();
-            tool.getHeadItems().forEach(ingredient -> items.add(ingredient.toJson()));
-
-            jsonObject.add("head_items", items);
-        }
-
-        {
-            JsonArray items = new JsonArray();
-            tool.getBindingItems().forEach(ingredient -> items.add(ingredient.toJson()));
-
-            jsonObject.add("binding_items", items);
-        }
-
-        JsonObject assembleSteps = new JsonObject();
-
-        tool.getAssembleStepsItems().forEach((integer, lists) -> {
-            JsonArray combinations = new JsonArray();
-
-            for (Map<Ingredient, Integer> combinationsMap : lists) {
-                JsonArray ingredients = new JsonArray();
-
-                for(int i = 0; i < combinationsMap.size(); i++){
-                    JsonObject ingredient = combinationsMap.keySet().stream().toList().get(i).toJson().getAsJsonObject();
-                    ingredient.addProperty("amount", combinationsMap.values().stream().toList().get(i));
-                    ingredients.add(ingredient);
-                }
-
-                combinations.add(ingredients);
-            }
-            assembleSteps.add(String.valueOf(integer), combinations);
-
-        });
-
-        if(assembleSteps.size() > 0){
-            jsonObject.add("assemble_steps", assembleSteps);
-        }
-
-        JsonArray disassembleItems = new JsonArray();
-
-        JsonArray combinations = new JsonArray();
-        tool.getDisassembleItems().forEach(map -> {
-            JsonArray ingredients = new JsonArray();
-            for(int i = 0; i < map.size(); i++){
-                JsonObject ingredient = map.keySet().stream().toList().get(i).toJson().getAsJsonObject();
-                ingredient.addProperty("amount", map.values().stream().toList().get(i));
-                ingredients.add(ingredient);
-            }
-
-            combinations.add(ingredients);
-        });
-
-        disassembleItems.add(combinations);
-
-        if(disassembleItems.size() > 0){
-            jsonObject.add("disassemble_items", disassembleItems);
-        }
-
-        return jsonObject;
     }
 }

@@ -8,7 +8,6 @@ import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,62 +22,62 @@ import java.util.stream.Collectors;
 /**
  * Created by MightyDanp on 1/25/2022.
  */
-public class ToolServer extends JsonConfigServer<ITool> {
+public class ToolServer extends JsonConfigServer<ToolCodec> {
 
-    public Map<String, ITool> getServerMapFromList(List<ITool> toolsIn) {
-        Map<String, ITool> toolsList = new LinkedHashMap<>();
-        toolsIn.forEach(tool -> toolsList.put(tool.getName(), tool));
+    public Map<String, ToolCodec> getServerMapFromList(List<ToolCodec> codecs) {
+        Map<String, ToolCodec> codecMap = new LinkedHashMap<>();
+        codecs.forEach(codec -> codecMap.put(codec.name(), codec));
 
-        return toolsList;
+        return codecMap;
     }
 
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<ITool> list = message.getConfig(TCJsonConfigs.toolID).stream()
-                .filter(ITool.class::isInstance)
-                .map(ITool.class::cast).toList();
+        List<ToolCodec> clientList = message.getConfig(TCJsonConfigs.toolID).stream()
+                .filter(ToolCodec.class::isInstance)
+                .map(ToolCodec.class::cast).toList();
         
-        if(list.size() != getServerMap().size()){
+        if(clientList.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("tool", sync.get());
+                ConfigSync.syncedJson.put(ToolCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        getServerMap().forEach((name, tool) -> {
-            sync.set(list.stream().anyMatch(o -> o.getName().equals(name)));
+        getServerMap().forEach((name, serverCodec) -> {
+            sync.set(clientList.stream().anyMatch(o -> o.name().equals(name)));
 
             if(sync.get()) {
-                Optional<ITool> optional = list.stream().filter(o -> o.getName().equals(name)).findFirst();
+                Optional<ToolCodec> optionalClientCodec = clientList.stream().filter(o -> o.name().equals(name)).findFirst();
 
-                if(optional.isPresent()) {
-                    ITool serverTool = optional.get();
-                    JsonObject jsonMaterial = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).toJsonObject(tool);
-                    JsonObject materialJson = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).toJsonObject(serverTool);
+                if(optionalClientCodec.isPresent()) {
+                    ToolCodec clientCodec = optionalClientCodec.get();
+                    JsonObject serverJson = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).toJsonObject(serverCodec);
+                    JsonObject clientJson = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).toJsonObject(clientCodec);
 
-                    sync.set(materialJson.equals(jsonMaterial));
+                    sync.set(clientJson.equals(serverJson));
                 }
             }
         });
 
-        ConfigSync.syncedJson.put("tool", sync.get());
+        ConfigSync.syncedJson.put(ToolCodec.codecName, sync.get());
 
         return sync.get();
     }
 
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, ITool> clientTools = new HashMap<>();
+        Map<String, ToolCodec> clientMap = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/tool");
+        Path configs = Paths.get(singlePlayerConfigs + "/" +ToolCodec.codecName);
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                ConfigSync.syncedJson.put("tool", sync.get());
+                ConfigSync.syncedJson.put(ToolCodec.codecName, sync.get());
                 return false;
             }
 
@@ -86,19 +85,19 @@ public class ToolServer extends JsonConfigServer<ITool> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.tool.getFirst().getJsonObject(file.getName());
-                    ITool tool = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).fromJsonObject(jsonObject);
-                    clientTools.put(tool.getName(), tool);
+                    ToolCodec codec = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).fromJsonObject(jsonObject);
+                    clientMap.put(codec.name(), codec);
                 }
 
-                getServerMap().values().forEach(serverTool -> {
-                    sync.set(clientTools.containsKey(serverTool.getName()));
+                getServerMap().values().forEach(serverCodec -> {
+                    sync.set(clientMap.containsKey(serverCodec.name()));
 
                     if(sync.get()) {
-                        ITool clientTool = getServerMap().get(serverTool.getName());
-                        JsonObject jsonMaterial = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).toJsonObject(serverTool);
-                        JsonObject materialJson = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).toJsonObject(clientTool);
+                        ToolCodec clientCodec = getServerMap().get(serverCodec.name());
+                        JsonObject serverJson = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).toJsonObject(serverCodec);
+                        JsonObject clientJson = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).toJsonObject(clientCodec);
 
-                        sync.set(materialJson.equals(jsonMaterial));
+                        sync.set(clientJson.equals(serverJson));
                     }
 
                 });
@@ -106,19 +105,19 @@ public class ToolServer extends JsonConfigServer<ITool> {
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("tool", sync.get());
+                ConfigSync.syncedJson.put(ToolCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        ConfigSync.syncedJson.put("tool", sync.get());
+        ConfigSync.syncedJson.put(ToolCodec.codecName, sync.get());
 
         return sync.get();
     }
 
     public void syncClientWithServer(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/tool");
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/" +ToolCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -126,15 +125,15 @@ public class ToolServer extends JsonConfigServer<ITool> {
             }
         }
 
-        for (ITool tool : getServerMap().values()) {
-            String name = tool.getName();
-            Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
+        for (ToolCodec tool : getServerMap().values()) {
+            String name = tool.name();
+            Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
             JsonObject jsonObject = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).toJsonObject(tool);
             String s = GSON.toJson(jsonObject);
-            if (!Files.exists(materialFile)) {
-                Files.createDirectories(materialFile.getParent());
+            if (!Files.exists(filePath)) {
+                Files.createDirectories(filePath.getParent());
 
-                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                     bufferedwriter.write(s);
                 }
             }
@@ -143,22 +142,22 @@ public class ToolServer extends JsonConfigServer<ITool> {
 
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
         //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/tool");
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/tool");
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/" +ToolCodec.codecName);
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/" +ToolCodec.codecName);
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.tool.getFirst().getJsonObject(file.getName());
-                    ITool tool = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).fromJsonObject(jsonObject);
+                    ToolCodec toolCodec = ((ToolRegistry) TCJsonConfigs.tool.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = tool.getName();
+                    String name = toolCodec.name();
 
-                    Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
-                    if (!Files.exists(materialFile)) {
-                        Files.createDirectories(materialFile.getParent());
+                    Path filePath = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
+                    if (!Files.exists(filePath)) {
+                        Files.createDirectories(filePath.getParent());
 
-                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                             String s = GSON.toJson(jsonObject);
                             bufferedwriter.write(s);
                         }
@@ -170,71 +169,29 @@ public class ToolServer extends JsonConfigServer<ITool> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<ITool> list = message.getConfig(TCJsonConfigs.toolID).stream()
-                .filter(ITool.class::isInstance)
-                .map(ITool.class::cast).toList();
+        List<ToolCodec> list = message.getConfig(TCJsonConfigs.toolID).stream()
+                .filter(ToolCodec.class::isInstance)
+                .map(ToolCodec.class::cast).toList();
 
-        Map<String, ITool> tools = list.stream()
-                .collect(Collectors.toMap(ITool::getName, s -> s));
+        Map<String, ToolCodec> map = list.stream()
+                .collect(Collectors.toMap(ToolCodec::name, s -> s));
 
         serverMap.clear();
-        serverMap.putAll(tools);
+        serverMap.putAll(map);
 
-        TechAscension.LOGGER.info("Loaded {} tools from the server", tools.size());
+        TechAscension.LOGGER.info("Loaded {} " + ToolCodec.codecName + " from the server", map.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, ITool tool) {
-        buffer.writeUtf(tool.getName());
-
-        buffer.writeInt(tool.getUseDamage());
-
-        buffer.writeInt(tool.getEffectiveOn().size());
-
-        tool.getEffectiveOn().forEach(buffer::writeUtf);
-
-        buffer.writeInt(tool.getHandleItems().size());
-        tool.getHandleItems().forEach(ingredient -> ingredient.toNetwork(buffer));
-
-        buffer.writeInt(tool.getHeadItems().size());
-        tool.getHeadItems().forEach(ingredient -> ingredient.toNetwork(buffer));
-
-        buffer.writeInt(tool.getBindingItems().size());
-        tool.getBindingItems().forEach(ingredient -> ingredient.toNetwork(buffer));
-
-        buffer.writeInt(tool.getAssembleStepsItems().size());
-
-        tool.getAssembleStepsItems().forEach((integer, combinations) -> {
-            buffer.writeInt(integer);
-            buffer.writeInt(combinations.size());
-
-            for (Map<Ingredient, Integer> ingredients : combinations) {
-                buffer.writeInt(ingredients.size());
-
-                ingredients.forEach((ingredient, integer1) -> {
-                    ingredient.toNetwork(buffer);
-                    buffer.writeInt(integer1);
-                });
-            }
-        });
-
-        buffer.writeInt(tool.getDisassembleItems().size());
-
-        tool.getDisassembleItems().forEach(list -> {
-            buffer.writeInt(list.size());
-
-            list.forEach((ingredient, integer) -> {
-                ingredient.toNetwork(buffer);
-                buffer.writeInt(integer);
-            });
-        });
+    public void singleToBuffer(FriendlyByteBuf buffer, ToolCodec codec) {
+        buffer.writeWithCodec(ToolCodec.CODEC, codec);
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<ITool> list = message.getConfig(TCJsonConfigs.toolID).stream()
-                .filter(ITool.class::isInstance)
-                .map(ITool.class::cast).toList();
+        List<ToolCodec> list = message.getConfig(TCJsonConfigs.toolID).stream()
+                .filter(ToolCodec.class::isInstance)
+                .map(ToolCodec.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -242,113 +199,18 @@ public class ToolServer extends JsonConfigServer<ITool> {
     }
 
     @Override
-    public ITool singleFromBuffer(FriendlyByteBuf buffer) {
-        return new ITool() {
-
-            @Override
-            public String getName() {
-                return buffer.readUtf();
-            }
-
-            @Override
-            public Integer getUseDamage() {
-                return buffer.readInt();
-            }
-
-            @Override
-            public List<String> getEffectiveOn() {
-                List<String> effectiveOn = new ArrayList<>();
-
-                for(int i = 0; i < buffer.readInt(); i++){
-                    effectiveOn.add(buffer.readUtf());
-                }
-
-                return effectiveOn;
-            }
-
-            @Override
-            public List<Ingredient> getHandleItems() {
-                List<Ingredient> items = new ArrayList<>();
-
-                for(int i = 0; i < buffer.readInt(); i++){
-                    items.add(Ingredient.fromNetwork(buffer));
-                }
-
-                return items;
-            }
-
-            @Override
-            public List<Ingredient> getHeadItems() {
-                List<Ingredient> items = new ArrayList<>();
-
-                for(int i = 0; i < buffer.readInt(); i++){
-                    items.add(Ingredient.fromNetwork(buffer));
-                }
-
-                return items;
-            }
-
-            @Override
-            public List<Ingredient> getBindingItems() {
-                List<Ingredient> items = new ArrayList<>();
-
-                for(int i = 0; i < buffer.readInt(); i++){
-                    items.add(Ingredient.fromNetwork(buffer));
-                }
-
-                return items;
-            }
-
-            @Override
-            public  Map<Integer, List<Map<Ingredient, Integer>>> getAssembleStepsItems() {
-                Map<Integer, List<Map<Ingredient, Integer>>> assembleStepsItems = new HashMap<>();
-
-                for(int i = 0; i < buffer.readInt(); i++){
-                    int step = buffer.readInt();
-
-                    List<Map<Ingredient, Integer>> combinations = new ArrayList<>();
-                    for(int j = 0; j < buffer.readInt(); j++){
-                        Map<Ingredient, Integer> ingredients = new HashMap<>();
-                        for(int k = 0; k < buffer.readInt(); k++){
-                            ingredients.put(Ingredient.fromNetwork(buffer), buffer.readInt());
-                        }
-
-                        combinations.add(ingredients);
-                    }
-
-                    assembleStepsItems.put(step, combinations);
-                }
-
-                return assembleStepsItems;
-            }
-
-            @Override
-            public List<Map<Ingredient, Integer>> getDisassembleItems() {
-
-                List<Map<Ingredient, Integer>> disassembleItems = new ArrayList<>();
-
-                for(int i = 0; i < buffer.readInt(); i++){
-                    Map<Ingredient, Integer> combinations = new HashMap<>();
-                    for(int j = 0; j < buffer.readInt(); j++){
-                        combinations.put(Ingredient.fromNetwork(buffer), buffer.readInt());
-                    }
-
-                    disassembleItems.add(combinations);
-                }
-
-                return disassembleItems;
-            }
-        };
+    public ToolCodec singleFromBuffer(FriendlyByteBuf buffer) {
+        return buffer.readWithCodec(ToolCodec.CODEC);
     }
 
     @Override
-    public List<ITool> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<ITool> tools = new ArrayList<>();
+    public List<ToolCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
+        List<ToolCodec> tools = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            ITool tool = singleFromBuffer(buffer);
+            ToolCodec tool = singleFromBuffer(buffer);
 
             tools.add(tool);
         }

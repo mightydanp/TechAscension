@@ -2,22 +2,16 @@ package mightydanp.techapi.common.resources;
 
 import mightydanp.techapi.common.resources.asset.data.IItems;
 import mightydanp.techapi.common.resources.data.DataPackRegistry;
-import mightydanp.techapi.common.resources.data.data.BlockStateVariantData;
-import mightydanp.techascension.common.blocks.CampfireBlockOverride;
-import mightydanp.techascension.common.blocks.ModBlocks;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techapi.common.resources.asset.AssetPackRegistry;
 import mightydanp.techascension.common.TechAscension;
-import net.minecraft.core.Direction;
+import mightydanp.techcore.common.material.TCMaterial;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -32,13 +26,15 @@ public class ResourcePackEventHandler {
 
     @SubscribeEvent
     public static void addResourcePack(AddPackFindersEvent event){
-        ((MaterialRegistry) TCJsonConfigs.material.getFirst()).registryMap.forEach((modID, material) -> {
+        ((MaterialRegistry)TCJsonConfigs.material.getFirst()).registryMap.forEach((modID, material) -> {
             try {
                 material.saveResources();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
+
+        TCMaterial.saveOnceResources();
 
         itemResources.forEach(IItems::initResource);
 

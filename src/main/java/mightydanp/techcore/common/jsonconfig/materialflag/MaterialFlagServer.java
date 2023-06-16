@@ -24,9 +24,9 @@ import java.util.stream.Collectors;
  */
 public class MaterialFlagServer extends JsonConfigServer<MaterialFlagCodec> {
     @Override
-    public Map<String, MaterialFlagCodec> getServerMapFromList(List<MaterialFlagCodec> materialFlagsIn) {
+    public Map<String, MaterialFlagCodec> getServerMapFromList(List<MaterialFlagCodec> codecs) {
         Map<String, MaterialFlagCodec> codecMap = new LinkedHashMap<>();
-        materialFlagsIn.forEach(materialFlag -> codecMap.put(fixesToName(materialFlag.prefix(), materialFlag.suffix()), materialFlag));
+        codecs.forEach(materialFlag -> codecMap.put(fixesToName(materialFlag.prefix(), materialFlag.suffix()), materialFlag));
 
         return codecMap;
     }

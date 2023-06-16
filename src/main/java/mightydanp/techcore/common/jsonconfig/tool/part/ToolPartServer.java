@@ -22,49 +22,49 @@ import java.util.stream.Collectors;
 /**
  * Created by MightyDanp on 1/25/2022.
  */
-public class ToolPartServer extends JsonConfigServer<IToolPart> {
+public class ToolPartServer extends JsonConfigServer<ToolPartCodec> {
 
     @Override
-    public Map<String, IToolPart> getServerMapFromList(List<IToolPart> toolPartsIn) {
-        Map<String, IToolPart> toolPartsList = new LinkedHashMap<>();
-        toolPartsIn.forEach(toolPart -> toolPartsList.put(fixesToName(toolPart.getPrefix(), toolPart.getSuffix()), toolPart));
+    public Map<String, ToolPartCodec> getServerMapFromList(List<ToolPartCodec> codecs) {
+        Map<String, ToolPartCodec> codecMap = new LinkedHashMap<>();
+        codecs.forEach(toolPart -> codecMap.put(fixesToName(toolPart.prefix(), toolPart.suffix()), toolPart));
 
-        return toolPartsList;
+        return codecMap;
     }
 
     @Override
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<IToolPart> list = message.getConfig(TCJsonConfigs.toolPartID).stream()
-                .filter(IToolPart.class::isInstance)
-                .map(IToolPart.class::cast).toList();
+        List<ToolPartCodec> clientList = message.getConfig(TCJsonConfigs.toolPartID).stream()
+                .filter(ToolPartCodec.class::isInstance)
+                .map(ToolPartCodec.class::cast).toList();
 
-        if(list.size() != getServerMap().size()){
+        if(clientList.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("tool_part", sync.get());
+                ConfigSync.syncedJson.put(ToolPartCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        getServerMap().forEach((name, toolPart) -> {
-            sync.set(list.stream().anyMatch(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)));
+        getServerMap().forEach((name, serverCodec) -> {
+            sync.set(clientList.stream().anyMatch(o -> fixesToName(o.prefix(), o.suffix()).equals(name)));
 
             if(sync.get()) {
-                Optional<IToolPart> optional = list.stream().filter(o -> fixesToName(o.getPrefix(), o.getSuffix()).equals(name)).findFirst();
+                Optional<ToolPartCodec> optionalClientCodec = clientList.stream().filter(o -> fixesToName(o.prefix(), o.suffix()).equals(name)).findFirst();
 
-                if(optional.isPresent()) {
-                    IToolPart serverToolPart = optional.get();
-                    JsonObject jsonMaterial = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(toolPart);
-                    JsonObject materialJson = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(serverToolPart);
+                if(optionalClientCodec.isPresent()) {
+                    ToolPartCodec clientCodec = optionalClientCodec.get();
+                    JsonObject serverJson = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(serverCodec);
+                    JsonObject clientJson = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(clientCodec);
 
-                    sync.set(materialJson.equals(jsonMaterial));
+                    sync.set(clientJson.equals(serverJson));
                 }
             }
         });
 
-        ConfigSync.syncedJson.put("tool_part", sync.get());
+        ConfigSync.syncedJson.put(ToolPartCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -72,15 +72,15 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
     @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, IToolPart> clientToolParts = new HashMap<>();
+        Map<String, ToolPartCodec> clientToolParts = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/tool_part");
+        Path configs = Paths.get(singlePlayerConfigs + "/" + ToolPartCodec.codecName);
         File[] files = configs.toFile().listFiles();
 
         if(files != null){
             if(getServerMap().size() != files.length){
                 sync.set(false);
-                ConfigSync.syncedJson.put("tool_part", sync.get());
+                ConfigSync.syncedJson.put(ToolPartCodec.codecName, sync.get());
                 return false;
             }
 
@@ -88,19 +88,19 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
 
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.toolPart.getFirst().getJsonObject(file.getName());
-                    IToolPart toolPart = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).fromJsonObject(jsonObject);
-                    clientToolParts.put(fixesToName(toolPart.getPrefix(), toolPart.getSuffix()), toolPart);
+                    ToolPartCodec codec = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).fromJsonObject(jsonObject);
+                    clientToolParts.put(fixesToName(codec.prefix(), codec.suffix()), codec);
                 }
 
-                getServerMap().values().forEach(serverToolPart -> {
-                    sync.set(clientToolParts.containsKey(fixesToName(serverToolPart.getPrefix(), serverToolPart.getSuffix())));
+                getServerMap().values().forEach(serverCodec -> {
+                    sync.set(clientToolParts.containsKey(fixesToName(serverCodec.prefix(), serverCodec.suffix())));
 
                     if(sync.get()) {
-                        IToolPart clientToolPart = getServerMap().get(fixesToName(serverToolPart.getPrefix(), serverToolPart.getSuffix()));
-                        JsonObject jsonMaterial = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(serverToolPart);
-                        JsonObject materialJson = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(clientToolPart);
+                        ToolPartCodec clientCodec = getServerMap().get(fixesToName(serverCodec.prefix(), serverCodec.suffix()));
+                        JsonObject serverJson = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(serverCodec);
+                        JsonObject clientJson = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(clientCodec);
 
-                        sync.set(materialJson.equals(jsonMaterial));
+                        sync.set(clientJson.equals(serverJson));
                     }
 
                 });
@@ -109,20 +109,19 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
         }else{
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("tool_part", sync.get());
+                ConfigSync.syncedJson.put(ToolPartCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        ConfigSync.syncedJson.put("tool_part", sync.get());
+        ConfigSync.syncedJson.put(ToolPartCodec.codecName, sync.get());
 
         return sync.get();
     }
 
     @Override
     public void syncClientWithServer(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/tool_part");
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/" + ToolPartCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -130,15 +129,15 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
             }
         }
 
-        for (IToolPart toolPart : getServerMap().values()) {
-            String name = fixesToName(toolPart.getPrefix(), toolPart.getSuffix());
-            Path materialFile = Paths.get(serverConfigFolder + "/" + name + ".json");
+        for (ToolPartCodec toolPart : getServerMap().values()) {
+            String name = fixesToName(toolPart.prefix(), toolPart.suffix());
+            Path filePath = Paths.get(serverConfigFolder + "/" + name + ".json");
             JsonObject jsonObject = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).toJsonObject(toolPart);
             String s = GSON.toJson(jsonObject);
-            if (!Files.exists(materialFile)) {
-                Files.createDirectories(materialFile.getParent());
+            if (!Files.exists(filePath)) {
+                Files.createDirectories(filePath.getParent());
 
-                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                     bufferedwriter.write(s);
                 }
             }
@@ -147,17 +146,16 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
 
     @Override
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/tool_part");
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/tool_part");
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/" + ToolPartCodec.codecName);
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/" + ToolPartCodec.codecName);
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){
                 for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                     JsonObject jsonObject = TCJsonConfigs.toolPart.getFirst().getJsonObject(file.getName());
-                    IToolPart toolPart = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).fromJsonObject(jsonObject);
+                    ToolPartCodec filePath = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).fromJsonObject(jsonObject);
 
-                    String name = fixesToName(toolPart.getPrefix(), toolPart.getSuffix());
+                    String name = fixesToName(filePath.prefix(), filePath.suffix());
 
                     Path materialFile = Paths.get(singlePlayerSaveConfigFolder + "/" + name + ".json");
                     if (!Files.exists(materialFile)) {
@@ -175,31 +173,29 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IToolPart> list = message.getConfig(TCJsonConfigs.toolPartID).stream()
-                .filter(IToolPart.class::isInstance)
-                .map(IToolPart.class::cast).toList();
+        List<ToolPartCodec> list = message.getConfig(TCJsonConfigs.toolPartID).stream()
+                .filter(ToolPartCodec.class::isInstance)
+                .map(ToolPartCodec.class::cast).toList();
 
-        Map<String, IToolPart> toolParts = list.stream()
-                .collect(Collectors.toMap(s -> fixesToName(s.getPrefix(), s.getSuffix()), s -> s));
+        Map<String, ToolPartCodec> codecMap = list.stream()
+                .collect(Collectors.toMap(s -> fixesToName(s.prefix(), s.suffix()), s -> s));
 
         serverMap.clear();
-        serverMap.putAll(toolParts);
+        serverMap.putAll(codecMap);
 
-        TechAscension.LOGGER.info("Loaded {} tool parts from the server", toolParts.size());
+        TechAscension.LOGGER.info("Loaded {} " + ToolPartCodec.codecName + " from the server", codecMap.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, IToolPart toolPart) {
-        buffer.writeUtf(fixesToName(toolPart.getPrefix(), toolPart.getSuffix()));
-        buffer.writeUtf(toolPart.getPrefix());
-        buffer.writeUtf(toolPart.getSuffix());
+    public void singleToBuffer(FriendlyByteBuf buffer, ToolPartCodec codec) {
+        buffer.writeWithCodec(ToolPartCodec.CODEC, codec);
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IToolPart> list = message.getConfig(TCJsonConfigs.toolPartID).stream()
-                .filter(IToolPart.class::isInstance)
-                .map(IToolPart.class::cast).toList();
+        List<ToolPartCodec> list = message.getConfig(TCJsonConfigs.toolPartID).stream()
+                .filter(ToolPartCodec.class::isInstance)
+                .map(ToolPartCodec.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -207,32 +203,18 @@ public class ToolPartServer extends JsonConfigServer<IToolPart> {
     }
 
     @Override
-    public IToolPart singleFromBuffer(FriendlyByteBuf buffer) {
-        String name = buffer.readUtf();
-        String prefix = buffer.readUtf();
-        String suffix = buffer.readUtf();
-
-        return new IToolPart() {
-            @Override
-            public String getPrefix() {
-                return prefix;
-            }
-
-            @Override
-            public String getSuffix() {
-                return suffix;
-            }
-        };
+    public ToolPartCodec singleFromBuffer(FriendlyByteBuf buffer) {
+        return buffer.readWithCodec(ToolPartCodec.CODEC);
     }
 
     @Override
-    public List<IToolPart> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<IToolPart> toolParts = new ArrayList<>();
+    public List<ToolPartCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
+        List<ToolPartCodec> toolParts = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            IToolPart toolPart = singleFromBuffer(buffer);
+            ToolPartCodec toolPart = singleFromBuffer(buffer);
 
             toolParts.add(toolPart);
         }

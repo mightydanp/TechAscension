@@ -1,6 +1,7 @@
 package mightydanp.techcore.common.jsonconfig.tool.part;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
@@ -10,20 +11,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static mightydanp.techcore.common.jsonconfig.tool.part.IToolPart.fixesToName;
+import static mightydanp.techcore.common.jsonconfig.tool.part.ToolPartCodec.fixesToName;
 
 /**
  * Created by MightyDanp on 1/20/2022.
  */
-public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
+public class ToolPartRegistry extends JsonConfigMultiFile<ToolPartCodec> {
     @Override
     public void initiate() {
-        setJsonFolderName("tool_part");
+        setJsonFolderName(ToolPartCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         //
-        for (DefaultToolPart toolPart : DefaultToolPart.values()) {
-            register(toolPart);
+        for (DefaultToolPart codec : DefaultToolPart.values()) {
+            register(codec.getCodec());
         }
         //
 
@@ -33,27 +34,27 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
     }
 
     @Override
-    public void register(IToolPart toolPartIn) {
-        if (registryMap.containsValue(toolPartIn)) {
-            throw new IllegalArgumentException("Tool Part with the prefix:(" + toolPartIn.getPrefix() + "), and the suffix:(" + toolPartIn.getSuffix() + "), already exists.");
+    public void register(ToolPartCodec codec) {
+        if (registryMap.containsValue(codec)) {
+            throw new IllegalArgumentException(ToolPartCodec.codecName + " with the prefix:(" + codec.prefix() + "), and the suffix:(" + codec.suffix() + "), already exists.");
         }
 
-        registryMap.put(fixesToName(toolPartIn), toolPartIn);
+        registryMap.put(fixesToName(codec), codec);
     }
 
-    public IToolPart getByName(String fixesIn) {
-        return registryMap.get(fixesIn);
+    public ToolPartCodec getByName(String name) {
+        return registryMap.get(name);
     }
 
     public void buildJson() {
-        for (IToolPart toolPart : registryMap.values()) {
-            String name = fixesToName(toolPart);
+        for (ToolPartCodec codec : registryMap.values()) {
+            String name = fixesToName(codec);
 
             if (!name.equals("")) {
                 JsonObject jsonObject = getJsonObject(name);
 
                 if (jsonObject.size() == 0) {
-                    this.saveJsonObject(name, toJsonObject(toolPart));
+                    this.saveJsonObject(name, toJsonObject(codec));
                 }
             }
         }
@@ -69,46 +70,28 @@ public class ToolPartRegistry extends JsonConfigMultiFile<IToolPart> {
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
                         String toolPartName = jsonObject.get("name").getAsString();
-                        IToolPart toolPart = fromJsonObject(jsonObject);
+                        ToolPartCodec codec = fromJsonObject(jsonObject);
 
-                        registryMap.put(fixesToName(toolPart), toolPart);
+                        registryMap.put(fixesToName(codec), codec);
 
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to tool part list because a tool part already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to " + ToolPartCodec.codecName + " list because a tool part already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            TechAscension.LOGGER.warn(new CrashReport("tool part json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport(ToolPartCodec.codecName + " json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
     @Override
-    public IToolPart fromJsonObject(JsonObject jsonObjectIn) {
-        String prefix = jsonObjectIn.get("prefix").getAsString();
-        String suffix = jsonObjectIn.get("suffix").getAsString();
+    public ToolPartCodec fromJsonObject(JsonObject jsonObjectIn) {
+        return ToolPartCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + ToolPartCodec.codecName + ", please fix this"))).getFirst();
 
-        return new IToolPart() {
-
-            @Override
-            public String getPrefix() {
-                return prefix;
-            }
-
-            @Override
-            public String getSuffix() {
-                return suffix;
-            }
-        };
     }
 
-    public JsonObject toJsonObject(IToolPart toolPart) {
-        JsonObject jsonObject = new JsonObject();
+    public JsonObject toJsonObject(ToolPartCodec codec) {
+        return ToolPartCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + ToolPartCodec.codecName + ", please fix this"))).getAsJsonObject();
 
-        jsonObject.addProperty("name", fixesToName(toolPart));
-        jsonObject.addProperty("prefix", toolPart.getPrefix());
-        jsonObject.addProperty("suffix", toolPart.getSuffix());
-
-        return jsonObject;
     }
 }

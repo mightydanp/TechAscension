@@ -10,12 +10,12 @@ public enum DefaultMaterialFlag {
     SOFTENED_INGOT(new MaterialFlagCodec("softened_", "_ingot")),
     HARDENED_INGOT(new MaterialFlagCodec("hardened_", "_ingot")),
     ORE(new MaterialFlagCodec("", "_ore")),
-    SMALL_ORE(new MaterialFlagCodec("", "_ore")),
+    SMALL_ORE(new MaterialFlagCodec("small_", "_ore")),
     GEM(new MaterialFlagCodec("", "_gem")),
     FLUID(new MaterialFlagCodec("", "_fluid")),
     GAS(new MaterialFlagCodec("", "_gas")),
-    BLOCK_METAL(new MaterialFlagCodec("", "_block")),
-    BLOCK_GEM(new MaterialFlagCodec("", "_block")),
+    BLOCK_METAL(new MaterialFlagCodec("block_", "_metal")),
+    BLOCK_GEM(new MaterialFlagCodec("block_", "_gem")),
     STONE_LAYER(new MaterialFlagCodec("stone_","_layer")),
     TOOL(new MaterialFlagCodec("","_tool"));
 

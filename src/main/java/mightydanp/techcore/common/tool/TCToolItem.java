@@ -6,7 +6,7 @@ import mightydanp.techcore.client.settings.keybindings.KeyBindings;
 import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
 import mightydanp.techcore.common.items.TCCreativeModeTab;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
-import mightydanp.techcore.common.jsonconfig.tool.ITool;
+import mightydanp.techcore.common.jsonconfig.tool.ToolCodec;
 import mightydanp.techcore.common.tool.part.BindingItem;
 import mightydanp.techcore.common.tool.part.HandleItem;
 import mightydanp.techcore.common.tool.part.HeadItem;
@@ -53,10 +53,10 @@ import net.minecraft.world.InteractionResultHolder;
  */
 public class TCToolItem extends Item {
     public String name;
-    private Map<String, ItemStack> handles = new HashMap<>();
-    private Map<String, ItemStack> dullHeads = new HashMap<>();
-    private Map<String, ItemStack> heads = new HashMap<>();
-    private Map<String, ItemStack> bindings = new HashMap<>();
+    private final Map<String, ItemStack> handles = new HashMap<>();
+    private final Map<String, ItemStack> dullHeads = new HashMap<>();
+    private final Map<String, ItemStack> heads = new HashMap<>();
+    private final Map<String, ItemStack> bindings = new HashMap<>();
 
     public Integer parts = 0;
     //public TCToolItemInventoryHelper inventory = new TCToolItemInventoryHelper();
@@ -98,9 +98,9 @@ public class TCToolItem extends Item {
     public Map<String, ItemStack> getHandles() {
         Map<String, ItemStack> map = handles;
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
-            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name));
+            ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
-            for (Ingredient partItems : tool.getHandleItems()) {
+            for (Ingredient partItems : tool.handleItems()) {
                 for (ItemStack partItemStack : partItems.getItems()) {
                     map.put(Objects.requireNonNull(partItemStack.getItem().getRegistryName()).toString(), partItemStack);
                 }
@@ -117,9 +117,9 @@ public class TCToolItem extends Item {
     public Map<String, ItemStack> getHeads() {
         Map<String, ItemStack> map = heads;
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
-            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name));
+            ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
-            for (Ingredient partItems : tool.getHeadItems()) {
+            for (Ingredient partItems : tool.headItems()) {
                 for (ItemStack partItemStack : partItems.getItems()) {
                     map.put(Objects.requireNonNull(partItemStack.getItem().getRegistryName()).toString(), partItemStack);
                 }
@@ -131,9 +131,9 @@ public class TCToolItem extends Item {
     public Map<String, ItemStack> getBindings() {
         Map<String, ItemStack> map = handles;
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
-            ITool tool = ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name));
+            ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
-            for (Ingredient partItems : tool.getBindingItems()) {
+            for (Ingredient partItems : tool.bindingItems()) {
                 for (ItemStack partItemStack : partItems.getItems()) {
                     map.put(Objects.requireNonNull(partItemStack.getItem().getRegistryName()).toString(), partItemStack);
                 }
@@ -143,23 +143,23 @@ public class TCToolItem extends Item {
         return map;
     }
 
-    public List<String> getEffectiveBlocks() {
+    public List<BlockState> getEffectiveBlocks() {
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
-            return ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name)).getEffectiveOn();
+            return ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name)).effectiveOn();
         }
         return null;
     }
 
     public Map<Integer, List<Map<Ingredient, Integer>>> getAssembleItems() {
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
-            return ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name)).getAssembleStepsItems();
+            return ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name)).assembleStepsItems();
         }
         return null;
     }
 
     public List<Map<Ingredient, Integer>> getDisassembleItems() {
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
-            return ((ITool)TCJsonConfigs.tool.getFirst().registryMap.get(name)).getDisassembleItems();
+            return ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name)).disassembleItems();
         }
         return null;
     }
@@ -355,14 +355,7 @@ public class TCToolItem extends Item {
                 });
 
                 if (!isCorrect.get()) {
-                    List<Block> blocks = new ArrayList<>();
-
-                    getEffectiveBlocks().forEach(string -> {
-                        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(string));
-                        blocks.add(block);
-                    });
-
-                    return blocks.contains(state.getBlock());
+                    return getEffectiveBlocks().contains(state);
                 }
             } else {
                 isCorrect.set(false);
