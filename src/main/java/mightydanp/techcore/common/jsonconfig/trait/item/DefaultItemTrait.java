@@ -4,69 +4,17 @@ import mightydanp.techcore.common.jsonconfig.icons.DefaultTextureIcon;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.resources.ResourceLocation;
 
-public enum DefaultItemTrait implements IItemTrait{
-    stick(new ResourceLocation("stick").toString(), 0x854F2B, 16, DefaultTextureIcon.WOOD.name(), 0.852D, null, null, null),
-    plant_fiber(new ResourceLocation(Ref.mod_id, "plant_fiber").toString(), 0x3c5817, 8, DefaultTextureIcon.LEAF.name(), 0.0003, null, 0.3048, null),
-    diamond(new ResourceLocation("diamond").toString(), 0x854F2B, 10, DefaultTextureIcon.DIAMOND.name(), 0.852D, null, null, null)
-    ;
+public enum DefaultItemTrait{
+    stick(new ItemTraitCodec(new ResourceLocation("stick").toString(), 0x854F2B, 16, DefaultTextureIcon.WOOD.name(), 4.922384399D, null)),
+    plant_fiber(new ItemTraitCodec(new ResourceLocation(Ref.mod_id, "plant_fiber").toString(), 0x3c5817, 8, DefaultTextureIcon.LEAF.name(), 0.000136077711, 0.3048)),
+    diamond(new ItemTraitCodec(new ResourceLocation("diamond").toString(), 0x854F2B, 10, DefaultTextureIcon.DIAMOND.name(), 0.3864607, null));
 
-    final String registry;
-    final int color;
-    final int maxDamage;
-    final String textureIcon;
-    final Double pounds;
-    final Double kilograms;
-    final Double meter;
-    final Double yard;
-
-    DefaultItemTrait(String registry, int color, int maxDamage, String textureIcon, Double pounds, Double kilograms, Double meter, Double yard){
-        this.registry = registry;
-        this.color = color;
-        this.maxDamage = maxDamage;
-        this.textureIcon = textureIcon;
-        this.pounds = pounds;
-        this.kilograms = kilograms;
-        this.meter = meter;
-        this.yard = yard;
+    private final ItemTraitCodec codec;
+    DefaultItemTrait(ItemTraitCodec codec) {
+        this.codec = codec;
     }
 
-    @Override
-    public String getRegistry() {
-        return registry;
-    }
-
-    @Override
-    public Double getPounds() {
-        return pounds;
-    }
-
-    @Override
-    public Double getKilograms() {
-        return kilograms;
-    }
-
-    @Override
-    public Double getMeters() {
-        return meter;
-    }
-
-    @Override
-    public Double getYards() {
-        return yard;
-    }
-
-    @Override
-    public Integer getColor() {
-        return color;
-    }
-
-    @Override
-    public Integer getMaxDamage() {
-        return maxDamage;
-    }
-
-    @Override
-    public String getTextureIcon() {
-        return textureIcon;
+    public ItemTraitCodec getCodec(){
+        return this.codec;
     }
 }

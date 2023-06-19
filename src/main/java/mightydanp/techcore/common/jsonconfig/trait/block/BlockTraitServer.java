@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 
 public class BlockTraitServer extends JsonConfigServer<BlockTraitCodec> {
 
-    public Map<String, BlockTraitCodec> getServerMapFromList(List<BlockTraitCodec> blockTraitsIn) {
+    public Map<String, BlockTraitCodec> getServerMapFromList(List<BlockTraitCodec> codecs) {
         Map<String, BlockTraitCodec> codecMap = new LinkedHashMap<>();
-        blockTraitsIn.forEach(blockTrait -> codecMap.put(blockTrait.registry(), blockTrait));
+        codecs.forEach(blockTrait -> codecMap.put(blockTrait.registry(), blockTrait));
 
         return codecMap;
     }
@@ -66,7 +66,7 @@ public class BlockTraitServer extends JsonConfigServer<BlockTraitCodec> {
 
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, BlockTraitCodec> clientBlockTraits = new HashMap<>();
+        Map<String, BlockTraitCodec> codecMap = new HashMap<>();
 
         Path configs = Paths.get(singlePlayerConfigs + "/" + BlockTraitCodec.codecName);
         File[] files = configs.toFile().listFiles();
@@ -83,11 +83,11 @@ public class BlockTraitServer extends JsonConfigServer<BlockTraitCodec> {
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.blockTrait.getFirst().getJsonObject(file.getName());
                     BlockTraitCodec codec = ((BlockTraitRegistry) TCJsonConfigs.blockTrait.getFirst()).fromJsonObject(jsonObject);
-                    clientBlockTraits.put(codec.registry(), codec);
+                    codecMap.put(codec.registry(), codec);
                 }
 
                 getServerMap().values().forEach(serverCodec -> {
-                    sync.set(clientBlockTraits.containsKey(serverCodec.registry()));
+                    sync.set(codecMap.containsKey(serverCodec.registry()));
 
                     if(sync.get()) {
                         BlockTraitCodec clientCodec = getServerMap().get(serverCodec.registry());
@@ -114,7 +114,7 @@ public class BlockTraitServer extends JsonConfigServer<BlockTraitCodec> {
     }
 
     public void syncClientWithServer(String folderName) throws IOException {
-        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/" + BlockTraitCodec.codecName);
+        Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/trait/block");
 
         if(serverConfigFolder.toFile().listFiles() != null) {
             for (File file : Objects.requireNonNull(serverConfigFolder.toFile().listFiles())) {
@@ -138,9 +138,8 @@ public class BlockTraitServer extends JsonConfigServer<BlockTraitCodec> {
     }
 
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
-        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/" + BlockTraitCodec.codecName);
-        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/" + BlockTraitCodec.codecName);
+        Path singlePlayerSaveConfigFolder = Paths.get(folderName + "/trait/block");
+        Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/trait/block");
 
         if(singlePlayerSaveConfigFolder.toFile().listFiles() == null) {
             if(configFolder.toFile().listFiles() != null){

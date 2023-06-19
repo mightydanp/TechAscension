@@ -8,7 +8,6 @@ import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,11 +19,11 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
+public class ItemTraitServer extends JsonConfigServer<ItemTraitCodec> {
 
-    public Map<String, IItemTrait> getServerMapFromList(List<IItemTrait> itemTraitsIn) {
-        Map<String, IItemTrait> itemTraitsList = new LinkedHashMap<>();
-        itemTraitsIn.forEach(itemTrait -> itemTraitsList.put(itemTrait.getRegistry(), itemTrait));
+    public Map<String, ItemTraitCodec> getServerMapFromList(List<ItemTraitCodec> codecs) {
+        Map<String, ItemTraitCodec> itemTraitsList = new LinkedHashMap<>();
+        codecs.forEach(itemTrait -> itemTraitsList.put(itemTrait.registry(), itemTrait));
 
         return itemTraitsList;
     }
@@ -32,42 +31,42 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
     public Boolean isClientAndServerConfigsSynced(SyncMessage message){
         AtomicBoolean sync = new AtomicBoolean(true);
 
-        List<IItemTrait> list = message.getConfig(TCJsonConfigs.itemTraitID).stream()
-                .filter(IItemTrait.class::isInstance)
-                .map(IItemTrait.class::cast).toList();
+        List<ItemTraitCodec> list = message.getConfig(TCJsonConfigs.itemTraitID).stream()
+                .filter(ItemTraitCodec.class::isInstance)
+                .map(ItemTraitCodec.class::cast).toList();
 
         if(list.size() != getServerMap().size()){
             if(getServerMap().size() > 0) {
                 sync.set(false);
-                ConfigSync.syncedJson.put("item_trait", sync.get());
+                ConfigSync.syncedJson.put(ItemTraitCodec.codecName, sync.get());
                 return false;
             }
         }
 
-        getServerMap().forEach((name, itemTrait) -> {
-            sync.set(list.stream().anyMatch(o -> o.getRegistry().equals(name)));
+        getServerMap().forEach((name, serverCodec) -> {
+            sync.set(list.stream().anyMatch(o -> o.registry().equals(name)));
 
             if(sync.get()) {
-                Optional<IItemTrait> optional = list.stream().filter(o -> o.getRegistry().equals(name)).findFirst();
+                Optional<ItemTraitCodec> optionalClientCodec = list.stream().filter(o -> o.registry().equals(name)).findFirst();
 
-                if(optional.isPresent()) {
-                    IItemTrait serverItemTrait = optional.get();
-                    JsonObject jsonMaterial = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(itemTrait);
-                    JsonObject materialJson = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(serverItemTrait);
+                if(optionalClientCodec.isPresent()) {
+                    ItemTraitCodec clientCodec = optionalClientCodec.get();
+                    JsonObject serverJson = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(serverCodec);
+                    JsonObject clientJson = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(clientCodec);
 
-                    sync.set(materialJson.equals(jsonMaterial));
+                    sync.set(clientJson.equals(serverJson));
                 }
             }
         });
 
-        ConfigSync.syncedJson.put("item_trait", sync.get());
+        ConfigSync.syncedJson.put(ItemTraitCodec.codecName, sync.get());
 
         return sync.get();
     }
 
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, IItemTrait> clientItemTraits = new HashMap<>();
+        Map<String, ItemTraitCodec> codecMap = new HashMap<>();
         Path path = Paths.get(singlePlayerConfigs + "/trait/item");
 
         File[] fileArray = path.toFile().listFiles();
@@ -82,7 +81,7 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
                 if (files != null) {
                     if (getServerMap().size() != files.length) {
                         sync.set(false);
-                        ConfigSync.syncedJson.put("item_trait", sync.get());
+                        ConfigSync.syncedJson.put(ItemTraitCodec.codecName, sync.get());
                         return false;
                     }
 
@@ -90,19 +89,19 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
 
                         for (File file : files) {
                             JsonObject jsonObject = TCJsonConfigs.itemTrait.getFirst().getJsonObject(file.getParentFile().getName() + ":" + file.getName().replace(".json", ""));
-                            IItemTrait itemTrait = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).fromJsonObject(jsonObject);
-                            clientItemTraits.put(itemTrait.getRegistry(), itemTrait);
+                            ItemTraitCodec codec = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).fromJsonObject(jsonObject);
+                            codecMap.put(codec.registry(), codec);
                         }
 
-                        getServerMap().values().forEach(serverItemTrait -> {
-                            sync.set(clientItemTraits.containsKey(serverItemTrait.getRegistry()));
+                        getServerMap().values().forEach(serverCodec -> {
+                            sync.set(codecMap.containsKey(serverCodec.registry()));
 
                             if (sync.get()) {
-                                IItemTrait clientItemTrait = getServerMap().get(serverItemTrait.getRegistry());
-                                JsonObject jsonMaterial = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(serverItemTrait);
-                                JsonObject materialJson = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(clientItemTrait);
+                                ItemTraitCodec clientCodec = getServerMap().get(serverCodec.registry());
+                                JsonObject serverJson = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(serverCodec);
+                                JsonObject clientJson = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(clientCodec);
 
-                                sync.set(materialJson.equals(jsonMaterial));
+                                sync.set(clientJson.equals(serverJson));
                             }
 
                         });
@@ -111,14 +110,14 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
                 } else {
                     if (getServerMap().size() > 0) {
                         sync.set(false);
-                        ConfigSync.syncedJson.put("item_trait", sync.get());
+                        ConfigSync.syncedJson.put(ItemTraitCodec.codecName, sync.get());
                         return false;
                     }
                 }
             }
         }
 
-        ConfigSync.syncedJson.put("item_trait", sync.get());
+        ConfigSync.syncedJson.put(ItemTraitCodec.codecName, sync.get());
 
         return sync.get();
     }
@@ -138,15 +137,15 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
                     }
                 }
 
-                for (IItemTrait itemTrait : getServerMap().values()) {
-                    String name = itemTrait.getRegistry();
-                    Path file = Paths.get(folder + "/" + name + ".json");
-                    JsonObject jsonObject = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(itemTrait);
+                for (ItemTraitCodec codec : getServerMap().values()) {
+                    String name = codec.registry();
+                    Path filePath = Paths.get(folder + "/" + name + ".json");
+                    JsonObject jsonObject = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).toJsonObject(codec);
                     String s = GSON.toJson(jsonObject);
-                    if (!Files.exists(file)) {
-                        Files.createDirectories(file.getParent());
+                    if (!Files.exists(filePath)) {
+                        Files.createDirectories(filePath.getParent());
 
-                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(file)) {
+                        try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                             bufferedwriter.write(s);
                         }
                     }
@@ -156,7 +155,6 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
     }
 
     public void syncClientWithSinglePlayerWorld(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path path = Paths.get(folderName + "/trait/item");
         Path configFolder = Paths.get(TechAscension.mainJsonConfig.getFolderLocation()  + "/trait/item");
 
@@ -169,15 +167,15 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
                  if (folder.listFiles() == null){
                     for (File file : Objects.requireNonNull(configFolder.toFile().listFiles())) {
                         JsonObject jsonObject = TCJsonConfigs.itemTrait.getFirst().getJsonObject(file.getParentFile().getName() + ":" + file.getName());
-                        IItemTrait itemTrait = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).fromJsonObject(jsonObject);
+                        ItemTraitCodec codec = ((ItemTraitRegistry) TCJsonConfigs.itemTrait.getFirst()).fromJsonObject(jsonObject);
 
-                        String name = itemTrait.getRegistry();
+                        String name = codec.registry();
 
-                        Path materialFile = Paths.get(folder + "/" + name + ".json");
-                        if (!Files.exists(materialFile)) {
-                            Files.createDirectories(materialFile.getParent());
+                        Path filePath = Paths.get(folder + "/" + name + ".json");
+                        if (!Files.exists(filePath)) {
+                            Files.createDirectories(filePath.getParent());
 
-                            try (BufferedWriter bufferedwriter = Files.newBufferedWriter(materialFile)) {
+                            try (BufferedWriter bufferedwriter = Files.newBufferedWriter(filePath)) {
                                 String s = GSON.toJson(jsonObject);
                                 bufferedwriter.write(s);
                             }
@@ -190,47 +188,29 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
 
     @Override
     public void loadFromServer(SyncMessage message) {
-        List<IItemTrait> list = message.getConfig(TCJsonConfigs.itemTraitID).stream()
-                .filter(IItemTrait.class::isInstance)
-                .map(IItemTrait.class::cast).toList();
+        List<ItemTraitCodec> list = message.getConfig(TCJsonConfigs.itemTraitID).stream()
+                .filter(ItemTraitCodec.class::isInstance)
+                .map(ItemTraitCodec.class::cast).toList();
 
-        Map<String, IItemTrait> itemTraits = list.stream()
-                .collect(Collectors.toMap(IItemTrait::getRegistry, s -> s));
+        Map<String, ItemTraitCodec> codecMap = list.stream()
+                .collect(Collectors.toMap(ItemTraitCodec::registry, s -> s));
 
         serverMap.clear();
-        serverMap.putAll(itemTraits);
+        serverMap.putAll(codecMap);
 
-        TechAscension.LOGGER.info("Loaded {} itemtraits from the server", itemTraits.size());
+        TechAscension.LOGGER.info("Loaded {} " + ItemTraitCodec.codecName + " from the server", codecMap.size());
     }
 
     @Override
-    public void singleToBuffer(FriendlyByteBuf buffer, IItemTrait itemTrait) {
-        buffer.writeUtf(itemTrait.getRegistry());
-        buffer.writeVarInt(itemTrait.getColor());
-        buffer.writeVarInt(itemTrait.getMaxDamage());
-
-        if(itemTrait.getPounds() != null && itemTrait.getKilograms() == null) {
-            buffer.writeUtf("pounds");
-            buffer.writeDouble(itemTrait.getPounds());
-        }else if(itemTrait.getKilograms() != null && itemTrait.getPounds() == null) {
-            buffer.writeUtf("kilograms");
-            buffer.writeDouble(itemTrait.getKilograms());
-        }
-
-        if(itemTrait.getMeters() != null && itemTrait.getYards() == null) {
-            buffer.writeUtf("meters");
-            buffer.writeDouble(itemTrait.getPounds());
-        }else if(itemTrait.getYards() != null && itemTrait.getMeters() == null) {
-            buffer.writeUtf("yards");
-            buffer.writeDouble(itemTrait.getKilograms());
-        }
+    public void singleToBuffer(FriendlyByteBuf buffer, ItemTraitCodec codec) {
+        buffer.writeWithCodec(ItemTraitCodec.CODEC, codec);
     }
 
     @Override
     public void multipleToBuffer(SyncMessage message, FriendlyByteBuf buffer) {
-        List<IItemTrait> list = message.getConfig(TCJsonConfigs.itemTraitID).stream()
-                .filter(IItemTrait.class::isInstance)
-                .map(IItemTrait.class::cast).toList();
+        List<ItemTraitCodec> list = message.getConfig(TCJsonConfigs.itemTraitID).stream()
+                .filter(ItemTraitCodec.class::isInstance)
+                .map(ItemTraitCodec.class::cast).toList();
 
         buffer.writeVarInt(list.size());
 
@@ -238,64 +218,18 @@ public class ItemTraitServer extends JsonConfigServer<IItemTrait> {
     }
 
     @Override
-    public IItemTrait singleFromBuffer(FriendlyByteBuf buffer) {
-
-        return new IItemTrait() {
-
-            @Override
-            public String getRegistry() {
-                return buffer.readUtf();
-            }
-
-            @Override
-            public Integer getColor() {
-                return buffer.readVarInt();
-            }
-
-            @Override
-            public Integer getMaxDamage() {
-                return buffer.readVarInt();
-            }
-
-            @Override
-            public String getTextureIcon() {
-                return buffer.readUtf();
-            }
-
-            final String weight = buffer.readUtf();
-
-            @Override
-            public Double getPounds() {
-                return weight.equals("pounds") ? buffer.readDouble() : null;
-            }
-
-            @Override
-            public Double getKilograms() {
-                return weight.equals("kilograms") ? buffer.readDouble() : null;
-            }
-
-            final String length = buffer.readUtf();
-
-            @Override
-            public Double getMeters() {
-                return length.equals("meters") ? buffer.readDouble() : null;
-            }
-
-            @Override
-            public Double getYards() {
-                return length.equals("yards") ? buffer.readDouble() : null;
-            }
-        };
+    public ItemTraitCodec singleFromBuffer(FriendlyByteBuf buffer) {
+        return buffer.readWithCodec(ItemTraitCodec.CODEC);
     }
 
     @Override
-    public List<IItemTrait> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<IItemTrait> itemTraits = new ArrayList<>();
+    public List<ItemTraitCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
+        List<ItemTraitCodec> itemTraits = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            IItemTrait itemTrait = singleFromBuffer(buffer);
+            ItemTraitCodec itemTrait = singleFromBuffer(buffer);
 
             itemTraits.add(itemTrait);
         }

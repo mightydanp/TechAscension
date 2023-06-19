@@ -5,7 +5,7 @@ import mightydanp.techcore.client.settings.keybindings.KeyBindings;
 import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.recipe.handcrafting.HandCraftingCodec;
-import mightydanp.techcore.common.jsonconfig.trait.item.IItemTrait;
+import mightydanp.techcore.common.jsonconfig.trait.item.ItemTraitCodec;
 import mightydanp.techcore.common.tool.part.HandleItem;
 import mightydanp.techcore.common.tool.part.BindingItem;
 import mightydanp.techcore.common.tool.part.HeadItem;
@@ -188,19 +188,19 @@ public class TCToolHandler {
 
                             if (stack != null) {
                                 if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(stack.getItem().getRegistryName()).toString())) {
-                                    IItemTrait trait = (IItemTrait) TCJsonConfigs.itemTrait.getFirst().registryMap.get(Objects.requireNonNull(stack.getItem().getRegistryName()).toString());
-                                    Float weight = trait.getPounds() != null ? trait.getPounds().floatValue() : trait.kilogramsToPounds(trait.getKilograms()).floatValue();
+                                    ItemTraitCodec trait = (ItemTraitCodec) TCJsonConfigs.itemTrait.getFirst().registryMap.get(Objects.requireNonNull(stack.getItem().getRegistryName()).toString());
+                                    Float weight = trait.kilograms().floatValue();
 
                                     if (!stack.isDamageableItem()) {
                                         CompoundTag tag = stack.getOrCreateTag();
                                         tag.putInt("damage", 0);
-                                        tag.putInt("max_damage", trait.getMaxDamage());
+                                        tag.putInt("max_damage", trait.maxDamage());
                                         stack.setTag(tag);
                                     }
 
                                     itemStackHandler.setToolHandle(toolItem, stack);
 
-                                    toolItemIn.setHandleColor(toolItem, trait.getColor());
+                                    toolItemIn.setHandleColor(toolItem, trait.color());
                                     toolItemIn.setAttackSpeed(toolItem, weight + toolHeadItem.weight);
                                 } else {
                                     TechAscension.LOGGER.warn("The item " + stack.getItem().getRegistryName() + " does not have any traits set and connot be used as a handle for tool " + toolItemIn.name);
@@ -257,21 +257,21 @@ public class TCToolHandler {
 
                                 if (stack != null) {
                                     if (TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(Objects.requireNonNull(stack.getItem().getRegistryName()).toString())){
-                                        IItemTrait trait = (IItemTrait) TCJsonConfigs.itemTrait.getFirst().registryMap.get(Objects.requireNonNull(stack.getItem().getRegistryName()).toString());
+                                        ItemTraitCodec trait = (ItemTraitCodec) TCJsonConfigs.itemTrait.getFirst().registryMap.get(Objects.requireNonNull(stack.getItem().getRegistryName()).toString());
 
                                         CompoundTag tag = stack.getOrCreateTag();
 
                                         if (!stack.isDamageableItem()) {
 
                                             tag.putInt("damage", 0);
-                                            tag.putInt("max_damage", trait.getMaxDamage());
+                                            tag.putInt("max_damage", trait.maxDamage());
                                             stack.setTag(tag);
                                         }
 
                                         itemStackHandler.setToolBinding(toolItem, stack);
-                                        Float weight = trait.getPounds() != null ? trait.getPounds().floatValue() : trait.kilogramsToPounds(trait.getKilograms()).floatValue();
+                                        Float weight = trait.kilograms().floatValue();
 
-                                        newToolItem.setBindingColor(toolItem, trait.getColor());
+                                        newToolItem.setBindingColor(toolItem, trait.color());
                                         newToolItem.setAttackSpeed(toolItem, newToolItem.getAttackSpeed(toolItem) + weight);
                                     } else{
                                         TechAscension.LOGGER.warn("The item " + stack.getItem().getRegistryName() + " does not have any traits set and connot be used as a handle for tool " + toolItemIn.name);
