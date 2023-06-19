@@ -72,7 +72,7 @@ public class HandCraftingServer extends JsonConfigServer<HandCraftingCodec> {
     @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, HandCraftingCodec> clientHandCraftingList = new HashMap<>();
+        Map<String, HandCraftingCodec> clientMap = new HashMap<>();
 
         Path configs = Paths.get(singlePlayerConfigs + "/recipe" + "/" + HandCraftingCodec.codecName);
         File[] files = configs.toFile().listFiles();
@@ -89,11 +89,11 @@ public class HandCraftingServer extends JsonConfigServer<HandCraftingCodec> {
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.handCrafting.getFirst().getJsonObject(file.getName());
                     HandCraftingCodec codec = ((HandCraftingRegistry) TCJsonConfigs.handCrafting.getFirst()).fromJsonObject(jsonObject);
-                    clientHandCraftingList.put(codec.name(), codec);
+                    clientMap.put(codec.name(), codec);
                 }
 
                 getServerMap().values().forEach(serverHandCrafting -> {
-                    sync.set(clientHandCraftingList.containsKey(serverHandCrafting.name()));
+                    sync.set(clientMap.containsKey(serverHandCrafting.name()));
 
                     if(sync.get()) {
                         HandCraftingCodec clientCodec = getServerMap().get(serverHandCrafting.name());

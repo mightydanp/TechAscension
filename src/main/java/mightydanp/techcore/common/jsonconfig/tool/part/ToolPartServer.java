@@ -72,7 +72,7 @@ public class ToolPartServer extends JsonConfigServer<ToolPartCodec> {
     @Override
     public Boolean isClientAndClientWorldConfigsSynced(Path singlePlayerConfigs){
         AtomicBoolean sync = new AtomicBoolean(true);
-        Map<String, ToolPartCodec> clientToolParts = new HashMap<>();
+        Map<String, ToolPartCodec> clientMap = new HashMap<>();
 
         Path configs = Paths.get(singlePlayerConfigs + "/" + ToolPartCodec.codecName);
         File[] files = configs.toFile().listFiles();
@@ -89,11 +89,11 @@ public class ToolPartServer extends JsonConfigServer<ToolPartCodec> {
                 for(File file : files){
                     JsonObject jsonObject = TCJsonConfigs.toolPart.getFirst().getJsonObject(file.getName());
                     ToolPartCodec codec = ((ToolPartRegistry) TCJsonConfigs.toolPart.getFirst()).fromJsonObject(jsonObject);
-                    clientToolParts.put(fixesToName(codec.prefix(), codec.suffix()), codec);
+                    clientMap.put(fixesToName(codec.prefix(), codec.suffix()), codec);
                 }
 
                 getServerMap().values().forEach(serverCodec -> {
-                    sync.set(clientToolParts.containsKey(fixesToName(serverCodec.prefix(), serverCodec.suffix())));
+                    sync.set(clientMap.containsKey(fixesToName(serverCodec.prefix(), serverCodec.suffix())));
 
                     if(sync.get()) {
                         ToolPartCodec clientCodec = getServerMap().get(fixesToName(serverCodec.prefix(), serverCodec.suffix()));

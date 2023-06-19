@@ -117,7 +117,6 @@ public class MaterialFlagServer extends JsonConfigServer<MaterialFlagCodec> {
 
     @Override
     public void syncClientWithServer(String folderName) throws IOException {
-        //Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server/" + folderName + "/material");
         Path serverConfigFolder = Paths.get("config/" + Ref.mod_id + "/server" + "/" + MaterialFlagCodec.codecName);
 
         if(serverConfigFolder.toFile().listFiles() != null) {
@@ -206,17 +205,17 @@ public class MaterialFlagServer extends JsonConfigServer<MaterialFlagCodec> {
 
     @Override
     public List<MaterialFlagCodec> multipleFromBuffer(FriendlyByteBuf buffer) {
-        List<MaterialFlagCodec> materialFlags = new ArrayList<>();
+        List<MaterialFlagCodec> codecs = new ArrayList<>();
 
         int size = buffer.readVarInt();
 
         for (int i = 0; i < size; i++) {
-            MaterialFlagCodec materialFlag = singleFromBuffer(buffer);
+            MaterialFlagCodec codec = singleFromBuffer(buffer);
 
-            materialFlags.add(materialFlag);
+            codecs.add(codec);
         }
 
-        return materialFlags;
+        return codecs;
     }
 
 }

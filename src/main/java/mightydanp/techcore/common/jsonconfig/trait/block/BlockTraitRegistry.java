@@ -1,6 +1,7 @@
 package mightydanp.techcore.common.jsonconfig.trait.block;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
@@ -12,18 +13,12 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class BlockTraitRegistry extends JsonConfigMultiFile<IBlockTrait> {
+public class BlockTraitRegistry extends JsonConfigMultiFile<BlockTraitCodec> {
 
     @Override
     public void initiate() {
         setJsonFolderName("trait/block");
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
-
-        /*
-        for (DefaultBlockTrait blockTrait : DefaultBlockTrait.values()) {
-            register(blockTrait);
-        }
-        */
 
         buildJson();
         loadExistJson();
@@ -31,28 +26,28 @@ public class BlockTraitRegistry extends JsonConfigMultiFile<IBlockTrait> {
     }
 
     @Override
-    public void register(IBlockTrait blockTraitIn) {
-        String registry = blockTraitIn.getRegistry().split(":")[1];
+    public void register(BlockTraitCodec codec) {
+        String registry = codec.registry().split(":")[1];
         if (registryMap.containsKey(registry))
-            throw new IllegalArgumentException("block trait for registry block(" + registry + "), already exists.");
-        registryMap.put(registry, blockTraitIn);
+            throw new IllegalArgumentException(BlockTraitCodec.codecName + " for registry block(" + registry + "), already exists.");
+        registryMap.put(registry, codec);
     }
 
-    public IBlockTrait getBlockTraitByName(String block_trait) {
-        return registryMap.get(block_trait);
+    public BlockTraitCodec getBlockTraitByName(String name) {
+        return registryMap.get(name);
     }
 
-    public Set<IBlockTrait> getAllBlockTrait() {
+    public Set<BlockTraitCodec> getAllBlockTrait() {
         return new HashSet<>(registryMap.values());
     }
 
     public void buildJson(){
-        for(IBlockTrait blockTrait : registryMap.values()) {
-            String registry = blockTrait.getRegistry().split(":")[1];
+        for(BlockTraitCodec codec : registryMap.values()) {
+            String registry = codec.registry().split(":")[1];
             JsonObject jsonObject = getJsonObject(registry);
 
             if (jsonObject.size() == 0) {
-                this.saveJsonObject(registry, toJsonObject(blockTrait));
+                this.saveJsonObject(registry, toJsonObject(codec));
             }
         }
     }
@@ -66,59 +61,26 @@ public class BlockTraitRegistry extends JsonConfigMultiFile<IBlockTrait> {
                     JsonObject jsonObject = getJsonObject(file.getName());
 
                     if (!registryMap.containsValue(fromJsonObject(jsonObject))) {
-                        IBlockTrait blockTrait = fromJsonObject(jsonObject);
-                        String registry = blockTrait.getRegistry().split(":")[1];
+                        BlockTraitCodec codec = fromJsonObject(jsonObject);
+                        String registry = codec.registry().split(":")[1];
 
-                        registryMap.put(registry, blockTrait);
+                        registryMap.put(registry, codec);
                     } else {
-                        TechAscension.LOGGER.fatal("[{}] could not be added to block trait because a block trait already exist!!", file.getAbsolutePath());
+                        TechAscension.LOGGER.fatal("[{}] could not be added to " + BlockTraitCodec.codecName + " because a " + BlockTraitCodec.codecName + " already exist!!", file.getAbsolutePath());
                     }
                 }
             }
         } else {
-            TechAscension.LOGGER.warn(new CrashReport("block trait json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
+            TechAscension.LOGGER.warn(new CrashReport(BlockTraitCodec.codecName + " json configs are empty [" + getJsonFolderLocation() + "/" + getJsonFolderName() + "]", new Throwable()));
         }
     }
 
     @Override
-    public IBlockTrait fromJsonObject(JsonObject jsonObjectIn){
-        return new IBlockTrait() {
-            @Override
-            public String getRegistry() {
-                return jsonObjectIn.get("registry").getAsString();
-            }
-
-            @Override
-            public Integer getColor() {
-                return jsonObjectIn.get("color").getAsInt();
-            }
-
-            @Override
-            public Double getPounds() {
-                return jsonObjectIn.get("pounds").getAsDouble();
-            }
-
-            @Override
-            public Double getKilograms() {
-                return jsonObjectIn.get("kilograms").getAsDouble();
-            }
-        };
+    public BlockTraitCodec fromJsonObject(JsonObject jsonObjectIn){
+        return BlockTraitCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + BlockTraitCodec.codecName + ", please fix this"))).getFirst();
     }
 
-    public JsonObject toJsonObject(IBlockTrait blockTrait) {
-        JsonObject jsonObject = new JsonObject();
-
-        jsonObject.addProperty("registry", blockTrait.getRegistry());
-        jsonObject.addProperty("color", blockTrait.getColor());
-
-        if(blockTrait.getPounds() != null) {
-            jsonObject.addProperty("pounds", blockTrait.getPounds());
-        }
-
-        if(blockTrait.getKilograms() != null) {
-            jsonObject.addProperty("kilograms", blockTrait.getKilograms());
-        }
-
-        return jsonObject;
+    public JsonObject toJsonObject(BlockTraitCodec codec) {
+        return BlockTraitCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + BlockTraitCodec.codecName + ", please fix this"))).getAsJsonObject();
     }
 }

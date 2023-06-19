@@ -87,11 +87,9 @@ public class ToolPartRegistry extends JsonConfigMultiFile<ToolPartCodec> {
     @Override
     public ToolPartCodec fromJsonObject(JsonObject jsonObjectIn) {
         return ToolPartCodec.CODEC.decode(JsonOps.INSTANCE, jsonObjectIn).getOrThrow(false,(a) -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + ToolPartCodec.codecName + ", please fix this"))).getFirst();
-
     }
 
     public JsonObject toJsonObject(ToolPartCodec codec) {
         return ToolPartCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with one of your " + ToolPartCodec.codecName + ", please fix this"))).getAsJsonObject();
-
     }
 }
