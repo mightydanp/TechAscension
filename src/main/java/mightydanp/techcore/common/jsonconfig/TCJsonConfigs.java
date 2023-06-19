@@ -26,8 +26,6 @@ import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeRegistry;
 import mightydanp.techcore.common.jsonconfig.material.ore.OreTypeServer;
 import mightydanp.techcore.common.jsonconfig.recipe.handcrafting.HandCraftingRegistry;
 import mightydanp.techcore.common.jsonconfig.recipe.handcrafting.HandCraftingServer;
-import mightydanp.techcore.common.jsonconfig.stonelayer.StoneLayerRegistry;
-import mightydanp.techcore.common.jsonconfig.stonelayer.StoneLayerServer;
 import mightydanp.techcore.common.jsonconfig.tool.ToolRegistry;
 import mightydanp.techcore.common.jsonconfig.tool.ToolServer;
 import mightydanp.techcore.common.jsonconfig.tool.part.ToolPartRegistry;
@@ -42,22 +40,17 @@ public class TCJsonConfigs extends ConfigSync {
     public static int fluidStateID = 1;
     public static int oreTypeID = 2;
     public static int textureIconID = 3;
-    public static int stoneLayerID = 4;
-
-    public static int toolPartID = 5;
-    public static int toolID = 6;
-    public static int materialID = 7;
-    public static int oreVeinID = 8;
-    public static int smallOreID = 9;
-    public static int blocksInWaterID = 10;
-    public static int randomSurfaceID = 11;
-
-    public static int blockTraitID = 12;
-
-    public static int itemTraitID = 13;
-
-    public static int handCraftingID = 14;
-    public static int definedStructureID = 15;
+    public static int toolPartID = 4;
+    public static int toolID = 5;
+    public static int materialID = 6;
+    public static int oreVeinID = 7;
+    public static int smallOreID = 8;
+    public static int blocksInWaterID = 9;
+    public static int randomSurfaceID = 10;
+    public static int blockTraitID = 11;
+    public static int itemTraitID = 12;
+    public static int handCraftingID = 13;
+    public static int definedStructureID = 14;
 
 
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> materialFlag = configs.getOrDefault(materialFlagID, new Pair<>(new MaterialFlagRegistry(),  new MaterialFlagServer()));
@@ -66,7 +59,6 @@ public class TCJsonConfigs extends ConfigSync {
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  textureIcon = configs.getOrDefault(textureIconID, new Pair<>(new TextureIconRegistry(),  new TextureIconServer()));
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  toolPart = configs.getOrDefault(toolPartID, new Pair<>(new ToolPartRegistry(),  new ToolPartServer()));
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  tool = configs.getOrDefault(toolID, new Pair<>(new ToolRegistry(),  new ToolServer()));
-    public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  stoneLayer = configs.getOrDefault(stoneLayerID, new Pair<>(new StoneLayerRegistry(),  new StoneLayerServer()));
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  material = configs.getOrDefault(materialID, new Pair<>(new MaterialRegistry(),  new MaterialServer()));
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  oreVein = configs.getOrDefault(oreVeinID, new Pair<>(new OreVeinRegistry(),  new OreVeinServer()));
     public static Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>  smallOre = configs.getOrDefault(smallOreID, new Pair<>(new SmallOreVeinRegistry(),  new SmallOreVeinServer()));
@@ -84,7 +76,6 @@ public class TCJsonConfigs extends ConfigSync {
         configs.put(textureIconID, textureIcon);
         configs.put(toolPartID, toolPart);
         configs.put(toolID, tool);
-        configs.put(stoneLayerID, stoneLayer);
         configs.put(materialID, material);
         configs.put(oreVeinID, oreVein);
         configs.put(smallOreID, smallOre);

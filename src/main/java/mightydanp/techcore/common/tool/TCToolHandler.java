@@ -124,15 +124,18 @@ public class TCToolHandler {
                 ItemStack itemStack = inventory.getItem(i);
 
                 if(!itemStack.isEmpty()) {
-                    //todo the item stacks does not match because the tag from the set is null and the slots tag is "{}"
-                    if (set.contains((itemStack))) {
-                        dummy.add(itemStack);
+                    for(ItemStack compared : set){
+                        if(ItemStack.isSame(compared, itemStack)){
+                            dummy.add(itemStack);
+                            break;
+                        }
                     }
+
                 }
 
                 if(dummy.equals(set)){
-                    firstFound.addAll(set);
-                    break;
+                    firstFound.addAll(set); //ItemStackLinkedSet
+                    return firstFound;
                 }
             }
         }
