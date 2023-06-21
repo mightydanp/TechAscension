@@ -125,9 +125,13 @@ public class TCToolHandler {
 
                 if(!itemStack.isEmpty()) {
                     //todo the item stacks does not match because the tag from the set is null and the slots tag is "{}"
-                    if (set.contains((itemStack))) {
-                        dummy.add(itemStack);
+                    for(ItemStack itemStackCopy : set){
+                        if (itemStack.sameItem(itemStackCopy)) {
+                            dummy.add(itemStack);
+                            break;
+                        }
                     }
+
                 }
 
                 if(dummy.equals(set)){

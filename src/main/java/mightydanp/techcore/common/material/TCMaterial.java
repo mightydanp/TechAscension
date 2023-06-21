@@ -22,6 +22,7 @@ import mightydanp.techcore.common.material.fluid.TCFluidBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
@@ -358,6 +359,104 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
     //to-do put all once one things in here.
     public static void saveOnceResources() {
         List<TCMaterial> stoneLayerList = ((MaterialRegistry) TCJsonConfigs.material.getFirst()).getAllValues().stream().filter(i -> i.isStoneLayer != null && i.isStoneLayer).toList();
+
+        {
+            ModelData modelData = new ModelData("ore", ModelData.BLOCK_FOLDER, "ore/state");
+            modelData.getModel()
+                    .setParent(TAModelBuilder.ExistingBlockModels.block.model)
+                    .texture("overlay", new ResourceLocation(Ref.mod_id, "block/material_icons/ore"));
+
+            modelData.getModel().element().from(0, 0, 0).to(16, 16, 16)
+                    .face(Direction.DOWN).texture("#sourceblock").cullface(Direction.DOWN).end()
+                    .face(Direction.UP).texture("#sourceblock").cullface(Direction.UP).end()
+                    .face(Direction.NORTH).texture("#sourceblock").cullface(Direction.NORTH).end()
+                    .face(Direction.WEST).texture("#sourceblock").cullface(Direction.WEST).end()
+                    .face(Direction.EAST).texture("#sourceblock").cullface(Direction.EAST);
+
+            modelData.getModel().element().from(0, 0, 0).to(16, 16, 16)
+                    .face(Direction.DOWN).texture("#overlay").cullface(Direction.DOWN).tintindex(0).end()
+                    .face(Direction.UP).texture("#overlay").cullface(Direction.UP).tintindex(0).end()
+                    .face(Direction.NORTH).texture("#overlay").cullface(Direction.NORTH).tintindex(0).end()
+                    .face(Direction.WEST).texture("#overlay").cullface(Direction.WEST).tintindex(0).end()
+                    .face(Direction.EAST).texture("#overlay").cullface(Direction.EAST).tintindex(0).end();
+
+            AssetPackRegistry.blockModelDataMap.put("ore", modelData);
+        }
+/////////
+        {
+            ModelData modelData = new ModelData("small_ore", ModelData.BLOCK_FOLDER, "ore/state");
+            modelData.getModel()
+                    .setParent(TAModelBuilder.ExistingBlockModels.block.model)
+                    .texture("overlay", new ResourceLocation(Ref.mod_id, "block/material_icons/small_ore"));
+
+            modelData.getModel().element().from(0, 0, 0).to(16, 16, 16)
+                    .face(Direction.DOWN).texture("#sourceblock").cullface(Direction.DOWN).end()
+                    .face(Direction.UP).texture("#sourceblock").cullface(Direction.UP).end()
+                    .face(Direction.NORTH).texture("#sourceblock").cullface(Direction.NORTH).end()
+                    .face(Direction.WEST).texture("#sourceblock").cullface(Direction.WEST).end()
+                    .face(Direction.EAST).texture("#sourceblock").cullface(Direction.EAST);
+
+            modelData.getModel().element().from(0, 0, 0).to(16, 16, 16)
+                    .face(Direction.DOWN).texture("#overlay").cullface(Direction.DOWN).tintindex(0).end()
+                    .face(Direction.UP).texture("#overlay").cullface(Direction.UP).tintindex(0).end()
+                    .face(Direction.NORTH).texture("#overlay").cullface(Direction.NORTH).tintindex(0).end()
+                    .face(Direction.WEST).texture("#overlay").cullface(Direction.WEST).tintindex(0).end()
+                    .face(Direction.EAST).texture("#overlay").cullface(Direction.EAST).tintindex(0).end();
+
+            AssetPackRegistry.blockModelDataMap.put("small_ore", modelData);
+        }
+
+/////////
+        {
+            ModelData modelData = new ModelData("dense_ore", ModelData.BLOCK_FOLDER, "ore/state");
+            modelData.getModel()
+                    .setParent(TAModelBuilder.ExistingBlockModels.block.model)
+                    .texture("overlay", new ResourceLocation(Ref.mod_id, "block/material_icons/dense_ore"));
+
+            modelData.getModel().element().from(0, 0, 0).to(16, 16, 16)
+                    .face(Direction.DOWN).texture("#sourceblock").cullface(Direction.DOWN).end()
+                    .face(Direction.UP).texture("#sourceblock").cullface(Direction.UP).end()
+                    .face(Direction.NORTH).texture("#sourceblock").cullface(Direction.NORTH).end()
+                    .face(Direction.WEST).texture("#sourceblock").cullface(Direction.WEST).end()
+                    .face(Direction.EAST).texture("#sourceblock").cullface(Direction.EAST);
+
+            modelData.getModel().element().from(0, 0, 0).to(16, 16, 16)
+                    .face(Direction.DOWN).texture("#overlay").cullface(Direction.DOWN).tintindex(0).end()
+                    .face(Direction.UP).texture("#overlay").cullface(Direction.UP).tintindex(0).end()
+                    .face(Direction.NORTH).texture("#overlay").cullface(Direction.NORTH).tintindex(0).end()
+                    .face(Direction.WEST).texture("#overlay").cullface(Direction.WEST).tintindex(0).end()
+                    .face(Direction.EAST).texture("#overlay").cullface(Direction.EAST).tintindex(0).end();
+
+            AssetPackRegistry.blockModelDataMap.put("dense_ore", modelData);
+        }
+
+/////////
+        {
+            ModelData modelData = new ModelData("gem", ModelData.BLOCK_FOLDER, "ore/state");
+            modelData.getModel()
+                    .setParent(TAModelBuilder.ExistingBlockModels.block.model)
+                    .texture("overlay", new ResourceLocation(Ref.mod_id, "block/material_icons/gem"));
+
+            modelData.getModel().element().from(0, 0, 0).to(16, 16, 16)
+                    .face(Direction.DOWN).texture("#sourceblock").cullface(Direction.DOWN).end()
+                    .face(Direction.UP).texture("#sourceblock").cullface(Direction.UP).end()
+                    .face(Direction.NORTH).texture("#sourceblock").cullface(Direction.NORTH).end()
+                    .face(Direction.WEST).texture("#sourceblock").cullface(Direction.WEST).end()
+                    .face(Direction.EAST).texture("#sourceblock").cullface(Direction.EAST);
+
+            modelData.getModel().element().from(0, 0, 0).to(16, 16, 16)
+                    .face(Direction.DOWN).texture("#overlay").cullface(Direction.DOWN).tintindex(0).end()
+                    .face(Direction.UP).texture("#overlay").cullface(Direction.UP).tintindex(0).end()
+                    .face(Direction.NORTH).texture("#overlay").cullface(Direction.NORTH).tintindex(0).end()
+                    .face(Direction.WEST).texture("#overlay").cullface(Direction.WEST).tintindex(0).end()
+                    .face(Direction.EAST).texture("#overlay").cullface(Direction.EAST).tintindex(0).end();
+
+            AssetPackRegistry.blockModelDataMap.put("gem", modelData);
+        }
+
+/////////
+
+
 
         for (TCMaterial stoneLayer : stoneLayerList) {
 

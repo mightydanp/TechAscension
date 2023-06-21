@@ -3,6 +3,7 @@ package mightydanp.techcore.common.jsonconfig.codec;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.UnboundedMapCodec;
+import mightydanp.techascension.common.TechAscension;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,6 +26,7 @@ public class CodecHelpers {
             new Decoder<>() {
                 @Override
                 public <T> DataResult<Pair<Ingredient, T>> decode(DynamicOps<T> ops, T input) {
+                    TechAscension.LOGGER.info(ops);
                     return DataResult.success(Pair.of(CraftingHelper.getIngredient(ops.convertTo(JsonOps.INSTANCE, input)), input));
                 }
             }

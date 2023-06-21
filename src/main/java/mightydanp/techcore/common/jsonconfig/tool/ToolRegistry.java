@@ -89,6 +89,5 @@ public class ToolRegistry extends JsonConfigMultiFile<ToolCodec> {
 
     public JsonObject toJsonObject(ToolCodec codec) {
         return ToolCodec.CODEC.encodeStart(JsonOps.INSTANCE, codec).get().left().orElseThrow(() -> TechAscension.LOGGER.throwing(new Error("There is something wrong with your " + ToolCodec.codecName + " with name [" + codec.name() + "], please fix this"))).getAsJsonObject();
-
     }
 }

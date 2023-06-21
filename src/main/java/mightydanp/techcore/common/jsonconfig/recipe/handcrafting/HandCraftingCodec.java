@@ -15,7 +15,7 @@ public record HandCraftingCodec(String name, Integer input1Amount, List<Ingredie
             Codec.INT.fieldOf("input_1_amount").forGetter(HandCraftingCodec::input1Amount),
             Codec.list(CodecHelpers.INGREDIENT_CODEC).fieldOf("input_1").forGetter(HandCraftingCodec::input1),
             Codec.INT.fieldOf("input_2_amount").forGetter(HandCraftingCodec::input2Amount),
-            Codec.list(CodecHelpers.INGREDIENT_CODEC).optionalFieldOf("input_2_amount", List.of()).forGetter(HandCraftingCodec::input2),
+            Codec.list(CodecHelpers.INGREDIENT_CODEC).optionalFieldOf("input_2_amount", List.of(Ingredient.EMPTY)).forGetter(HandCraftingCodec::input2),
             Codec.INT.optionalFieldOf("output_amount", 0).forGetter(HandCraftingCodec::outputAmount),
             Codec.list(CodecHelpers.INGREDIENT_CODEC).fieldOf("output").forGetter(HandCraftingCodec::output)
     ).apply(instance, HandCraftingCodec::new));

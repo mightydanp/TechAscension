@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
-apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/ForgeUpdatesRemapper/main/remapper.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
 version = '0.0.0.1'
@@ -123,7 +123,7 @@ repositories {
     maven { url 'https://dvs1.progwml6.com/files/maven' }
 }
 
-boolean hasIndustrialCore = findProject(':industrialcore') != null
+//boolean hasIndustrialCore = findProject(':industrialcore') != null
 
 sourceSets {
     main {

@@ -8,8 +8,8 @@ public record BlockTraitCodec(String registry, Integer color, Double kilograms) 
 
     public static final Codec<BlockTraitCodec> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
             Codec.STRING.fieldOf("registry").forGetter(BlockTraitCodec::registry),
-            Codec.INT.fieldOf("color").forGetter(BlockTraitCodec::color),
-            Codec.DOUBLE.fieldOf("kilograms").forGetter(BlockTraitCodec::kilograms)
+            Codec.INT.optionalFieldOf("color", 0).forGetter(BlockTraitCodec::color),
+            Codec.DOUBLE.optionalFieldOf("kilograms", 0D).forGetter(BlockTraitCodec::kilograms)
     ).apply(instance, BlockTraitCodec::new));
 
     //size
