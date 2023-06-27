@@ -1,7 +1,5 @@
 package mightydanp.techascension.common;
 
-import mightydanp.techapi.common.resources.asset.data.ModelData;
-import mightydanp.techapi.common.resources.asset.data.TAModelBuilder;
 import mightydanp.techcore.client.ClientEvent;
 import mightydanp.techcore.client.jsonconfig.JsonConfigClient;
 import mightydanp.techcore.common.CommonEvent;
@@ -31,8 +29,6 @@ import mightydanp.techascension.common.items.ModItems;
 import mightydanp.techascension.common.materials.ModMaterials;
 import mightydanp.techascension.common.tileentities.ModBlockEntity;
 import mightydanp.techascension.common.tool.ModTools;
-import mightydanp.techascension.common.trees.ModTrees;
-import net.minecraft.core.Direction;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -66,6 +62,7 @@ public class TechAscension {
 
         ModLoadingContext modLoadingContext = ModLoadingContext.get();
 
+        //needed because I forced creators to code in tools
         ModTools.init();
 
         ModMaterials.commonInit();

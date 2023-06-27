@@ -2,6 +2,7 @@ package mightydanp.techcore.common.tool;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.mojang.datafixers.util.Either;
 import mightydanp.techcore.client.settings.keybindings.KeyBindings;
 import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
 import mightydanp.techcore.common.items.TCCreativeModeTab;
@@ -10,6 +11,7 @@ import mightydanp.techcore.common.jsonconfig.tool.ToolCodec;
 import mightydanp.techcore.common.tool.part.BindingItem;
 import mightydanp.techcore.common.tool.part.HandleItem;
 import mightydanp.techcore.common.tool.part.HeadItem;
+import net.minecraft.core.Registry;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
@@ -129,7 +131,7 @@ public class TCToolItem extends Item {
     }
 
     public Map<String, ItemStack> getBindings() {
-        Map<String, ItemStack> map = handles;
+        Map<String, ItemStack> map = bindings;
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
             ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
@@ -150,14 +152,14 @@ public class TCToolItem extends Item {
         return null;
     }
 
-    public Map<Integer, List<Map<Ingredient, Integer>>> getAssembleItems() {
+    public Map<Integer, List<List<Either<String, ItemStack>>>> getAssembleItems() {
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
             return ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name)).assembleStepsItems();
         }
         return null;
     }
 
-    public List<Map<Ingredient, Integer>> getDisassembleItems() {
+    public List<List<Either<String, ItemStack>>> getDisassembleItems() {
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
             return ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name)).disassembleItems();
         }
@@ -262,17 +264,19 @@ public class TCToolItem extends Item {
         }
     }
 
-    public List<ItemStack> containsDisassembleItems(List<Map<Ingredient, Integer>> disassembleItems, Inventory playerInventory){
+    public List<ItemStack> containsDisassembleItems(List<List<Either<String, ItemStack>>> disassembleItems, Inventory playerInventory){
         List<ItemStack> items = new ArrayList<>();
 
-        for(Map<Ingredient, Integer> map : disassembleItems) {
+        for(List<Either<String, ItemStack>> map : disassembleItems) {
             List<List<ItemStack>> stack = new ArrayList<>();
-            map.forEach((ingredient, integer) -> {
+            map.forEach((either) -> {
                 List<ItemStack> ing = new ArrayList<>();
-                Arrays.stream(ingredient.getItems()).toList().forEach(itemStack -> {
-                    itemStack.setCount(integer);
-                    ing.add(itemStack);
-                });
+
+                //to-do make it work with tags it adds all items to list instead of just one
+                either.ifLeft(s -> ing.addAll(Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList()));
+
+                either.ifRight(ing::add);
+
                 stack.add(ing);
 
             });

@@ -1,5 +1,6 @@
 package mightydanp.techcore.common.tool;
 
+import com.mojang.datafixers.util.Either;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.client.settings.keybindings.KeyBindings;
 import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
@@ -10,8 +11,10 @@ import mightydanp.techcore.common.tool.part.HandleItem;
 import mightydanp.techcore.common.tool.part.BindingItem;
 import mightydanp.techcore.common.tool.part.HeadItem;
 import mightydanp.techcore.common.libs.Ref;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -87,17 +90,16 @@ public class TCToolHandler {
         }
     }
 
-    public static List<Set<ItemStack>> convertAssembleItems(Integer step, Map<Integer, List<Map<Ingredient, Integer>>> toolNeededIn){
+    public static List<Set<ItemStack>> convertAssembleItems(Integer step, Map<Integer, List<List<Either<String, ItemStack>>>> toolNeededIn){
         List<Set<ItemStack>> map = new ArrayList<>();
 
-        for(Map<Ingredient, Integer> stepMap : toolNeededIn.get(step)) {
+        for(List<Either<String, ItemStack>> stepMap : toolNeededIn.get(step)) {
             Set<ItemStack> itemStackSet = new HashSet<>();
-            stepMap.forEach((ingredient, count) -> {
-                for(ItemStack itemStack : ingredient.getItems()) {
+            stepMap.forEach((either) -> {
+                //to-do make it work with tags it adds all items to list instead of just one
+                either.ifLeft(s -> itemStackSet.addAll(Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList()));
 
-                    itemStack.setCount(count);
-                    itemStackSet.add(itemStack);
-                }
+                either.ifRight(itemStackSet::add);
             });
             map.add(itemStackSet);
         }
@@ -145,7 +147,7 @@ public class TCToolHandler {
     }
 
     @SuppressWarnings("ALL")
-    public static void handToolCrafting(TCToolItem toolItemIn, PlayerInteractEvent.RightClickItem event, int toolNeededDamage, Map<Integer, List<Map<Ingredient, Integer>>> toolNeededIn) {
+    public static void handToolCrafting(TCToolItem toolItemIn, PlayerInteractEvent.RightClickItem event, int toolNeededDamage, Map<Integer, List<List<Either<String, ItemStack>>>> toolNeededIn) {
         Player playerEntity = event.getPlayer();
         ItemStack mainHand = playerEntity.getMainHandItem();
         ItemStack offHand = playerEntity.getOffhandItem();

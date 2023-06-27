@@ -1,5 +1,6 @@
 package mightydanp.techascension.common.tool;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import mightydanp.techcore.common.handler.RegistryHandler;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
@@ -18,6 +19,7 @@ import mightydanp.techascension.common.tool.part.TAHeadItem;
 import mightydanp.techcore.common.material.tools.HammerToolItem;
 import mightydanp.techcore.common.material.tools.KnifeToolItem;
 import mightydanp.techcore.common.material.tools.PickaxeToolItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -79,32 +81,30 @@ public class ModTools extends TCTools{
             List<Ingredient> headPartItems = List.of(Ingredient.EMPTY);
             List<Ingredient> bindingPartItems = List.of(Ingredient.EMPTY);
 
-            Map<Integer, List<Map<Ingredient, Integer>>> assembleItems =
+            Map<Integer, List<List<Either<String, ItemStack>>>> assembleItems =
                     new HashMap<>();
 
-            List<Map<Ingredient, Integer>> step1 = assembleItems.getOrDefault(1, new ArrayList<>());
-            List<Map<Ingredient, Integer>> step2 = assembleItems.getOrDefault(2, new ArrayList<>());
-            List<Map<Ingredient, Integer>> step3 = assembleItems.getOrDefault(3, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step1 = assembleItems.getOrDefault(1, new ArrayList<>());
+            List<List<Either<String, ItemStack>>>step2 = assembleItems.getOrDefault(2, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step3 = assembleItems.getOrDefault(3, new ArrayList<>());
 
-            step1.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
-            step2.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
-            step3.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step1.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
+            step2.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
+            step3.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
 
 
-            List<Map<Ingredient, Integer>> disassembleItems =
-                    new ArrayList<>(List.of(
-                            Map.of(Ingredient.of(hammer.toolItem.get()), 1,
-                                    Ingredient.of(chisel.toolItem.get()), 1
-                            )));
+            List<List<Either<String, ItemStack>>> disassembleItems =
+                    new ArrayList<>(List.of(List.of(Either.right(new ItemStack(hammer.toolItem.get())),
+                            Either.right(new ItemStack(chisel.toolItem.get())))));
 
             for (TCMaterial material : stoneLayers) {
-                step1.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
-                step2.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
-                step3.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step1.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
+                step2.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
+                step3.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
 
-                disassembleItems.add(new HashMap<>(Map.of(Ingredient.of(material.rockItemBlock.get()), 1,
-                        Ingredient.of(chisel.toolItem.get()), 1
-                )));
+                disassembleItems.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get())),
+                        Either.right(new ItemStack(chisel.toolItem.get()))
+                ));
             }
 
             assembleItems.put(1, step1);
@@ -121,31 +121,29 @@ public class ModTools extends TCTools{
             List<Ingredient> headPartItems = List.of(Ingredient.EMPTY);
             List<Ingredient> bindingPartItems = List.of(Ingredient.EMPTY);
 
-            Map<Integer, List<Map<Ingredient, Integer>>> assembleItems =
+            Map<Integer, List<List<Either<String, ItemStack>>>> assembleItems =
                     new HashMap<>();
 
-            List<Map<Ingredient, Integer>> step1 = assembleItems.getOrDefault(1, new ArrayList<>());
-            List<Map<Ingredient, Integer>> step2 = assembleItems.getOrDefault(2, new ArrayList<>());
-            List<Map<Ingredient, Integer>> step3 = assembleItems.getOrDefault(3, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step1 = assembleItems.getOrDefault(1, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step2 = assembleItems.getOrDefault(2, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step3 = assembleItems.getOrDefault(3, new ArrayList<>());
 
-            step1.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
-            step2.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
-            step3.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step1.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
+            step2.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
+            step3.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
 
-            List<Map<Ingredient, Integer>> disassembleItems =
-                    new ArrayList<>(List.of(
-                            Map.of(Ingredient.of(hammer.toolItem.get()), 1,
-                                    Ingredient.of(chisel.toolItem.get()), 1
-                            )));
+            List<List<Either<String, ItemStack>>> disassembleItems =
+                    new ArrayList<>(List.of(List.of(Either.right(new ItemStack(hammer.toolItem.get())),
+                            Either.right(new ItemStack(chisel.toolItem.get())))));
 
             for (TCMaterial material : stoneLayers) {
-                step1.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
-                step2.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
-                step3.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step1.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
+                step2.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
+                step3.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
 
-                disassembleItems.add(new HashMap<>(Map.of(Ingredient.of(material.rockItemBlock.get()), 1,
-                        Ingredient.of(chisel.toolItem.get()), 1
-                )));
+                disassembleItems.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get())),
+                        Either.right(new ItemStack(chisel.toolItem.get()))
+                ));
             }
 
             assembleItems.put(1, step1);
@@ -158,35 +156,33 @@ public class ModTools extends TCTools{
         {
             List<BlockState> effectiveOn = List.of(Blocks.ACTIVATOR_RAIL.defaultBlockState(), Blocks.COAL_ORE.defaultBlockState(), Blocks.COBBLESTONE.defaultBlockState(), Blocks.DETECTOR_RAIL.defaultBlockState(), Blocks.DIAMOND_BLOCK.defaultBlockState(), Blocks.DIAMOND_ORE.defaultBlockState(), Blocks.POWERED_RAIL.defaultBlockState(), Blocks.GOLD_BLOCK.defaultBlockState(), Blocks.GOLD_ORE.defaultBlockState(), Blocks.NETHER_GOLD_ORE.defaultBlockState(), Blocks.ICE.defaultBlockState(), Blocks.IRON_BLOCK.defaultBlockState(), Blocks.IRON_ORE.defaultBlockState(), Blocks.LAPIS_BLOCK.defaultBlockState(), Blocks.LAPIS_ORE.defaultBlockState(), Blocks.MOSSY_COBBLESTONE.defaultBlockState(), Blocks.NETHERRACK.defaultBlockState(), Blocks.PACKED_ICE.defaultBlockState(), Blocks.BLUE_ICE.defaultBlockState(), Blocks.RAIL.defaultBlockState(), Blocks.REDSTONE_ORE.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.CHISELED_SANDSTONE.defaultBlockState(), Blocks.CUT_SANDSTONE.defaultBlockState(), Blocks.CHISELED_RED_SANDSTONE.defaultBlockState(), Blocks.CUT_RED_SANDSTONE.defaultBlockState(), Blocks.RED_SANDSTONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.GRANITE.defaultBlockState(), Blocks.POLISHED_GRANITE.defaultBlockState(), Blocks.DIORITE.defaultBlockState(), Blocks.POLISHED_DIORITE.defaultBlockState(), Blocks.ANDESITE.defaultBlockState(), Blocks.POLISHED_ANDESITE.defaultBlockState(), Blocks.STONE_SLAB.defaultBlockState(), Blocks.SMOOTH_STONE_SLAB.defaultBlockState(), Blocks.SANDSTONE_SLAB.defaultBlockState(), Blocks.PETRIFIED_OAK_SLAB.defaultBlockState(), Blocks.COBBLESTONE_SLAB.defaultBlockState(), Blocks.BRICK_SLAB.defaultBlockState(), Blocks.STONE_BRICK_SLAB.defaultBlockState(), Blocks.NETHER_BRICK_SLAB.defaultBlockState(), Blocks.QUARTZ_SLAB.defaultBlockState(), Blocks.RED_SANDSTONE_SLAB.defaultBlockState(), Blocks.PURPUR_SLAB.defaultBlockState(), Blocks.SMOOTH_QUARTZ.defaultBlockState(), Blocks.SMOOTH_RED_SANDSTONE.defaultBlockState(), Blocks.SMOOTH_SANDSTONE.defaultBlockState(), Blocks.SMOOTH_STONE.defaultBlockState(), Blocks.STONE_BUTTON.defaultBlockState(), Blocks.STONE_PRESSURE_PLATE.defaultBlockState(), Blocks.POLISHED_GRANITE_SLAB.defaultBlockState(), Blocks.SMOOTH_RED_SANDSTONE_SLAB.defaultBlockState(), Blocks.MOSSY_STONE_BRICK_SLAB.defaultBlockState(), Blocks.POLISHED_DIORITE_SLAB.defaultBlockState(), Blocks.MOSSY_COBBLESTONE_SLAB.defaultBlockState(), Blocks.END_STONE_BRICK_SLAB.defaultBlockState(), Blocks.SMOOTH_SANDSTONE_SLAB.defaultBlockState(), Blocks.SMOOTH_QUARTZ_SLAB.defaultBlockState(), Blocks.GRANITE_SLAB.defaultBlockState(), Blocks.ANDESITE_SLAB.defaultBlockState(), Blocks.RED_NETHER_BRICK_SLAB.defaultBlockState(), Blocks.POLISHED_ANDESITE_SLAB.defaultBlockState(), Blocks.DIORITE_SLAB.defaultBlockState(), Blocks.SHULKER_BOX.defaultBlockState(), Blocks.BLACK_SHULKER_BOX.defaultBlockState(), Blocks.BLUE_SHULKER_BOX.defaultBlockState(), Blocks.BROWN_SHULKER_BOX.defaultBlockState(), Blocks.CYAN_SHULKER_BOX.defaultBlockState(), Blocks.GRAY_SHULKER_BOX.defaultBlockState(), Blocks.GREEN_SHULKER_BOX.defaultBlockState(), Blocks.LIGHT_BLUE_SHULKER_BOX.defaultBlockState(), Blocks.LIGHT_GRAY_SHULKER_BOX.defaultBlockState(), Blocks.LIME_SHULKER_BOX.defaultBlockState(), Blocks.MAGENTA_SHULKER_BOX.defaultBlockState(), Blocks.ORANGE_SHULKER_BOX.defaultBlockState(), Blocks.PINK_SHULKER_BOX.defaultBlockState(), Blocks.PURPLE_SHULKER_BOX.defaultBlockState(), Blocks.RED_SHULKER_BOX.defaultBlockState(), Blocks.WHITE_SHULKER_BOX.defaultBlockState(), Blocks.YELLOW_SHULKER_BOX.defaultBlockState(), Blocks.PISTON.defaultBlockState(), Blocks.STICKY_PISTON.defaultBlockState(), Blocks.PISTON_HEAD.defaultBlockState());
 
-            List<Ingredient> handlePartItems = List.of(Ingredient.EMPTY);
-            List<Ingredient> headPartItems = List.of(Ingredient.EMPTY);
-            List<Ingredient> bindingPartItems = List.of(Ingredient.EMPTY);
+            List<Ingredient> handlePartItems = new ArrayList<>();
+            List<Ingredient> headPartItems = new ArrayList<>();
+            List<Ingredient> bindingPartItems = new ArrayList<>();
 
-            Map<Integer, List<Map<Ingredient, Integer>>> assembleItems =
+            Map<Integer, List<List<Either<String, ItemStack>>>> assembleItems =
                     new HashMap<>();
 
-            List<Map<Ingredient, Integer>> step1 = assembleItems.getOrDefault(1, new ArrayList<>());
-            List<Map<Ingredient, Integer>> step2 = assembleItems.getOrDefault(2, new ArrayList<>());
-            List<Map<Ingredient, Integer>> step3 = assembleItems.getOrDefault(3, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step1 = assembleItems.getOrDefault(1, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step2 = assembleItems.getOrDefault(2, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step3 = assembleItems.getOrDefault(3, new ArrayList<>());
 
-            step1.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
-            step2.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
-            step3.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step1.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
+            step2.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
+            step3.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
 
-            List<Map<Ingredient, Integer>> disassembleItems =
-                    new ArrayList<>(List.of(
-                            Map.of(Ingredient.of(hammer.toolItem.get()), 1,
-                                    Ingredient.of(chisel.toolItem.get()), 1
-                            )));
+            List<List<Either<String, ItemStack>>> disassembleItems =
+                    new ArrayList<>(List.of(List.of(Either.right(new ItemStack(hammer.toolItem.get())),
+                            Either.right(new ItemStack(chisel.toolItem.get())))));
 
             for (TCMaterial material : stoneLayers) {
-                step1.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
-                step2.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
-                step3.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step1.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
+                step2.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
+                step3.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
 
-                disassembleItems.add(new HashMap<>(Map.of(Ingredient.of(material.rockItemBlock.get()), 1,
-                        Ingredient.of(chisel.toolItem.get()), 1
-                )));
+                disassembleItems.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get())),
+                        Either.right(new ItemStack(chisel.toolItem.get()))
+                ));
             }
 
             assembleItems.put(1, step1);
@@ -199,35 +195,33 @@ public class ModTools extends TCTools{
         {
             List<BlockState> effectiveOn = List.of(Blocks.ACTIVATOR_RAIL.defaultBlockState(), Blocks.COAL_ORE.defaultBlockState(), Blocks.COBBLESTONE.defaultBlockState(), Blocks.DETECTOR_RAIL.defaultBlockState(), Blocks.DIAMOND_BLOCK.defaultBlockState(), Blocks.DIAMOND_ORE.defaultBlockState(), Blocks.POWERED_RAIL.defaultBlockState(), Blocks.GOLD_BLOCK.defaultBlockState(), Blocks.GOLD_ORE.defaultBlockState(), Blocks.NETHER_GOLD_ORE.defaultBlockState(), Blocks.ICE.defaultBlockState(), Blocks.IRON_BLOCK.defaultBlockState(), Blocks.IRON_ORE.defaultBlockState(), Blocks.LAPIS_BLOCK.defaultBlockState(), Blocks.LAPIS_ORE.defaultBlockState(), Blocks.MOSSY_COBBLESTONE.defaultBlockState(), Blocks.NETHERRACK.defaultBlockState(), Blocks.PACKED_ICE.defaultBlockState(), Blocks.BLUE_ICE.defaultBlockState(), Blocks.RAIL.defaultBlockState(), Blocks.REDSTONE_ORE.defaultBlockState(), Blocks.SANDSTONE.defaultBlockState(), Blocks.CHISELED_SANDSTONE.defaultBlockState(), Blocks.CUT_SANDSTONE.defaultBlockState(), Blocks.CHISELED_RED_SANDSTONE.defaultBlockState(), Blocks.CUT_RED_SANDSTONE.defaultBlockState(), Blocks.RED_SANDSTONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.GRANITE.defaultBlockState(), Blocks.POLISHED_GRANITE.defaultBlockState(), Blocks.DIORITE.defaultBlockState(), Blocks.POLISHED_DIORITE.defaultBlockState(), Blocks.ANDESITE.defaultBlockState(), Blocks.POLISHED_ANDESITE.defaultBlockState(), Blocks.STONE_SLAB.defaultBlockState(), Blocks.SMOOTH_STONE_SLAB.defaultBlockState(), Blocks.SANDSTONE_SLAB.defaultBlockState(), Blocks.PETRIFIED_OAK_SLAB.defaultBlockState(), Blocks.COBBLESTONE_SLAB.defaultBlockState(), Blocks.BRICK_SLAB.defaultBlockState(), Blocks.STONE_BRICK_SLAB.defaultBlockState(), Blocks.NETHER_BRICK_SLAB.defaultBlockState(), Blocks.QUARTZ_SLAB.defaultBlockState(), Blocks.RED_SANDSTONE_SLAB.defaultBlockState(), Blocks.PURPUR_SLAB.defaultBlockState(), Blocks.SMOOTH_QUARTZ.defaultBlockState(), Blocks.SMOOTH_RED_SANDSTONE.defaultBlockState(), Blocks.SMOOTH_SANDSTONE.defaultBlockState(), Blocks.SMOOTH_STONE.defaultBlockState(), Blocks.STONE_BUTTON.defaultBlockState(), Blocks.STONE_PRESSURE_PLATE.defaultBlockState(), Blocks.POLISHED_GRANITE_SLAB.defaultBlockState(), Blocks.SMOOTH_RED_SANDSTONE_SLAB.defaultBlockState(), Blocks.MOSSY_STONE_BRICK_SLAB.defaultBlockState(), Blocks.POLISHED_DIORITE_SLAB.defaultBlockState(), Blocks.MOSSY_COBBLESTONE_SLAB.defaultBlockState(), Blocks.END_STONE_BRICK_SLAB.defaultBlockState(), Blocks.SMOOTH_SANDSTONE_SLAB.defaultBlockState(), Blocks.SMOOTH_QUARTZ_SLAB.defaultBlockState(), Blocks.GRANITE_SLAB.defaultBlockState(), Blocks.ANDESITE_SLAB.defaultBlockState(), Blocks.RED_NETHER_BRICK_SLAB.defaultBlockState(), Blocks.POLISHED_ANDESITE_SLAB.defaultBlockState(), Blocks.DIORITE_SLAB.defaultBlockState(), Blocks.SHULKER_BOX.defaultBlockState(), Blocks.BLACK_SHULKER_BOX.defaultBlockState(), Blocks.BLUE_SHULKER_BOX.defaultBlockState(), Blocks.BROWN_SHULKER_BOX.defaultBlockState(), Blocks.CYAN_SHULKER_BOX.defaultBlockState(), Blocks.GRAY_SHULKER_BOX.defaultBlockState(), Blocks.GREEN_SHULKER_BOX.defaultBlockState(), Blocks.LIGHT_BLUE_SHULKER_BOX.defaultBlockState(), Blocks.LIGHT_GRAY_SHULKER_BOX.defaultBlockState(), Blocks.LIME_SHULKER_BOX.defaultBlockState(), Blocks.MAGENTA_SHULKER_BOX.defaultBlockState(), Blocks.ORANGE_SHULKER_BOX.defaultBlockState(), Blocks.PINK_SHULKER_BOX.defaultBlockState(), Blocks.PURPLE_SHULKER_BOX.defaultBlockState(), Blocks.RED_SHULKER_BOX.defaultBlockState(), Blocks.WHITE_SHULKER_BOX.defaultBlockState(), Blocks.YELLOW_SHULKER_BOX.defaultBlockState(), Blocks.PISTON.defaultBlockState(), Blocks.STICKY_PISTON.defaultBlockState(), Blocks.PISTON_HEAD.defaultBlockState());
 
-            List<Ingredient> handlePartItems = List.of(Ingredient.EMPTY);
-            List<Ingredient> headPartItems = List.of(Ingredient.EMPTY);
-            List<Ingredient> bindingPartItems = List.of(Ingredient.EMPTY);
+            List<Ingredient> handlePartItems = new ArrayList<>();
+            List<Ingredient> headPartItems = new ArrayList<>();
+            List<Ingredient> bindingPartItems = new ArrayList<>();
 
-            Map<Integer, List<Map<Ingredient, Integer>>> assembleItems =
+            Map<Integer, List<List<Either<String, ItemStack>>>> assembleItems =
                     new HashMap<>();
 
-            List<Map<Ingredient, Integer>> step1 = assembleItems.getOrDefault(1, new ArrayList<>());
-            List<Map<Ingredient, Integer>> step2 = assembleItems.getOrDefault(2, new ArrayList<>());
-            List<Map<Ingredient, Integer>> step3 = assembleItems.getOrDefault(3, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step1 = assembleItems.getOrDefault(1, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step2 = assembleItems.getOrDefault(2, new ArrayList<>());
+            List<List<Either<String, ItemStack>>> step3 = assembleItems.getOrDefault(3, new ArrayList<>());
 
-            step1.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
-            step2.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
-            step3.add(Map.of(Ingredient.of(hammer.toolItem.get()), 1));
+            step1.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
+            step2.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
+            step3.add(List.of(Either.right(new ItemStack(hammer.toolItem.get()))));
 
-            List<Map<Ingredient, Integer>> disassembleItems =
-                    new ArrayList<>(List.of(
-                            Map.of(Ingredient.of(hammer.toolItem.get()), 1,
-                                    Ingredient.of(chisel.toolItem.get()), 1
-                            )));
+            List<List<Either<String, ItemStack>>> disassembleItems =
+                    new ArrayList<>(List.of(List.of(Either.right(new ItemStack(hammer.toolItem.get())),
+                            Either.right(new ItemStack(chisel.toolItem.get())))));
 
             for (TCMaterial material : stoneLayers) {
-                step1.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
-                step2.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
-                step3.add(Map.of(Ingredient.of(material.rockItemBlock.get()), 1));
+                step1.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
+                step2.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
+                step3.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get()))));
 
-                disassembleItems.add(new HashMap<>(Map.of(Ingredient.of(material.rockItemBlock.get()), 1,
-                        Ingredient.of(chisel.toolItem.get()), 1
-                )));
+                disassembleItems.add(List.of(Either.right(new ItemStack(material.rockItemBlock.get())),
+                        Either.right(new ItemStack(chisel.toolItem.get()))
+                ));
             }
 
             assembleItems.put(1, step1);
