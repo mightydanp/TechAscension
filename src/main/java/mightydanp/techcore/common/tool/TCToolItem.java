@@ -17,7 +17,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -102,10 +101,20 @@ public class TCToolItem extends Item {
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
             ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
-            for (Ingredient partItems : tool.handleItems()) {
-                for (ItemStack partItemStack : partItems.getItems()) {
-                    map.put(Objects.requireNonNull(partItemStack.getItem().getRegistryName()).toString(), partItemStack);
-                }
+            for (Either<String, ItemStack> either : tool.handleItems()) {
+                either.ifLeft(s -> {
+                    List<ItemStack> list = Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList();
+
+                    list.forEach(itemStack -> {
+                        String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+                        map.put(Objects.requireNonNull(registryName), itemStack);
+                    });
+                });
+
+                either.ifRight(itemStack -> {
+                    String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+                    map.put(Objects.requireNonNull(registryName), itemStack);
+                });
             }
         }
 
@@ -121,10 +130,20 @@ public class TCToolItem extends Item {
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
             ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
-            for (Ingredient partItems : tool.headItems()) {
-                for (ItemStack partItemStack : partItems.getItems()) {
-                    map.put(Objects.requireNonNull(partItemStack.getItem().getRegistryName()).toString(), partItemStack);
-                }
+            for (Either<String, ItemStack> either : tool.headItems()) {
+                either.ifLeft(s -> {
+                    List<ItemStack> list = Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList();
+
+                    list.forEach(itemStack -> {
+                        String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+                        map.put(Objects.requireNonNull(registryName), itemStack);
+                    });
+                });
+
+                either.ifRight(itemStack -> {
+                    String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+                    map.put(Objects.requireNonNull(registryName), itemStack);
+                });
             }
         }
         return map;
@@ -135,10 +154,20 @@ public class TCToolItem extends Item {
         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(name)){
             ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
-            for (Ingredient partItems : tool.bindingItems()) {
-                for (ItemStack partItemStack : partItems.getItems()) {
-                    map.put(Objects.requireNonNull(partItemStack.getItem().getRegistryName()).toString(), partItemStack);
-                }
+            for (Either<String, ItemStack> either : tool.bindingItems()) {
+                either.ifLeft(s -> {
+                    List<ItemStack> list = Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList();
+
+                    list.forEach(itemStack -> {
+                        String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+                        map.put(Objects.requireNonNull(registryName), itemStack);
+                    });
+                });
+
+                either.ifRight(itemStack -> {
+                    String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+                    map.put(Objects.requireNonNull(registryName), itemStack);
+                });
             }
         }
 

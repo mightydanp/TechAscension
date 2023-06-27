@@ -22,7 +22,7 @@ public class ToolRegistry extends JsonConfigMultiFile<ToolCodec> {
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
-        loadExistJson();
+        //loadExistJson();
         super.initiate();
     }
 

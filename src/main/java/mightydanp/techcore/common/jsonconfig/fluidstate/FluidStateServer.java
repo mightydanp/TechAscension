@@ -75,7 +75,7 @@ public class FluidStateServer extends JsonConfigServer<FluidStateCodec> {
         AtomicBoolean sync = new AtomicBoolean(true);
         Map<String, FluidStateCodec> clientMap = new HashMap<>();
 
-        Path configs = Paths.get(singlePlayerConfigs + "/" + FluidStateCodec.CODEC);
+        Path configs = Paths.get(singlePlayerConfigs + "/" + FluidStateCodec.codecName);
         File[] files = configs.toFile().listFiles();
 
         if(files != null){

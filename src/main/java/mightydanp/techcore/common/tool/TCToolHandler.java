@@ -28,6 +28,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
@@ -90,16 +91,20 @@ public class TCToolHandler {
         }
     }
 
-    public static List<Set<ItemStack>> convertAssembleItems(Integer step, Map<Integer, List<List<Either<String, ItemStack>>>> toolNeededIn){
-        List<Set<ItemStack>> map = new ArrayList<>();
+    public static List<Set<Either<List<ItemStack>, ItemStack>>> convertAssembleItems(Integer step, Map<Integer, List<List<Either<String, ItemStack>>>> toolNeededIn){
+        List<Set<Either<List<ItemStack>, ItemStack>>> map = new ArrayList<>();
 
         for(List<Either<String, ItemStack>> stepMap : toolNeededIn.get(step)) {
-            Set<ItemStack> itemStackSet = new HashSet<>();
+            Set<Either<List<ItemStack>, ItemStack>> itemStackSet = new HashSet<>();
             stepMap.forEach((either) -> {
+                List<ItemStack> list = new ArrayList<>();
                 //to-do make it work with tags it adds all items to list instead of just one
-                either.ifLeft(s -> itemStackSet.addAll(Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList()));
+                either.ifLeft(s -> {
+                    list.addAll(Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList());
+                    itemStackSet.add(Either.left(list));
+                });
 
-                either.ifRight(itemStackSet::add);
+                either.ifRight(itemStack -> itemStackSet.add(Either.right(itemStack)));
             });
             map.add(itemStackSet);
         }
@@ -107,37 +112,84 @@ public class TCToolHandler {
         return map;
     }
 
-    public static Set<ItemStack> checkAssembleItems(Inventory inventory, ItemStack mainHand, ItemStack offHand, List<Set<ItemStack>> setIn){
-        List<Set<ItemStack>> filtered = new ArrayList<>();
+    public static Set<ItemStack> checkAssembleItems(Inventory inventory, ItemStack mainHand, ItemStack offHand, List<Set<Either<List<ItemStack>, ItemStack>>> setIn){
+        List<Set<Either<List<ItemStack>, ItemStack>>> filtered = new ArrayList<>();
 
         Set<ItemStack> firstFound = new HashSet<>();
 
-        for(Set<ItemStack> combinations : setIn){
-            for(ItemStack itemStack : combinations){
-                    if(itemStack.equals(mainHand) || itemStack.equals(offHand) || inventory.contains(itemStack)){
-                        filtered.add(combinations);
+        for(Set<Either<List<ItemStack>, ItemStack>> combinations : setIn){
+            for(Either<List<ItemStack>, ItemStack> either : combinations) {
+                either.ifLeft(list -> {
+                    for (ItemStack itemStack : list) {
+                        if (itemStack.equals(mainHand) || itemStack.equals(offHand) || inventory.contains(itemStack)) {
+                            if(itemStack.getItem() instanceof TCToolItem tool){
+                                if(tool.canWork(itemStack)) {
+                                    filtered.add(combinations);
+                                    break;
+                                }
+                            }else {
+                                filtered.add(combinations);
+                                break;
+                            }
+                        }
                     }
-                }
+                });
+
+                either.ifRight(itemStack -> {
+                    if (itemStack.equals(mainHand) || itemStack.equals(offHand) || inventory.contains(itemStack)) {
+                        if(itemStack.getItem() instanceof TCToolItem tool) {
+                            if (tool.canWork(itemStack)) {
+                                filtered.add(combinations);
+                            }
+                        }else{
+                            filtered.add(combinations);
+                        }
+
+
+                    }
+                });
+            }
         }
 
-        for(Set<ItemStack> set : filtered) {
-            Set<ItemStack> dummy = new HashSet<>();
+        for(Set<Either<List<ItemStack>, ItemStack>> set : filtered) {
+            //Set<ItemStack> dummy = new HashSet<>();
             for (int i = 0; i <= 45; i++) {
                 ItemStack itemStack = inventory.getItem(i);
 
                 if(!itemStack.isEmpty()) {
                     //todo the item stacks does not match because the tag from the set is null and the slots tag is "{}"
-                    for(ItemStack itemStackCopy : set){
-                        if (itemStack.sameItem(itemStackCopy)) {
-                            dummy.add(itemStack);
-                            break;
-                        }
-                    }
+                    for(Either<List<ItemStack>, ItemStack> either : set){
+                        either.ifLeft(list -> {
+                            for (ItemStack itemStackDummy : list) {
+                                if (itemStack.sameItem(itemStackDummy)) {
+                                    if(itemStackDummy.getItem() instanceof TCToolItem tool){
+                                        if(tool.canWork(itemStackDummy)){
+                                            firstFound.add(itemStack);
+                                            break;
+                                        }
+                                }else{
+                                        firstFound.add(itemStack);
+                                        break;
+                                    }
+                                }
+                            }
+                        });
 
+                        either.ifRight(itemStackDummy -> {
+                            if(itemStackDummy.getItem() instanceof TCToolItem tool){
+                                if(tool.canWork(itemStackDummy)) {
+                                    firstFound.add(itemStack);
+                                }
+                            }else{
+                                if (itemStack.sameItem(itemStackDummy)) {
+                                    firstFound.add(itemStack);
+                                }
+                            }
+                        });
+                    }
                 }
 
-                if(dummy.equals(set)){
-                    firstFound.addAll(set);
+                if (set.size() == firstFound.size()){
                     break;
                 }
             }

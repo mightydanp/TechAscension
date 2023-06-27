@@ -17,6 +17,8 @@ import mightydanp.techapi.common.resources.asset.data.LangData;
 import mightydanp.techapi.common.resources.data.DataPackRegistry;
 import mightydanp.techcore.common.tool.part.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Registry;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -386,14 +388,31 @@ public class TCTool {
                             ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
 
                             if(tool.handleItems().size() > 0){
-                                tool.handleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
-                                    String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
-                                    if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
-                                        if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
-                                            ((TCToolItem) toolItemIn.get()).addHandle(registryName, itemStack);
+                                tool.handleItems().forEach(either -> {
+                                    either.ifLeft(s -> {
+                                        List<ItemStack> list = Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList();
+
+                                        list.forEach(itemStack -> {
+                                            String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+
+                                            if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
+                                                if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
+                                                    ((TCToolItem) toolItemIn.get()).addHandle(registryName, itemStack);
+                                                }
+                                            }
+                                        });
+                                    });
+
+                                    either.ifRight(itemStack -> {
+                                        String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+
+                                        if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
+                                            if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
+                                                ((TCToolItem) toolItemIn.get()).addHandle(registryName, itemStack);
+                                            }
                                         }
-                                    }
-                                }));
+                                    });
+                                });
                             }
                         }
                     }
@@ -482,15 +501,32 @@ public class TCTool {
                         if(TCJsonConfigs.tool.getFirst().registryMap.containsKey(toolName)) {
                             ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
 
-                            if(tool.handleItems().size() > 0){
-                                tool.handleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
-                                    String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
-                                    if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
-                                        if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
-                                            ((TCToolItem) toolItemIn.get()).addHead(registryName, itemStack);
+                            if(tool.headItems().size() > 0){
+                                tool.headItems().forEach(either -> {
+                                    either.ifLeft(s -> {
+                                        List<ItemStack> list = Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList();
+
+                                        list.forEach(itemStack -> {
+                                            String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+
+                                            if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
+                                                if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
+                                                    ((TCToolItem) toolItemIn.get()).addHead(registryName, itemStack);
+                                                }
+                                            }
+                                        });
+                                    });
+
+                                    either.ifRight(itemStack -> {
+                                        String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+
+                                        if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
+                                            if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
+                                                ((TCToolItem) toolItemIn.get()).addHead(registryName, itemStack);
+                                            }
                                         }
-                                    }
-                                }));
+                                    });
+                                });
                             }
                         }
                     }
@@ -539,14 +575,31 @@ public class TCTool {
                             ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(toolName));
 
                             if(tool.handleItems().size() > 0){
-                                tool.handleItems().forEach(ingredient -> Arrays.stream(ingredient.getItems()).forEach(itemStack ->{
-                                    String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
-                                    if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
-                                        if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
-                                            ((TCToolItem) toolItemIn.get()).addBinding(registryName, itemStack);
+                                tool.handleItems().forEach(either -> {
+                                    either.ifLeft(s -> {
+                                        List<ItemStack> list = Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList();
+
+                                        list.forEach(itemStack -> {
+                                            String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+
+                                            if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
+                                                if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
+                                                    ((TCToolItem) toolItemIn.get()).addHandle(registryName, itemStack);
+                                                }
+                                            }
+                                        });
+                                    });
+
+                                    either.ifRight(itemStack -> {
+                                        String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
+
+                                        if(!TCJsonConfigs.tool.getFirst().registryMap.containsKey(registryName)){
+                                            if(TCJsonConfigs.itemTrait.getFirst().registryMap.containsKey(registryName)){
+                                                ((TCToolItem) toolItemIn.get()).addHandle(registryName, itemStack);
+                                            }
                                         }
-                                    }
-                                }));
+                                    });
+                                });
                             }
                         }
                     }
