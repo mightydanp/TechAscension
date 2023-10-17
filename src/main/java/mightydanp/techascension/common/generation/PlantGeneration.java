@@ -1,9 +1,10 @@
 package mightydanp.techascension.common.generation;
 
-import mightydanp.techcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.techascension.common.blocks.ModBlocks;
+import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.generation.blocksinwater.BlocksInWaterRegistry;
+import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureCodec;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,6 +51,6 @@ public class PlantGeneration {
 
 
     public static void init() {
-        PlantGenerationHandler.addBlockInWaterGenerate("cattail", 100, 1, true, true, List.of(Level.OVERWORLD.location().toString()), List.of(), List.of(), cattailValidBlocks, ModBlocks.cattail_plant_top_block.get().defaultBlockState(), ModBlocks.cattail_plant_bottom_block.get().defaultBlockState());
+        ((BlocksInWaterRegistry)TCJsonConfigs.blocksInWater.getFirst()).buildAndRegister(new BlocksInWaterGenFeatureCodec("cattail", 100, 1, true, true, List.of(Level.OVERWORLD.location().toString()), List.of(), List.of(), cattailValidBlocks, ModBlocks.cattail_plant_top_block.get().defaultBlockState(), ModBlocks.cattail_plant_bottom_block.get().defaultBlockState()));
     }
 }

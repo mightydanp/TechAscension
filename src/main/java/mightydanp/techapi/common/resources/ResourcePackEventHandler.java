@@ -3,6 +3,7 @@ package mightydanp.techapi.common.resources;
 import mightydanp.techapi.common.resources.asset.data.IItems;
 import mightydanp.techapi.common.resources.data.DataPackRegistry;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
+import mightydanp.techcore.common.jsonconfig.generation.blocksinwater.BlocksInWaterRegistry;
 import mightydanp.techcore.common.jsonconfig.material.data.MaterialRegistry;
 import mightydanp.techcore.common.jsonconfig.tool.ToolRegistry;
 import mightydanp.techcore.common.libs.Ref;
@@ -27,7 +28,7 @@ public class ResourcePackEventHandler {
 
     @SubscribeEvent
     public static void addResourcePack(AddPackFindersEvent event){
-        ((ToolRegistry)TCJsonConfigs.tool.getFirst()).loadExistJson();
+        ((ToolRegistry)TCJsonConfigs.tool.getFirst()).loadExistingJsons();
         ((MaterialRegistry)TCJsonConfigs.material.getFirst()).registryMap.forEach((modID, material) -> {
             try {
                 material.saveResources();
@@ -39,6 +40,8 @@ public class ResourcePackEventHandler {
         TCMaterial.saveOnceResources();
 
         itemResources.forEach(IItems::initResource);
+
+        ((BlocksInWaterRegistry)TCJsonConfigs.blocksInWater.getFirst()).loadExistingJsons();
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> AssetPackRegistry::init);
 

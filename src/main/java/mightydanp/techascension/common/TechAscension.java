@@ -67,9 +67,6 @@ public class TechAscension {
 
         ModMaterials.commonInit();
 
-        TCJsonConfigs.init();
-        ConfigSync.init();
-
         ModItems modItems = new ModItems();
         
         TCItems.init();
@@ -91,6 +88,9 @@ public class TechAscension {
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientEvent::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientEvent::init);
+
+        TCJsonConfigs.init();
+        ConfigSync.init();
 
         MinecraftForge.EVENT_BUS.register(ConfigSync.class);
         MinecraftForge.EVENT_BUS.register(TCRecipes.class);

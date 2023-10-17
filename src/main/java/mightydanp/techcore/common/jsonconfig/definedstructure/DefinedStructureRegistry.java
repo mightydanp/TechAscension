@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -20,7 +19,7 @@ public class DefinedStructureRegistry extends JsonConfigMultiFile<DefinedStructu
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
 
@@ -46,7 +45,7 @@ public class DefinedStructureRegistry extends JsonConfigMultiFile<DefinedStructu
         }
     }
 
-    public void loadExistJson(){
+    public void loadExistingJsons(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if(path.toFile().listFiles() != null) {

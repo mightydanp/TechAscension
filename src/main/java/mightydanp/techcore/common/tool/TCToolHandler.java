@@ -6,6 +6,7 @@ import mightydanp.techcore.client.settings.keybindings.KeyBindings;
 import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.recipe.handcrafting.HandCraftingCodec;
+import mightydanp.techcore.common.jsonconfig.tool.ToolCodec;
 import mightydanp.techcore.common.jsonconfig.trait.item.ItemTraitCodec;
 import mightydanp.techcore.common.tool.part.HandleItem;
 import mightydanp.techcore.common.tool.part.BindingItem;
@@ -21,14 +22,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
@@ -75,12 +74,15 @@ public class TCToolHandler {
             List<HandCraftingCodec> handCraftingList = (List<HandCraftingCodec>)(TCJsonConfigs.handCrafting.getFirst().registryMap.values().stream().toList());
 
             for(HandCraftingCodec handCrafting : handCraftingList) {
-                List<Ingredient> offhandRecipeItem = handCrafting.input1().stream().filter(ingredient -> Arrays.stream(ingredient.getItems()).anyMatch(itemStack -> itemStack.equals(event.getPlayer().getMainHandItem()) || itemStack.equals(event.getPlayer().getOffhandItem()))).toList();
-                List<Ingredient> mainHandRecipeItem = new ArrayList<>();
+                List<ItemStack> input1 = ToolCodec.giveItemStacks(handCrafting.input1());
 
-                if(handCrafting.input1().stream().anyMatch(ingredient -> Arrays.stream(ingredient.getItems()).anyMatch(itemStack -> itemStack.equals(event.getPlayer().getMainHandItem()))) && handCrafting.input1().stream().anyMatch(ingredient -> Arrays.stream(ingredient.getItems()).anyMatch(itemStack -> itemStack.equals(event.getPlayer().getOffhandItem())))){
+                List<ItemStack> input2 = ToolCodec.giveItemStacks(handCrafting.input2());
+
+                List<ItemStack> output = ToolCodec.giveItemStacks(handCrafting.output());
+
+                if(input1.stream().anyMatch(itemStack -> itemStack.equals(event.getPlayer().getMainHandItem())) && input2.stream().anyMatch(itemStack -> itemStack.equals(event.getPlayer().getOffhandItem()))){
                     if(event.getPlayer().getMainHandItem().getCount() == handCrafting.input1Amount() && event.getPlayer().getOffhandItem().getCount() == handCrafting.input2Amount()) {
-                        ItemStack itemStack = handCrafting.output().get(0).getItems()[0];
+                        ItemStack itemStack = output.get(0);
                         itemStack.setCount(handCrafting.outputAmount());
 
                         event.getPlayer().setItemInHand(InteractionHand.MAIN_HAND, itemStack);

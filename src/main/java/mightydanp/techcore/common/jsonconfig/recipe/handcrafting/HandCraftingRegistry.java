@@ -27,7 +27,7 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<HandCraftingCodec>
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
 
@@ -59,7 +59,7 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<HandCraftingCodec>
         }
     }
 
-    public void loadExistJson(){
+    public void loadExistingJsons(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if(path.toFile().listFiles() != null) {

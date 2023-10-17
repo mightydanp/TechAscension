@@ -11,7 +11,6 @@ import mightydanp.techcore.common.jsonconfig.tool.ToolCodec;
 import mightydanp.techcore.common.tool.part.BindingItem;
 import mightydanp.techcore.common.tool.part.HandleItem;
 import mightydanp.techcore.common.tool.part.HeadItem;
-import net.minecraft.core.Registry;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
@@ -102,16 +101,9 @@ public class TCToolItem extends Item {
             ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
             for (Either<String, ItemStack> either : tool.handleItems()) {
-                either.ifLeft(s -> {
-                    List<ItemStack> list = Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList();
+                List<ItemStack> handles = ToolCodec.giveItemStacks(either);
 
-                    list.forEach(itemStack -> {
-                        String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
-                        map.put(Objects.requireNonNull(registryName), itemStack);
-                    });
-                });
-
-                either.ifRight(itemStack -> {
+                handles.forEach(itemStack -> {
                     String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
                     map.put(Objects.requireNonNull(registryName), itemStack);
                 });
@@ -131,16 +123,9 @@ public class TCToolItem extends Item {
             ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
             for (Either<String, ItemStack> either : tool.headItems()) {
-                either.ifLeft(s -> {
-                    List<ItemStack> list = Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList();
+                List<ItemStack> heads = ToolCodec.giveItemStacks(either);
 
-                    list.forEach(itemStack -> {
-                        String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
-                        map.put(Objects.requireNonNull(registryName), itemStack);
-                    });
-                });
-
-                either.ifRight(itemStack -> {
+                heads.forEach(itemStack -> {
                     String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
                     map.put(Objects.requireNonNull(registryName), itemStack);
                 });
@@ -155,16 +140,9 @@ public class TCToolItem extends Item {
             ToolCodec tool = ((ToolCodec)TCJsonConfigs.tool.getFirst().registryMap.get(name));
 
             for (Either<String, ItemStack> either : tool.bindingItems()) {
-                either.ifLeft(s -> {
-                    List<ItemStack> list = Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList();
+                List<ItemStack> bindings = ToolCodec.giveItemStacks(either);
 
-                    list.forEach(itemStack -> {
-                        String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
-                        map.put(Objects.requireNonNull(registryName), itemStack);
-                    });
-                });
-
-                either.ifRight(itemStack -> {
+                bindings.forEach(itemStack -> {
                     String registryName = Objects.requireNonNull(itemStack.getItem().getRegistryName()).toString();
                     map.put(Objects.requireNonNull(registryName), itemStack);
                 });
@@ -299,14 +277,14 @@ public class TCToolItem extends Item {
         for(List<Either<String, ItemStack>> map : disassembleItems) {
             List<List<ItemStack>> stack = new ArrayList<>();
             map.forEach((either) -> {
-                List<ItemStack> ing = new ArrayList<>();
+                //List<ItemStack> ing = new ArrayList<>();
 
                 //to-do make it work with tags it adds all items to list instead of just one
-                either.ifLeft(s -> ing.addAll(Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList()));
+                //either.ifLeft(s -> ing.addAll(Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s))).stream().map(ItemStack::new).toList()));
 
-                either.ifRight(ing::add);
+                //either.ifRight(ing::add);
 
-                stack.add(ing);
+                stack.add(ToolCodec.giveItemStacks(either));
 
             });
 

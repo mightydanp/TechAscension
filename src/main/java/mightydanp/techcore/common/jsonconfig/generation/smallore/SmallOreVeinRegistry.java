@@ -1,12 +1,9 @@
 package mightydanp.techcore.common.jsonconfig.generation.smallore;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techcore.common.handler.generation.OreGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureCodec;
 import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeatureCodec;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
@@ -23,7 +20,7 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
         setJsonFolderName(SmallOreVeinGenFeatureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
 
@@ -44,7 +41,7 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
         }
     }
 
-    public void loadExistJson() {
+    public void loadExistingJsons() {
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if (path.toFile().listFiles() != null) {

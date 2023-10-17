@@ -28,7 +28,7 @@ public class TextureIconRegistry extends JsonConfigMultiFile<TextureIconCodec> {
         //
 
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
 
@@ -58,7 +58,7 @@ public class TextureIconRegistry extends JsonConfigMultiFile<TextureIconCodec> {
         }
     }
 
-    public void loadExistJson(){
+    public void loadExistingJsons(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if(path.toFile().listFiles() != null) {

@@ -2,9 +2,6 @@ package mightydanp.techcore.common.handler.generation;
 
 import com.google.common.base.Preconditions;
 import mightydanp.techcore.common.handler.RegistryHandler;
-import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
-import mightydanp.techcore.common.jsonconfig.generation.blocksinwater.BlocksInWaterRegistry;
-import mightydanp.techcore.common.jsonconfig.generation.randomsurface.RandomSurfaceRegistry;
 import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeature;
 import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureCodec;
 import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeature;
@@ -50,7 +47,7 @@ public class PlantGenerationHandler {
 
         //Registry<ConfiguredFeature<?, ?>> registry = BuiltinRegistries.CONFIGURED_FEATURE;
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), featureHolder, list.toArray(new PlacementModifier[0]));
-        ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).register(config);
+        //((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).register(config);
         blockInWaterGenerationList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
         //Registry.register(registry, new ResourceLocation(Ref.mod_id, config.name), topWaterCropFeature);;
     }
@@ -63,7 +60,7 @@ public class PlantGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), featureHolder, list.toArray(new PlacementModifier[0]));
-        ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).register(config);
+        //((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).register(config);
         blockInWaterGenerationList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
     }
 
@@ -73,7 +70,7 @@ public class PlantGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), featureHolder, list.toArray(new PlacementModifier[0]));
-        ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).register(config);
+        //((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).register(config);
         randomSurfaceGenList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
     }
 
@@ -85,12 +82,12 @@ public class PlantGenerationHandler {
         //list.add(CountPlacement.of(config.rarity));
 
         Holder<PlacedFeature> placedFeature = createPlacedFeature(config.name(), oreVeinFeature, list.toArray(new PlacementModifier[0]));
-        ((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).register(config);
+        //((RandomSurfaceRegistry) TCJsonConfigs.randomSurface.getFirst()).register(config);
         randomSurfaceGenList.put(config.name(), new MapWrapper(placedFeature, config.dimensions(), config.validBiomes(), config.invalidBiomes()));
     }
 
     @SubscribeEvent(priority= EventPriority.HIGH)
-    public static boolean checkAndInitBiome(BiomeLoadingEvent event) {
+    public static boolean checkAndInitBiomes(BiomeLoadingEvent event) {
         if(blockInWaterGenerationList.size() > 0) {
             BiomeGenerationSettingsBuilder builder = event.getGeneration();
             blockInWaterGenerationList.forEach(((s, mapWrapper) -> {
@@ -117,7 +114,7 @@ public class PlantGenerationHandler {
     public static <FC extends FeatureConfiguration> Holder<PlacedFeature> createPlacedFeature(String id, Holder<ConfiguredFeature<FC, ?>> feature, PlacementModifier... placementModifiers) {
         ResourceLocation realID = new ResourceLocation(Ref.mod_id, id);
         if (BuiltinRegistries.PLACED_FEATURE.keySet().contains(realID))
-            throw new IllegalStateException("Placed Feature ID: \"" + realID.toString() + "\" already exists in the Placed Features registry!");
+            throw new IllegalStateException("Placed Feature ID: \"" + realID + "\" already exists in the Placed Features registry!");
 
         return BuiltinRegistries.register(BuiltinRegistries.PLACED_FEATURE, realID, new PlacedFeature(Holder.hackyErase(feature), List.of(placementModifiers)));
     }

@@ -3,11 +3,14 @@ package mightydanp.techcore.common.jsonconfig.generation.blocksinwater;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techascension.common.TechAscension;
+import mightydanp.techascension.common.blocks.ModBlocks;
 import mightydanp.techcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
+import mightydanp.techcore.common.jsonconfig.tool.ToolCodec;
 import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureCodec;
 import net.minecraft.CrashReport;
+import net.minecraft.world.level.Level;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -21,10 +24,10 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
         setJsonFolderName(BlocksInWaterGenFeatureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
-        loadExistJson();
+        //loadExistJson();
         super.initiate();
     }
-
+////////////////////////////////////////////////////////////////////////////find way to build jsons that exist instead of overriding pre existing jsons with new one.///////////////////////////////////
     @Override
     public List<BlocksInWaterGenFeatureCodec> getAllValues() {
         return new ArrayList<>(registryMap.values());
@@ -33,11 +36,13 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     @Override
     public void register(BlocksInWaterGenFeatureCodec codec) {
         if (registryMap.containsKey(codec.name())) {
-            throw new IllegalArgumentException(BlocksInWaterGenFeatureCodec.codecName + " with name(" + codec.name() + "), already exists.");
+            throw new IllegalArgumentException(BlocksInWaterGenFeatureCodec.codecName + " with name (" + codec.name() + "), already exists.");
         } else {
             registryMap.put(codec.name(), codec);
+            PlantGenerationHandler.addRegistryBlockInWaterGenerate(codec);
         }
     }
+
 
     public void buildJson() {
         for (BlocksInWaterGenFeatureCodec codec : registryMap.values()) {
@@ -48,7 +53,14 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
         }
     }
 
-    public void loadExistJson() {
+
+    public void buildAndRegister(BlocksInWaterGenFeatureCodec codec){
+        this.register(codec);
+        this.saveJsonObject(codec.name(), toJsonObject(codec));
+    }
+
+    @Override
+    public void loadExistingJsons() {
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if (path.toFile().listFiles() != null) {
@@ -60,7 +72,6 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
                         BlocksInWaterGenFeatureCodec codec = fromJsonObject(jsonObject);
 
                         registryMap.put(codec.name(), codec);
-                        PlantGenerationHandler.addRegistryBlockInWaterGenerate(codec);
                     } else {
                         TechAscension.LOGGER.fatal("[{}] could not be added to " + BlocksInWaterGenFeatureCodec.codecName + " list because it already exist!!", file.getAbsolutePath());
                     }

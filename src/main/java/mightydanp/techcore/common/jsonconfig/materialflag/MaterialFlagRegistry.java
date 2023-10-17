@@ -30,7 +30,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<MaterialFlagCodec>
         //
 
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
 
@@ -64,7 +64,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<MaterialFlagCodec>
         }
     }
 
-    public void loadExistJson(){
+    public void loadExistingJsons(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if(path.toFile().listFiles() != null) {

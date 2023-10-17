@@ -29,7 +29,7 @@ public class ToolPartRegistry extends JsonConfigMultiFile<ToolPartCodec> {
         //
 
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
 
@@ -60,7 +60,7 @@ public class ToolPartRegistry extends JsonConfigMultiFile<ToolPartCodec> {
         }
     }
 
-    public void loadExistJson() {
+    public void loadExistingJsons() {
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if (path.toFile().listFiles() != null) {

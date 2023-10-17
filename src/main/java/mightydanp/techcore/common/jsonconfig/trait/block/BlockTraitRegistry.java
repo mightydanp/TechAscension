@@ -21,7 +21,7 @@ public class BlockTraitRegistry extends JsonConfigMultiFile<BlockTraitCodec> {
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
 
@@ -52,7 +52,7 @@ public class BlockTraitRegistry extends JsonConfigMultiFile<BlockTraitCodec> {
         }
     }
 
-    public void loadExistJson(){
+    public void loadExistingJsons(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if(path.toFile().listFiles() != null) {

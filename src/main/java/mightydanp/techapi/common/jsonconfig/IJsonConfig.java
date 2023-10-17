@@ -27,6 +27,10 @@ public class IJsonConfig<T> {
 
     }
 
+    public void loadExistingJsons(){
+
+    }
+
     public JsonObject getJsonObject(String name){
         return null;
     }

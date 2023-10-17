@@ -20,7 +20,7 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureCodec>
         setJsonFolderName(OreVeinGenFeatureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
 
@@ -42,7 +42,7 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureCodec>
         }
     }
 
-    public void loadExistJson() {
+    public void loadExistingJsons() {
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if (path.toFile().listFiles() != null) {

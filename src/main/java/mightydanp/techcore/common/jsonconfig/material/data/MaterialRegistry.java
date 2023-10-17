@@ -37,7 +37,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         registryMap.forEach((modID, material) -> {
             material.save();
         });
@@ -71,7 +71,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         }
     }
 
-    public void loadExistJson(){
+    public void loadExistingJsons(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if(path.toFile().listFiles() != null) {

@@ -24,7 +24,7 @@ public class ItemTraitRegistry extends JsonConfigMultiFileDirectory<ItemTraitCod
         }
 
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
 
@@ -53,7 +53,7 @@ public class ItemTraitRegistry extends JsonConfigMultiFileDirectory<ItemTraitCod
         }
     }
 
-    public void loadExistJson(){
+    public void loadExistingJsons(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         List<File> folders = Arrays.stream(Objects.requireNonNull(path.toFile().listFiles())).filter(file -> !file.getName().contains(".")).toList();

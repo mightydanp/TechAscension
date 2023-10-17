@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techcore.common.jsonconfig.icons.TextureIconCodec;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -29,7 +28,7 @@ public class OreTypeRegistry extends JsonConfigMultiFile<OreTypeCodec> {
         //
 
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
 
@@ -55,7 +54,7 @@ public class OreTypeRegistry extends JsonConfigMultiFile<OreTypeCodec> {
         }
     }
 
-    public void loadExistJson(){
+    public void loadExistingJsons(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if(path.toFile().listFiles() != null) {

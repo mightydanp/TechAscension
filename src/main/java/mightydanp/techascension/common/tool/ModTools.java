@@ -20,7 +20,6 @@ import mightydanp.techcore.common.material.tools.HammerToolItem;
 import mightydanp.techcore.common.material.tools.KnifeToolItem;
 import mightydanp.techcore.common.material.tools.PickaxeToolItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -111,7 +110,7 @@ public class ModTools extends TCTools{
             assembleItems.put(2, step2);
             assembleItems.put(3, step3);
 
-            ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegisterTool(new ToolCodec(pickaxeName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
+            ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegister(new ToolCodec(pickaxeName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
         }
 //----------knife
         {
@@ -150,7 +149,7 @@ public class ModTools extends TCTools{
             assembleItems.put(2, step2);
             assembleItems.put(3, step3);
 
-            ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegisterTool(new ToolCodec(knifeName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
+            ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegister(new ToolCodec(knifeName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
         }
 //----------hammer
         {
@@ -189,7 +188,7 @@ public class ModTools extends TCTools{
             assembleItems.put(2, step2);
             assembleItems.put(3, step3);
 
-            ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegisterTool(new ToolCodec(hammerName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
+            ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegister(new ToolCodec(hammerName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
         }
 //----------chisel
         {
@@ -228,7 +227,7 @@ public class ModTools extends TCTools{
             assembleItems.put(2, step2);
             assembleItems.put(3, step3);
 
-            ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegisterTool(new ToolCodec(chiselName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
+            ((ToolRegistry) TCJsonConfigs.tool.getFirst()).buildAndRegister(new ToolCodec(chiselName, 1, effectiveOn, handlePartItems, headPartItems, bindingPartItems, assembleItems, disassembleItems));
         }
 //----------
     }

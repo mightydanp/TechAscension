@@ -25,7 +25,7 @@ public class FluidStateRegistry extends JsonConfigMultiFile<FluidStateCodec> {
         }
 
         buildJson();
-        loadExistJson();
+        loadExistingJsons();
         super.initiate();
     }
     @Override
@@ -54,7 +54,7 @@ public class FluidStateRegistry extends JsonConfigMultiFile<FluidStateCodec> {
         }
     }
 
-    public void loadExistJson(){
+    public void loadExistingJsons(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if(path.toFile().listFiles() != null) {

@@ -54,12 +54,12 @@ public class ToolRegistry extends JsonConfigMultiFile<ToolCodec> {
         }
     }
 
-    public void buildAndRegisterTool(ToolCodec codec){
+    public void buildAndRegister(ToolCodec codec){
         this.register(codec);
         this.saveJsonObject(codec.name(), toJsonObject(codec));
     }
 
-    public void loadExistJson(){
+    public void loadExistingJsons(){
         Path path = Paths.get(this.getJsonFolderLocation() + "/" + this.getJsonFolderName());
 
         if(path.toFile().listFiles() != null) {
