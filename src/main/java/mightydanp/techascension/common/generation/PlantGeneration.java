@@ -51,6 +51,8 @@ public class PlantGeneration {
 
 
     public static void init() {
-        ((BlocksInWaterRegistry)TCJsonConfigs.blocksInWater.getFirst()).buildAndRegister(new BlocksInWaterGenFeatureCodec("cattail", 100, 1, true, true, List.of(Level.OVERWORLD.location().toString()), List.of(), List.of(), cattailValidBlocks, ModBlocks.cattail_plant_top_block.get().defaultBlockState(), ModBlocks.cattail_plant_bottom_block.get().defaultBlockState()));
+        if(!TCJsonConfigs.blocksInWater.getFirst().registryMap.containsKey("cattail")) {
+            ((BlocksInWaterRegistry) TCJsonConfigs.blocksInWater.getFirst()).buildAndRegister(new BlocksInWaterGenFeatureCodec("cattail", 100, 1, true, true, List.of(Level.OVERWORLD.location().toString()), List.of(), List.of(), cattailValidBlocks, ModBlocks.cattail_plant_top_block.get().defaultBlockState(), ModBlocks.cattail_plant_bottom_block.get().defaultBlockState()));
+        }
     }
 }
