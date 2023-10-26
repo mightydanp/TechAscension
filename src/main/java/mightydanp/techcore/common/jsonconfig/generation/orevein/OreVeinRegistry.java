@@ -5,6 +5,7 @@ import com.mojang.serialization.JsonOps;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.OreGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureCodec;
 import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeatureCodec;
 import net.minecraft.CrashReport;
 
@@ -30,6 +31,7 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureCodec>
             throw new IllegalArgumentException(OreVeinGenFeatureCodec.codecName + " with name(" + codec.name() + "), already exists.");
         } else {
             registryMap.put(codec.name(), codec);
+            OreGenerationHandler.addRegistryOreGeneration(codec);
         }
     }
 
@@ -39,6 +41,13 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureCodec>
             if (jsonObject.size() == 0) {
                 this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
+        }
+    }
+
+    public void buildAndRegister(OreVeinGenFeatureCodec codec){
+        if (!registryMap.containsKey(codec.name())) {
+            this.register(codec);
+            this.saveJsonObject(codec.name(), toJsonObject(codec));
         }
     }
 

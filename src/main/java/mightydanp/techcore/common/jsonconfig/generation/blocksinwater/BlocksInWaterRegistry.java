@@ -53,10 +53,11 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
         }
     }
 
-
     public void buildAndRegister(BlocksInWaterGenFeatureCodec codec){
-        this.register(codec);
-        this.saveJsonObject(codec.name(), toJsonObject(codec));
+        if (!registryMap.containsKey(codec.name())) {
+            this.register(codec);
+            this.saveJsonObject(codec.name(), toJsonObject(codec));
+        }
     }
 
     @Override

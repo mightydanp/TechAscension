@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techcore.common.handler.generation.OreGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureCodec;
 import mightydanp.techcore.common.world.gen.feature.SmallOreVeinGenFeatureCodec;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
@@ -29,6 +30,7 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
             throw new IllegalArgumentException(SmallOreVeinGenFeatureCodec.codecName + " vein with name(" + codec.name() + "), already exists.");
         } else {
             registryMap.put(codec.name(), codec);
+            OreGenerationHandler.addRegistrySmallOreVeinGeneration(codec);
         }
     }
 
@@ -38,6 +40,13 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
             if (jsonObject.size() == 0) {
                 this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
+        }
+    }
+
+    public void buildAndRegister(SmallOreVeinGenFeatureCodec codec){
+        if (!registryMap.containsKey(codec.name())) {
+            this.register(codec);
+            this.saveJsonObject(codec.name(), toJsonObject(codec));
         }
     }
 

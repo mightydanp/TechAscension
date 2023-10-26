@@ -5,6 +5,7 @@ import com.mojang.serialization.JsonOps;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeatureCodec;
 import mightydanp.techcore.common.world.gen.feature.RandomSurfaceGenFeatureCodec;
 import net.minecraft.CrashReport;
 
@@ -31,6 +32,7 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
             throw new IllegalArgumentException(RandomSurfaceGenFeatureCodec.codecName + " with name(" + codec.name() + "), already exists.");
         } else {
             registryMap.put(codec.name(), codec);
+            PlantGenerationHandler.addRegistryRandomSurfaceGenerate(codec);
         }
     }
 
@@ -40,6 +42,13 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
             if (jsonObject.size() == 0) {
                 this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
+        }
+    }
+
+    public void buildAndRegister(RandomSurfaceGenFeatureCodec codec){
+        if (!registryMap.containsKey(codec.name())) {
+            this.register(codec);
+            this.saveJsonObject(codec.name(), toJsonObject(codec));
         }
     }
 

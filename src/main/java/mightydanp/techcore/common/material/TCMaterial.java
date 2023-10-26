@@ -453,8 +453,85 @@ public class TCMaterial extends net.minecraftforge.registries.ForgeRegistryEntry
 
             AssetPackRegistry.blockModelDataMap.put("gem", modelData);
         }
-
 /////////
+        {
+            ModelData modelData = new ModelData("rock", ModelData.BLOCK_FOLDER, "stone_layer/state");
+            modelData.getModel()
+                    .texture("rock", new ResourceLocation(Ref.mod_id, "block/material_icons/rock"));
+
+            modelData.getModel().element().from(3, 0, 8).to(12, 1, 9)
+                    .face(Direction.DOWN).uvs(3, 9, 12, 8).texture("#rock").tintindex(0).end()
+                    .face(Direction.UP).uvs(3, 8, 12, 9).texture("#rock").tintindex(0).end()
+                    .face(Direction.NORTH).uvs(12, 8, 3, 9).texture("#rock").tintindex(0).end()
+                    .face(Direction.SOUTH).uvs(3, 8, 12, 9).texture("#rock").tintindex(0).end()
+                    .face(Direction.WEST).uvs(3, 8, 4, 9).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90).end()
+                    .face(Direction.EAST).uvs(12, 9, 11, 8).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90);
+
+            modelData.getModel().element().from(3, 0, 9).to(11, 1, 11)
+                    .face(Direction.DOWN).uvs(3, 11, 11, 9).texture("#rock").tintindex(0).end()
+                    .face(Direction.UP).uvs(3, 9, 11, 11).texture("#rock").tintindex(0).end()
+                    .face(Direction.NORTH).uvs(11, 9, 3, 10).texture("#rock").tintindex(0).end()
+                    .face(Direction.SOUTH).uvs(3, 10, 11, 11).texture("#rock").tintindex(0).end()
+                    .face(Direction.WEST).uvs(3, 9, 4, 11).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90).end()
+                    .face(Direction.EAST).uvs(11, 11, 10, 9).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90);
+
+            modelData.getModel().element().from(3, 0, 11).to(10, 1, 12)
+                    .face(Direction.DOWN).uvs(3, 12, 10, 11).texture("#rock").tintindex(0).end()
+                    .face(Direction.UP).uvs(3, 11, 10, 12).texture("#rock").tintindex(0).end()
+                    .face(Direction.NORTH).uvs(10, 11, 3, 12).texture("#rock").tintindex(0).end()
+                    .face(Direction.SOUTH).uvs(3, 11, 10, 12).texture("#rock").tintindex(0).end()
+                    .face(Direction.WEST).uvs(3, 11, 4, 12).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90).end()
+                    .face(Direction.EAST).uvs(10, 12, 9, 11).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90);
+
+            modelData.getModel().element().from(4, 0, 6).to(13, 1, 7)
+                    .face(Direction.DOWN).uvs(4, 7, 13, 6).texture("#rock").tintindex(0).end()
+                    .face(Direction.UP).uvs(4, 6, 13, 7).texture("#rock").tintindex(0).end()
+                    .face(Direction.NORTH).uvs(13, 6, 4, 7).texture("#rock").tintindex(0).end()
+                    .face(Direction.SOUTH).uvs(4, 6, 13, 7).texture("#rock").tintindex(0).end()
+                    .face(Direction.WEST).uvs(4, 6, 5, 7).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90).end()
+                    .face(Direction.EAST).uvs(13, 7, 12, 6).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90);
+
+            modelData.getModel().element().from(4, 0, 7).to(12, 1, 8)
+                    .face(Direction.DOWN).uvs(4, 8, 12, 7).texture("#rock").tintindex(0).end()
+                    .face(Direction.UP).uvs(4, 7, 12, 8).texture("#rock").tintindex(0).end()
+                    .face(Direction.NORTH).uvs(12, 7, 4, 8).texture("#rock").tintindex(0).end()
+                    .face(Direction.SOUTH).uvs(4, 7, 12, 8).texture("#rock").tintindex(0).end()
+                    .face(Direction.WEST).uvs(4, 7, 5, 8).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90).end()
+                    .face(Direction.EAST).uvs(12, 8, 11, 7).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90);
+
+            modelData.getModel().element().from(4, 0, 12).to(8, 1, 13)
+                    .face(Direction.DOWN).uvs(4, 13, 8, 12).texture("#rock").tintindex(0).end()
+                    .face(Direction.UP).uvs(4, 12, 8, 13).texture("#rock").tintindex(0).end()
+                    .face(Direction.NORTH).uvs(8, 12, 4, 13).texture("#rock").tintindex(0).end()
+                    .face(Direction.SOUTH).uvs(4, 12, 8, 13).texture("#rock").tintindex(0).end()
+                    .face(Direction.WEST).uvs(4, 12, 5, 13).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90).end()
+                    .face(Direction.EAST).uvs(8, 13, 7, 12).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90);
+
+            modelData.getModel().element().from(5, 0, 5).to(13, 1, 6)
+                    .face(Direction.DOWN).uvs(5, 6, 13, 5).texture("#rock").tintindex(0).end()
+                    .face(Direction.UP).uvs(5, 5, 13, 6).texture("#rock").tintindex(0).end()
+                    .face(Direction.NORTH).uvs(13, 5, 5, 6).texture("#rock").tintindex(0).end()
+                    .face(Direction.SOUTH).uvs(5, 5, 13, 6).texture("#rock").tintindex(0).end()
+                    .face(Direction.WEST).uvs(5, 5, 6, 6).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90).end()
+                    .face(Direction.EAST).uvs(13, 6, 12, 5).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90);
+
+            modelData.getModel().element().from(6, 0, 4).to(13, 1, 5)
+                    .face(Direction.DOWN).uvs(6, 5, 13, 4).texture("#rock").tintindex(0).end()
+                    .face(Direction.UP).uvs(6, 4, 13, 5).texture("#rock").tintindex(0).end()
+                    .face(Direction.NORTH).uvs(13, 4, 6, 5).texture("#rock").tintindex(0).end()
+                    .face(Direction.SOUTH).uvs(6, 4, 13, 5).texture("#rock").tintindex(0).end()
+                    .face(Direction.WEST).uvs(6, 4, 7, 5).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90).end()
+                    .face(Direction.EAST).uvs(13, 5, 12, 4).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90);
+
+            modelData.getModel().element().from(8, 0, 3).to(12, 1, 4)
+                    .face(Direction.DOWN).uvs(8, 4, 12, 3).texture("#rock").tintindex(0).end()
+                    .face(Direction.UP).uvs(8, 3, 12, 4).texture("#rock").tintindex(0).end()
+                    .face(Direction.NORTH).uvs(12, 3, 8, 4).texture("#rock").tintindex(0).end()
+                    .face(Direction.SOUTH).uvs(8, 3, 12, 4).texture("#rock").tintindex(0).end()
+                    .face(Direction.WEST).uvs(8, 3, 9, 4).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90).end()
+                    .face(Direction.EAST).uvs(12, 4, 11, 3).texture("#rock").tintindex(0).rotation(TAModelBuilder.FaceRotation.COUNTERCLOCKWISE_90);
+            AssetPackRegistry.blockModelDataMap.put("rock", modelData);
+        }
 
 
 
