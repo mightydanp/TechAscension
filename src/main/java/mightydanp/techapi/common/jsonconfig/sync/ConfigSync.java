@@ -16,6 +16,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.level.storage.LevelSummary;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -44,9 +45,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 public class ConfigSync {
     public static Map<String, Boolean> syncedJson = new HashMap<>();
     public static Map<Integer, Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>>> configs = new HashMap<>();
-
-    public static boolean isSinglePlayer;
-    public static String singlePlayerWorldName;
+    public static LevelSummary summary;
     public static String serverIP;
 
     public static void init(){
@@ -158,11 +157,12 @@ public class ConfigSync {
                     }
 
                     if (event.getScreen() instanceof LevelLoadingScreen) {
-                        if((new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id).exists())) {
+                        if(new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id).exists()) {
                             if (!TechAscension.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id)) {
-                                TechAscension.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
-                                TechAscension.mainJsonConfig.reloadConfigJson();
-                                Minecraft.getInstance().close();
+                                //event.setScreen(screen);
+                                //TechAscension.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
+                                //TechAscension.mainJsonConfig.reloadConfigJson();
+                                //Minecraft.getInstance().getSingleplayerServer().close();
                             }
                         }
                     }

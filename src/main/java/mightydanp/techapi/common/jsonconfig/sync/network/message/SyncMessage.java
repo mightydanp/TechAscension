@@ -79,8 +79,6 @@ public class SyncMessage {
             }
 
             if(!message.isSinglePlayer()){
-                ConfigSync.isSinglePlayer = false;
-                ConfigSync.singlePlayerWorldName = "";
 
                 for(int i = 0; i < ConfigSync.configs.size(); i++){
                     Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
@@ -88,8 +86,6 @@ public class SyncMessage {
                 }
 
             }else{
-                ConfigSync.isSinglePlayer = true;
-                ConfigSync.singlePlayerWorldName = message.getSinglePlayerWorldName();
 
                 for(int i = 0; i < ConfigSync.configs.size(); i++){
                     Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);

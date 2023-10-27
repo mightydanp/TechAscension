@@ -27,7 +27,7 @@ public class GenLanguage extends LanguageProvider {
             add(item.getValue(), itemName);
         }
 
-        add(TCButtonRef.returnToServerScreen, TCButtonRef.returnToServerScreenText);
+        add(TCButtonRef.returnToMainMenuScreen, TCButtonRef.returnToMainMenuScreenText);
         add(TCButtonRef.syncClientConfigsWithServers, TCButtonRef.syncClientConfigsWithServersText);
         add(TCScreenTextRef.syncWarningLine1, TCScreenTextRef.syncWarningLine1Text);
         add(TCScreenTextRef.syncWarningLine2, TCScreenTextRef.syncWarningLine2Text);
