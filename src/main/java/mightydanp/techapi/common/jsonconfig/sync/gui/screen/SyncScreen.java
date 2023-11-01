@@ -2,22 +2,17 @@ package mightydanp.techapi.common.jsonconfig.sync.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.realmsclient.RealmsMainScreen;
 import mightydanp.techapi.common.jsonconfig.IJsonConfig;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
-import mightydanp.techcore.common.libs.TCButtonRef;
-import mightydanp.techcore.common.libs.TCScreenRef;
-import mightydanp.techcore.common.libs.TCScreenTextRef;
+import mightydanp.techapi.common.jsonconfig.sync.gui.lib.SyncScreenButtonRef;
+import mightydanp.techapi.common.jsonconfig.sync.gui.lib.SyncScreenRef;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
-import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
@@ -31,7 +26,7 @@ import java.io.IOException;
 
 public class SyncScreen extends Screen {
     public SyncScreen() {
-        super(new TranslatableComponent(TCScreenRef.syncScreen));
+        super(new TranslatableComponent(mightydanp.techapi.common.jsonconfig.sync.gui.lib.SyncScreenRef.syncScreen));
     }
 
     public boolean isPauseScreen() {
@@ -47,7 +42,7 @@ public class SyncScreen extends Screen {
         super.init();
         if(minecraft != null) {
             if(ConfigSync.summary != null) {
-                this.addRenderableWidget(new Button((this.width / 2) - 150, this.height - 102, 300, 20, new TranslatableComponent(TCButtonRef.loadIntoWorldWithoutSyncing), (button) -> {
+                this.addRenderableWidget(new Button((this.width / 2) - 150, this.height - 102, 300, 20, new TranslatableComponent(SyncScreenButtonRef.Continue), (button) -> {
                     this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     if (this.minecraft.getLevelSource().levelExists(ConfigSync.summary.getLevelId())) {
                         this.minecraft.forceSetScreen(new GenericDirtMessageScreen(new TranslatableComponent("selectWorld.data_read")));
@@ -56,13 +51,13 @@ public class SyncScreen extends Screen {
                     }
                 }));
 
-                this.addRenderableWidget(new Button((this.width / 2) - 150, this.height - 82, 300, 20, new TranslatableComponent(TCButtonRef.syncClientConfigsWithWorld), (button) -> {
+                this.addRenderableWidget(new Button((this.width / 2) - 150, this.height - 82, 300, 20, new TranslatableComponent(SyncScreenButtonRef.stopToSync), (button) -> {
                     TechAscension.mainJsonConfig.setFolderLocation("saves/" + ConfigSync.summary.getLevelId() + "/serverconfig/" + Ref.mod_id);
                     TechAscension.mainJsonConfig.reloadConfigJson();
                     this.minecraft.stop();
                 }));
             } else {
-                this.addRenderableWidget(new Button((this.width / 2) - 150, this.height - 82, 300, 20, new TranslatableComponent(TCButtonRef.syncClientConfigsWithServers), (button) -> {
+                this.addRenderableWidget(new Button((this.width / 2) - 150, this.height - 82, 300, 20, new TranslatableComponent(SyncScreenButtonRef.syncClientConfigsWithServers), (button) -> {
                     for(int i = 0; i < ConfigSync.configs.size(); i++){
                         Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
                         try {
@@ -79,7 +74,7 @@ public class SyncScreen extends Screen {
                 }));
             }
 
-            this.addRenderableWidget(new Button((this.width / 2) - 150, this.height - 62, 300, 20, new TranslatableComponent(TCButtonRef.returnToMainMenuScreen), (button) -> {
+            this.addRenderableWidget(new Button((this.width / 2) - 150, this.height - 62, 300, 20, new TranslatableComponent(SyncScreenButtonRef.returnToMainMenuScreen), (button) -> {
                 button.active = false;
 
                 this.minecraft.setScreen(new TitleScreen());
@@ -93,16 +88,25 @@ public class SyncScreen extends Screen {
         this.renderBackground(poseStack);
 
         if(ConfigSync.summary == null){
-            drawCenteredString(poseStack, this.font, I18n.get(TCScreenTextRef.syncWarningLine1), this.width / 2, 20, 0xFF5555);
+            poseStack.pushPose();
+            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.syncWarningLine1), this.width / 2, 20, 0xFF5555);
+            poseStack.popPose();
 
-            //poseStack.scale(0.5F, 0.5F, 1F);
-            drawCenteredString(poseStack, this.font, I18n.get(TCScreenTextRef.syncWarningLine2), this.width / 2, 40 * 2, 16777215);
-            drawCenteredString(poseStack, this.font, I18n.get(TCScreenTextRef.syncWarningLine3), this.width / 2, 60 * 2, 16777215);
+            poseStack.pushPose();
+            poseStack.scale(0.5F, 0.5F, 1F);
+            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.syncWarningLine2), this.width, 40 * 2, 16777215);
+            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.syncWarningLine3), this.width, 60 * 2, 16777215);
+            poseStack.popPose();
         }else{
-            drawCenteredString(poseStack, this.font, I18n.get(TCScreenTextRef.clientWorldWarningLine1), this.width / 2, 20, 0xFF5555);
+            poseStack.pushPose();
+            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.clientWorldWarningLine1), this.width / 2, 20, 0xFF5555);
+            poseStack.popPose();
 
-            //poseStack.scale(0.5F, 0.5F, 1F);
-            drawCenteredString(poseStack, this.font, I18n.get(TCScreenTextRef.clientWorldWarningLine2), this.width / 2, 40 * 2, 16777215);
+            poseStack.pushPose();
+            poseStack.scale(0.5F, 0.5F, 1F);
+            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.clientWorldWarningLine2), this.width, 40 * 2, 16777215);
+            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.clientWorldWarningLine3), this.width, 60 * 2, 16777215);
+            poseStack.popPose();
         }
 
         super.render(poseStack, x, y, p_230430_4_);

@@ -1,5 +1,6 @@
 package mightydanp.techapi.common.resources;
 
+import mightydanp.techapi.common.jsonconfig.sync.gui.lang.SyncScreenLang;
 import mightydanp.techapi.common.resources.asset.data.IItems;
 import mightydanp.techapi.common.resources.data.DataPackRegistry;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
@@ -28,6 +29,8 @@ public class ResourcePackEventHandler {
 
     @SubscribeEvent
     public static void addResourcePack(AddPackFindersEvent event){
+        SyncScreenLang.init();
+
         ((ToolRegistry)TCJsonConfigs.tool.getFirst()).loadExistingJsons();
         ((MaterialRegistry)TCJsonConfigs.material.getFirst()).registryMap.forEach((modID, material) -> {
             try {

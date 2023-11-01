@@ -1,7 +1,5 @@
 package mightydanp.techcore.common.datagen;
 
-import mightydanp.techcore.common.libs.TCButtonRef;
-import mightydanp.techcore.common.libs.TCScreenTextRef;
 import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
@@ -26,14 +24,6 @@ public class GenLanguage extends LanguageProvider {
             String itemName = translateUpperCase(item.getKey().location().toString());
             add(item.getValue(), itemName);
         }
-
-        add(TCButtonRef.returnToMainMenuScreen, TCButtonRef.returnToMainMenuScreenText);
-        add(TCButtonRef.syncClientConfigsWithServers, TCButtonRef.syncClientConfigsWithServersText);
-        add(TCScreenTextRef.syncWarningLine1, TCScreenTextRef.syncWarningLine1Text);
-        add(TCScreenTextRef.syncWarningLine2, TCScreenTextRef.syncWarningLine2Text);
-        add(TCScreenTextRef.syncWarningLine3, TCScreenTextRef.syncWarningLine3Text);
-        add(TCScreenTextRef.clientWorldWarningLine1, TCScreenTextRef.clientWorldWarningLine1Text);
-        add(TCScreenTextRef.clientWorldWarningLine2, TCScreenTextRef.clientWorldWarningLine2Text);
 
     }
 

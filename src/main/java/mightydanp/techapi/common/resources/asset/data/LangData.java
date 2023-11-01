@@ -8,14 +8,13 @@ public class LangData {
     public JsonObject translations = new JsonObject();
 
 
-    public boolean addTranslation(String localizationIn, String translationIn) {
+    public LangData addTranslation(String localizationIn, String translationIn) {
         if (!translations.has(localizationIn)) {
             translations.addProperty(localizationIn, translationIn);
-            return true;
         } else {
             TechAscension.LOGGER.warn("Cannot add translation, [" + translationIn + "], because the localization, [" + localizationIn + "], already exist for " + language);
-            return false;
         }
+        return this;
     }
 
     public static String translateUpperCase(String name){
