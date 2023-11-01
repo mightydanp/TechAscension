@@ -99,13 +99,14 @@ public class SyncScreen extends Screen {
             poseStack.popPose();
         }else{
             poseStack.pushPose();
-            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.clientWorldWarningLine1), this.width / 2, 20, 0xFF5555);
+            poseStack.scale(1.5F, 1.5F, 1F);
+            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.clientWorldWarningLine1), this.width / 3, 20, 0xFF5555);
             poseStack.popPose();
 
             poseStack.pushPose();
-            poseStack.scale(0.5F, 0.5F, 1F);
-            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.clientWorldWarningLine2), this.width, 40 * 2, 16777215);
-            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.clientWorldWarningLine3), this.width, 60 * 2, 16777215);
+            poseStack.scale(1F, 1F, 1F);
+            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.clientWorldWarningLine2), this.width / 2, 40 * 2, 16777215);
+            drawCenteredString(poseStack, this.font, new TranslatableComponent(SyncScreenRef.clientWorldWarningLine3), this.width / 2, 60 * 2, 16777215);
             poseStack.popPose();
         }
 

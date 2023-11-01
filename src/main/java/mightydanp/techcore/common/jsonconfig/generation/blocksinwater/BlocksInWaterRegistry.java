@@ -24,7 +24,6 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
         setJsonFolderName(BlocksInWaterGenFeatureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
-        //loadExistJson();
         super.initiate();
     }
 ////////////////////////////////////////////////////////////////////////////find way to build jsons that exist instead of overriding pre existing jsons with new one.///////////////////////////////////

@@ -18,11 +18,11 @@ public class SyncScreenRef {
     //public static String syncWarningLine3Text = "You will NOT be able to play on this server unless you sync with the server's json configs or contact the owner of this server to get a copy of there json configs!";
 
     public static String clientWorldWarningLine1 = Ref.mod_id + ".client_world_error_line_1";
-    public static String clientWorldWarningLine1Text = "Your current configs don't match with the current selected world!";
+    public static String clientWorldWarningLine1Text = "Your configs don't match with this world!";
     public static String clientWorldWarningLine2 = Ref.mod_id + ".client_world_error_line_2";
     public static String clientWorldWarningLine2Text = "You can either continue, stop to sync, or go back to the main menu.";
 
     public static String clientWorldWarningLine3 = Ref.mod_id + ".client_world_error_line_3";
 
-    public static String clientWorldWarningLine3Text = "If you continue without stopping to sync there is a chance things will disappear or your game might crash.";
+    public static String clientWorldWarningLine3Text = "If you do not stopping to sync things might disappear or your game might crash.";
 }
