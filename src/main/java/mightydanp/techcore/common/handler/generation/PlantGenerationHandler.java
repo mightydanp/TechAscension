@@ -87,22 +87,19 @@ public class PlantGenerationHandler {
     }
 
     @SubscribeEvent(priority= EventPriority.HIGH)
-    public static boolean checkAndInitBiomes(BiomeLoadingEvent event) {
+    public static void checkAndInitBiomes(BiomeLoadingEvent event) {
+        BiomeGenerationSettingsBuilder builder = event.getGeneration();
         if(blockInWaterGenerationList.size() > 0) {
-            BiomeGenerationSettingsBuilder builder = event.getGeneration();
             blockInWaterGenerationList.forEach(((s, mapWrapper) -> {
                 builder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, mapWrapper.feature());
             }));
         }
 
         if(randomSurfaceGenList.size() > 0) {
-            BiomeGenerationSettingsBuilder builder = event.getGeneration();
             randomSurfaceGenList.forEach(((s, mapWrapper) -> {
                 builder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, mapWrapper.feature());
             }));
         }
-
-        return true;
     }
 
     public static <FC extends FeatureConfiguration, F extends Feature<FC>> Holder<ConfiguredFeature<FC, ?>> register(String id, ConfiguredFeature<FC, F> cf) {

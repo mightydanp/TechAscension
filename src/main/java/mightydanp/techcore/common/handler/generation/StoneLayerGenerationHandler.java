@@ -56,11 +56,13 @@ public class StoneLayerGenerationHandler {
     }
 
     @SubscribeEvent(priority= EventPriority.HIGH)
-    public static void checkAndInitBiome(BiomeLoadingEvent event) {
+    public static void checkAndInitBiomes(BiomeLoadingEvent event) {
         BiomeGenerationSettingsBuilder builder = event.getGeneration();
-        stoneLayerTopGenerateList.forEach(((s, mapWrapper) -> {
-            builder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, mapWrapper.feature());
-        }));
+        if(stoneLayerTopGenerateList.size() > 0) {
+            stoneLayerTopGenerateList.forEach(((s, mapWrapper) -> {
+                builder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, mapWrapper.feature());
+            }));
+        }
     }
 
     public static <FC extends FeatureConfiguration, F extends Feature<FC>> Holder<ConfiguredFeature<FC, ?>> register(String id, ConfiguredFeature<FC, F> cf) {

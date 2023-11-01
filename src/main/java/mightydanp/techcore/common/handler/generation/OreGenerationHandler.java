@@ -118,16 +118,15 @@ public class OreGenerationHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static boolean checkAndInitBiome(BiomeLoadingEvent event) {
+    public static boolean checkAndInitBiomes(BiomeLoadingEvent event) {
+        BiomeGenerationSettingsBuilder builder = event.getGeneration();
         if (oreGenList.size() > 0) {
-            BiomeGenerationSettingsBuilder builder = event.getGeneration();
             oreGenList.forEach(((s, mapWrapper) -> {
                 builder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, mapWrapper.feature());
             }));
         }
 
         if (smallOreGenList.size() > 0) {
-            BiomeGenerationSettingsBuilder builder = event.getGeneration();
             smallOreGenList.forEach(((s, mapWrapper) -> {
                 builder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, mapWrapper.feature());
             }));
