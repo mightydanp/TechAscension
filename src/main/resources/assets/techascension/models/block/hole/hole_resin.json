@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "techascension:block/tree/hole/hole",
-		"1": "techascension:block/tree/hole/resin_hole",
-		"particle": "techascension:block/tree/hole/hole"
+		"0": "techascension:block/tree_icons/oak/hole",
+		"1": "techascension:block/tree_icons/oak/resin_hole",
+		"particle": "techascension:block/tree_icons/oak/resin_hole"
 	},
 	"elements": [
 		{

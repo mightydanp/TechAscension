@@ -2,10 +2,11 @@ package mightydanp.techcore.common.jsonconfig.generation.orevein;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import mightydanp.techapi.common.resources.ClientResourcePackEventHandler;
+import mightydanp.techapi.common.resources.ServerResourcePackEventHandler;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.common.handler.generation.OreGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureCodec;
 import mightydanp.techcore.common.world.gen.feature.OreVeinGenFeatureCodec;
 import net.minecraft.CrashReport;
 
@@ -22,6 +23,7 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureCodec>
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
         super.initiate();
+        ServerResourcePackEventHandler.postInitLoad.add(this);
     }
 
     @Override

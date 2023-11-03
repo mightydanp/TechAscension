@@ -3,6 +3,8 @@ package mightydanp.techcore.common.jsonconfig.tool;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techapi.common.resources.ClientResourcePackEventHandler;
+import mightydanp.techapi.common.resources.ServerResourcePackEventHandler;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 
@@ -22,8 +24,8 @@ public class ToolRegistry extends JsonConfigMultiFile<ToolCodec> {
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         buildJson();
-        //loadExistJson();
         super.initiate();
+        ServerResourcePackEventHandler.postInitLoad.add(this);
     }
 
     @Override
@@ -71,7 +73,6 @@ public class ToolRegistry extends JsonConfigMultiFile<ToolCodec> {
                         ToolCodec codec = fromJsonObject(jsonObject);
 
                         registryMap.put(codec.name(), codec);
-
                     } else {
                         TechAscension.LOGGER.fatal("[{}] could not be added to " + ToolCodec.codecName + " because a tool already exist!!", file.getAbsolutePath());
                     }

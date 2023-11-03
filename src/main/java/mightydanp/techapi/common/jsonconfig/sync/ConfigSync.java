@@ -80,11 +80,8 @@ public class ConfigSync {
 
     @SubscribeEvent
     public static void onPlayerJoinServer(PlayerEvent.PlayerLoggedInEvent event) {
-        if(event.getPlayer().getServer() != null) {
-            boolean isSinglePlayer = event.getPlayer().getServer().isSingleplayer();
-            String singlePlayerWorldName = isSinglePlayer ? event.getPlayer().getServer().getWorldPath(LevelResource.ROOT).getParent().getFileName().toString(): "";/////////
-
-            SyncMessage syncMessage = new SyncMessage(isSinglePlayer, singlePlayerWorldName);
+        if(event.getPlayer().getServer() != null && !event.getPlayer().getServer().isSingleplayer()) {
+            SyncMessage syncMessage = new SyncMessage();
 
             for(int i = 0; i < configs.size(); i++){
                 Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = configs.get(i);
@@ -115,7 +112,7 @@ public class ConfigSync {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onPlayerJoinServer(ClientPlayerNetworkEvent.LoggedInEvent event) {
-        if (event.getPlayer() != null) {
+        if (event.getPlayer() != null && event.getPlayer().getServer() != null && !event.getPlayer().getServer().isSingleplayer()) {
             if (syncedJson.containsValue(false)) {
                 if (Minecraft.getInstance().level != null && Minecraft.getInstance().getCurrentServer() != null && Minecraft.getInstance().screen != null) {
                     serverIP = Minecraft.getInstance().getCurrentServer().ip;
@@ -137,9 +134,8 @@ public class ConfigSync {
             TechAscension.LOGGER.debug(event.getScreen().getTitle().getString());
 
             if (server != null) {
+                //on create new world. Create configs for that world.
                 if (server.isSingleplayer() && Minecraft.getInstance().getSingleplayerServer() != null) {
-                        IntegratedServer integratedServer = Minecraft.getInstance().getSingleplayerServer();
-
                     if (event.getScreen() instanceof ProgressScreen) {
                         if (!(new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id).exists()) && !TechAscension.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig"  + "/" + Ref.mod_id)) {
                             for(int i = 0; i < configs.size(); i++){
@@ -153,17 +149,6 @@ public class ConfigSync {
 
                             TechAscension.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
                             TechAscension.mainJsonConfig.reloadConfigJson();
-                        }
-                    }
-
-                    if (event.getScreen() instanceof LevelLoadingScreen) {
-                        if(new File("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id).exists()) {
-                            if (!TechAscension.mainJsonConfig.getFolderLocation().equals("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id)) {
-                                //event.setScreen(screen);
-                                //TechAscension.mainJsonConfig.setFolderLocation("saves/" + server.getWorldPath(LevelResource.ROOT).getParent().getFileName().toString() + "/serverconfig/" + Ref.mod_id);
-                                //TechAscension.mainJsonConfig.reloadConfigJson();
-                                //Minecraft.getInstance().getSingleplayerServer().close();
-                            }
                         }
                     }
                 }

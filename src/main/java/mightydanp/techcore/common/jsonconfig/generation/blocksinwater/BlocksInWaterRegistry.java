@@ -2,15 +2,13 @@ package mightydanp.techcore.common.jsonconfig.generation.blocksinwater;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import mightydanp.techapi.common.resources.ClientResourcePackEventHandler;
+import mightydanp.techapi.common.resources.ServerResourcePackEventHandler;
 import mightydanp.techascension.common.TechAscension;
-import mightydanp.techascension.common.blocks.ModBlocks;
 import mightydanp.techcore.common.handler.generation.PlantGenerationHandler;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
-import mightydanp.techcore.common.jsonconfig.fluidstate.FluidStateCodec;
-import mightydanp.techcore.common.jsonconfig.tool.ToolCodec;
 import mightydanp.techcore.common.world.gen.feature.BlocksInWaterGenFeatureCodec;
 import net.minecraft.CrashReport;
-import net.minecraft.world.level.Level;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -25,6 +23,7 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
         buildJson();
         super.initiate();
+        ServerResourcePackEventHandler.postInitLoad.add(this);
     }
 ////////////////////////////////////////////////////////////////////////////find way to build jsons that exist instead of overriding pre existing jsons with new one.///////////////////////////////////
     @Override

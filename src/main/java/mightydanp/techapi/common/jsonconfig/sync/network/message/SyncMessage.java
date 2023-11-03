@@ -4,12 +4,9 @@ import com.mojang.datafixers.util.Pair;
 import mightydanp.techapi.common.jsonconfig.IJsonConfig;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techapi.common.jsonconfig.sync.JsonConfigServer;
-import mightydanp.techcore.common.libs.Ref;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
-import javax.annotation.Nullable;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +18,6 @@ import java.util.function.Supplier;
 public class SyncMessage {
     private final Map<Integer, List<?>> configs = new HashMap<>();
 
-    private final boolean isSinglePlayer;
-    private final String singlePlayerWorldName;
-
     public void setConfig(Integer configIDIn, List<?> listIn){
         configs.put(configIDIn, listIn);
     }
@@ -32,25 +26,8 @@ public class SyncMessage {
         return configs.get(configIDIn);
     }
 
-    public SyncMessage(boolean isSinglePlayerIn, @Nullable String singlePlayerWorldNameIn) {
-        isSinglePlayer = isSinglePlayerIn;
-        singlePlayerWorldName = singlePlayerWorldNameIn;
-
-    }
-
-    public boolean isSinglePlayer() {
-        return isSinglePlayer;
-    }
-
-    public String getSinglePlayerWorldName() {
-        return singlePlayerWorldName;
-    }
-
     public static SyncMessage read(FriendlyByteBuf buffer) {
-        boolean isSinglePlayer = buffer.readBoolean();
-        String singlePlayerWorldName = buffer.readUtf();
-
-        SyncMessage message = new SyncMessage(isSinglePlayer, singlePlayerWorldName);
+        SyncMessage message = new SyncMessage();
 
         for(int i = 0; i < ConfigSync.configs.size(); i++){
             message.setConfig(i, ConfigSync.configs.get(i).getFirst().getAllValues());
@@ -60,39 +37,23 @@ public class SyncMessage {
     }
 
     public static void write(SyncMessage message, FriendlyByteBuf buffer) {
-        buffer.writeBoolean(message.isSinglePlayer());
-        buffer.writeUtf(message.singlePlayerWorldName);
-
         for(int i = 0; i < ConfigSync.configs.size(); i++){
             Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
             config.getSecond().multipleToBuffer(message, buffer);
         }
-
     }
 
     public static void onMessage(SyncMessage message, Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> {
-
             for(int i = 0; i < ConfigSync.configs.size(); i++){
                 Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
                 config.getSecond().loadFromServer(message);
             }
 
-            if(!message.isSinglePlayer()){
-
-                for(int i = 0; i < ConfigSync.configs.size(); i++){
-                    Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
-                    config.getSecond().isClientAndServerConfigsSynced(message);
-                }
-
-            }else{
-
-                for(int i = 0; i < ConfigSync.configs.size(); i++){
-                    Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
-                    config.getSecond().isClientAndClientWorldConfigsSynced(Paths.get("saves/" + message.singlePlayerWorldName + "/serverconfig/" + Ref.mod_id));
-                }
+            for(int i = 0; i < ConfigSync.configs.size(); i++){
+                Pair<? extends IJsonConfig<?>, ? extends JsonConfigServer<?>> config = ConfigSync.configs.get(i);
+                config.getSecond().isClientAndServerConfigsSynced(message);
             }
-            //
 
         });
 

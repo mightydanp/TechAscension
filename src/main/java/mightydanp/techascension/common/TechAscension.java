@@ -1,5 +1,6 @@
 package mightydanp.techascension.common;
 
+import mightydanp.techapi.common.resources.ServerResourcePackEventHandler;
 import mightydanp.techcore.client.ClientEvent;
 import mightydanp.techcore.client.jsonconfig.JsonConfigClient;
 import mightydanp.techcore.common.CommonEvent;
@@ -16,7 +17,7 @@ import mightydanp.techcore.common.tool.TCToolHandler;
 import mightydanp.techapi.common.jsonconfig.main.MainJsonConfig;
 import mightydanp.techapi.common.resources.asset.TAAssetHolder;
 import mightydanp.techapi.common.resources.data.TADataHolder;
-import mightydanp.techapi.common.resources.ResourcePackEventHandler;
+import mightydanp.techapi.common.resources.ClientResourcePackEventHandler;
 import mightydanp.techapi.common.jsonconfig.sync.ConfigSync;
 import mightydanp.techcore.common.libs.Ref;
 import mightydanp.techcore.common.tileentities.TileEntities;
@@ -68,7 +69,7 @@ public class TechAscension {
         ModMaterials.commonInit();
 
         ModItems modItems = new ModItems();
-        
+
         TCItems.init();
         ModItems.init();
         TCBlocks.init();
@@ -80,14 +81,13 @@ public class TechAscension {
         ModBlockEntity.init();
         TileEntities.init();
 
-        ResourcePackEventHandler.itemResources.add(modItems);
+        ClientResourcePackEventHandler.itemResources.add(modItems);
 
         bus.addListener(JsonConfigClient::init);
         bus.addListener(CommonEvent::init);
         bus.addListener(ModCommonEvent::init);
-
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientEvent::init);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientEvent::init);
+        bus.addListener(ClientEvent::init);
+        bus.addListener(ModClientEvent::init);
 
         TCJsonConfigs.init();
         ConfigSync.init();
@@ -95,11 +95,8 @@ public class TechAscension {
         MinecraftForge.EVENT_BUS.register(ConfigSync.class);
         MinecraftForge.EVENT_BUS.register(TCRecipes.class);
         MinecraftForge.EVENT_BUS.register(ModRecipes.class);
-        MinecraftForge.EVENT_BUS.register(EventHandler.class);
         MinecraftForge.EVENT_BUS.register(TCToolHandler.class);
         MinecraftForge.EVENT_BUS.register(TreeEvents.class);
         MinecraftForge.EVENT_BUS.register(TraitEventHandler.class);
-
-        bus.addListener(ResourcePackEventHandler::addResourcePack);
     }
 }
