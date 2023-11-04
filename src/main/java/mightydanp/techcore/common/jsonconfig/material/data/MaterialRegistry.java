@@ -36,6 +36,10 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         setJsonFolderName("material");
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
+        if(TechAscension.mainJsonConfig.loadDefault()){
+
+        }
+
         buildJson();
         loadExistingJsons();
         registryMap.forEach((modID, material) -> {

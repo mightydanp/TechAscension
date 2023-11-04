@@ -23,11 +23,11 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<MaterialFlagCodec>
         setJsonFolderName(MaterialFlagCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
-        //
-        for (DefaultMaterialFlag codec : DefaultMaterialFlag.values()) {
-            register(codec.getCodec());
+        if(TechAscension.mainJsonConfig.loadDefault()){
+            for (DefaultMaterialFlag codec : DefaultMaterialFlag.values()) {
+                register(codec.getCodec());
+            }
         }
-        //
 
         buildJson();
         loadExistingJsons();

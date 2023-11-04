@@ -21,6 +21,11 @@ public class OreVeinRegistry extends JsonConfigMultiFile<OreVeinGenFeatureCodec>
     public void initiate() {
         setJsonFolderName(OreVeinGenFeatureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
+
+        if(TechAscension.mainJsonConfig.loadDefault()){
+
+        }
+
         buildJson();
         super.initiate();
         ServerResourcePackEventHandler.postInitLoad.add(this);

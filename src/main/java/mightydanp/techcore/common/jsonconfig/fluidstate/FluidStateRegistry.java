@@ -20,9 +20,12 @@ public class FluidStateRegistry extends JsonConfigMultiFile<FluidStateCodec> {
         setJsonFolderName(FluidStateCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
-        for (DefaultFluidState fluidState : DefaultFluidState.values()) {
-            register(fluidState.fluidState);
+        if(TechAscension.mainJsonConfig.loadDefault()){
+            for (DefaultFluidState fluidState : DefaultFluidState.values()) {
+                register(fluidState.fluidState);
+            }
         }
+
 
         buildJson();
         loadExistingJsons();

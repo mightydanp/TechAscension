@@ -23,6 +23,10 @@ public class ToolRegistry extends JsonConfigMultiFile<ToolCodec> {
         setJsonFolderName(ToolCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
+        if(TechAscension.mainJsonConfig.loadDefault()){
+
+        }
+
         buildJson();
         super.initiate();
         ServerResourcePackEventHandler.postInitLoad.add(this);

@@ -16,26 +16,6 @@ import java.util.Objects;
  */
 @Mod.EventBusSubscriber(modid = Ref.mod_id)
 public class EventHandler {
-
-    @SubscribeEvent
-    public static void playerPickup(EntityItemPickupEvent event){
-        if(!event.getPlayer().getInventory().getItem(41).isEmpty()){
-            event.setCanceled(true);
-        }
-    }
-    @SubscribeEvent
-    public static void onItemRightClickEvent(PlayerInteractEvent.RightClickBlock event) {
-        if(!event.getPlayer().getInventory().getItem(41).isEmpty()){
-            if (event.getPlayer().isShiftKeyDown() && event.getPlayer().getOffhandItem().isEmpty() && event.getPlayer().getMainHandItem().isEmpty()) {
-                if(event.getPlayer().getInventory().getItem(41).getItem() instanceof BlockItem blockItem) {
-
-                    event.getWorld().setBlock(event.getPos().relative(Objects.requireNonNull(event.getFace())), blockItem.getBlock().defaultBlockState(), 2);
-                    event.getPlayer().getInventory().setItem(41, ItemStack.EMPTY);
-                }
-            }
-        }
-    }
-
     public static BlockPos copyBlockPos = new BlockPos(0, 0, 0);
 
     public static boolean newPosition = false;

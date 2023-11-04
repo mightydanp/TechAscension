@@ -21,6 +21,11 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     public void initiate() {
         setJsonFolderName(BlocksInWaterGenFeatureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
+
+        if(TechAscension.mainJsonConfig.loadDefault()){
+
+        }
+
         buildJson();
         super.initiate();
         ServerResourcePackEventHandler.postInitLoad.add(this);

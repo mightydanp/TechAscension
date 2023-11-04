@@ -29,11 +29,25 @@ public class MainJsonConfig extends JsonConfigSingleFile {
         addToCategoryInConfig("json_config", jsonObject);
     }
 
+    public void setLoadDefault(boolean loadDefault) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("load_default", loadDefault);
+        addToCategoryInConfig("json_config", jsonObject);
+    }
+
     public String getFolderLocation() {
         if(!getConfigFromCategory("json_config", "folder_location").toString().equals("{}")){
             return getConfigFromCategory("json_config", "folder_location").getAsString();
         } else {
-            return "";
+            return null;
+        }
+    }
+
+    public Boolean loadDefault() {
+        if(!getConfigFromCategory("json_config", "load_default").toString().equals("{}")){
+            return getConfigFromCategory("json_config", "load_default").getAsBoolean();
+        } else {
+            return null;
         }
     }
 
@@ -42,11 +56,18 @@ public class MainJsonConfig extends JsonConfigSingleFile {
         if(jsonObject.size() == 0) {
             {
                 JsonObject json_config = new JsonObject();
-                if (!getFolderLocation().equals("")) {
+                if (getFolderLocation() != null) {
                     json_config.addProperty("folder_location", getFolderLocation());
                 } else {
                     Path path = Paths.get(getJsonFolderLocation() + "/" + Ref.mod_id + "/default");
                     setFolderLocation(path.toFile().toString());
+                    json_config.addProperty("folder_location", getFolderLocation());
+                }
+
+                if (loadDefault() != null) {
+                    json_config.addProperty("load_default", loadDefault());
+                } else {
+                    setLoadDefault(true);
                     json_config.addProperty("folder_location", getFolderLocation());
                 }
 

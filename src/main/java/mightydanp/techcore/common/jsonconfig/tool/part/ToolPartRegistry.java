@@ -22,11 +22,11 @@ public class ToolPartRegistry extends JsonConfigMultiFile<ToolPartCodec> {
         setJsonFolderName(ToolPartCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
-        //
-        for (DefaultToolPart codec : DefaultToolPart.values()) {
-            register(codec.getCodec());
+        if(TechAscension.mainJsonConfig.loadDefault()){
+            for (DefaultToolPart codec : DefaultToolPart.values()) {
+                register(codec.getCodec());
+            }
         }
-        //
 
         buildJson();
         loadExistingJsons();

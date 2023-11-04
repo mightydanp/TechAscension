@@ -21,11 +21,11 @@ public class OreTypeRegistry extends JsonConfigMultiFile<OreTypeCodec> {
         setJsonFolderName(OreTypeCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
-        //
-        for (DefaultOreType codecs : DefaultOreType.values()) {
-            register(codecs.getCodec());
+        if(TechAscension.mainJsonConfig.loadDefault()){
+            for (DefaultOreType codecs : DefaultOreType.values()) {
+                register(codecs.getCodec());
+            }
         }
-        //
 
         buildJson();
         loadExistingJsons();

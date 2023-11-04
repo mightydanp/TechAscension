@@ -21,6 +21,11 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
 
         setJsonFolderName(RandomSurfaceGenFeatureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation() + "/generation/");
+
+        if(TechAscension.mainJsonConfig.loadDefault()){
+
+        }
+
         buildJson();
         loadExistingJsons();
         super.initiate();

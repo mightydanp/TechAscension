@@ -3,6 +3,7 @@ package mightydanp.techcore.common.jsonconfig.definedstructure;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
+import mightydanp.techapi.common.jsonconfig.main.MainJsonConfig;
 import mightydanp.techascension.common.TechAscension;
 import net.minecraft.CrashReport;
 
@@ -17,6 +18,11 @@ public class DefinedStructureRegistry extends JsonConfigMultiFile<DefinedStructu
     public void initiate() {
         setJsonFolderName(DefinedStructureCodec.codecName);
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
+
+        if(TechAscension.mainJsonConfig.loadDefault()){
+
+        }
+
 
         buildJson();
         loadExistingJsons();

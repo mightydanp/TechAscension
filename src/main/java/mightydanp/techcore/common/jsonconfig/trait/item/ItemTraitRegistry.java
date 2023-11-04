@@ -19,8 +19,10 @@ public class ItemTraitRegistry extends JsonConfigMultiFileDirectory<ItemTraitCod
         setJsonFolderName("trait/item");
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
-        for (DefaultItemTrait codec : DefaultItemTrait.values()) {
-            register(codec.getCodec());
+        if(TechAscension.mainJsonConfig.loadDefault()){
+            for (DefaultItemTrait codec : DefaultItemTrait.values()) {
+                register(codec.getCodec());
+            }
         }
 
         buildJson();

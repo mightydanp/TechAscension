@@ -20,6 +20,10 @@ public class BlockTraitRegistry extends JsonConfigMultiFile<BlockTraitCodec> {
         setJsonFolderName("trait/block");
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
+        if(TechAscension.mainJsonConfig.loadDefault()){
+
+        }
+
         buildJson();
         loadExistingJsons();
         super.initiate();
