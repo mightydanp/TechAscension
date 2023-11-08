@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.datafixers.util.Either;
 import mightydanp.techcore.client.settings.keybindings.KeyBindings;
-import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
 import mightydanp.techcore.common.items.TCCreativeModeTab;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.tool.ToolCodec;

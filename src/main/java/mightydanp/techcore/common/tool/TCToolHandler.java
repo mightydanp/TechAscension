@@ -3,7 +3,6 @@ package mightydanp.techcore.common.tool;
 import com.mojang.datafixers.util.Either;
 import mightydanp.techascension.common.TechAscension;
 import mightydanp.techcore.client.settings.keybindings.KeyBindings;
-import mightydanp.techcore.common.handler.itemstack.TCToolItemInventoryHelper;
 import mightydanp.techcore.common.jsonconfig.TCJsonConfigs;
 import mightydanp.techcore.common.jsonconfig.recipe.handcrafting.HandCraftingCodec;
 import mightydanp.techcore.common.jsonconfig.tool.ToolCodec;

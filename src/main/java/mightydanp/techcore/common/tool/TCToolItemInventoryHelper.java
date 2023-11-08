@@ -1,4 +1,4 @@
-package mightydanp.techcore.common.handler.itemstack;
+package mightydanp.techcore.common.tool;
 
 import mightydanp.techcore.common.tool.part.BindingItem;
 import mightydanp.techcore.common.tool.part.HandleItem;

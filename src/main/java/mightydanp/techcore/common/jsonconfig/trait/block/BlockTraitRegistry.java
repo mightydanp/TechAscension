@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import mightydanp.techapi.common.jsonconfig.JsonConfigMultiFile;
 import mightydanp.techascension.common.TechAscension;
+import mightydanp.techcore.common.jsonconfig.trait.item.DefaultItemTrait;
 import net.minecraft.CrashReport;
 
 import java.io.File;
@@ -21,7 +22,9 @@ public class BlockTraitRegistry extends JsonConfigMultiFile<BlockTraitCodec> {
         setJsonFolderLocation(TechAscension.mainJsonConfig.getFolderLocation());
 
         if(TechAscension.mainJsonConfig.loadDefault()){
-
+            for (DefaultBlockTrait codec : DefaultBlockTrait.values()) {
+                register(codec.getCodec());
+            }
         }
 
         buildJson();
