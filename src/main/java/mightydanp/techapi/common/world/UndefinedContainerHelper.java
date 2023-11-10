@@ -2,8 +2,10 @@ package mightydanp.techapi.common.world;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.Container;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -25,12 +27,11 @@ public class UndefinedContainerHelper {
 
         for(int i = 0; i < p_18978_.size(); ++i) {
             ItemStack itemstack = p_18978_.get(i);
-            if (!itemstack.isEmpty()) {
-                CompoundTag compoundtag = new CompoundTag();
-                compoundtag.putByte("Slot", (byte)i);
-                itemstack.save(compoundtag);
-                listtag.add(compoundtag);
-            }
+
+            CompoundTag compoundtag = new CompoundTag();
+            compoundtag.putByte("Slot", (byte)i);
+            itemstack.save(compoundtag);
+            listtag.add(compoundtag);
         }
 
         if (!listtag.isEmpty() || p_18979_) {
@@ -44,10 +45,16 @@ public class UndefinedContainerHelper {
     public static void loadAllItems(CompoundTag compoundTag, List<ItemStack> p_18982_) {
         ListTag listtag = compoundTag.getList("Items", 10);
 
-        for(int i = 0; i < listtag.size(); ++i) {
+        if(p_18982_.size() == 0){
+            for(int i = 0; i < listtag.size(); i++){
+                p_18982_.add(ItemStack.EMPTY);
+            }
+        };
+
+        for(int i = 0; i < listtag.size(); i++) {
             CompoundTag compoundtag = listtag.getCompound(i);
             int j = compoundtag.getByte("Slot") & 255;
-            if (j >= 0 && j < p_18982_.size()) {
+            if (j >= 0) {
                 p_18982_.set(j, ItemStack.of(compoundtag));
             }
         }
