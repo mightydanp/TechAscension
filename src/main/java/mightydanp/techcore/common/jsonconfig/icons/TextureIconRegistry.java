@@ -52,7 +52,7 @@ public class TextureIconRegistry extends JsonConfigMultiFile<TextureIconCodec> {
         for(TextureIconCodec codec : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(codec.name());
 
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }

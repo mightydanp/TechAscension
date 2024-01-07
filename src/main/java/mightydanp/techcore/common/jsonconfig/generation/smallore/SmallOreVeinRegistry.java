@@ -42,7 +42,7 @@ public class SmallOreVeinRegistry extends JsonConfigMultiFile<SmallOreVeinGenFea
     public void buildJson() {
         for (SmallOreVeinGenFeatureCodec codec : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(codec.name());
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }

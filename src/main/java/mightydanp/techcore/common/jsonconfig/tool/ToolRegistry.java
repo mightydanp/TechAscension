@@ -54,7 +54,7 @@ public class ToolRegistry extends JsonConfigMultiFile<ToolCodec> {
         for(ToolCodec tool : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(tool.name());
 
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 this.saveJsonObject(tool.name(), toJsonObject(tool));
             }
         }

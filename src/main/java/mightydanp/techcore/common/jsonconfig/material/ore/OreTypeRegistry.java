@@ -48,7 +48,7 @@ public class OreTypeRegistry extends JsonConfigMultiFile<OreTypeCodec> {
         for(OreTypeCodec oreType : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(oreType.name());
 
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 this.saveJsonObject(oreType.name(), toJsonObject(oreType));
             }
         }

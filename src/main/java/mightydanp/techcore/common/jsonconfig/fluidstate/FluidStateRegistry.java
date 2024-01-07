@@ -51,7 +51,7 @@ public class FluidStateRegistry extends JsonConfigMultiFile<FluidStateCodec> {
         for(FluidStateCodec codec : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(codec.name());
 
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }

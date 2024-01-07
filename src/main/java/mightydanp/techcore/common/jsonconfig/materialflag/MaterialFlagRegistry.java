@@ -58,7 +58,7 @@ public class MaterialFlagRegistry extends JsonConfigMultiFile<MaterialFlagCodec>
             String name = fixesToName(codec);
             JsonObject jsonObject = getJsonObject(name);
 
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 this.saveJsonObject(name, toJsonObject(codec));
             }
         }

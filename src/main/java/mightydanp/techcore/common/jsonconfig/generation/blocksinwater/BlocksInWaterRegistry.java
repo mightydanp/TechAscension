@@ -50,7 +50,7 @@ public class BlocksInWaterRegistry extends JsonConfigMultiFile<BlocksInWaterGenF
     public void buildJson() {
         for (BlocksInWaterGenFeatureCodec codec : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(codec.name());
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }

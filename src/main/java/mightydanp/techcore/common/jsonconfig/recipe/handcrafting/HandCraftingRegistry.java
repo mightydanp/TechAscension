@@ -56,7 +56,7 @@ public class HandCraftingRegistry extends JsonConfigMultiFile<HandCraftingCodec>
         for(HandCraftingCodec codec : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(codec.name());
 
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 jsonObject = toJsonObject(codec);
                 saveJsonObject(codec.name(), jsonObject);
             }

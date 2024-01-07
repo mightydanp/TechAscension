@@ -45,7 +45,8 @@ public class DefinedStructureRegistry extends JsonConfigMultiFile<DefinedStructu
         for(DefinedStructureCodec codec : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(codec.name());
 
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
+
                 this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }

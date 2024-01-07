@@ -51,7 +51,7 @@ public class BlockTraitRegistry extends JsonConfigMultiFileDirectory<BlockTraitC
         for(BlockTraitCodec codec : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(codec.registry());
 
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 this.saveJsonObject(codec.registry(), toJsonObject(codec));
             }
         }

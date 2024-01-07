@@ -44,7 +44,7 @@ public class RandomSurfaceRegistry extends JsonConfigMultiFile<RandomSurfaceGenF
     public void buildJson() {
         for (RandomSurfaceGenFeatureCodec codec : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(codec.name());
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 this.saveJsonObject(codec.name(), toJsonObject(codec));
             }
         }

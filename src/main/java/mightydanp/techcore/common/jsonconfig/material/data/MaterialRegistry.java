@@ -66,7 +66,7 @@ public class MaterialRegistry extends JsonConfigMultiFile<TCMaterial>{
         for(TCMaterial material : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(material.name);
 
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0  || TechAscension.mainJsonConfig.loadDefault()) {
                 JsonObject materialJson = toJsonObject(material);
 
                 this.saveJsonObject(material.name, materialJson);

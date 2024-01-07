@@ -53,7 +53,7 @@ public class ToolPartRegistry extends JsonConfigMultiFile<ToolPartCodec> {
             if (!name.equals("")) {
                 JsonObject jsonObject = getJsonObject(name);
 
-                if (jsonObject.size() == 0) {
+                if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                     this.saveJsonObject(name, toJsonObject(codec));
                 }
             }

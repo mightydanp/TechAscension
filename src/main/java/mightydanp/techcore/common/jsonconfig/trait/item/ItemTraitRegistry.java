@@ -49,7 +49,7 @@ public class ItemTraitRegistry extends JsonConfigMultiFileDirectory<ItemTraitCod
         for(ItemTraitCodec codec : registryMap.values()) {
             JsonObject jsonObject = getJsonObject(codec.registry());
 
-            if (jsonObject.size() == 0) {
+            if (jsonObject.size() == 0 || TechAscension.mainJsonConfig.loadDefault()) {
                 this.saveJsonObject(codec.registry(), toJsonObject(codec));
             }
         }
