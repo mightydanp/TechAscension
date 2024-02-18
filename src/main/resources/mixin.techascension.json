@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "mightydanp.techascension.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "mixins.techascension.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+
+}
