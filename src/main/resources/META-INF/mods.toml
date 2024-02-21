@@ -1,37 +1,46 @@
 modLoader="javafml"
-loaderVersion="${loader_version_range}"
-issueTrackerURL="${mod_issue_tracker_url}"
-license="${mod_license}"
+loaderVersion="[2,)"
+issueTrackerURL="https://github.com/MightyDanp/TechAscension/issues"
+license="AGPL-3.0 license"
 
 [[mods]]
-    modId="${mod_id}"
-#    logoFile="creativecore.png"
-    version="${mod_version}"
-    displayName="${mod_name}
-#    displayURL="https://modrinth.com/mod/creativecore"
-    authors="${mod_authors}"
-    description='''${mod_description}'''
+    modId="techascension"
+    logoFile="techascension.png"
+    version="0.0.0.1"
+    displayName="Tech Ascension"
+    displayURL=""
+    authors="MightyDanp"
+    description='''A simple but powerful coremod.'''
 
-[[dependencies.${mod_id}]]
+[[dependencies.techascension]]
     modId="neoforge"
     type="required"
-    versionRange="${neo_version_range}"
+    versionRange="[20.4,)"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.${mod_id}]]
+[[dependencies.techascension]]
     modId="minecraft"
     type="required"
-    versionRange="${minecraft_version_range}"
+    versionRange="[1.20.4,1.21)"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.${mod_id}]]
+[[dependencies.techascension]]
    modId="techcore"
-   mandatory=true
+
+[[dependencies.techascension]]
+   type="required"
+
+[[dependencies.techascension]]
    ordering="NONE"
+
+[[dependencies.techascension]]
    side="BOTH"
-   versionRange="${tech_core_version_range}"
+
+[[dependencies.techascension]]
+   versionRange="[0.0.0.1,)"
 
 [[mixins]]
-   config="${mod_mixins}"
+   config="techascension.mixins.json"
+
