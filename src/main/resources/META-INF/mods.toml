@@ -28,17 +28,9 @@ license="AGPL-3.0 license"
 
 [[dependencies.techascension]]
    modId="techcore"
-
-[[dependencies.techascension]]
    type="required"
-
-[[dependencies.techascension]]
-   ordering="NONE"
-
-[[dependencies.techascension]]
+   ordering="AFTER"
    side="BOTH"
-
-[[dependencies.techascension]]
    versionRange="[0.0.0.1,)"
 
 [[mixins]]

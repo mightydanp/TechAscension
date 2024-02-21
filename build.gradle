@@ -58,6 +58,6 @@ dependencies {
     runtimeOnly "mezz.jei:jei-${minecraft_version}-forge:${jei_version}"
 }
 
-modDependencies = [ modId: "techcore", type: "required", ordering: "NONE", side: "BOTH", versionRange: "[" + project.tech_core_version + ",)" ]
+modDependencies = [[ modId: "techcore", type: "required", ordering: "AFTER", side: "BOTH", versionRange: "[" + project.tech_core_version + ",)" ]]
 modMixins = ["techascension.mixins.json"]
 
