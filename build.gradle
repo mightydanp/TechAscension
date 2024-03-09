@@ -10,8 +10,6 @@ plugins {
 
 if (project.file('../gradletools.gradle').exists()) {
     apply from: '../gradletools.gradle'
-} else {
-    apply from: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/1.20_tech/gradletools.gradle'
 }
 
 version = project.mod_version
