@@ -15,14 +15,7 @@ license="AGPL-3.0 license"
 [[dependencies.techascension]]
     modId="neoforge"
     type="required"
-    versionRange="[20.4,)"
-    ordering="NONE"
-    side="BOTH"
-
-[[dependencies.techascension]]
-    modId="minecraft"
-    type="required"
-    versionRange="[1.20.4,1.21)"
+    versionRange="[21,)"
     ordering="NONE"
     side="BOTH"
 

@@ -5,17 +5,19 @@ plugins {
     id 'maven-publish'
     id "com.modrinth.minotaur" version "2.+"
     id "com.matthewprenger.cursegradle" version "1.4.0"
-    id 'net.neoforged.gradle.userdev' version '7.0.97'
+    id 'net.neoforged.gradle.userdev' version '7.0.154'
 }
 
 if (project.file('../gradletools.gradle').exists()) {
     apply from: '../gradletools.gradle'
+} else {
+    apply from: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/1.21_neo/gradletools.gradle'
 }
 
 version = project.mod_version
 group = project.mod_group
 archivesBaseName = project.mod_id
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 
 project.evaluationDependsOn(":TechCore")
@@ -60,6 +62,13 @@ dependencies {
     jei()
 
     implementation project(':TechCore')
+}
+
+subsystems {
+    parchment {
+        minecraftVersion = "1.21"
+        mappingsVersion = "2024.06.23"
+    }
 }
 
 // Example configuration to allow publishing using the maven-publish task
