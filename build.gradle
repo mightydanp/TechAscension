@@ -5,61 +5,65 @@ plugins {
     id 'maven-publish'
     id "com.modrinth.minotaur" version "2.+"
     id "com.matthewprenger.cursegradle" version "1.4.0"
-    id 'net.neoforged.gradle.userdev' version '7.0.97'
+    id 'net.neoforged.gradle.userdev' version '7.0.181'
 }
 
 if (project.file('../gradletools.gradle').exists()) {
     apply from: '../gradletools.gradle'
+} else {
+    apply from: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/1.21_neo/gradletools.gradle'
+}
+
+repositories {
+    mavenLocal()
+    maven { url "https://dvs1.progwml6.com/files/maven" } // JEI
+    maven { url "https://maven.blamejared.com" } // Patchouli
+    maven { url "https://maven.k-4u.nl" } // McJtyLib, TOP
+    maven { url "https://maven.theillusivec4.top/" } // Curios
 }
 
 version = project.mod_version
 group = project.mod_group
 archivesBaseName = project.mod_id
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+minecraft {
+    accessTransformers {
+        file('src/main/resources/META-INF/accesstransformer.cfg')
+    }
+}
 
 project.evaluationDependsOn(":TechCore")
 
-repos()
-at()
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            systemProperty 'mixin.env.remapRefMap', 'true'
+            systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+			
+			modSource project(':TechCore').sourceSets.main
+			
+        }
 
-runs {
-    configureEach {
-        workingDirectory project.file('run')
-        systemProperty 'forge.logging.console.level', 'debug'
-        systemProperty 'mixin.env.remapRefMap', 'true'
-        systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
-        modSource project.sourceSets.main
-        modSource project(':TechCore').sourceSets.main
+        client {
+        }
 
+        server {
+        }
+
+        data {
+            arguments.addAll '--all', '--output', file('src/generated/resources/').absolutePath, '--existing', sourceSets.main.resources.srcDirs[0].absolutePath
+        }
     }
-
-    client {
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-    }
-
-    server {
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-        programArgument '--nogui'
-    }
-
-    gameTestServer {
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-    }
-
-    data {
-        programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-    }
-}
 
 jars()
 
 dependencies {
     mc()
     jei()
-
-    implementation project(':TechCore')
+	
+	implementation project(':TechCore')
 }
 
 // Example configuration to allow publishing using the maven-publish task
@@ -83,3 +87,12 @@ publishing {
         }
     }
 }
+
+
+subsystems {
+    parchment {
+        minecraftVersion = "${parchment_minecraft_version}"
+        mappingsVersion = "${parchment_version}"
+    }
+}
+
