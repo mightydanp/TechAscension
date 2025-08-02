@@ -18,21 +18,6 @@ public class TechAscension
 {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    /*
-    public static final DeferredBlock<Block> EXAMPLE_BLOCK = RegistriesHandler.BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = RegistriesHandler.ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
-    public static final DeferredItem<Item> EXAMPLE_ITEM = RegistriesHandler.ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
-            .alwaysEat().nutrition(1).saturationMod(2f).build()));
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = RegistriesHandler.CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup."+ ModRef.MOD_ID))
-            .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
-            .displayItems((parameters, output) -> {
-                output.accept(EXAMPLE_ITEM.get());
-            }).build());
-
-     */
-
     public TechAscension(IEventBus modEventBus) {
         modEventBus.addListener(this::commonSetup);
         NeoForge.EVENT_BUS.register(this);
