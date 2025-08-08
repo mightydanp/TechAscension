@@ -1,70 +1,104 @@
-plugins {
-    id 'java-library'
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
-    id "com.modrinth.minotaur" version "2.+"
-    id "com.matthewprenger.cursegradle" version "1.4.0"
-    id 'net.neoforged.gradle.userdev' version '7.0.181'
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+    }
 }
 
-if (project.file('../gradletools.gradle').exists()) {
-    apply from: '../gradletools.gradle'
-} else {
-    apply from: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/1.21_neo/gradletools.gradle'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply from: '../gradletools.gradle'
+
+mixin {
+    add sourceSets.main, "techascension.mixins.refmap.json"
+    config "techascension.mixins.json"
 }
 
-repositories {
-    mavenLocal()
-    maven { url "https://dvs1.progwml6.com/files/maven" } // JEI
-    maven { url "https://maven.blamejared.com" } // Patchouli
-    maven { url "https://maven.k-4u.nl" } // McJtyLib, TOP
-    maven { url "https://maven.theillusivec4.top/" } // Curios
-}
+repos()
 
 version = project.mod_version
 group = project.mod_group
 archivesBaseName = project.mod_id
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-minecraft {
-    accessTransformers {
-        file('src/main/resources/META-INF/accesstransformer.cfg')
-    }
-}
+repos()
 
 project.evaluationDependsOn(":TechCore")
 
+minecraft {
+    //mappings channel: 'parchment', version: "${parchment_version}"
+    mappings channel: 'official', version: "${minecraft_version}"
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
     runs {
-        configureEach {
-            workingDirectory project.file('run')
-            systemProperty 'mixin.env.remapRefMap', 'true'
-            systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-			
-			modSource project(':TechCore').sourceSets.main
-			
-        }
-
-
         client {
+            workingDirectory project.file('run')
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+
+
+            mods {
+                TechCore {
+                    source project(':TechCore').sourceSets.main
+                }
+                TechAscension {
+                    source sourceSets.main
+                }
+            }
         }
 
         server {
+            workingDirectory project.file('run')
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            mods {
+                TechCore {
+                    source project(':TechCore').sourceSets.main
+                }
+                TechAscension {
+                    source sourceSets.main
+                }
+            }
         }
 
         data {
-            arguments.addAll '--all', '--output', file('src/generated/resources/').absolutePath, '--existing', sourceSets.main.resources.srcDirs[0].absolutePath
+            workingDirectory project.file('run')
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            args '--all', '--output', file('src/generated/resources/'), '--existing', sourceSets.main.resources.srcDirs[0]
+
+            mods {
+                TechCore {
+                    source project(':TechCore').sourceSets.main
+                }
+            }
         }
     }
-
-jars()
+}
 
 dependencies {
     mc()
     jei()
-	
-	implementation project(':TechCore')
+    implementation project(':TechCore')
+    implementation "org.spongepowered:mixin:0.8.5"
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
+
+jars(project.mod_id)
 
 // Example configuration to allow publishing using the maven-publish task
 // we define a custom artifact that is sourced from the reobfJar output task
@@ -87,12 +121,3 @@ publishing {
         }
     }
 }
-
-
-subsystems {
-    parchment {
-        minecraftVersion = "${parchment_minecraft_version}"
-        mappingsVersion = "${parchment_version}"
-    }
-}
-

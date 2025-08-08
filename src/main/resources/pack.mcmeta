@@ -1,8 +1,6 @@
 {
-    "pack": {
-        "description": "Tech Ascension resources",
-        "pack_format": 18,
-        "forge:resource_pack_format": 18,
-        "forge:data_pack_format": 14
-    }
+  "pack": {
+    "description": "${mod_id} resources",
+    "pack_format": 64
+  }
 }

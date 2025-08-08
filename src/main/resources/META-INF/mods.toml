@@ -1,0 +1,39 @@
+modLoader="javafml" # mandatory
+loaderVersion="[52,)" # mandatory
+license="AGPL-3.0 license"
+issueTrackerURL="https://github.com/MightyDanp/TechAscension/issues"
+
+[[mods]]
+modId="techascension"
+version="0.0.0.1"
+displayName="Tech Ascension"
+authors="MightyDanp"
+description='''Example mod description.
+Newline characters can be used and will be replaced properly.'''
+
+[[dependencies.techascension]]
+modId="forge"
+mandatory=true
+versionRange="[52.1.3,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.techascension]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.21.1,1.22)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.techascension]]
+modId="techcore"
+mandatory=true
+ordering="BEFORE"
+side="BOTH"
+versionRange="[0.0.0.1,)"
+
+[[mixins]]
+config="techascension.mixins.json"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
