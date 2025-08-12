@@ -1,69 +1,148 @@
-plugins {
-    id 'java-library'
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
-    id "com.modrinth.minotaur" version "2.+"
-    id "com.matthewprenger.cursegradle" version "1.4.0"
-    id 'net.neoforged.gradle.userdev' version '7.0.181'
+apply from: rootProject.file('gradletools.gradle')
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
+    }
 }
 
-if (project.file('../gradletools.gradle').exists()) {
-    apply from: '../gradletools.gradle'
-} else {
-    apply from: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/1.21_neo/gradletools.gradle'
-}
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
 
 repositories {
-    mavenLocal()
     maven { url "https://dvs1.progwml6.com/files/maven" } // JEI
     maven { url "https://maven.blamejared.com" } // Patchouli
     maven { url "https://maven.k-4u.nl" } // McJtyLib, TOP
     maven { url "https://maven.theillusivec4.top/" } // Curios
 }
 
-version = project.mod_version
-group = project.mod_group
-archivesBaseName = project.mod_id
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-
-minecraft {
-    accessTransformers {
-        file('src/main/resources/META-INF/accesstransformer.cfg')
-    }
-}
+version = project.findProperty('mod_version')
+group = project.findProperty('mod_group')
+archivesBaseName = project.findProperty('mod_id')
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 project.evaluationDependsOn(":TechCore")
 
+minecraft {
+    //mappings channel: 'parchment', version: "${rootProject.findProperty('parchment_version')}-${rootProject.findProperty('parchment_minecraft_version')}"
+    mappings channel: rootProject.findProperty('mapping_channel'), version: rootProject.findProperty('mapping_version')
+    accessTransformer = file('workspace/accesstransformer.cfg')
+
     runs {
-        configureEach {
-            workingDirectory project.file('run')
-            systemProperty 'mixin.env.remapRefMap', 'true'
-            systemProperty 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-			
-			modSource project(':TechCore').sourceSets.main
-			
-        }
-
-
         client {
+            property 'forge.enabledGameTestNamespaces', project.findProperty('mod_id')
+            workingDirectory project.file('run')
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            mods {
+                "${project.findProperty('mod_id')}" {
+                    source sourceSets.main
+                }
+                "${project.findProperty('tech_core_mod_id')}" {
+                    source project(":TechCore").sourceSets.main
+                }
+
+            }
         }
 
         server {
+            property 'forge.enabledGameTestNamespaces', project.findProperty('mod_id')
+            workingDirectory project.file('run')
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            mods {
+                "${project.findProperty('mod_id')}" {
+                    source sourceSets.main
+                }
+                "${project.findProperty('tech_core_mod_id')}" {
+                    source project(":TechCore").sourceSets.main
+                }
+            }
+        }
+
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', project.findProperty('mod_id')
         }
 
         data {
-            arguments.addAll '--all', '--output', file('src/generated/resources/').absolutePath, '--existing', sourceSets.main.resources.srcDirs[0].absolutePath
+            property 'forge.enabledGameTestNamespaces', project.findProperty('mod_id')
+            workingDirectory project.file('run')
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            args '--all', '--output', file('src/generated/resources/'), '--existing', sourceSets.main.resources.srcDirs[0]
+
+            mods {
+                "${project.findProperty('mod_id')}" {
+                    source sourceSets.main
+                }
+                "${project.findProperty('tech_core_mod_id')}" {
+                    source project(":TechCore").sourceSets.main
+                }
+            }
         }
     }
+}
 
-jars()
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+ext.jars()
 
 dependencies {
     mc()
     jei()
-	
-	implementation project(':TechCore')
+    compileOnly project(':TechCore')
+	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+// Tell the AP what to name the refmap and that we use Mojmap (“official”).
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += [
+        "-AoutRefMap=techascension.refmap.json",
+        "-AdefaultObfuscationEnv=official"
+    ]
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version   : rootProject.findProperty('minecraft_version'),
+            minecraft_version_range: rootProject.findProperty('minecraft_version_range'),
+            forge_version       : rootProject.findProperty('forge_version'),
+            forge_version_range : rootProject.findProperty('forge_version_range'),
+            loader_version_range: rootProject.findProperty('loader_version_range'),
+
+            mod_id              : project.findProperty('mod_id'),
+            mod_name            : project.findProperty('mod_name'),
+            mod_license         : project.findProperty('mod_license'),
+            mod_version         : project.findProperty('mod_version'),
+            mod_authors         : project.findProperty('mod_authors'),
+            mod_description     : project.findProperty('mod_description'),
+            mod_issue_tracker_url   : project.findProperty('mod_issue_tracker_url'),
+
+            tech_core_mod_id   : project.findProperty('tech_core_mod_id'),
+            tech_core_version_range   : project.findProperty('tech_core_version_range'),
+			
+			mod_access_transformers_file_location : project.findProperty('mod_access_transformers_file_location'),
+			mod_mixins_config_location : project.findProperty('mod_mixins_config_location'),
+
+
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
 }
 
 // Example configuration to allow publishing using the maven-publish task
@@ -87,12 +166,3 @@ publishing {
         }
     }
 }
-
-
-subsystems {
-    parchment {
-        minecraftVersion = "${parchment_minecraft_version}"
-        mappingsVersion = "${parchment_version}"
-    }
-}
-
