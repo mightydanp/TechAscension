@@ -11,19 +11,21 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 @Mod(ModRef.MOD_ID)
 public class TechAscension
 {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public TechAscension(IEventBus modEventBus) {
+    public TechAscension(FMLJavaModLoadingContext context) {
+        IEventBus modEventBus = context.getModEventBus();
         modEventBus.addListener(this::commonSetup);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event){
+    public void commonSetup(final FMLCommonSetupEvent event){
         LOGGER.info("Tech Ascension common setup is starting");
     }
 
