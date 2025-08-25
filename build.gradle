@@ -4,11 +4,13 @@ buildscript {
         maven { url = 'https://maven.minecraftforge.net/' }
         maven { url = 'https://maven.parchmentmc.org' }
         maven { url = 'https://plugins.gradle.org/m2/' }
+        maven { url = 'https://repo.spongepowered.org/maven' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.+', changing: true
         classpath 'org.parchmentmc:librarian:1.+'
+        classpath 'org.spongepowered:mixingradle:0.7.+'
     }
 }
 
@@ -16,6 +18,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
 
 
 repositories {
@@ -25,9 +28,12 @@ repositories {
     maven { url "https://maven.theillusivec4.top/" } // Curios
 }
 
+base {
+    archivesName = project.findProperty('mod_id')
+}
+
 version = project.findProperty('mod_version')
 group = project.findProperty('mod_group')
-archivesBaseName = project.findProperty('mod_id')
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 project.evaluationDependsOn(":TechCore")
@@ -103,15 +109,15 @@ dependencies {
     mc()
     jei()
     compileOnly project(':TechCore')
-	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
-// Tell the AP what to name the refmap and that we use Mojmap (“official”).
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs += [
-        "-AoutRefMap=techascension.refmap.json",
-        "-AdefaultObfuscationEnv=official"
-    ]
+// Mixingradle: generates/refers to the refmap and wires AP options.
+mixin {
+    add sourceSets.main, "${project.findProperty('mod_id')}.refmap.json"
+    // If you already have this in mods.toml, that's fine; the plugin can know about it too:
+    config project.findProperty('mod_mixins_config_location')
+    // debug.export = true // (optional) writes post-processed classes for inspection
 }
 
 tasks.named('processResources', ProcessResources).configure {
