@@ -1,11 +1,38 @@
+// ============================================================
+// TechAscension — build.gradle
+//
+// Build script for the Tech Ascension mod. This mod depends on
+// Tech Core and loads both at runtime in the dev environment.
+//
+// Addon mod developers: if your mod depends on both Tech Core
+// and Tech Ascension, use this file as a reference. The key
+// differences from a standalone mod are:
+//   1. project.evaluationDependsOn(":TechCore") so TechCore is
+//      configured before this project reads its sourceSets.
+//   2. Both mods are listed in the minecraftSetup mods block so
+//      they are both loaded in the dev client/server.
+//   3. TechCore (and Tech Ascension) are added as compileOnly
+//      dependencies — they are not bundled inside your JAR.
+// ============================================================
+
+// Load all shared build helpers from gradletools.gradle.
 apply from: rootProject.file('gradletools.gradle')
 
+// Register Maven repositories (JEI, Forge, etc.).
 repos()
+
+// Apply common project settings (mod ID, version, group, Java 17).
 commonSetup()
 
+// Ensure TechCore is fully evaluated before this project configures
+// its runs, since TechCore's sourceSets are referenced below.
 project.evaluationDependsOn(":TechCore")
 
-minecraftSetup {
+// Configure the minecraft {} block and all run configurations.
+// false = use official Mojang mappings (change to true for ParchmentMC).
+// Both this mod's sources and TechCore's sources are passed so the
+// dev client loads both mods simultaneously.
+minecraftSetup(false) {
     "${project.findProperty('mod_id')}" {
         source sourceSets.main
     }
@@ -14,19 +41,30 @@ minecraftSetup {
     }
 }
 
+// Embed mod metadata into the built JAR manifest.
 ext.jars()
 
+// Add Forge, JEI, and Mixin annotation processor as dependencies.
 commonDeps()
 
+// Depend on TechCore at compile time. compileOnly means TechCore is
+// not bundled inside this JAR — it must be present as a separate mod
+// at runtime (which Forge enforces via the mods.toml dependency entry).
 dependencies {
     compileOnly project(':TechCore')
 }
 
+// Register the mixin refmap and config with MixinGradle.
+// Remove this if your addon does not use Mixins.
 mixinSetup()
 
+// Replace ${token} placeholders in mods.toml and pack.mcmeta.
+// The extra properties add TechCore's mod ID and version range so
+// Forge can enforce the TechCore dependency at load time.
 commonProcessResources([
         tech_core_mod_id        : project.findProperty('tech_core_mod_id'),
         tech_core_version_range : project.findProperty('tech_core_version_range'),
 ])
 
+// Register the reobfuscated JAR as the final build output.
 reobfArtifact()
