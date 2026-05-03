@@ -27,5 +27,7 @@ description='''${mod_description}'''
     versionRange="${tech_core_version_range}"
     ordering="AFTER"
     side="BOTH"
+[[accessTransformers]]
+    file="${mod_access_transformers_file_location}"
 [[mixins]]
     config="${mod_mixins_config_location}"

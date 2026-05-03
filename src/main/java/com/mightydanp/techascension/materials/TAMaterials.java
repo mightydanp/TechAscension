@@ -3,7 +3,6 @@ package com.mightydanp.techascension.materials;
 import com.mightydanp.techcore.api.registries.RegistriesHandler;
 import com.mightydanp.techcore.materials.Material;
 import com.mightydanp.techcore.materials.properties.Icons;
-import net.minecraft.world.item.Item;
 
 import java.util.function.Supplier;
 
@@ -31,9 +30,6 @@ public class TAMaterials {
 
 
     public static void commonInit() {
-
-
-
         //--//stone layers
         //materialRegistry.register(andesite = new Material("andesite", 0x747878, new Pair<>(Ref.mod_id, DULL.getCodec())).setStoneLayerProperties(true, String.valueOf(Blocks.ANDESITE.getRegistryName()), "minecraft:block/andesite"));
         //MaterialRegistry.registerMaterial(new ITMaterial("basalt", 0x4C4A4A, new Pair<>(Ref.mod_id, DULL)).setStoneLayerProperties(true, "minecraft:block/basalt"));
@@ -46,7 +42,7 @@ public class TAMaterials {
         //        .setToolProperties( 40, 12, 40F, 1F, 4F, 2, List.of(), List.of()));
         //--//
         //materialRegistry.register(alexandrite = new Material("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL.getCodec())).setOreType(DefaultOreType.ORE.getCodec()).setDenseOreDensity(8));
-        alexandrite = RegistriesHandler.MATERIALS.register("alexanrite", ()-> new Material("alexanrite", Icons.GEM_HORIZONTAL.icon()));
+        alexandrite = RegistriesHandler.registerMaterial("alexanrite", ()-> new Material("alexanrite", Icons.GEM_HORIZONTAL.icon()).physical.setColor(0xFFFFFFFF).end());
         //materialRegistry.register(almandine = new Material("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH.getCodec())).setOreType(DefaultOreType.GEM.getCodec()).setDenseOreDensity(8));
 
         //flint = RegistriesHandler.MATERIALS.register("flint", () -> new Material("flint", Icons.FLINT.icon()));
