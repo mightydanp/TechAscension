@@ -3,6 +3,7 @@ package com.mightydanp.techascension.materials;
 import com.mightydanp.techcore.api.registries.RegistriesHandler;
 import com.mightydanp.techcore.materials.Material;
 import com.mightydanp.techcore.materials.properties.Icons;
+import com.mightydanp.techcore.materials.properties.OreTypes;
 
 import java.util.function.Supplier;
 
@@ -42,7 +43,7 @@ public class TAMaterials {
         //        .setToolProperties( 40, 12, 40F, 1F, 4F, 2, List.of(), List.of()));
         //--//
         //materialRegistry.register(alexandrite = new Material("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL.getCodec())).setOreType(DefaultOreType.ORE.getCodec()).setDenseOreDensity(8));
-        alexandrite = RegistriesHandler.registerMaterial("alexanrite", ()-> new Material("alexanrite", Icons.GEM_HORIZONTAL.icon()).physical.setColor(0xFFFFFFFF).end());
+        alexandrite = RegistriesHandler.registerMaterial("alexandrite", ()-> new Material("alexandrite", Icons.GEM_HORIZONTAL.icon()).physical.setColor(0x6A4D6B).setMaxQuantity(144).setMaxQuality(100).end().ore.setOreType(OreTypes.GEM.oreType()).end().thermal.setMeltingPoint(1870.0).end());
         //materialRegistry.register(almandine = new Material("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH.getCodec())).setOreType(DefaultOreType.GEM.getCodec()).setDenseOreDensity(8));
 
         //flint = RegistriesHandler.MATERIALS.register("flint", () -> new Material("flint", Icons.FLINT.icon()));
