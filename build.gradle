@@ -41,6 +41,13 @@ minecraftSetup(false) {
     }
 }
 
+// Inject TechCore's mixin config into all runs so its mixins fire
+// during dev launches (ForgeGradle doesn't pick it up automatically
+// from the unprocessed mods.toml template).
+addRunMixinConfigs(
+    project(":TechCore").findProperty('mod_mixins_config_location') as String
+)
+
 // Embed mod metadata into the built JAR manifest.
 ext.jars()
 
