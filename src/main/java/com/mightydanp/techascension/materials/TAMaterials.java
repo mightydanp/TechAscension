@@ -43,7 +43,7 @@ public class TAMaterials {
         //        .setToolProperties( 40, 12, 40F, 1F, 4F, 2, List.of(), List.of()));
         //--//
         //materialRegistry.register(alexandrite = new Material("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL.getCodec())).setOreType(DefaultOreType.ORE.getCodec()).setDenseOreDensity(8));
-        alexandrite = RegistriesHandler.registerMaterial("alexandrite", ()-> new Material("alexandrite", Icons.GEM_HORIZONTAL.icon()).physical.setColor(0x6A4D6B).setMaxQuantity(144).setMaxQuality(100).end().ore.setOreType(OreTypes.GEM.oreType()).end().thermal.setMeltingPoint(1870.0).end());
+        alexandrite = RegistriesHandler.registerMaterial("alexandrite", ()-> new Material("alexandrite", Icons.GEM_HORIZONTAL.icon()).physical.setColor(0x6A4D6B).setDefaultQuantity(144).setMaxQuantity(144).setDefaultQuality(60).setMaxQuality(100).setDefaultPurity(75D).setMaxPurity(100D).end().ore.setOreType(OreTypes.GEM.oreType()).end().thermal.setMeltingPoint(1870.0).end());
         //materialRegistry.register(almandine = new Material("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH.getCodec())).setOreType(DefaultOreType.GEM.getCodec()).setDenseOreDensity(8));
 
         //flint = RegistriesHandler.MATERIALS.register("flint", () -> new Material("flint", Icons.FLINT.icon()));
