@@ -2,6 +2,7 @@ package com.mightydanp.techascension;
 
 import com.mightydanp.techascension.client.ref.ModRef;
 import com.mightydanp.techascension.materials.TAMaterials;
+import com.mightydanp.techcore.materials.Material;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -17,10 +18,12 @@ public class TechAscension
     public TechAscension(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
 
+        TAMaterials.commonInit();
+
         modEventBus.addListener(EventPriority.HIGHEST, this::bootstrapMaterials);
     }
 
     private void bootstrapMaterials(NewRegistryEvent event) {
-        TAMaterials.commonInit();
+        Material material = TAMaterials.alexandrite.get();
     }
 }
