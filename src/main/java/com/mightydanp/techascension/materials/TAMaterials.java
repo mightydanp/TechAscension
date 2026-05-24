@@ -4,6 +4,7 @@ import com.mightydanp.techcore.api.registries.RegistriesHandler;
 import com.mightydanp.techcore.materials.Material;
 import com.mightydanp.techcore.materials.properties.Icons;
 import com.mightydanp.techcore.materials.properties.OreTypes;
+import com.mightydanp.techcore.materials.properties.RockTypes;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.function.Supplier;
@@ -41,28 +42,28 @@ public class TAMaterials {
         //materialRegistry.register(netherrack = new Material("netherrack", 0x6F4644, new Pair<>(Ref.mod_id, DULL.getCodec())).setStoneLayerProperties(true, String.valueOf(Blocks.NETHERRACK.getRegistryName()), "minecraft:block/netherrack"));
 
         andesite = RegistriesHandler.registerMaterial("andesite", () -> new Material("andesite", Icons.DULL.icon())
-                .physical.setColor(0x747878).setDefaultQuantity(144).setMaxQuantity(144).end()
-                .stoneLayer.stoneLayer(Blocks.ANDESITE).end()
+                .physical.setColor(0x747878).end()
+                .stoneLayer.stoneLayer(Blocks.ANDESITE, RockTypes.VOLCANIC_IGNEOUS.getType()).end()
         );
         basalt = RegistriesHandler.registerMaterial("basalt", () -> new Material("basalt", Icons.DULL.icon())
-                .physical.setColor(0x4C4A4A).setDefaultQuantity(144).setMaxQuantity(144).end()
-                .stoneLayer.stoneLayer(Blocks.BASALT).end()
+                .physical.setColor(0x4C4A4A).end()
+                .stoneLayer.stoneLayer(Blocks.BASALT, RockTypes.VOLCANIC_IGNEOUS.getType()).end()
         );
         diorite = RegistriesHandler.registerMaterial("diorite", () -> new Material("diorite", Icons.DULL.icon())
-                .physical.setColor(0x9DBFB1).setDefaultQuantity(144).setMaxQuantity(144).end()
-                .stoneLayer.stoneLayer(Blocks.DIORITE).end()
+                .physical.setColor(0x9DBFB1).end()
+                .stoneLayer.stoneLayer(Blocks.DIORITE, RockTypes.PLUTONIC_IGNEOUS.getType()).end()
         );
         end_stone = RegistriesHandler.registerMaterial("end_stone", () -> new Material("end_stone", Icons.DULL.icon())
-                .physical.setColor(0xB8B09B).setDefaultQuantity(144).setMaxQuantity(144).end()
-                .stoneLayer.stoneLayer(Blocks.END_STONE).end()
+                .physical.setColor(0xB8B09B).end()
+                .stoneLayer.stoneLayer(Blocks.END_STONE, RockTypes.GENERIC.getType()).end()
         );
         granite = RegistriesHandler.registerMaterial("granite", () -> new Material("granite", Icons.DULL.icon())
-                .physical.setColor(0xA26B56).setDefaultQuantity(144).setMaxQuantity(144).end()
-                .stoneLayer.stoneLayer(Blocks.GRANITE).end()
+                .physical.setColor(0xA26B56).end()
+                .stoneLayer.stoneLayer(Blocks.GRANITE, RockTypes.PLUTONIC_IGNEOUS.getType()).end()
         );
         netherrack = RegistriesHandler.registerMaterial("netherrack", () -> new Material("netherrack", Icons.DULL.icon())
-                .physical.setColor(0x6F4644).setDefaultQuantity(144).setMaxQuantity(144).end()
-                .stoneLayer.stoneLayer(Blocks.NETHERRACK).end()
+                .physical.setColor(0x6F4644).end()
+                .stoneLayer.stoneLayer(Blocks.NETHERRACK, RockTypes.GENERIC.getType()).end()
         );
 
         //materialRegistry.register(stone = new Material("stone", 0x808080, new Pair<>(Ref.mod_id, DULL.getCodec())).setStoneLayerProperties(true, String.valueOf(Blocks.STONE.getRegistryName()), "minecraft:block/stone")
@@ -70,8 +71,9 @@ public class TAMaterials {
         //--//
         //materialRegistry.register(alexandrite = new Material("alexandrite", 0x6A4D6B, new Pair<>(Ref.mod_id, GEM_HORIZONTAL.getCodec())).setOreType(DefaultOreType.ORE.getCodec()).setDenseOreDensity(8));
         alexandrite = RegistriesHandler.registerMaterial("alexandrite", ()-> new Material("alexandrite", Icons.GEM_HORIZONTAL.icon())
-                .physical.setColor(0x6A4D6B).setDefaultQuantity(144).setMaxQuantity(144).setDefaultQuality(60).setMaxQuality(100).setDefaultPurity(75D).setMaxPurity(100D).end()
-                .ore.setOreType(OreTypes.GEM.oreType()).end().thermal.setMeltingPoint(1870.0)
+                .physical.setColor(0x6A4D6B).end()
+                .ore.setOre(OreTypes.GEM.oreType(), RockTypes.FOLIATED_METAMORPHIC.getType(), RockTypes.PLUTONIC_IGNEOUS.getType()).end()
+                .thermal.setMeltingPoint(1870.0)
                 .end()
         );
         //materialRegistry.register(almandine = new Material("almandine", 0xff0000, new Pair<>(Ref.mod_id, ROUGH.getCodec())).setOreType(DefaultOreType.GEM.getCodec()).setDenseOreDensity(8));

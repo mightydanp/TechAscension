@@ -2,7 +2,6 @@ package com.mightydanp.techascension;
 
 import com.mightydanp.techascension.client.ref.ModRef;
 import com.mightydanp.techascension.materials.TAMaterials;
-import com.mightydanp.techcore.materials.Material;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -24,6 +23,6 @@ public class TechAscension
     }
 
     private void bootstrapMaterials(NewRegistryEvent event) {
-        Material material = TAMaterials.alexandrite.get();
+
     }
 }
