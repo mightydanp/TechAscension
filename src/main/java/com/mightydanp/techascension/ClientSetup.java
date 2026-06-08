@@ -5,6 +5,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.jetbrains.annotations.NotNull;
 
 import static com.mightydanp.techcore.TechCore.LOGGER;
 
@@ -12,7 +13,7 @@ import static com.mightydanp.techcore.TechCore.LOGGER;
 public class ClientSetup {
 
     @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
+    public static void onClientSetup(@NotNull FMLClientSetupEvent event) {
         LOGGER.info("Tech Ascension client setup is starting");
 
         //enqueueWork is only needed for things that aren't thread-safe
