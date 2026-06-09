@@ -1,7 +1,7 @@
 package com.mightydanp.techascension;
 
 import com.mightydanp.techascension.client.ref.ModRef;
-import com.mightydanp.techascension.materials.TAMaterials;
+import com.mightydanp.techascension.materials.Materials;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -18,7 +18,7 @@ public class TechAscension
     public TechAscension(@NotNull FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
 
-        TAMaterials.commonInit();
+        Materials.commonInit();
 
         modEventBus.addListener(EventPriority.HIGHEST, this::bootstrapMaterials);
     }
