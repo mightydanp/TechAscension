@@ -51,7 +51,7 @@ public class Materials {
         
         end_stone = RegistriesHandler.registerMaterial("end_stone", () -> new Material("end_stone", Icons.DULL.icon())
                 .physical.setColor(0xD9DE9E).end()
-                .rockLayer.rockLayer(Blocks.END_STONE, RockTypes.GENERIC.getType()).end()
+                .rockLayer.rockLayer( RockTypes.GENERIC.getType()).existingRockLayer(Blocks.END_STONE, null, Blocks.END_STONE_BRICKS).end()
         );
         
         granite = RegistriesHandler.registerMaterial("granite", () -> new Material("granite", Icons.DULL.icon())
@@ -61,7 +61,7 @@ public class Materials {
         
         netherrack = RegistriesHandler.registerMaterial("netherrack", () -> new Material("netherrack", Icons.DULL.icon())
                 .physical.setColor(0xC80000).end()
-                .rockLayer.rockLayer(Blocks.NETHERRACK, RockTypes.GENERIC.getType()).end()
+                .rockLayer.rockLayer(RockTypes.GENERIC.getType()).existingRockLayer(Blocks.NETHERRACK, null, Blocks.NETHER_BRICKS).end()
         );
 
         shale = RegistriesHandler.registerMaterial("shale", () -> new Material("shale", Icons.DULL.icon())
@@ -135,7 +135,6 @@ public class Materials {
 
         stone = RegistriesHandler.registerMaterial("stone", () -> new Material("stone", Icons.DULL.icon())
                 .physical.setColor(0xCDCDCD).end()
-                    .rockLayer.rockLayer(Blocks.STONE, RockTypes.GENERIC.getType()).end()
                     .tool.setAttackSpeed(40).setDurability(20).setAttackDamage(40F).end()
         );
 
