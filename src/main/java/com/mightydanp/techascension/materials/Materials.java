@@ -36,32 +36,32 @@ public class Materials {
         //rock layers
         andesite = RegistriesHandler.registerMaterial("andesite", () -> new Material("andesite", Icons.DULL.icon())
                 .physical.setColor(0x747878).end()
-                .rockLayer.rockLayer(Blocks.ANDESITE, RockTypes.VOLCANIC_IGNEOUS.getType()).end()
+                .rockLayer.rockLayer(RockTypes.VOLCANIC_IGNEOUS.getType()).end()
         );
         
         basalt = RegistriesHandler.registerMaterial("basalt", () -> new Material("basalt", Icons.DULL.icon())
                 .physical.setColor(0x4C4A4A).end()
-                .rockLayer.rockLayer(Blocks.BASALT, RockTypes.VOLCANIC_IGNEOUS.getType()).end()
+                .rockLayer.rockLayer(RockTypes.VOLCANIC_IGNEOUS.getType()).end()
         );
         
         diorite = RegistriesHandler.registerMaterial("diorite", () -> new Material("diorite", Icons.DULL.icon())
                 .physical.setColor(0x9DBFB1).end()
-                .rockLayer.rockLayer(Blocks.DIORITE, RockTypes.PLUTONIC_IGNEOUS.getType()).end()
+                .rockLayer.rockLayer(RockTypes.PLUTONIC_IGNEOUS.getType()).end()
         );
         
         end_stone = RegistriesHandler.registerMaterial("end_stone", () -> new Material("end_stone", Icons.DULL.icon())
-                .physical.setColor(0xB8B09B).end()
-                .rockLayer.rockLayer(Blocks.END_STONE, RockTypes.GENERIC.getType()).useExistingRockLayerTexture().end()
+                .physical.setColor(0xD9DE9E).end()
+                .rockLayer.rockLayer(Blocks.END_STONE, RockTypes.GENERIC.getType()).end()
         );
         
         granite = RegistriesHandler.registerMaterial("granite", () -> new Material("granite", Icons.DULL.icon())
                 .physical.setColor(0xA26B56).end()
-                .rockLayer.rockLayer(Blocks.GRANITE, RockTypes.PLUTONIC_IGNEOUS.getType()).end()
+                .rockLayer.rockLayer(RockTypes.PLUTONIC_IGNEOUS.getType()).end()
         );
         
         netherrack = RegistriesHandler.registerMaterial("netherrack", () -> new Material("netherrack", Icons.DULL.icon())
-                .physical.setColor(0x6F4644).end()
-                .rockLayer.rockLayer(Blocks.NETHERRACK, RockTypes.GENERIC.getType()).useExistingRockLayerTexture().end()
+                .physical.setColor(0xC80000).end()
+                .rockLayer.rockLayer(Blocks.NETHERRACK, RockTypes.GENERIC.getType()).end()
         );
 
         shale = RegistriesHandler.registerMaterial("shale", () -> new Material("shale", Icons.DULL.icon())
@@ -106,8 +106,8 @@ public class Materials {
         );
 
         prismarine = RegistriesHandler.registerMaterial("prismarine", () -> new Material("prismarine", Icons.DULL.icon())
-                .physical.setColor(0x5AA09A).end()
-                .rockLayer.rockLayer(Blocks.PRISMARINE, RockTypes.GENERIC.getType()).end()
+                .physical.setColor(0x6EB2A5).end()
+                .rockLayer.rockLayer(RockTypes.GENERIC.getType()).end()
         );
 
         greenschist = RegistriesHandler.registerMaterial("greenschist", () -> new Material("greenschist", Icons.DULL.icon())
@@ -126,22 +126,22 @@ public class Materials {
         );
 
         dark_prismarine = RegistriesHandler.registerMaterial("dark_prismarine", () -> new Material("dark_prismarine", Icons.DULL.icon())
-                .physical.setColor(0x345E54).end()
-                .rockLayer.rockLayer(Blocks.DARK_PRISMARINE, RockTypes.GENERIC.getType()).end()
+                .physical.setColor(0x587D6C).end()
+                .rockLayer.rockLayer(RockTypes.GENERIC.getType()).end()
         );
 
         // Legacy tool data kept from TCMaterial/MaterialHandler for later: weight=2F, flintToolTypes, TOOL_HEAD, TOOL_WEDGE, TOOL_WEDGE_HANDLE.
         //materials.add(stone = new MaterialHandler("stone", 0x808080, CUBE_SHINY).addToolProperties( 40, 20, 40F, 2F, flintToolTypes, TOOL_HEAD, TOOL_WEDGE, TOOL_WEDGE_HANDLE).save());
 
         stone = RegistriesHandler.registerMaterial("stone", () -> new Material("stone", Icons.DULL.icon())
-                .physical.setColor(0x808080).end()
-                    .rockLayer.rockLayer(Blocks.STONE, RockTypes.GENERIC.getType()).useExistingRockLayerTexture().end()
+                .physical.setColor(0xCDCDCD).end()
+                    .rockLayer.rockLayer(Blocks.STONE, RockTypes.GENERIC.getType()).end()
                     .tool.setAttackSpeed(40).setDurability(20).setAttackDamage(40F).end()
         );
 
         //none rock layers
         alexandrite = RegistriesHandler.registerMaterial("alexandrite", () -> new Material("alexandrite", Icons.GEM_HORIZONTAL.icon())
-                .physical.setColor(0x6A4D6B).end()
+                .physical.setColor(0xC8FFAA).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.FOLIATED_METAMORPHIC.getType(), RockTypes.GENERIC.getType()).end()
                 .thermal.setMeltingPoint(1870.0).end()
         );
@@ -152,7 +152,7 @@ public class Materials {
         );
         
         amethyst = RegistriesHandler.registerMaterial("amethyst", () -> new Material("amethyst", Icons.RUBY.icon())
-                .physical.setColor(0xD232D2).end()
+                .physical.setColor(0xA678F1).end()
                 .ore.setOre(OreTypes.GEM.oreType(), 8, RockTypes.VOLCANIC_IGNEOUS.getType(), RockTypes.CHEMICAL_SEDIMENTARY.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -162,7 +162,7 @@ public class Materials {
         );
         
         anthracite = RegistriesHandler.registerMaterial("anthracite", () -> new Material("anthracite", Icons.DULL.icon())
-                .physical.setColor(0x383E42).end()
+                .physical.setColor(0x5A5A5A).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.ORGANIC_SEDIMENTARY.getType(), RockTypes.FOLIATED_METAMORPHIC.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -172,7 +172,7 @@ public class Materials {
         );
         
         aquamarine = RegistriesHandler.registerMaterial("aquamarine", () -> new Material("aquamarine", Icons.DULL.icon())
-                .physical.setColor(0x7FFFD4).end()
+                .physical.setColor(0xC8DCFF).end()
                 .ore.setOre(OreTypes.GEM.oreType(), 8, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.CLASTIC_SEDIMENTARY.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -202,7 +202,7 @@ public class Materials {
         );
         
         bentonite = RegistriesHandler.registerMaterial("bentonite", () -> new Material("bentonite", Icons.ROUGH.icon())
-                .physical.setColor(0xF5D7D2).end()
+                .physical.setColor(0xFFC004).end()
                 .chemical.setSymbol("NaOH").end()
                 .ore.setOre(OreTypes.ORE.oreType(), 16, RockTypes.VOLCANIC_IGNEOUS.getType(), RockTypes.CLASTIC_SEDIMENTARY.getType(), RockTypes.GENERIC.getType()).end()
         );
@@ -231,12 +231,12 @@ public class Materials {
         );
         
         blue_sapphire = RegistriesHandler.registerMaterial("blue_sapphire", () -> new Material("blue_sapphire", Icons.GEM_HORIZONTAL.icon())
-                .physical.setColor(0x6464C8).end()
+                .physical.setColor(0x7878A0).end()
                 .ore.setOre(OreTypes.GEM.oreType(), 8, RockTypes.NON_FOLIATED_METAMORPHIC.getType(), RockTypes.CLASTIC_SEDIMENTARY.getType(), RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.GENERIC.getType()).end()
         );
         
         blue_topaz = RegistriesHandler.registerMaterial("blue_topaz", () -> new Material("blue_topaz", Icons.GEM_HORIZONTAL.icon())
-                .physical.setColor(0x0000FF).end()
+                .physical.setColor(0x7B96DC).end()
                 .ore.setOre(OreTypes.GEM.oreType(), 8, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.VOLCANIC_IGNEOUS.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -291,12 +291,12 @@ public class Materials {
         );
         
         cooperite = RegistriesHandler.registerMaterial("cooperite", () -> new Material("cooperite", Icons.METALLIC.icon())
-                .physical.setColor(0xFFFFC8).end()
+                .physical.setColor(0x82A0E6).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.CLASTIC_SEDIMENTARY.getType(), RockTypes.GENERIC.getType()).end()
         );
         
         copper = RegistriesHandler.registerMaterial("copper", () -> new Material("copper", Icons.SHINY.icon())
-                .physical.setColor(0xFF6400).end().chemical.setSymbol("Cu").end()
+                .physical.setColor(0xFF825A).end().chemical.setSymbol("Cu").end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.VOLCANIC_IGNEOUS.getType(), RockTypes.CHEMICAL_SEDIMENTARY.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -347,7 +347,7 @@ public class Materials {
         
         // Legacy middle temperature value kept for later: addTemperatureProperties(1337, 1337, 3129).
         gold = RegistriesHandler.registerMaterial("gold", () -> new Material("gold", Icons.SHINY.icon())
-                .physical.setColor(0xFFFF1E).end().chemical.setSymbol("Au").end()
+                .physical.setColor(0xFFE650).end().chemical.setSymbol("Au").end()
                 .thermal.setMeltingPoint(1337.0).setBoilingPoint(3129.0).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 16, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.VOLCANIC_IGNEOUS.getType(), RockTypes.CLASTIC_SEDIMENTARY.getType(), RockTypes.GENERIC.getType()).end()
         );
@@ -389,7 +389,7 @@ public class Materials {
         
         // Legacy constructor had no icon mapping: new MaterialHandler("hematite", 145, 90, 90, 255).addOreProperties(8, false).
         hematite = RegistriesHandler.registerMaterial("hematite", () -> new Material("hematite", Icons.DULL.icon())
-                .physical.setColor(0x915A5A).end()
+                .physical.setColor(0xC85050).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.CHEMICAL_SEDIMENTARY.getType(), RockTypes.FOLIATED_METAMORPHIC.getType(), RockTypes.VOLCANIC_IGNEOUS.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -447,7 +447,7 @@ public class Materials {
         );
         
         magnesite = RegistriesHandler.registerMaterial("magnesite", () -> new Material("magnesite", Icons.METALLIC.icon())
-                .physical.setColor(0xFAFAB4).end()
+                .physical.setColor(0xE1CDCD).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.CHEMICAL_SEDIMENTARY.getType(), RockTypes.NON_FOLIATED_METAMORPHIC.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -472,12 +472,12 @@ public class Materials {
         );
         
         monazite = RegistriesHandler.registerMaterial("monazite", () -> new Material("monazite", Icons.METALLIC.icon())
-                .physical.setColor(0x091919).end()
+                .physical.setColor(0x324632).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.CLASTIC_SEDIMENTARY.getType(), RockTypes.FOLIATED_METAMORPHIC.getType(), RockTypes.GENERIC.getType()).end()
         );
         
         morganite = RegistriesHandler.registerMaterial("morganite", () -> new Material("morganite", Icons.DIAMOND.icon())
-                .physical.setColor(0x324632).end()
+                .physical.setColor(0xFFC8C8).end()
                 .ore.setOre(OreTypes.GEM.oreType(), 8, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -522,7 +522,7 @@ public class Materials {
         );
         
         pitchblende = RegistriesHandler.registerMaterial("pitchblende", () -> new Material("pitchblende", Icons.DULL.icon())
-                .physical.setColor(0xC8D200).end()
+                .physical.setColor(0x646E00).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.VOLCANIC_IGNEOUS.getType(), RockTypes.CHEMICAL_SEDIMENTARY.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -537,12 +537,12 @@ public class Materials {
         );
         
         pyrite = RegistriesHandler.registerMaterial("pyrite", () -> new Material("pyrite", Icons.ROUGH.icon())
-                .physical.setColor(0x967828).end()
+                .physical.setColor(0xFFE650).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.VOLCANIC_IGNEOUS.getType(), RockTypes.CHEMICAL_SEDIMENTARY.getType(), RockTypes.FOLIATED_METAMORPHIC.getType(), RockTypes.GENERIC.getType()).end()
         );
         
         pyrolusite = RegistriesHandler.registerMaterial("pyrolusite", () -> new Material("pyrolusite", Icons.DULL.icon())
-                .physical.setColor(0x9696AA).end()
+                .physical.setColor(0x323232).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.CHEMICAL_SEDIMENTARY.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -572,7 +572,7 @@ public class Materials {
         );
         
         rutile = RegistriesHandler.registerMaterial("rutile", () -> new Material("rutile", Icons.GEM_HORIZONTAL.icon())
-                .physical.setColor(0xD40D5C).end()
+                .physical.setColor(0xE6E6E6).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.FOLIATED_METAMORPHIC.getType(), RockTypes.CLASTIC_SEDIMENTARY.getType(), RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -582,12 +582,12 @@ public class Materials {
         );
         
         sapphire = RegistriesHandler.registerMaterial("sapphire", () -> new Material("sapphire", Icons.GEM_HORIZONTAL.icon())
-                .physical.setColor(0x6464C8).end()
+                .physical.setColor(0x7878A0).end()
                 .ore.setOre(OreTypes.GEM.oreType(), 8, RockTypes.NON_FOLIATED_METAMORPHIC.getType(), RockTypes.CLASTIC_SEDIMENTARY.getType(), RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.GENERIC.getType()).end()
         );
         
         scheelite = RegistriesHandler.registerMaterial("scheelite", () -> new Material("scheelite", Icons.DULL.icon())
-                .physical.setColor(0xC88C14).end()
+                .physical.setColor(0xDEDE00).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.NON_FOLIATED_METAMORPHIC.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -664,7 +664,7 @@ public class Materials {
         );
         
         topaz = RegistriesHandler.registerMaterial("topaz", () -> new Material("topaz", Icons.GEM_HORIZONTAL.icon())
-                .physical.setColor(0x0000FF).end()
+                .physical.setColor(0xFF8000).end()
                 .ore.setOre(OreTypes.GEM.oreType(), 8, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.VOLCANIC_IGNEOUS.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -685,7 +685,7 @@ public class Materials {
         
         // Legacy constructor had alpha/string/extra values with no icon mapping: new MaterialHandler("vanadium_magnetite", 0, 51, 153, alpha, "", 0, 0).addOreProperties(8, false).
         vanadium_magnetite = RegistriesHandler.registerMaterial("vanadium_magnetite", () -> new Material("vanadium_magnetite", Icons.DULL.icon())
-                .physical.setColor(0x003399).end()
+                .physical.setColor(0x23233C).end()
                 .ore.setOre(OreTypes.ORE.oreType(), 8, RockTypes.PLUTONIC_IGNEOUS.getType(), RockTypes.GENERIC.getType()).end()
         );
         
@@ -705,7 +705,7 @@ public class Materials {
         );
         
         yellow_sapphire = RegistriesHandler.registerMaterial("yellow_sapphire", () -> new Material("yellow_sapphire", Icons.GEM_HORIZONTAL.icon())
-                .physical.setColor(0xD0DC78).end()
+                .physical.setColor(0xDCDC32).end()
                 .ore.setOre(OreTypes.GEM.oreType(), 8, RockTypes.NON_FOLIATED_METAMORPHIC.getType(), RockTypes.CLASTIC_SEDIMENTARY.getType(), RockTypes.GENERIC.getType()).end()
         );
         
