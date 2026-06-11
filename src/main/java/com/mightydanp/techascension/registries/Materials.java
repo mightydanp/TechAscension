@@ -1,4 +1,4 @@
-package com.mightydanp.techascension.materials;
+package com.mightydanp.techascension.registries;
 
 import com.mightydanp.techcore.api.registries.RegistriesHandler;
 import com.mightydanp.techcore.materials.Material;
@@ -727,4 +727,6 @@ public class Materials {
                 .tool.setAttackSpeed(20).setDurability(10).setAttackDamage(20F).end()
         );
     }
+
+
 }
