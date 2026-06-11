@@ -25,7 +25,7 @@ public class Materials {
     public static Supplier<Material> flint, stone;
 
     //rock layers
-    public static Supplier<Material> andesite, diorite, basalt, end_stone, granite, netherrack, shale, slate, marble, komatiite, limestone, quartzite,
+    public static Supplier<Material> andesite, diorite, basalt, deepslate, end_stone, granite, netherrack, shale, slate, marble, komatiite, limestone, quartzite,
             blueschist, kimberlite, prismarine, greenschist, red_granite, black_granite, dark_prismarine;
     //public static List<ToolPartCodec> flintToolParts;
 
@@ -42,6 +42,11 @@ public class Materials {
         basalt = RegistriesHandler.registerMaterial("basalt", () -> new Material("basalt", Icons.DULL.icon())
                 .physical.setColor(0x4C4A4A).end()
                 .rockLayer.rockLayer(RockTypes.VOLCANIC_IGNEOUS.getType()).end()
+        );
+
+        deepslate = RegistriesHandler.registerMaterial("deepslate", () -> new Material("deepslate", Icons.ROUGH.icon())
+                .physical.setColor(0x2F3136).end()
+                .rockLayer.rockLayer(RockTypes.FOLIATED_METAMORPHIC.getType()).existingRockLayer(Blocks.DEEPSLATE, Blocks.COBBLED_DEEPSLATE, Blocks.DEEPSLATE_BRICKS).end()
         );
         
         diorite = RegistriesHandler.registerMaterial("diorite", () -> new Material("diorite", Icons.DULL.icon())
