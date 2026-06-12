@@ -1,7 +1,38 @@
-Copyright (c) 2026 @mightydanp. All rights reserved.
+========================================================================
+PART 1: YOUR MOD CODE (PROPRIETARY & ALL RIGHTS RESERVED)
+========================================================================
+Copyright (c) 2026 @mightydanp All rights reserved.
 
-This software and its source code are strictly proprietary. 
+This license applies to all unique source code, compiled binaries, and 
+assets (textures, models, sounds) created for this modification.
 
-Any unauthorized copying, modification, redistribution, or reverse 
-engineering of this software is strictly prohibited without the 
-express written permission of the copyright holder.
+Modification, redistribution, sublicensing, reverse engineering, or 
+Creation of derivative works of this unique software is strictly 
+prohibited without explicit written permission from the copyright holder.
+
+========================================================================
+PART 2: NEOFORGED TEMPLATE FILES (MIT LICENSE)
+========================================================================
+MIT License 
+Copyright (c) 2023 NeoForged project 
+
+This license applies strictly to the template files as supplied by 
+github.com/NeoForged/MDK.
+
+Permission is hereby granted, free of charge, to any person obtaining a 
+copy of this software and associated documentation files (the "Software"), 
+to deal in the Software without restriction, including without limitation 
+the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+and/or sell copies of the Software, and to permit persons to whom the 
+Software is furnished to do so, subject to the following conditions: 
+
+The above copyright notice and this permission notice shall be included 
+in all copies or substantial portions of the Software. 
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+DEALINGS IN THE SOFTWARE.
