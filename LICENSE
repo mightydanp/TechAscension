@@ -1,41 +1,11 @@
-========================================================================
-PROPRIETARY MOD LICENSE
-ALL RIGHTS RESERVED
-===================
+ Proprietary License
 
-Copyright (c) 2026 @mightydanp. All rights reserved.
+ Copyright (c) 2026 @mightydanp. All rights reserved.
 
-This license applies only to the original source code, compiled binaries,
-configuration files, textures, models, sounds, and other assets created by
-@mightydanp for this Minecraft modification.
+ This license applies only to the original source code, compiled binaries, and assets, including textures, models, sounds, configuration files, and other creative content, created by @mightydanp for this modification.
 
-You may not copy, modify, redistribute, republish, sublicense, sell, lease,
-rent, reverse engineer, decompile, disassemble, extract assets from, or create
-derivative works based on this modification, its original code, its compiled
-binaries, or its original assets without explicit prior written permission from
-the copyright holder.
+ Except where expressly permitted by applicable law or by prior written permission from the copyright holder, you may not copy, modify, redistribute, publish, sublicense, sell, decompile, disassemble, reverse engineer, or create derivative works based on this original software or its original assets.
 
-You may download and use this modification for personal gameplay only, provided
-that you do not redistribute, modify, reverse engineer, decompile, extract,
-repackage, or claim ownership of any part of the modification.
+ Third-party code, libraries, tools, or assets included in or used by this project remain subject to their respective licenses. Any portions derived from MIT-licensed software remain governed by the applicable MIT License terms, including the requirement to preserve the original copyright notice and license text.
 
-Server owners, modpack creators, websites, launchers, and third-party
-distribution platforms may not include, mirror, rehost, redistribute, modify,
-or package this modification without explicit prior written permission from the
-copyright holder.
-
-This license does not apply to Minecraft, NeoForge, Mojang, Microsoft, or any
-third-party code, libraries, APIs, tools, templates, trademarks, or assets used,
-referenced, linked, or required by this modification. Those materials remain
-subject to their respective licenses and owners.
-
-Any MIT-licensed or otherwise third-party portions included in this project
-remain subject to their original license terms, including any requirement to
-preserve copyright notices, license notices, and attribution.
-
-THE MODIFICATION IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE, COMPATIBILITY, SECURITY, PERFORMANCE, OR
-NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
-CLAIM, DAMAGES, LOSS OF DATA, SERVER ISSUES, GAME CRASHES, OR OTHER LIABILITY
-ARISING FROM, OUT OF, OR IN CONNECTION WITH THE USE OF THIS MODIFICATION.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OF THE SOFTWARE.
