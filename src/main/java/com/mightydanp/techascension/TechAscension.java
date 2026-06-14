@@ -2,6 +2,7 @@ package com.mightydanp.techascension;
 
 import com.mightydanp.techascension.client.ref.ModRef;
 import com.mightydanp.techascension.registries.Materials;
+import com.mightydanp.techascension.registries.OreVeins;
 import com.mightydanp.techascension.registries.RockLayers;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -21,6 +22,7 @@ public class TechAscension
 
         Materials.commonInit();
         RockLayers.init();
+        OreVeins.init();
 
         modEventBus.addListener(EventPriority.HIGHEST, this::bootstrapMaterials);
     }
