@@ -39,7 +39,7 @@ public final class OreVeins {
                 .sizeX(17, 63)
                 .sizeY(7, 7)
                 .sizeZ(17, 63)
-                .sparseReachBlocks(32)
+                .sparseReachBlocks(16)
                 .ores(
                         new VeinOreEntry(Materials.chalcopyrite, 8),
                         new VeinOreEntry(Materials.hematite, 4),
