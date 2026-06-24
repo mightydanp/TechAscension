@@ -13,10 +13,6 @@ public final class OreVeins {
         if (initialized) return;
         initialized = true;
 
-        OreVeinDefinitions.registerGenerationSettings(new OreVeinDefinitions.DimensionGenerationSettings(
-                Level.OVERWORLD,
-                1000
-        ));
         OreVeinDefinitions.registerOverlapSettings(
                 Level.OVERWORLD,
                 new OreVeinDefinitions.OverlapSettings(512, 1024)
