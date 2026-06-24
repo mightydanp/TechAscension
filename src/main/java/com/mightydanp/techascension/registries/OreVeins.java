@@ -9,14 +9,8 @@ import net.minecraft.world.level.Level;
 public final class OreVeins {
     private static boolean initialized;
 
-    private OreVeins() {
-    }
-
     public static void init() {
-        if (initialized) {
-            return;
-        }
-
+        if (initialized) return;
         initialized = true;
 
         OreVeinDefinitions.registerGenerationSettings(new OreVeinDefinitions.DimensionGenerationSettings(
@@ -33,9 +27,7 @@ public final class OreVeins {
                         .dimensions(Level.OVERWORLD)
                         .generationWeight(80)
                         .centerY(12, 27)
-                        .maxSizeX(64)
                         .sizeY(8, 8)
-                        .maxSizeZ(64)
                     .ores(
                             new OreVeinDefinition.OreEntry(Materials.chalcopyrite, 8),
                             new OreVeinDefinition.OreEntry(Materials.hematite, 4),
