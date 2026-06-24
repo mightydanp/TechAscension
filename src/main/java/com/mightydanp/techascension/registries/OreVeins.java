@@ -30,20 +30,18 @@ public final class OreVeins {
 
         OreVeinDefinitions.register(
                 OreVeinDefinition.builder(ResourceLocation.fromNamespaceAndPath(ModRef.MOD_ID, "copper_vein"))
-                .dimensions(Level.OVERWORLD)
-                .generationWeight(80)
-                .centerY(12, 27)
-                .sizeX(17, 63)
-                .sizeY(7, 7)
-                .sizeZ(17, 63)
-                .sparseReachBlocks(16)
-                .ores(
-                        new OreVeinDefinition.OreEntry(Materials.chalcopyrite, 8),
-                        new OreVeinDefinition.OreEntry(Materials.hematite, 4),
-                        new OreVeinDefinition.OreEntry(Materials.pyrite, 2),
-                        new OreVeinDefinition.OreEntry(Materials.copper, 1)
-                )
-                .build()
+                        .dimensions(Level.OVERWORLD)
+                        .generationWeight(80)
+                        .centerY(12, 27)
+                        .maxSizeX(64)
+                        .sizeY(8, 8)
+                        .maxSizeZ(64)
+                    .ores(
+                            new OreVeinDefinition.OreEntry(Materials.chalcopyrite, 8),
+                            new OreVeinDefinition.OreEntry(Materials.hematite, 4),
+                            new OreVeinDefinition.OreEntry(Materials.pyrite, 2),
+                            new OreVeinDefinition.OreEntry(Materials.copper, 1))
+                        .build()
         );
     }
 }
